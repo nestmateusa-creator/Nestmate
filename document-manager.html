@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NestMate - Document Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
+            authDomain: "nestmate-167ed.firebaseapp.com",
+            projectId: "nestmate-167ed",
+            storageBucket: "nestmate-167ed.firebasestorage.app",
+            messagingSenderId: "865171535257",
+            appId: "1:865171535257:web:9944a48a952e99f55f0f08",
+            measurementId: "G-1DYR2RGY4G"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        window.firebaseAuth = auth;
+        window.firebaseDb = db;
+    </script>
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .back-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: white;
+            border-radius: var(--radius);
+            padding: 8px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            background: none;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            color: var(--secondary);
+            white-space: nowrap;
+        }
+
+        .nav-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .nav-tab:hover:not(.active) {
+            background: var(--light);
+        }
+
+        .content-section {
+            background: white;
+            border-radius: var(--radius);
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .section-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .section-subtitle {
+            color: var(--secondary);
+            font-size: 16px;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 16px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .filter-btn {
+            background: var(--light);
+            border: 2px solid var(--border);
+            padding: 12px 24px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .filter-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .upload-area {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius);
+            padding: 48px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-bottom: 24px;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: var(--light);
+        }
+
+        .upload-area i {
+            font-size: 48px;
+            color: var(--secondary);
+            margin-bottom: 16px;
+        }
+
+        .upload-text {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--dark);
+        }
+
+        .upload-subtext {
+            color: var(--secondary);
+            font-size: 14px;
+        }
+
+        .documents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .document-card {
+            background: var(--light);
+            border-radius: var(--radius);
+            padding: 20px;
+            border: 2px solid var(--border);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .document-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .document-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--radius);
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            margin-bottom: 16px;
+        }
+
+        .document-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--dark);
+        }
+
+        .document-meta {
+            color: var(--secondary);
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .document-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 8px 12px;
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 12px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .category-card {
+            background: var(--light);
+            border-radius: var(--radius);
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid var(--border);
+        }
+
+        .category-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .category-card.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .category-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+            color: var(--primary);
+        }
+
+        .category-card.active .category-icon {
+            color: white;
+        }
+
+        .category-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .category-count {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--light);
+            border-radius: var(--radius);
+            padding: 24px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: var(--secondary);
+            font-size: 14px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--radius);
+            padding: 32px;
+            max-width: 600px;
+            margin: 50px auto;
+            position: relative;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--secondary);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .nav-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .documents-grid,
+            .categories-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .search-bar {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div>
+                <h1><i class="fas fa-folder-open"></i> Document Manager</h1>
+                <p>Organize and secure all your home-related documents</p>
+            </div>
+            <button class="back-btn" onclick="window.location.href='NestMate.html'">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </button>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showSection('all')">All Documents</button>
+            <button class="nav-tab" onclick="showSection('categories')">Categories</button>
+            <button class="nav-tab" onclick="showSection('recent')">Recent</button>
+            <button class="nav-tab" onclick="showSection('shared')">Shared</button>
+        </div>
+
+        <!-- All Documents Section -->
+        <div id="all" class="content-section">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div>
+                    <h2 class="section-title">All Documents</h2>
+                    <p class="section-subtitle">Manage and organize your home documents</p>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">47</div>
+                    <div class="stat-label">Total Documents</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2.3 GB</div>
+                    <div class="stat-label">Storage Used</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">Categories</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">Shared Documents</div>
+                </div>
+            </div>
+
+            <!-- Search and Upload -->
+            <div class="search-bar">
+                <input type="text" class="search-input" placeholder="Search documents..." id="searchInput">
+                <button class="filter-btn" onclick="toggleFilters()">
+                    <i class="fas fa-filter"></i> Filter
+                </button>
+                <button class="filter-btn" onclick="openUploadModal()">
+                    <i class="fas fa-upload"></i> Upload
+                </button>
+            </div>
+
+            <!-- Upload Area -->
+            <div class="upload-area" onclick="openUploadModal()">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <div class="upload-text">Drag and drop files here or click to upload</div>
+                <div class="upload-subtext">Supports PDF, DOC, XLS, JPG, PNG up to 10MB each</div>
+            </div>
+
+            <!-- Documents Grid -->
+            <div class="documents-grid">
+                <!-- Insurance Documents -->
+                <div class="document-card" onclick="viewDocument('insurance-policy')">
+                    <div class="document-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="document-title">Home Insurance Policy</div>
+                    <div class="document-meta">PDF • 2.1 MB • Updated 2 days ago</div>
+                    <div class="document-actions">
+                        <button class="btn btn-primary" onclick="event.stopPropagation(); downloadDocument('insurance-policy')">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                        <button class="btn btn-outline" onclick="event.stopPropagation(); shareDocument('insurance-policy')">
+                            <i class="fas fa-share"></i> Share
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Property Deed -->
+                <div class="document-card" onclick="viewDocument('property-deed')">
+                    <div class="document-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <div class="document-title">Property Deed</div>
+                    <div class="document-meta">PDF • 1.8 MB • Updated 1 month ago</div>
+                    <div class="document-actions">
+                        <button class="btn btn-primary" onclick="event.stopPropagation(); downloadDocument('property-deed')">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                        <button class="btn btn-outline" onclick="event.stopPropagation(); shareDocument('property-deed')">
+                            <i class="fas fa-share"></i> Share
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mortgage Documents -->
+                <div class="document-card" onclick="viewDocument('mortgage-docs')">
+                    <div class="document-icon">
+                        <i class="fas fa-file-contract"></i>
+                    </div>
+                    <div class="document-title">Mortgage Documents</div>
+                    <div class="document-meta">PDF • 3.2 MB • Updated 1 week ago</div>
+                    <div class="document-actions">
+                        <button class="btn btn-primary" onclick="event.stopPropagation(); downloadDocument('mortgage-docs')">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                        <button class="btn btn-outline" onclick="event.stopPropagation(); shareDocument('mortgage-docs')">
+                            <i class="fas fa-share"></i> Share
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Utility Bills -->
+                <div class="document-card" onclick="viewDocument('utility-bills')">
+                    <div class="document-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="document-title">Utility Bills (2024)</div>
+                    <div class="document-meta">PDF • 1.5 MB • Updated 3 days ago</div>
+                    <div class="document-actions">
+                        <button class="btn btn-primary" onclick="event.stopPropagation(); downloadDocument('utility-bills')">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                        <button class="btn btn-outline" onclick="event.stopPropagation(); shareDocument('utility-bills')">
+                            <i class="fas fa-share"></i> Share
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Maintenance Records -->
+                <div class="document-card" onclick="viewDocument('maintenance-records')">
+                    <div class="document-icon">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <div class="document-title">Maintenance Records</div>
+                    <div class="document-meta">XLS • 0.8 MB • Updated 1 day ago</div>
+                    <div class="document-actions">
+                        <button class="btn btn-primary" onclick="event.stopPropagation(); downloadDocument('maintenance-records')">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                        <button class="btn btn-outline" onclick="event.stopPropagation(); shareDocument('maintenance-records')">
+                            <i class="fas fa-share"></i> Share
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Warranty Information -->
+                <div class="document-card" onclick="viewDocument('warranty-info')">
+                    <div class="document-icon">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+                    <div class="document-title">Warranty Information</div>
+                    <div class="document-meta">PDF • 2.7 MB • Updated 2 weeks ago</div>
+                    <div class="document-actions">
+                        <button class="btn btn-primary" onclick="event.stopPropagation(); downloadDocument('warranty-info')">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                        <button class="btn btn-outline" onclick="event.stopPropagation(); shareDocument('warranty-info')">
+                            <i class="fas fa-share"></i> Share
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Categories Section -->
+        <div id="categories" class="content-section" style="display: none;">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-folder"></i>
+                </div>
+                <div>
+                    <h2 class="section-title">Document Categories</h2>
+                    <p class="section-subtitle">Organize documents by type and purpose</p>
+                </div>
+            </div>
+
+            <div class="categories-grid">
+                <div class="category-card active" onclick="filterByCategory('all')">
+                    <div class="category-icon">
+                        <i class="fas fa-folder"></i>
+                    </div>
+                    <div class="category-name">All Documents</div>
+                    <div class="category-count">47 files</div>
+                </div>
+
+                <div class="category-card" onclick="filterByCategory('insurance')">
+                    <div class="category-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="category-name">Insurance</div>
+                    <div class="category-count">8 files</div>
+                </div>
+
+                <div class="category-card" onclick="filterByCategory('legal')">
+                    <div class="category-icon">
+                        <i class="fas fa-gavel"></i>
+                    </div>
+                    <div class="category-name">Legal</div>
+                    <div class="category-count">12 files</div>
+                </div>
+
+                <div class="category-card" onclick="filterByCategory('financial')">
+                    <div class="category-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="category-name">Financial</div>
+                    <div class="category-count">15 files</div>
+                </div>
+
+                <div class="category-card" onclick="filterByCategory('maintenance')">
+                    <div class="category-icon">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <div class="category-name">Maintenance</div>
+                    <div class="category-count">6 files</div>
+                </div>
+
+                <div class="category-card" onclick="filterByCategory('utilities')">
+                    <div class="category-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="category-name">Utilities</div>
+                    <div class="category-count">4 files</div>
+                </div>
+
+                <div class="category-card" onclick="filterByCategory('warranty')">
+                    <div class="category-icon">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+                    <div class="category-name">Warranty</div>
+                    <div class="category-count">2 files</div>
+                </div>
+
+                <div class="category-card" onclick="filterByCategory('other')">
+                    <div class="category-icon">
+                        <i class="fas fa-file"></i>
+                    </div>
+                    <div class="category-name">Other</div>
+                    <div class="category-count">3 files</div>
+                </div>
+            </div>
+
+            <div class="documents-grid" id="categoryDocuments">
+                <!-- Documents will be filtered here based on category -->
+            </div>
+        </div>
+
+        <!-- Recent Section -->
+        <div id="recent" class="content-section" style="display: none;">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div>
+                    <h2 class="section-title">Recent Documents</h2>
+                    <p class="section-subtitle">Recently uploaded or modified documents</p>
+                </div>
+            </div>
+
+            <div class="documents-grid">
+                <!-- Recent documents will be displayed here -->
+            </div>
+        </div>
+
+        <!-- Shared Section -->
+        <div id="shared" class="content-section" style="display: none;">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-share-alt"></i>
+                </div>
+                <div>
+                    <h2 class="section-title">Shared Documents</h2>
+                    <p class="section-subtitle">Documents shared with family members or contractors</p>
+                </div>
+            </div>
+
+            <div class="documents-grid">
+                <!-- Shared documents will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Modal -->
+    <div id="uploadModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('uploadModal')">&times;</button>
+            <h2>Upload Document</h2>
+            
+            <form id="uploadForm">
+                <div class="form-group">
+                    <label class="form-label">Document Name</label>
+                    <input type="text" class="form-input" id="documentName" placeholder="Enter document name" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select class="form-select" id="documentCategory" required>
+                        <option value="">Select category...</option>
+                        <option value="insurance">Insurance</option>
+                        <option value="legal">Legal</option>
+                        <option value="financial">Financial</option>
+                        <option value="maintenance">Maintenance</option>
+                        <option value="utilities">Utilities</option>
+                        <option value="warranty">Warranty</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <input type="text" class="form-input" id="documentDescription" placeholder="Brief description of the document">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">File</label>
+                    <input type="file" class="form-input" id="documentFile" accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png" required>
+                </div>
+
+                <div class="document-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-upload"></i> Upload Document
+                    </button>
+                    <button type="button" class="btn btn-outline" onclick="closeModal('uploadModal')">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentSection = 'all';
+        let currentCategory = 'all';
+
+        // Show section
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).style.display = 'block';
+            
+            // Update active tab
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            currentSection = sectionId;
+        }
+
+        // Filter by category
+        function filterByCategory(category) {
+            currentCategory = category;
+            
+            // Update active category
+            document.querySelectorAll('.category-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            event.target.closest('.category-card').classList.add('active');
+            
+            // Filter documents (in a real app, this would filter the actual documents)
+            console.log(`Filtering by category: ${category}`);
+        }
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const documents = document.querySelectorAll('.document-card');
+            
+            documents.forEach(doc => {
+                const text = doc.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    doc.style.display = 'block';
+                } else {
+                    doc.style.display = 'none';
+                }
+            });
+        });
+
+        // Toggle filters
+        function toggleFilters() {
+            alert('Filter options will be displayed here');
+        }
+
+        // Open upload modal
+        function openUploadModal() {
+            document.getElementById('uploadModal').style.display = 'block';
+        }
+
+        // Close modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // View document
+        function viewDocument(docId) {
+            alert(`Viewing document: ${docId}. This would open a document viewer.`);
+        }
+
+        // Download document
+        function downloadDocument(docId) {
+            alert(`Downloading document: ${docId}. This would trigger a file download.`);
+        }
+
+        // Share document
+        function shareDocument(docId) {
+            alert(`Sharing document: ${docId}. This would open sharing options.`);
+        }
+
+        // Handle form submission
+        document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('documentName').value,
+                category: document.getElementById('documentCategory').value,
+                description: document.getElementById('documentDescription').value,
+                fileName: document.getElementById('documentFile').files[0]?.name,
+                userId: window.firebaseAuth?.currentUser?.uid || 'anonymous',
+                timestamp: new Date().toISOString()
+            };
+
+            try {
+                // Save document info to Firebase
+                if (window.firebaseDb) {
+                    await addDoc(collection(window.firebaseDb, 'documents'), formData);
+                }
+                
+                alert('Document uploaded successfully!');
+                closeModal('uploadModal');
+                document.getElementById('uploadForm').reset();
+            } catch (error) {
+                console.error('Error uploading document:', error);
+                alert('There was an error uploading your document. Please try again.');
+            }
+        });
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+
+        // Check authentication
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.firebaseAuth) {
+                window.firebaseAuth.onAuthStateChanged(function(user) {
+                    if (!user) {
+                        // Redirect to sign in if not authenticated
+                        window.location.href = 'signin.html';
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

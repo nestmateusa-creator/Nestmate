@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Recommendations - NestMate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #06b6d4;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .logo i {
+            font-size: 28px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+        }
+
+        .card-icon.primary { background: var(--primary); }
+        .card-icon.success { background: var(--success); }
+        .card-icon.warning { background: var(--warning); }
+        .card-icon.danger { background: var(--danger); }
+        .card-icon.info { background: var(--info); }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .card-subtitle {
+            font-size: 14px;
+            color: var(--secondary);
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .product-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            background: var(--light);
+            border-radius: var(--radius);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--secondary);
+            font-size: 48px;
+        }
+
+        .product-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+
+        .product-description {
+            color: var(--secondary);
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .product-price {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 16px;
+        }
+
+        .product-rating {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .stars {
+            color: var(--warning);
+        }
+
+        .rating-text {
+            color: var(--secondary);
+            font-size: 14px;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .product-actions .btn {
+            flex: 1;
+            text-align: center;
+        }
+
+        .category-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .category-tab {
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            background: white;
+            color: var(--secondary);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .category-tab.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .category-tab:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .category-tab.active:hover {
+            color: white;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 14px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .search-btn {
+            padding: 12px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .recommendation-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: var(--success);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .category-tabs {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-lightbulb"></i>
+                Product Recommendations
+            </div>
+            <div>
+                <button class="btn btn-primary" onclick="refreshRecommendations()">
+                    <i class="fas fa-refresh"></i>
+                    Refresh
+                </button>
+                <a href="dashboard-pro.html" class="btn btn-outline">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Dashboard
+                </a>
+            </div>
+        </div>
+
+        <!-- Search and Filters -->
+        <div class="card">
+            <div class="search-bar">
+                <input type="text" class="search-input" placeholder="Search products..." id="searchInput">
+                <button class="search-btn" onclick="searchProducts()">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+            
+            <div class="category-tabs">
+                <div class="category-tab active" onclick="filterByCategory('all')">All Products</div>
+                <div class="category-tab" onclick="filterByCategory('hvac')">HVAC</div>
+                <div class="category-tab" onclick="filterByCategory('plumbing')">Plumbing</div>
+                <div class="category-tab" onclick="filterByCategory('electrical')">Electrical</div>
+                <div class="category-tab" onclick="filterByCategory('appliances')">Appliances</div>
+                <div class="category-tab" onclick="filterByCategory('maintenance')">Maintenance</div>
+                <div class="category-tab" onclick="filterByCategory('security')">Security</div>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="products-grid" id="productsGrid">
+            <!-- Products will be populated here -->
+        </div>
+    </div>
+
+    <script>
+        // Sample products data
+        let products = [
+            {
+                id: 1,
+                title: "Smart Thermostat",
+                description: "Energy-efficient smart thermostat with Wi-Fi connectivity and mobile app control.",
+                price: 249.99,
+                category: "hvac",
+                rating: 4.5,
+                reviews: 128,
+                image: "fas fa-thermometer-half",
+                recommended: true
+            },
+            {
+                id: 2,
+                title: "Water Leak Detector",
+                description: "Wireless water leak detector with smartphone alerts and battery backup.",
+                price: 89.99,
+                category: "plumbing",
+                rating: 4.3,
+                reviews: 95,
+                image: "fas fa-tint",
+                recommended: true
+            },
+            {
+                id: 3,
+                title: "Smart Doorbell",
+                description: "Video doorbell with motion detection, night vision, and two-way audio.",
+                price: 199.99,
+                category: "security",
+                rating: 4.7,
+                reviews: 203,
+                image: "fas fa-door-open",
+                recommended: false
+            },
+            {
+                id: 4,
+                title: "Air Purifier",
+                description: "HEPA air purifier with smart sensors and automatic mode adjustment.",
+                price: 179.99,
+                category: "hvac",
+                rating: 4.4,
+                reviews: 156,
+                image: "fas fa-wind",
+                recommended: true
+            },
+            {
+                id: 5,
+                title: "Smart Light Switch",
+                description: "Wi-Fi enabled light switch with voice control and scheduling features.",
+                price: 49.99,
+                category: "electrical",
+                rating: 4.2,
+                reviews: 87,
+                image: "fas fa-lightbulb",
+                recommended: false
+            },
+            {
+                id: 6,
+                title: "Gutter Guard System",
+                description: "Professional-grade gutter guard system to prevent clogs and debris buildup.",
+                price: 299.99,
+                category: "maintenance",
+                rating: 4.6,
+                reviews: 142,
+                image: "fas fa-home",
+                recommended: true
+            }
+        ];
+
+        let currentCategory = 'all';
+        let filteredProducts = products;
+
+        function renderProducts() {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = filteredProducts.map(product => `
+                <div class="product-card">
+                    ${product.recommended ? '<div class="recommendation-badge">Recommended</div>' : ''}
+                    
+                    <div class="product-image">
+                        <i class="${product.image}"></i>
+                    </div>
+                    
+                    <div class="product-title">${product.title}</div>
+                    <div class="product-description">${product.description}</div>
+                    
+                    <div class="product-rating">
+                        <div class="stars">
+                            ${'★'.repeat(Math.floor(product.rating))}${'☆'.repeat(5 - Math.floor(product.rating))}
+                        </div>
+                        <div class="rating-text">${product.rating} (${product.reviews} reviews)</div>
+                    </div>
+                    
+                    <div class="product-price">$${product.price}</div>
+                    
+                    <div class="product-actions">
+                        <button class="btn btn-primary" onclick="viewProduct(${product.id})">
+                            <i class="fas fa-eye"></i>
+                            View Details
+                        </button>
+                        <button class="btn btn-success" onclick="addToCart(${product.id})">
+                            <i class="fas fa-shopping-cart"></i>
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterByCategory(category) {
+            currentCategory = category;
+            
+            // Update active tab
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Filter products
+            if (category === 'all') {
+                filteredProducts = products;
+            } else {
+                filteredProducts = products.filter(product => product.category === category);
+            }
+            
+            renderProducts();
+        }
+
+        function searchProducts() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            filteredProducts = products.filter(product => 
+                product.title.toLowerCase().includes(searchTerm) ||
+                product.description.toLowerCase().includes(searchTerm)
+            );
+            renderProducts();
+        }
+
+        function refreshRecommendations() {
+            // Simulate refreshing recommendations
+            alert('Refreshing product recommendations based on your home profile...');
+            // In a real app, this would fetch new recommendations from the server
+        }
+
+        function viewProduct(productId) {
+            const product = products.find(p => p.id === productId);
+            if (product) {
+                alert(`Product Details:\n\n${product.title}\n$${product.price}\n\n${product.description}\n\nRating: ${product.rating}/5 (${product.reviews} reviews)`);
+            }
+        }
+
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (product) {
+                alert(`Added "${product.title}" to your cart!\n\nPrice: $${product.price}\n\nYou can now proceed to checkout or continue shopping.`);
+            }
+        }
+
+        // Handle search input
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchProducts();
+            }
+        });
+
+        // Initialize the page
+        window.addEventListener('load', function() {
+            renderProducts();
+        });
+    </script>
+</body>
+</html>
+

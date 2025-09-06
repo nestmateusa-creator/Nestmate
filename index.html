@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>NestMate — Your Home's Digital Command Center</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;500&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --accent: #facc15;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --bg: #f8fafc;
+      --card: #fff;
+      --radius: 16px;
+      --shadow: 0 4px 32px rgba(37,99,235,0.08);
+      --shadow-lg: 0 8px 48px rgba(37,99,235,0.12);
+    }
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      margin: 0;
+      font-family: 'Inter', 'Plus Jakarta Sans', sans-serif;
+      background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
+      color: #1e293b;
+      line-height: 1.6;
+    }
+    
+    /* Header */
+    header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(37, 99, 235, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .header-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--primary);
+      text-decoration: none;
+    }
+    
+    .brand svg {
+      width: 32px;
+      height: 32px;
+    }
+    
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+    
+    .nav-links a {
+      text-decoration: none;
+      color: #64748b;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    
+    .nav-links a:hover {
+      color: var(--primary);
+    }
+    
+    .nav-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+    
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.2s;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #1d4ed8;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+    
+    .btn-secondary {
+      background: white;
+      color: var(--primary);
+      border: 2px solid var(--primary);
+    }
+    
+    .btn-secondary:hover {
+      background: var(--primary);
+      color: white;
+    }
+    
+    /* Hero Section */
+    .hero {
+      padding: 4rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(37, 99, 235, 0.1);
+      color: var(--primary);
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    
+    .hero-title {
+      font-size: 3.5rem;
+      font-weight: 900;
+      color: #1e293b;
+      margin-bottom: 1.5rem;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+    
+    .hero-title .highlight {
+      background: linear-gradient(135deg, var(--primary), #7c3aed);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .hero-subtitle {
+      font-size: 1.25rem;
+      color: #64748b;
+      margin-bottom: 2.5rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 3rem;
+    }
+    
+    .btn-lg {
+      padding: 1rem 2rem;
+      font-size: 1.1rem;
+    }
+    
+    .btn-accent {
+      background: var(--accent);
+      color: #1e293b;
+    }
+    
+    .btn-accent:hover {
+      background: #fde047;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(250, 204, 21, 0.3);
+    }
+    
+    /* Stats Section */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+      margin: 3rem 0;
+    }
+    
+    .stat {
+      text-align: center;
+      padding: 1.5rem;
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+      color: #64748b;
+      font-weight: 500;
+    }
+    
+    /* Features Grid */
+    .features {
+      padding: 4rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .section-title {
+      text-align: center;
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: #1e293b;
+      margin-bottom: 1rem;
+    }
+    
+    .section-subtitle {
+      text-align: center;
+      font-size: 1.125rem;
+      color: #64748b;
+      margin-bottom: 3rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-bottom: 4rem;
+    }
+    
+    .feature-card {
+      background: white;
+      padding: 2rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      transition: all 0.3s;
+      border: 1px solid rgba(37, 99, 235, 0.1);
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--primary);
+    }
+    
+    .feature-icon {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, var(--primary), #7c3aed);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .feature-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 0.75rem;
+    }
+    
+    .feature-desc {
+      color: #64748b;
+      line-height: 1.6;
+    }
+    
+    /* Value Proposition */
+    .value-prop {
+      background: white;
+      margin: 4rem 2rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+    }
+    
+    .value-content {
+      padding: 3rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+    
+    .value-text h2 {
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: #1e293b;
+      margin-bottom: 1.5rem;
+    }
+    
+    .value-text p {
+      font-size: 1.125rem;
+      color: #64748b;
+      margin-bottom: 2rem;
+      line-height: 1.7;
+    }
+    
+    .benefits-list {
+      list-style: none;
+      padding: 0;
+    }
+    
+    .benefits-list li {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      font-weight: 500;
+    }
+    
+    .benefits-list li::before {
+      content: "✓";
+      background: var(--success);
+      color: white;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: bold;
+    }
+    
+    .value-visual {
+      text-align: center;
+    }
+    
+    .value-visual img {
+      max-width: 100%;
+      height: auto;
+    }
+    
+    /* CTA Section */
+    .cta-section {
+      background: linear-gradient(135deg, var(--primary), #7c3aed);
+      color: white;
+      text-align: center;
+      padding: 4rem 2rem;
+      margin: 4rem 0;
+    }
+    
+    .cta-content {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .cta-title {
+      font-size: 2.5rem;
+      font-weight: 900;
+      margin-bottom: 1rem;
+    }
+    
+    .cta-subtitle {
+      font-size: 1.125rem;
+      margin-bottom: 2rem;
+      opacity: 0.9;
+    }
+    
+    .cta-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    .btn-white {
+      background: white;
+      color: var(--primary);
+    }
+    
+    .btn-white:hover {
+      background: #f8fafc;
+      transform: translateY(-1px);
+    }
+    
+    .btn-outline {
+      background: transparent;
+      color: white;
+      border: 2px solid white;
+    }
+    
+    .btn-outline:hover {
+      background: white;
+      color: var(--primary);
+    }
+    
+    /* Footer */
+    footer {
+      background: #1e293b;
+      color: #94a3b8;
+      text-align: center;
+      padding: 2rem;
+      margin-top: 4rem;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header-container {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      .nav-links {
+        display: none;
+      }
+      
+      .hero-title {
+        font-size: 2.5rem;
+      }
+      
+      .hero-actions {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .value-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+      
+      .value-text h2 {
+        font-size: 2rem;
+      }
+      
+      .cta-title {
+        font-size: 2rem;
+      }
+      
+      .cta-actions {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-container">
+      <a href="#" class="brand">
+        <svg viewBox="0 0 64 64" fill="currentColor">
+          <path d="M32 4 L4 28 H12 V60 H26 V40 H38 V60 H52 V28 H60 Z"/>
+        </svg>
+        NestMate
+      </a>
+      <nav>
+        <div class="nav-links">
+          <a href="pricing.html">Pricing</a>
+          <a href="about.html">About</a>
+          <a href="contact.html">Contact</a>
+          <a href="faq.html">FAQ</a>
+        </div>
+        <div class="nav-actions">
+          <a href="signin.html?tab=signup" class="btn btn-secondary">Register</a>
+          <a href="signin.html" class="btn btn-primary">Sign In</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-badge">
+        🏆 Trusted by 10,000+ homeowners
+      </div>
+      <h1 class="hero-title">
+        Your Home's <span class="highlight">Digital Command Center</span>
+      </h1>
+      <p class="hero-subtitle">
+        Transform your home management with the ultimate digital hub. Track every detail, 
+        get smart reminders, order products, and boost your home's value—all in one place.
+      </p>
+      <div class="hero-actions">
+        <a href="signin.html?tab=signup" class="btn btn-primary btn-lg">
+          🚀 Start Free Trial
+        </a>
+        <a href="NestMate.html" class="btn btn-secondary btn-lg">
+          👀 View Demo
+        </a>
+        <a href="pricing.html" class="btn btn-accent btn-lg">
+          💰 See Pricing
+        </a>
+      </div>
+      
+      <!-- Stats -->
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-number">10K+</div>
+          <div class="stat-label">Happy Homeowners</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number">$15K</div>
+          <div class="stat-label">Avg. Home Value Increase</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number">4.9★</div>
+          <div class="stat-label">Customer Rating</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number">24/7</div>
+          <div class="stat-label">Support Available</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features">
+      <h2 class="section-title">Everything Your Home Needs</h2>
+      <p class="section-subtitle">
+        From room-by-room details to smart reminders, NestMate has everything to keep your home organized and valuable.
+      </p>
+      
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🏡</div>
+          <h3 class="feature-title">Complete Home Inventory</h3>
+          <p class="feature-desc">
+            Store every detail about your home—paint colors, appliance models, 
+            room dimensions, and more. Never lose important information again.
+          </p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">⏰</div>
+          <h3 class="feature-title">Smart Reminders</h3>
+          <p class="feature-desc">
+            Get notified about maintenance tasks, filter changes, warranty renewals, 
+            and important home events. Stay on top of everything automatically.
+          </p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h3 class="feature-title">Home Health Score</h3>
+          <p class="feature-desc">
+            Monitor your home's condition with our intelligent scoring system. 
+            Know exactly what needs attention and when.
+          </p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">🛒</div>
+          <h3 class="feature-title">Direct Shopping</h3>
+          <p class="feature-desc">
+            Order any home product directly from your dashboard. From appliances 
+            to paint, get recommendations and shop trusted brands.
+          </p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">📈</div>
+          <h3 class="feature-title">Value Tracking</h3>
+          <p class="feature-desc">
+            Track how improvements affect your home's value. Build a complete 
+            history that increases resale value and buyer confidence.
+          </p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">🔒</div>
+          <h3 class="feature-title">Secure & Private</h3>
+          <p class="feature-desc">
+            Your data is encrypted and protected. Only you control access to 
+            your home's information. Complete privacy guaranteed.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Value Proposition -->
+    <section class="value-prop">
+      <div class="value-content">
+        <div class="value-text">
+          <h2>Like Carfax, But for Your Home</h2>
+          <p>
+            NestMate creates a comprehensive digital record of your home that increases 
+            its value and makes it easier to sell, maintain, and improve.
+          </p>
+          <ul class="benefits-list">
+            <li>Increase resale value by 5-15% with complete home history</li>
+            <li>Give realtors powerful marketing tools for your property</li>
+            <li>Help contractors understand your home's needs instantly</li>
+            <li>Track upgrades, warranties, and repairs in one place</li>
+            <li>Stand out in the market with transparent, trusted records</li>
+          </ul>
+        </div>
+        <div class="value-visual">
+          <svg viewBox="0 0 400 300" fill="none">
+            <!-- House -->
+            <rect x="100" y="150" width="200" height="120" rx="10" fill="#e0e7ff" stroke="#2563eb" stroke-width="3"/>
+            <polygon points="80,150 200,80 320,150" fill="#2563eb"/>
+            <rect x="180" y="200" width="40" height="70" fill="#facc15"/>
+            <rect x="130" y="170" width="30" height="30" fill="white" stroke="#2563eb" stroke-width="2"/>
+            <rect x="240" y="170" width="30" height="30" fill="white" stroke="#2563eb" stroke-width="2"/>
+            
+            <!-- Document/Report -->
+            <rect x="50" y="50" width="120" height="160" rx="8" fill="white" stroke="#2563eb" stroke-width="2"/>
+            <rect x="70" y="80" width="80" height="4" fill="#e0e7ff"/>
+            <rect x="70" y="100" width="60" height="4" fill="#e0e7ff"/>
+            <rect x="70" y="120" width="70" height="4" fill="#e0e7ff"/>
+            <rect x="70" y="140" width="50" height="4" fill="#e0e7ff"/>
+            <rect x="70" y="160" width="80" height="4" fill="#e0e7ff"/>
+            <rect x="70" y="180" width="65" height="4" fill="#e0e7ff"/>
+            
+            <!-- Checkmarks -->
+            <circle cx="85" cy="82" r="8" fill="#10b981"/>
+            <text x="85" y="87" text-anchor="middle" fill="white" font-size="12" font-weight="bold">✓</text>
+            <circle cx="85" cy="102" r="8" fill="#10b981"/>
+            <text x="85" y="107" text-anchor="middle" fill="white" font-size="12" font-weight="bold">✓</text>
+            <circle cx="85" cy="122" r="8" fill="#10b981"/>
+            <text x="85" y="127" text-anchor="middle" fill="white" font-size="12" font-weight="bold">✓</text>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+      <div class="cta-content">
+        <h2 class="cta-title">Ready to Transform Your Home?</h2>
+        <p class="cta-subtitle">
+          Join thousands of homeowners who are already saving time, money, and stress 
+          with NestMate. Start your free trial today.
+        </p>
+        <div class="cta-actions">
+          <a href="signin.html?tab=signup" class="btn btn-white btn-lg">
+            🚀 Start Free Trial
+          </a>
+          <a href="about.html" class="btn btn-outline btn-lg">
+            ℹ️ Learn More
+          </a>
+          <a href="contact.html" class="btn btn-outline btn-lg">
+            📧 Contact Us
+          </a>
+          <a href="faq.html" class="btn btn-outline btn-lg">
+            ❓ FAQ
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 NestMate. Built for your peace of mind.</p>
+  </footer>
+</body>
+</html>

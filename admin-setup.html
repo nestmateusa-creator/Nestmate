@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Setup - NestMate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    
+    <style>
+        :root {
+            --primary: #2563eb;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --border: #e2e8f0;
+            --radius: 12px;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+        }
+        
+        .header h1 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .setup-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+        }
+        
+        .setup-section h3 {
+            margin-top: 0;
+            color: var(--primary);
+        }
+        
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+        }
+        
+        .btn-success {
+            background: var(--success);
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+        }
+        
+        .status {
+            padding: 15px;
+            border-radius: var(--radius);
+            margin: 10px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        
+        .status.success {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #16a34a;
+        }
+        
+        .status.error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+        }
+        
+        .status.info {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1d4ed8;
+        }
+        
+        .credentials-box {
+            background: #f8fafc;
+            border: 2px solid var(--primary);
+            border-radius: var(--radius);
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .credentials-box h4 {
+            margin-top: 0;
+            color: var(--primary);
+        }
+        
+        .credential {
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 16px;
+            border: 1px solid var(--border);
+        }
+        
+        .test-login {
+            background: #fef3c7;
+            border: 1px solid #fde68a;
+            padding: 15px;
+            border-radius: var(--radius);
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-tools"></i> NestMate Admin Setup</h1>
+            <p>This page will help you set up the default admin user and troubleshoot any issues.</p>
+        </div>
+
+        <div class="setup-section">
+            <h3><i class="fas fa-cog"></i> Step 1: Check Firebase Connection</h3>
+            <p>First, let's verify that Firebase is properly connected:</p>
+            <button class="btn" onclick="checkFirebaseConnection()">Check Firebase Connection</button>
+            <div id="firebase-status"></div>
+        </div>
+
+        <div class="setup-section">
+            <h3><i class="fas fa-user-plus"></i> Step 2: Create Default Admin User</h3>
+            <p>This will create the default admin user with the credentials:</p>
+            
+            <div class="credentials-box">
+                <h4>Default Admin Credentials</h4>
+                <div class="credential">Email: nestmateusa@gmail.com</div>
+                <div class="credential">Password: Test123</div>
+            </div>
+            
+            <button class="btn btn-success" onclick="createAdminUser()">Create Admin User</button>
+            <button class="btn btn-warning" onclick="checkExistingUser()">Check Existing User</button>
+            <div id="admin-creation-status"></div>
+        </div>
+
+        <div class="setup-section">
+            <h3><i class="fas fa-sign-in-alt"></i> Step 3: Test Login</h3>
+            <p>After creating the admin user, test the login:</p>
+            <div class="test-login">
+                <strong>Test Login:</strong><br>
+                Go to <a href="admin-login.html" target="_blank">admin-login.html</a> and try logging in with:<br>
+                <strong>nestmateusa@gmail.com</strong> / <strong>Test123</strong>
+            </div>
+            <button class="btn" onclick="testLogin()">Test Login Now</button>
+            <div id="login-test-status"></div>
+        </div>
+
+        <div class="setup-section">
+            <h3><i class="fas fa-bug"></i> Troubleshooting</h3>
+            <p>If you're still having issues, check the browser console (F12) for error messages and try these steps:</p>
+            <ul>
+                <li>Make sure Firebase is properly configured in <code>scripts/firebaseconfig.js</code></li>
+                <li>Check that Authentication and Firestore are enabled in your Firebase Console</li>
+                <li>Verify your Firebase project ID matches the configuration</li>
+                <li>Check if there are any CORS or security rule issues</li>
+            </ul>
+            <button class="btn btn-danger" onclick="resetAdminUser()">Reset Admin User (Delete & Recreate)</button>
+            <div id="reset-status"></div>
+        </div>
+    </div>
+
+    <script src="scripts/firebaseconfig.js"></script>
+    <script>
+        let currentUser = null;
+
+        async function checkFirebaseConnection() {
+            const statusDiv = document.getElementById('firebase-status');
+            statusDiv.innerHTML = '<div class="status info">Checking Firebase connection...</div>';
+            
+            try {
+                // Check if Firebase is initialized
+                if (!firebase.apps.length) {
+                    throw new Error('Firebase not initialized');
+                }
+                
+                // Test Firestore connection
+                const db = firebase.firestore();
+                await db.collection('test').doc('test').get();
+                
+                // Test Auth connection
+                const auth = firebase.auth();
+                
+                statusDiv.innerHTML = '<div class="status success">✅ Firebase connection successful!\n\n- App: ' + firebase.app().name + '\n- Project ID: ' + firebase.app().options.projectId + '\n- Auth: Connected\n- Firestore: Connected</div>';
+                
+            } catch (error) {
+                statusDiv.innerHTML = '<div class="status error">❌ Firebase connection failed:\n\n' + error.message + '\n\nPlease check your firebaseconfig.js file.</div>';
+            }
+        }
+
+        async function createAdminUser() {
+            const statusDiv = document.getElementById('admin-creation-status');
+            statusDiv.innerHTML = '<div class="status info">Creating admin user...</div>';
+            
+            try {
+                const auth = firebase.auth();
+                const db = firebase.firestore();
+                
+                // Check if user already exists
+                try {
+                    const userCredential = await auth.signInWithEmailAndPassword('nestmateusa@gmail.com', 'Test123');
+                    currentUser = userCredential.user;
+                    
+                    // Check if user document exists in Firestore
+                    const userDoc = await db.collection('users').doc(currentUser.uid).get();
+                    
+                    if (!userDoc.exists) {
+                        // Create user document with admin role
+                        await db.collection('users').doc(currentUser.uid).set({
+                            uid: currentUser.uid,
+                            email: 'nestmateusa@gmail.com',
+                            role: 'admin',
+                            name: 'NestMate Admin',
+                            status: 'active',
+                            createdAt: new Date(),
+                            isDefaultAdmin: true
+                        });
+                        statusDiv.innerHTML = '<div class="status success">✅ Admin user updated successfully!\n\nUser already existed in Authentication, but admin role has been set in Firestore.\n\nYou can now login with nestmateusa@gmail.com / Test123</div>';
+                    } else if (userDoc.data().role !== 'admin') {
+                        // Update existing user to admin role
+                        await db.collection('users').doc(currentUser.uid).update({
+                            role: 'admin',
+                            isDefaultAdmin: true
+                        });
+                        statusDiv.innerHTML = '<div class="status success">✅ Admin user updated successfully!\n\nUser role has been updated to admin.\n\nYou can now login with nestmateusa@gmail.com / Test123</div>';
+                    } else {
+                        statusDiv.innerHTML = '<div class="status success">✅ Admin user already exists and has admin role!\n\nYou can now login with nestmateusa@gmail.com / Test123</div>';
+                    }
+                    
+                    // Sign out
+                    await auth.signOut();
+                    currentUser = null;
+                    
+                } catch (signInError) {
+                    // User doesn't exist, create new one
+                    const userCredential = await auth.createUserWithEmailAndPassword('nestmateusa@gmail.com', 'Test123');
+                    currentUser = userCredential.user;
+                    
+                    // Create user document with admin role
+                    await db.collection('users').doc(currentUser.uid).set({
+                        uid: currentUser.uid,
+                        email: 'nestmateusa@gmail.com',
+                        role: 'admin',
+                        name: 'NestMate Admin',
+                        status: 'active',
+                        createdAt: new Date(),
+                        isDefaultAdmin: true
+                    });
+                    
+                    statusDiv.innerHTML = '<div class="status success">✅ Admin user created successfully!\n\nUID: ' + currentUser.uid + '\n\nYou can now login with nestmateusa@gmail.com / Test123</div>';
+                    
+                    // Sign out
+                    await auth.signOut();
+                    currentUser = null;
+                }
+                
+            } catch (error) {
+                statusDiv.innerHTML = '<div class="status error">❌ Error creating admin user:\n\n' + error.message + '\n\nError code: ' + (error.code || 'unknown') + '</div>';
+            }
+        }
+
+        async function checkExistingUser() {
+            const statusDiv = document.getElementById('admin-creation-status');
+            statusDiv.innerHTML = '<div class="status info">Checking existing user...</div>';
+            
+            try {
+                const db = firebase.firestore();
+                
+                // Check Firestore for admin user
+                const adminQuery = await db.collection('users')
+                    .where('email', '==', 'nestmateusa@gmail.com')
+                    .get();
+                
+                if (!adminQuery.empty) {
+                    const userData = adminQuery.docs[0].data();
+                    statusDiv.innerHTML = '<div class="status info">ℹ️ User found in Firestore:\n\n' + 
+                        'Email: ' + userData.email + '\n' +
+                        'Role: ' + userData.role + '\n' +
+                        'Status: ' + userData.status + '\n' +
+                        'Created: ' + userData.createdAt?.toDate?.() || 'N/A' + '</div>';
+                } else {
+                    statusDiv.innerHTML = '<div class="status info">ℹ️ No user found in Firestore with email nestmateusa@gmail.com</div>';
+                }
+                
+            } catch (error) {
+                statusDiv.innerHTML = '<div class="status error">❌ Error checking existing user:\n\n' + error.message + '</div>';
+            }
+        }
+
+        async function testLogin() {
+            const statusDiv = document.getElementById('login-test-status');
+            statusDiv.innerHTML = '<div class="status info">Testing login...</div>';
+            
+            try {
+                const auth = firebase.auth();
+                
+                // Try to sign in
+                const userCredential = await auth.signInWithEmailAndPassword('nestmateusa@gmail.com', 'Test123');
+                const user = userCredential.user;
+                
+                // Check if user has admin role
+                const db = firebase.firestore();
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                
+                if (userDoc.exists && userDoc.data().role === 'admin') {
+                    statusDiv.innerHTML = '<div class="status success">✅ Login test successful!\n\nUser authenticated and has admin role.\n\nUID: ' + user.uid + '\n\nYou can now access the admin dashboard!</div>';
+                } else {
+                    statusDiv.innerHTML = '<div class="status error">⚠️ Login successful but user lacks admin role.\n\nPlease check the user document in Firestore.</div>';
+                }
+                
+                // Sign out
+                await auth.signOut();
+                
+            } catch (error) {
+                statusDiv.innerHTML = '<div class="status error">❌ Login test failed:\n\n' + error.message + '\n\nError code: ' + (error.code || 'unknown') + '</div>';
+            }
+        }
+
+        async function resetAdminUser() {
+            if (!confirm('This will delete the existing admin user and recreate it. Are you sure?')) {
+                return;
+            }
+            
+            const statusDiv = document.getElementById('reset-status');
+            statusDiv.innerHTML = '<div class="status info">Resetting admin user...</div>';
+            
+            try {
+                const auth = firebase.auth();
+                const db = firebase.firestore();
+                
+                // Try to sign in to get the user
+                try {
+                    const userCredential = await auth.signInWithEmailAndPassword('nestmateusa@gmail.com', 'Test123');
+                    const user = userCredential.user;
+                    
+                    // Delete user document from Firestore
+                    await db.collection('users').doc(user.uid).delete();
+                    
+                    // Delete user from Authentication
+                    await user.delete();
+                    
+                    statusDiv.innerHTML = '<div class="status success">✅ Admin user deleted successfully!\n\nNow click "Create Admin User" to recreate it.</div>';
+                    
+                } catch (signInError) {
+                    // User doesn't exist, that's fine
+                    statusDiv.innerHTML = '<div class="status info">ℹ️ No existing admin user found to delete.\n\nYou can now click "Create Admin User" to create a new one.</div>';
+                }
+                
+            } catch (error) {
+                statusDiv.innerHTML = '<div class="status error">❌ Error resetting admin user:\n\n' + error.message + '</div>';
+            }
+        }
+
+        // Auto-check Firebase connection when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(checkFirebaseConnection, 1000);
+        });
+    </script>
+</body>
+</html>
+

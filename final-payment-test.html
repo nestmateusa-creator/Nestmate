@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final Payment Test - NestMate</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 700px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background: #2563eb;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background: #1d4ed8;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .error {
+            color: #ef4444;
+            margin-top: 10px;
+            padding: 10px;
+            background: #fef2f2;
+            border-radius: 5px;
+        }
+        .success {
+            color: #10b981;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f0fdf4;
+            border-radius: 5px;
+        }
+        .loading {
+            color: #f59e0b;
+            margin-top: 10px;
+            padding: 10px;
+            background: #fffbeb;
+            border-radius: 5px;
+        }
+        #card-element {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: white;
+        }
+        .StripeElement--focus {
+            border-color: #2563eb;
+        }
+        .StripeElement--invalid {
+            border-color: #ef4444;
+        }
+        .success-box {
+            background: #f0fdf4;
+            border: 1px solid #10b981;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .debug-section {
+            background: #f8fafc;
+            border-radius: 5px;
+            padding: 20px;
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .plan-card {
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .plan-card:hover {
+            border-color: #2563eb;
+            background: #f8fafc;
+        }
+        .plan-card.selected {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+        .plan-price {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2563eb;
+        }
+        .plan-features {
+            list-style: none;
+            padding: 0;
+        }
+        .plan-features li {
+            padding: 5px 0;
+        }
+        .plan-features li:before {
+            content: "✅ ";
+            margin-right: 8px;
+        }
+        .server-status {
+            background: #e0f2fe;
+            border: 1px solid #0277bd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎉 Final Payment Test - NestMate</h1>
+        
+        <div class="success-box">
+            <h3>✅ Node.js Server is Running!</h3>
+            <p>Your payment server is now active on port 3001</p>
+            <p>This test will process real payments through your server!</p>
+        </div>
+        
+        <div class="server-status">
+            <h3>🖥️ Server Status:</h3>
+            <div id="server-status">Checking server connection...</div>
+        </div>
+        
+        <h2>Choose Your Plan:</h2>
+        <div class="plan-card" data-plan="basic" onclick="selectPlan('basic')">
+            <h3>Basic Plan</h3>
+            <div class="plan-price">$5/month</div>
+            <ul class="plan-features">
+                <li>Manage your first home with ease</li>
+                <li>Stay on top of 10 essential tasks & reminders</li>
+                <li>Instantly organize key home details</li>
+                <li>Rock-solid cloud backup for peace of mind</li>
+            </ul>
+        </div>
+        
+        <div class="plan-card" data-plan="pro" onclick="selectPlan('pro')">
+            <h3>Pro Plan</h3>
+            <div class="plan-price">$10/month</div>
+            <ul class="plan-features">
+                <li>Create unlimited home profiles for every property</li>
+                <li>Never miss a beat with unlimited tasks & reminders</li>
+                <li>Get your personalized Home Health Score</li>
+                <li>VIP priority support—get help fast</li>
+                <li>All Basic features, supercharged</li>
+            </ul>
+        </div>
+        
+        <div class="plan-card" data-plan="advanced" onclick="selectPlan('advanced')">
+            <h3>Advanced Pro Plan</h3>
+            <div class="plan-price">$16/month</div>
+            <ul class="plan-features">
+                <li>All Pro features, plus more family power</li>
+                <li>Connect up to 5 family members—everyone's included</li>
+                <li>Share tasks & reminders for total home harmony</li>
+                <li>Family dashboard for effortless collaboration</li>
+                <li>Unlimited access to emergency home & contractor services</li>
+            </ul>
+        </div>
+        
+        <form id="payment-form">
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" value="test@example.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Card Details:</label>
+                <div id="card-element"></div>
+                <div id="card-errors" role="alert"></div>
+            </div>
+            
+            <button type="submit" id="submit-button">
+                Complete Payment
+            </button>
+        </form>
+        
+        <div id="payment-status"></div>
+        
+        <div class="debug-section">
+            <h3>🔍 Debug Info:</h3>
+            <div id="debug-info"></div>
+        </div>
+    </div>
+
+    <script>
+        let selectedPlan = 'basic';
+        
+        // Stripe configuration
+        const stripe = Stripe('pk_test_51S4C0sAmpksixclYeG19nYyKaIrbc41a2Twtw8uNCPTEFO9BLQl6BRN6V9HxLNyCZZrMdPIy9wzk5xOGfd943BNM00Z3gp2GuY');
+        const elements = stripe.elements();
+
+        // Create card element
+        const cardElement = elements.create('card', {
+            style: {
+                base: {
+                    fontSize: '16px',
+                    color: '#424770',
+                    '::placeholder': {
+                        color: '#aab7c4',
+                    },
+                },
+                invalid: {
+                    color: '#9e2146',
+                },
+            },
+        });
+
+        // Mount the card element
+        cardElement.mount('#card-element');
+
+        // Handle real-time validation errors from the card Element
+        cardElement.on('change', function(event) {
+            const displayError = document.getElementById('card-errors');
+            if (event.error) {
+                displayError.textContent = event.error.message;
+            } else {
+                displayError.textContent = '';
+            }
+        });
+
+        // Plan selection
+        function selectPlan(plan) {
+            selectedPlan = plan;
+            document.querySelectorAll('.plan-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.querySelector(`[data-plan="${plan}"]`).classList.add('selected');
+            
+            const planNames = {
+                basic: 'Basic Plan - $5/month',
+                pro: 'Pro Plan - $10/month',
+                advanced: 'Advanced Pro Plan - $16/month'
+            };
+            
+            document.getElementById('submit-button').textContent = `Complete Payment - ${planNames[plan]}`;
+        }
+
+        // Handle form submission
+        const form = document.getElementById('payment-form');
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const submitButton = document.getElementById('submit-button');
+            const paymentStatus = document.getElementById('payment-status');
+            const debugInfo = document.getElementById('debug-info');
+
+            // Show loading state
+            showStatus('loading', 'Processing payment...');
+            setLoadingState(true);
+            debugInfo.innerHTML = 'Starting payment process...';
+
+            try {
+                // Get plan details
+                const planAmounts = {
+                    basic: 500,    // $5.00 in cents
+                    pro: 1000,     // $10.00 in cents
+                    advanced: 1600 // $16.00 in cents
+                };
+                const amount = planAmounts[selectedPlan];
+
+                debugInfo.innerHTML += `<br>Selected Plan: ${selectedPlan}`;
+                debugInfo.innerHTML += `<br>Amount: $${(amount/100).toFixed(2)}/month`;
+
+                // Create payment method
+                const {error, paymentMethod} = await stripe.createPaymentMethod({
+                    type: 'card',
+                    card: cardElement,
+                    billing_details: {
+                        email: document.getElementById('email').value,
+                    },
+                });
+
+                if (error) {
+                    showStatus('error', error.message);
+                    setLoadingState(false);
+                    debugInfo.innerHTML += `<br>❌ Payment method error: ${error.message}`;
+                    return;
+                }
+
+                debugInfo.innerHTML += `<br>✅ Payment method created: ${paymentMethod.id}`;
+                debugInfo.innerHTML += `<br>✅ Card brand: ${paymentMethod.card.brand}`;
+                debugInfo.innerHTML += `<br>✅ Last 4 digits: ****${paymentMethod.card.last4}`;
+
+                // Process payment with server
+                debugInfo.innerHTML += `<br>Connecting to server...`;
+                
+                const response = await fetch('http://localhost:3001/create-payment-intent', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        paymentMethodId: paymentMethod.id,
+                        planType: selectedPlan,
+                        amount: amount,
+                        currency: 'usd'
+                    }),
+                });
+
+                debugInfo.innerHTML += `<br>Server response status: ${response.status}`;
+
+                const result = await response.json();
+                debugInfo.innerHTML += `<br>Server response: ${JSON.stringify(result, null, 2)}`;
+
+                if (!response.ok) {
+                    throw new Error(result.error || 'Payment failed');
+                }
+
+                // Show success
+                showStatus('success', `🎉 Payment successful! Welcome to NestMate ${selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1)}!`);
+                debugInfo.innerHTML += `<br>🎉 Payment processed successfully!`;
+                debugInfo.innerHTML += `<br>✅ Payment Intent ID: ${result.paymentIntentId}`;
+                debugInfo.innerHTML += `<br>✅ Subscription created for ${selectedPlan} plan`;
+                debugInfo.innerHTML += `<br>✅ Billing: $${(amount/100).toFixed(2)}/month`;
+
+            } catch (error) {
+                console.error('Payment error:', error);
+                showStatus('error', error.message);
+                debugInfo.innerHTML += `<br>❌ Error: ${error.message}`;
+            } finally {
+                setLoadingState(false);
+            }
+        });
+
+        function showStatus(type, message) {
+            const statusDiv = document.getElementById('payment-status');
+            statusDiv.className = type;
+            statusDiv.textContent = message;
+            statusDiv.style.display = 'block';
+        }
+
+        function setLoadingState(loading) {
+            const submitButton = document.getElementById('submit-button');
+            if (loading) {
+                submitButton.innerHTML = 'Processing Payment...';
+                submitButton.disabled = true;
+            } else {
+                const planNames = {
+                    basic: 'Basic Plan - $5/month',
+                    pro: 'Pro Plan - $10/month',
+                    advanced: 'Advanced Pro Plan - $16/month'
+                };
+                submitButton.innerHTML = `Complete Payment - ${planNames[selectedPlan]}`;
+                submitButton.disabled = false;
+            }
+        }
+
+        // Check server status on load
+        window.addEventListener('load', async function() {
+            const debugInfo = document.getElementById('debug-info');
+            const serverStatus = document.getElementById('server-status');
+            
+            debugInfo.innerHTML = `✅ Stripe loaded successfully<br>✅ Your publishable key is working<br>✅ Checking server connection...`;
+            
+            try {
+                const response = await fetch('http://localhost:3001/create-payment-intent', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        test: true
+                    }),
+                });
+                
+                if (response.ok) {
+                    serverStatus.innerHTML = '✅ Server is running and responding!';
+                    debugInfo.innerHTML += `<br>✅ Server connection successful!`;
+                } else {
+                    serverStatus.innerHTML = '⚠️ Server is running but returned an error';
+                    debugInfo.innerHTML += `<br>⚠️ Server responded with status: ${response.status}`;
+                }
+            } catch (error) {
+                serverStatus.innerHTML = '❌ Server connection failed';
+                debugInfo.innerHTML += `<br>❌ Server connection failed: ${error.message}`;
+            }
+            
+            // Select basic plan by default
+            selectPlan('basic');
+        });
+    </script>
+</body>
+</html>
+

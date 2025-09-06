@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contractor Connection | NestMate</title>
+  <link rel="stylesheet" href="styles/main.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f8fafc;
+      margin: 0;
+      color: #334155;
+    }
+    .contractor-header {
+      background: linear-gradient(90deg, #2563eb 60%, #60a5fa 100%);
+      color: #fff;
+      padding: 36px 0 24px 0;
+      text-align: center;
+      box-shadow: 0 2px 16px #e0e7ef;
+    }
+    .contractor-header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 8px;
+    }
+    .contractor-header p {
+      font-size: 1.2rem;
+      margin: 0 auto;
+      max-width: 600px;
+    }
+    .contractor-main {
+      max-width: 900px;
+      margin: 32px auto;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 4px 32px rgba(37,99,235,0.08);
+      padding: 32px 24px;
+    }
+    .contractor-section {
+      margin-bottom: 36px;
+    }
+    .contractor-section h2 {
+      color: #2563eb;
+      font-size: 1.5rem;
+      margin-bottom: 12px;
+    }
+    .contractor-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+    .contractor-form input, .contractor-form textarea, .contractor-form select {
+      flex: 1 1 220px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      font-size: 1rem;
+      margin-bottom: 8px;
+    }
+    .contractor-form button {
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 32px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      font-weight: 600;
+      margin-top: 8px;
+      transition: background 0.2s;
+    }
+    .contractor-form button:hover {
+      background: #1e40af;
+    }
+    .contractor-services {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      margin-bottom: 18px;
+    }
+    .service-card {
+      background: #f1f5f9;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px #e0e7ef;
+      padding: 18px 16px;
+      flex: 1 1 220px;
+      min-width: 220px;
+      text-align: center;
+      transition: box-shadow 0.2s;
+    }
+    .service-card:hover {
+      box-shadow: 0 6px 24px #60a5fa44;
+    }
+    .service-card img {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 8px;
+    }
+    .service-card h3 {
+      margin: 0 0 6px 0;
+      font-size: 1.1rem;
+      color: #2563eb;
+    }
+    .service-card p {
+      font-size: 0.98rem;
+      color: #64748b;
+      margin: 0;
+    }
+    .contractor-history {
+      background: #f1f5f9;
+      border-radius: 12px;
+      padding: 18px 16px;
+      margin-bottom: 18px;
+    }
+    .contractor-history h3 {
+      margin-top: 0;
+      color: #2563eb;
+    }
+    .contractor-history ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+    .contractor-history li {
+      margin-bottom: 6px;
+      color: #334155;
+    }
+    .contractor-footer {
+      text-align: center;
+      color: #64748b;
+      margin-top: 40px;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="contractor-header">
+    <div style="position:absolute;top:24px;right:32px;display:flex;gap:12px;z-index:10;align-items:center;">
+      <a href="profile.html" title="Profile" style="background:#fff;border:1.5px solid #e5e7eb;border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px #2563eb22;padding:0;transition:box-shadow 0.18s,border 0.18s;background:#fff;">
+        <svg viewBox="0 0 24 24" fill="none" width="26" height="26"><circle cx="12" cy="8" r="4" stroke="#2563eb" stroke-width="2"/><path d="M4 20c0-3.3137 3.134-6 8-6s8 2.6863 8 6" stroke="#2563eb" stroke-width="2" stroke-linecap="round"/></svg>
+      </a>
+      <button id="logoutBtn" style="background:#2563eb;color:#fff;border:none;border-radius:12px;padding:12px 22px;font-size:1.08rem;font-weight:700;box-shadow:0 2px 8px #2563eb22;cursor:pointer;transition:background 0.18s;display:flex;align-items:center;gap:10px;outline:none;">🚪 Logout</button>
+    </div>
+    <h1>Connect with Contractors</h1>
+    <p>Instant quotes, emergency help, and trusted pros for every home need. Get connected, get help, and get it done—fast!</p>
+  </div>
+  <main class="contractor-main">
+  <div style="display:flex;gap:18px;margin-bottom:32px;justify-content:center;flex-wrap:wrap;">
+      <a href="dashboard.html" style="background:#2563eb;color:#fff;border:none;border-radius:12px;padding:12px 32px;font-size:1.1rem;font-weight:700;text-decoration:none;box-shadow:0 2px 12px #2563eb22;display:inline-flex;align-items:center;gap:8px;transition:background 0.18s;">
+        🏡 My Home
+      </a>
+      <a href="shop-for-my-home.html" style="background:linear-gradient(90deg,#2563eb 60%,#facc15 100%);color:#fff;border:none;border-radius:12px;padding:12px 32px;font-size:1.1rem;font-weight:700;text-decoration:none;box-shadow:0 2px 12px #2563eb22;display:inline-flex;align-items:center;gap:8px;transition:background 0.18s;">
+        🛒 Shop for my home
+      </a>
+      <a href="compare-contractor-bids.html" style="background:#fff;color:#2563eb;border:2px solid #2563eb;border-radius:12px;padding:12px 32px;font-size:1.1rem;font-weight:700;text-decoration:none;box-shadow:0 2px 12px #2563eb22;display:inline-flex;align-items:center;gap:8px;transition:background 0.18s;">
+        Compare Contractor Bids
+      </a>
+    </div>
+    <section class="contractor-section">
+      <h2>Recommended Contractors</h2>
+      <div class="contractor-services" id="recommendedContractors">
+        <div class="service-card">
+          <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="John's Plumbing">
+          <h3>John's Plumbing</h3>
+          <p>⭐ 4.9 | Emergency, Residential, Commercial<br><span style="color:#2563eb;">(555) 123-4567</span></p>
+        </div>
+        <div class="service-card">
+          <img src="https://cdn-icons-png.flaticon.com/512/3135/3135789.png" alt="Bright Electric">
+          <h3>Bright Electric</h3>
+          <p>⭐ 4.8 | Licensed, Fast Response<br><span style="color:#2563eb;">(555) 987-6543</span></p>
+        </div>
+        <div class="service-card">
+          <img src="https://cdn-icons-png.flaticon.com/512/3135/3135768.png" alt="Cool Comfort HVAC">
+          <h3>Cool Comfort HVAC</h3>
+          <p>⭐ 4.7 | AC/Heat, 24/7 Service<br><span style="color:#2563eb;">(555) 222-3344</span></p>
+        </div>
+      </div>
+    </section>
+    <section class="contractor-section">
+      <h2>Request a Quote or Service</h2>
+      <form class="contractor-form" id="contractorRequestForm">
+        <input type="text" id="homeownerName" placeholder="Your Name" required>
+        <input type="email" id="homeownerEmail" placeholder="Your Email" required>
+        <select id="serviceType" required>
+          <option value="">Select Service</option>
+          <option value="quote">Instant Quote</option>
+          <option value="emergency">Emergency Service</option>
+          <option value="hire">Hire a Pro</option>
+          <option value="consult">Consultation</option>
+          <option value="other">Other</option>
+        </select>
+        <input type="text" id="serviceLocation" placeholder="Service Location (Address)">
+        <textarea id="serviceDetails" rows="3" placeholder="Describe your request or issue" required></textarea>
+        <button type="submit">Request Now</button>
+      </form>
+      <div id="contractorRequestSuccess" style="color:#22c55e;font-weight:600;"></div>
+    </section>
+    <section class="contractor-section">
+      <h2>Popular Services</h2>
+      <div class="contractor-services">
+        <div class="service-card">
+          <img src="https://cdn-icons-png.flaticon.com/512/2933/2933811.png" alt="Plumbing">
+          <h3>Plumbing</h3>
+          <p>Leaky pipes, water heater, emergency repairs</p>
+        </div>
+        <div class="service-card">
+          <img src="https://cdn-icons-png.flaticon.com/512/2933/2933807.png" alt="Electrical">
+          <h3>Electrical</h3>
+          <p>Outages, wiring, panel upgrades, urgent fixes</p>
+        </div>
+        <div class="service-card">
+          <img src="https://cdn-icons-png.flaticon.com/512/2933/2933809.png" alt="HVAC">
+          <h3>HVAC</h3>
+          <p>AC/heat issues, tune-ups, emergency service</p>
+        </div>
+        <div class="service-card">
+          <img src="https://cdn-icons-png.flaticon.com/512/2933/2933810.png" alt="Roofing">
+          <h3>Roofing</h3>
+          <p>Leaks, storm damage, inspections, repairs</p>
+        </div>
+        <div class="service-card">
+          <img src="https://cdn-icons-png.flaticon.com/512/2933/2933808.png" alt="Cleaning">
+          <h3>Cleaning</h3>
+          <p>Deep clean, move-in/out, emergency cleanup</p>
+        </div>
+        <div class="service-card">
+          <img src="https://cdn-icons-png.flaticon.com/512/2933/2933812.png" alt="Handyman">
+          <h3>Handyman</h3>
+          <p>Repairs, installations, quick fixes</p>
+        </div>
+      </div>
+    </section>
+    <section class="contractor-section">
+      <h2>Emergency Services</h2>
+      <div class="contractor-services">
+        <div class="service-card">
+          <img src="https://cdn-icons-png.flaticon.com/512/2933/2933813.png" alt="Flood">
+          <h3>Flood/Water Damage</h3>
+          <p>Immediate response, water extraction, restoration</p>
+        </div>
+        <div class="service-card">
+          <img src="https://cdn-icons-png.flaticon.com/512/2933/2933814.png" alt="Fire">
+          <h3>Fire Damage</h3>
+          <p>Emergency cleanup, restoration, insurance help</p>
+        </div>
+        <div class="service-card">
+          <img src="https://cdn-icons-png.flaticon.com/512/2933/2933815.png" alt="Security">
+          <h3>Security/Burglary</h3>
+          <p>Locksmith, security system, urgent repairs</p>
+        </div>
+      </div>
+    </section>
+    <section class="contractor-section">
+      <h2>Recommended Contractors</h2>
+      <div class="contractor-services" id="recommendedContractors">
+        <div class="service-card">
+          <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="John's Plumbing">
+          <h3>John's Plumbing</h3>
+          <p>⭐ 4.9 | Emergency, Residential, Commercial<br><span style="color:#2563eb;">(555) 123-4567</span></p>
+        </div>
+        <div class="service-card">
+          <img src="https://cdn-icons-png.flaticon.com/512/3135/3135789.png" alt="Bright Electric">
+          <h3>Bright Electric</h3>
+          <p>⭐ 4.8 | Licensed, Fast Response<br><span style="color:#2563eb;">(555) 987-6543</span></p>
+        </div>
+        <div class="service-card">
+          <img src="https://cdn-icons-png.flaticon.com/512/3135/3135768.png" alt="Cool Comfort HVAC">
+          <h3>Cool Comfort HVAC</h3>
+          <p>⭐ 4.7 | AC/Heat, 24/7 Service<br><span style="color:#2563eb;">(555) 222-3344</span></p>
+        </div>
+      </div>
+    </section>
+    <section class="contractor-section contractor-history">
+      <h3>Your Recent Requests</h3>
+      <ul id="recentRequestsList">
+        <!-- Recent requests will appear here -->
+      </ul>
+    </section>
+  </main>
+  <footer class="contractor-footer">
+    &copy; 2025 NestMate. All rights reserved.
+  </footer>
+  <script>
+    // Logout button logic (redirect to index.html)
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', function() {
+        window.location.href = 'index.html';
+      });
+    }
+    // Save and show recent requests
+    const contractorRequestForm = document.getElementById('contractorRequestForm');
+    const contractorRequestSuccess = document.getElementById('contractorRequestSuccess');
+    const recentRequestsList = document.getElementById('recentRequestsList');
+    function renderRecentRequests() {
+      const requests = JSON.parse(localStorage.getItem('contractorRequests')) || [];
+      recentRequestsList.innerHTML = '';
+      if (!requests.length) {
+        recentRequestsList.innerHTML = '<li>No recent requests yet.</li>';
+        return;
+      }
+      requests.slice(-5).reverse().forEach(req => {
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>${req.serviceType}</strong> for <span>${req.homeownerName}</span> at <span>${req.serviceLocation}</span> <br><span style='color:#64748b;'>${req.serviceDetails}</span>`;
+        recentRequestsList.appendChild(li);
+      });
+    }
+    contractorRequestForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const req = {
+        homeownerName: document.getElementById('homeownerName').value,
+        homeownerEmail: document.getElementById('homeownerEmail').value,
+        serviceType: document.getElementById('serviceType').value,
+        serviceLocation: document.getElementById('serviceLocation').value,
+        serviceDetails: document.getElementById('serviceDetails').value
+      };
+      const requests = JSON.parse(localStorage.getItem('contractorRequests')) || [];
+      requests.push(req);
+      localStorage.setItem('contractorRequests', JSON.stringify(requests));
+      contractorRequestSuccess.textContent = 'Request submitted! A contractor will reach out soon.';
+      contractorRequestForm.reset();
+      renderRecentRequests();
+      setTimeout(() => { contractorRequestSuccess.textContent = ''; }, 2500);
+    });
+    renderRecentRequests();
+  </script>
+</body>
+</html>

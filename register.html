@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>NestMate — Register</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Plus+Jakarta+Sans:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/main.css">
+  <style>
+    .error-msg {
+      color: #fb7185;
+      margin-top: 10px;
+      min-height: 22px;
+      text-align: center;
+    }
+    .cta-btn {
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 0;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.18s;
+      margin-top: 8px;
+      width: 100%;
+    }
+    .cta-btn:hover {
+      background: #1d4ed8;
+    }
+    #registerForm {
+      max-width: 400px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    #registerForm label {
+      font-size: 1rem;
+      color: var(--muted, #64748b);
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    #registerForm input {
+      width: 100%;
+      padding: 9px 11px;
+      border-radius: 7px;
+      border: 1.2px solid #e0e7ff;
+      background: transparent;
+      color: var(--text, #0f172a);
+      font-size: 1rem;
+      font-family: inherit;
+      transition: border 0.18s;
+      box-sizing: border-box;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <svg viewBox="0 0 64 64" width="38" height="38" fill="currentColor"><path d="M32 4 L4 28 H12 V60 H26 V40 H38 V60 H52 V28 H60 Z"/></svg>
+      NestMate
+    </div>
+    <nav>
+      <a href="index.html" id="homeNav">Home</a>
+      <a href="#">Features</a>
+      <a href="signin.html" id="signInBtn">Sign In</a>
+      <a href="#" id="registerBtn">Register</a>
+      <span class="theme-toggle" id="themeToggle" tabindex="0" role="button" aria-label="Toggle dark mode">
+        <span class="toggle-icon" id="themeIcon">🌙</span>
+        <span id="themeLabel">Dark</span>
+        <span class="toggle-switch" id="toggleSwitch">
+          <span class="toggle-slider"></span>
+        </span>
+      </span>
+    </nav>
+  </header>
+  <main>
+    <section class="hero" id="heroSection">
+      <h1>Create Your Account</h1>
+      <p>
+        Join NestMate to manage your home efficiently. Fill in the details below to get started.
+      </p>
+      <form id="registerForm">
+        <label for="registerEmail">Email</label>
+        <input type="email" id="registerEmail" required placeholder="Enter your email">
+        <label for="registerPassword">Password</label>
+        <input type="password" id="registerPassword" required placeholder="Create a password">
+        
+        <label for="planSelection">Choose Your Plan</label>
+        <select id="planSelection" required style="width: 100%; padding: 9px 11px; border-radius: 7px; border: 1.2px solid #e0e7ff; background: transparent; color: var(--text, #0f172a); font-size: 1rem; font-family: inherit; transition: border 0.18s; box-sizing: border-box; margin-bottom: 8px;">
+          <option value="trial">30 Day Free Trial</option>
+          <option value="basic">Basic Plan - $5/month</option>
+          <option value="pro">Pro Plan - $10/month</option>
+          <option value="advanced">Advanced Pro - $16/month</option>
+        </select>
+        
+        <button type="submit" class="cta-btn">Register</button>
+      </form>
+      <div class="error-msg" id="registerError"></div>
+      <div style="margin-top:10px;font-size:0.98em;">Already have an account? <a href="signin.html" style="color:var(--primary);text-decoration:underline;">Sign In</a></div>
+    </section>
+  </main>
+  <footer>
+    &copy; 2025 NestMate. All rights reserved.
+  </footer>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+    import { getFirestore, setDoc, doc, serverTimestamp, getDoc, getDocs, query, collection, where } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
+      authDomain: "nestmate-167ed.firebaseapp.com",
+      projectId: "nestmate-167ed",
+      storageBucket: "nestmate-167ed.firebasestorage.app",
+      messagingSenderId: "865171535257",
+      appId: "1:865171535257:web:9944a48a952e99f55f0f08",
+      measurementId: "G-1DYR2RGY4G"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // For registration page, we don't want automatic redirection
+    // Users should only be redirected after successful registration
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const registerForm = document.getElementById('registerForm');
+      const registerError = document.getElementById('registerError');
+      if (registerForm) {
+        registerForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          registerError.textContent = "";
+          const email = document.getElementById('registerEmail').value.trim();
+          const password = document.getElementById('registerPassword').value;
+          const selectedPlan = document.getElementById('planSelection').value;
+          const auth = getAuth();
+          
+          try {
+            console.log('Starting registration process...');
+            
+            // Check if user already exists in salesReps collection
+            const existingSalesRep = await getDocs(query(collection(db, 'salesReps'), where('email', '==', email)));
+            if (!existingSalesRep.empty) {
+              throw new Error('This email is already registered as a sales representative. Please use a different email or contact support.');
+            }
+            
+            // Create the user account
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+            console.log('User created successfully:', user.uid);
+            
+            // Check if this email is already registered as a seller
+            const sellerSnapshot = await db.collection('SELLER USER ACCOUNTS').where('email', '==', email).get();
+            if (!sellerSnapshot.empty) {
+              // User is already a seller, sign them out and show error
+              await auth.signOut();
+              registerError.textContent = "This email is already registered as a seller. Please use the seller login page.";
+              return;
+            }
+            
+            // Save user info to regular user collections (userProfiles and accounts)
+            const userProfileData = {
+              uid: user.uid,
+              displayName: user.displayName || 'User',
+              email: user.email,
+              role: 'user',
+              accountType: selectedPlan,
+              plan: selectedPlan,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString()
+            };
+            
+            const accountData = {
+              uid: user.uid,
+              displayName: user.displayName || 'User',
+              email: user.email,
+              role: 'user',
+              accountType: selectedPlan,
+              plan: selectedPlan,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+              status: 'active'
+            };
+            
+            console.log('Saving user data to userProfiles and accounts collections...');
+            await Promise.all([
+              db.collection('userProfiles').doc(user.uid).set(userProfileData),
+              db.collection('accounts').doc(user.uid).set(accountData)
+            ]);
+            console.log('User data saved successfully');
+            
+            // Verify the user was saved correctly
+            const userProfileDoc = await db.collection('userProfiles').doc(user.uid).get();
+            const accountDoc = await db.collection('accounts').doc(user.uid).get();
+            
+            if (userProfileDoc.exists && accountDoc.exists) {
+              console.log('User documents verified in userProfiles and accounts collections');
+              // Redirect to appropriate dashboard based on selected plan
+              switch (selectedPlan) {
+                case 'trial':
+                  window.location.href = "dashboard-trial.html";
+                  break;
+                case 'basic':
+                  window.location.href = "dashboard-basic.html";
+                  break;
+                case 'pro':
+                  window.location.href = "dashboard-pro.html";
+                  break;
+                case 'advanced':
+                  window.location.href = "dashboard-advanced.html";
+                  break;
+                default:
+                  window.location.href = "dashboard-trial.html";
+              }
+            } else {
+              throw new Error('User documents were not saved correctly');
+            }
+          } catch (err) {
+            console.error('Registration error:', err);
+            if (err.code === 'auth/email-already-in-use') {
+              registerError.textContent = "An account with this email already exists. Please sign in instead.";
+            } else if (err.code === 'auth/weak-password') {
+              registerError.textContent = "Password should be at least 6 characters long.";
+            } else {
+              registerError.textContent = "Registration failed. Please try again.";
+            }
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Download & Upload Documents | NestMate</title>
+  <link rel="stylesheet" href="styles/main.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(120deg, #e0e7ff 0%, #f8fafc 100%);
+      color: #1e293b;
+      margin: 0;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 700px;
+      margin: 48px auto;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 4px 32px rgba(37,99,235,0.10);
+      padding: 36px 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      color: #2563eb;
+      font-size: 2.1rem;
+      margin-bottom: 8px;
+    }
+    .section {
+      width: 100%;
+      margin-bottom: 32px;
+    }
+    .section label {
+      font-weight: 600;
+      color: #2563eb;
+      margin-bottom: 4px;
+      display: block;
+    }
+    .section select, .section input[type="date"] {
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1.5px solid #e5e7eb;
+      font-size: 1.08rem;
+      margin-bottom: 12px;
+      width: 100%;
+    }
+    .section button, .section input[type="file"] {
+      margin-top: 8px;
+    }
+    .downloads-list, .uploads-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .downloads-list li, .uploads-list li {
+      background: #f1f5f9;
+      border-radius: 10px;
+      padding: 12px 18px;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 8px #2563eb11;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .downloads-list li strong {
+      color: #2563eb;
+    }
+    .uploads-list li span {
+      color: #64748b;
+    }
+    .back-btn {
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 28px;
+      font-size: 1.08rem;
+      font-weight: 700;
+      box-shadow: 0 2px 8px #2563eb22;
+      cursor: pointer;
+      margin-bottom: 24px;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .back-btn:hover {
+      background: #1d4ed8;
+    }
+    .upload-btn {
+      background: linear-gradient(90deg,#2563eb 60%,#facc15 100%);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 28px;
+      font-size: 1.08rem;
+      font-weight: 700;
+      box-shadow: 0 2px 8px #2563eb22;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    .upload-btn:hover {
+      background: linear-gradient(90deg,#1d4ed8 60%,#fde047 100%);
+    }
+    .date-filter {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+    @media (max-width: 600px) {
+      .container { padding: 16px 4vw; }
+      .date-filter { flex-direction: column; gap: 6px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="dashboard.html" class="back-btn">← Back to Dashboard</a>
+    <h1>Download & Upload Documents</h1>
+    <div class="section">
+      <label for="sectionSelect">Download Dashboard Section</label>
+      <select id="sectionSelect">
+        <option value="">Select Section</option>
+        <option value="overview">Home Overview</option>
+        <option value="home-repairs">Home Repairs</option>
+        <option value="dashboard">Home Details</option>
+        <option value="builder">Builder</option>
+        <option value="bedrooms">Bedrooms</option>
+        <option value="bathrooms">Bathrooms</option>
+        <option value="roof">Roof</option>
+        <option value="crawlspace">Crawlspace</option>
+        <option value="appliances">Appliances</option>
+        <option value="download-document">Download Document</option>
+        <option value="other">Other</option>
+      </select>
+      <div class="date-filter">
+        <label for="dateFrom">From</label>
+        <input type="date" id="dateFrom">
+        <label for="dateTo">To</label>
+        <input type="date" id="dateTo">
+      </div>
+      <button id="downloadSectionBtn">Download Selected Section</button>
+      <ul class="downloads-list" id="downloadsList"></ul>
+    </div>
+    <div class="section">
+      <label for="fileUpload">Upload Documents (PDF, Images, etc.)</label>
+      <input type="file" id="fileUpload" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx,.txt">
+      <button class="upload-btn" id="uploadBtn">Upload</button>
+      <ul class="uploads-list" id="uploadsList"></ul>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    // Download section logic (simulate by exporting JSON from localStorage)
+    const sectionSelect = document.getElementById('sectionSelect');
+    const downloadSectionBtn = document.getElementById('downloadSectionBtn');
+    const downloadsList = document.getElementById('downloadsList');
+    const dateFrom = document.getElementById('dateFrom');
+    const dateTo = document.getElementById('dateTo');
+    function getSectionData(section) {
+      // Map section to localStorage key
+      const map = {
+        'overview': 'userProfile',
+        'home-repairs': 'homeRepairs',
+        'dashboard': 'generalDetails',
+        'builder': 'builderDetails',
+        'bedrooms': 'bedrooms',
+        'bathrooms': 'bathrooms',
+        'roof': 'roofs',
+        'crawlspace': 'crawlspaceDetails',
+        'appliances': 'appliances',
+        'download-document': 'downloadDocument',
+        'other': 'otherDetails',
+      };
+      let raw = localStorage.getItem(map[section] || '');
+      if (!raw) return null;
+      if (section === 'dashboard') {
+        try {
+          const obj = JSON.parse(raw);
+          // If it's a direct object with fields, return as is
+          if (obj && typeof obj === 'object' && Object.keys(obj).length > 0) {
+            // If it has a nested generalDetails, return that
+            if (obj.generalDetails && typeof obj.generalDetails === 'object') {
+              return obj.generalDetails;
+            }
+            // Otherwise, return the object itself
+            return obj;
+          }
+        } catch {}
+      }
+      return raw;
+    }
+    function filterByDate(data, from, to) {
+      if (!Array.isArray(data)) return data;
+      if (!from && !to) return data;
+      const fromDate = from ? new Date(from) : null;
+      const toDate = to ? new Date(to) : null;
+      return data.filter(item => {
+        const d = new Date(item.date || item.repairDate || item.createdAt || item.updatedAt || 0);
+        if (fromDate && d < fromDate) return false;
+        if (toDate && d > toDate) return false;
+        return true;
+      });
+    }
+    downloadSectionBtn.addEventListener('click', function() {
+      const section = sectionSelect.value;
+      if (!section) return alert('Please select a section.');
+      let data = getSectionData(section);
+      if (!data) return alert('No data found for this section.');
+      try { data = JSON.parse(data); } catch {}
+      data = filterByDate(data, dateFrom.value, dateTo.value);
+      // Convert data to a readable string
+      let text = '';
+      if (Array.isArray(data)) {
+        data.forEach((item, idx) => {
+          text += `#${idx + 1}\n`;
+          for (const [k, v] of Object.entries(item)) {
+            text += `${k}: ${v}\n`;
+          }
+          text += '\n';
+        });
+      } else if (typeof data === 'object' && data !== null) {
+        for (const [k, v] of Object.entries(data)) {
+          text += `${k}: ${v}\n`;
+        }
+      } else {
+        text = String(data);
+      }
+      // Generate PDF using jsPDF
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      const lines = doc.splitTextToSize(text, 180);
+      doc.text(lines, 10, 20);
+      doc.save(`${section}-data-${new Date().toISOString().slice(0,10)}.pdf`);
+      const li = document.createElement('li');
+      li.innerHTML = `<strong>${section}</strong> PDF downloaded on <span>${new Date().toLocaleString()}</span>`;
+      downloadsList.prepend(li);
+    });
+    // Upload logic
+    const fileUpload = document.getElementById('fileUpload');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const uploadsList = document.getElementById('uploadsList');
+    uploadBtn.addEventListener('click', function() {
+      const files = fileUpload.files;
+      if (!files.length) return alert('Please select files to upload.');
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const li = document.createElement('li');
+        li.innerHTML = `<span>${file.name}</span> <span style='color:#22c55e;font-weight:600;'>Uploaded</span>`;
+        uploadsList.prepend(li);
+      }
+      fileUpload.value = '';
+    });
+  </script>
+</body>
+</html>

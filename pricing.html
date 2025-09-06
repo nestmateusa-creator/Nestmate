@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>NestMate — Pricing & Plans</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;500&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --accent: #facc15;
+      --bg: #f8fafc;
+      --card: #fff;
+      --radius: 18px;
+      --shadow: 0 4px 32px rgba(37,99,235,0.10);
+    }
+    body {
+      margin: 0;
+      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+      background: linear-gradient(120deg, #e0e7ff 0%, #f8fafc 100%);
+      color: #1e293b;
+      min-height: 100vh;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 32px 8vw 0 8vw;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: -1px;
+    }
+    nav {
+      display: flex;
+      gap: 18px;
+    }
+    nav a {
+      text-decoration: none;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 1.1rem;
+      padding: 8px 20px;
+      border-radius: 10px;
+      transition: background 0.18s, color 0.18s;
+    }
+    nav a.cta {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(37,99,235,0.10);
+    }
+    nav a.cta:hover {
+      background: #1d4ed8;
+    }
+    nav a:hover:not(.cta) {
+      background: #e0e7ff;
+      color: #1d4ed8;
+    }
+    .pricing-hero {
+      max-width: 900px;
+      margin: 48px auto 0 auto;
+      text-align: center;
+      padding: 0 8vw;
+    }
+    .pricing-title {
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: var(--primary);
+      margin-bottom: 16px;
+      letter-spacing: -2px;
+    }
+    .pricing-desc {
+      font-size: 1.25rem;
+      color: #334155;
+      margin-bottom: 40px;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+    .toggle-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 36px;
+    }
+    .toggle-label {
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: #334155;
+      cursor: pointer;
+      user-select: none;
+    }
+    .toggle-switch {
+      position: relative;
+      width: 56px;
+      height: 28px;
+      display: inline-block;
+    }
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #e0e7ff;
+      transition: .3s;
+      border-radius: 18px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 22px;
+      width: 22px;
+      left: 4px;
+      bottom: 3px;
+      background-color: var(--primary);
+      transition: .3s;
+      border-radius: 50%;
+    }
+    .toggle-switch input:checked + .slider {
+      background-color: #dbeafe;
+    }
+    .toggle-switch input:checked + .slider:before {
+      transform: translateX(28px);
+      background-color: #facc15;
+    }
+    .toggle-yearly {
+      color: #facc15;
+      font-weight: 800;
+      margin-left: 6px;
+      font-size: 1.05rem;
+    }
+    .discount-badge {
+      background: #facc15;
+      color: #1e293b;
+      font-weight: 800;
+      font-size: 0.95rem;
+      border-radius: 12px;
+      padding: 3px 12px;
+      margin-left: 8px;
+      vertical-align: middle;
+      display: inline-block;
+    }
+    .pricing-table {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 36px;
+      max-width: 1000px;
+      margin: 0 auto 48px auto;
+      padding: 0 8vw;
+    }
+    .plan-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 36px 28px 32px 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border: 2.5px solid #e5e7eb;
+      transition: box-shadow 0.18s, border 0.18s;
+      position: relative;
+    }
+    .plan-card.popular {
+      border: 2.5px solid var(--primary);
+      box-shadow: 0 8px 32px #2563eb22;
+    }
+    .plan-badge {
+      position: absolute;
+      top: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--primary);
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 800;
+      padding: 6px 22px;
+      border-radius: 16px;
+      box-shadow: 0 2px 8px #2563eb22;
+      letter-spacing: 1px;
+    }
+    .plan-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 8px;
+      margin-top: 8px;
+    }
+    .plan-price {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: #1e293b;
+      margin-bottom: 6px;
+    }
+    .plan-period {
+      font-size: 1.05rem;
+      color: #64748b;
+      margin-bottom: 18px;
+    }
+    .plan-features {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 28px 0;
+      text-align: left;
+      width: 100%;
+    }
+    .plan-features li {
+      font-size: 1.08rem;
+      color: #334155;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .plan-features li .check {
+      color: #22c55e;
+      font-size: 1.2em;
+    }
+    .plan-action {
+      margin-top: auto;
+      width: 100%;
+      text-align: center;
+    }
+    .plan-action a {
+      display: inline-block;
+      padding: 14px 0;
+      width: 100%;
+      background: var(--primary);
+      color: #fff;
+      font-size: 1.15rem;
+      font-weight: 800;
+      border-radius: 12px;
+      text-decoration: none;
+      box-shadow: 0 2px 12px rgba(37,99,235,0.10);
+      transition: background 0.18s;
+    }
+    .plan-action a:hover {
+      background: #1d4ed8;
+    }
+    .plan-note {
+      font-size: 0.98rem;
+      color: #64748b;
+      margin-top: 18px;
+      text-align: center;
+    }
+    .trial-badge {
+      background: #22c55e;
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.95rem;
+      border-radius: 12px;
+      padding: 3px 12px;
+      margin-bottom: 12px;
+      display: inline-block;
+      letter-spacing: 1px;
+    }
+    footer {
+      text-align: center;
+      margin: 64px 0 24px 0;
+      color: #64748b;
+      font-size: 1.05rem;
+    }
+    @media (max-width: 900px) {
+      .pricing-table {
+        padding: 0 4vw;
+      }
+      header {
+        padding: 32px 4vw 0 4vw;
+      }
+    }
+    @media (max-width: 600px) {
+      .pricing-title {
+        font-size: 1.5rem;
+      }
+      .plan-card {
+        padding: 20px 10px 18px 10px;
+      }
+      header {
+        flex-direction: column;
+        gap: 12px;
+        padding: 18px 2vw 0 2vw;
+      }
+    }
+  </style>
+  <script>
+    // Pricing toggle logic
+    document.addEventListener('DOMContentLoaded', function () {
+      const toggle = document.getElementById('pricing-toggle');
+      const prices = {
+        basic: { monthly: "$5", yearly: "$54" }, // 5*12=60, 10% off = 54
+        pro: { monthly: "$10", yearly: "$108" },
+        advanced: { monthly: "$16", yearly: "$173" }
+      };
+      const periods = {
+        monthly: { basic: "per month", pro: "per month", advanced: "per month" },
+        yearly: { basic: "per year", pro: "per year", advanced: "per year" }
+      };
+      const notes = {
+        monthly: "Billed monthly. Cancel anytime.",
+        yearly: "Billed yearly. Cancel anytime. Save 10%!"
+      };
+
+      function updatePricing() {
+        const yearly = toggle.checked;
+        document.querySelectorAll('.plan-price-basic').forEach(e => e.textContent = yearly ? prices.basic.yearly : prices.basic.monthly);
+        document.querySelectorAll('.plan-price-pro').forEach(e => e.textContent = yearly ? prices.pro.yearly : prices.pro.monthly);
+        document.querySelectorAll('.plan-price-advanced').forEach(e => e.textContent = yearly ? prices.advanced.yearly : prices.advanced.monthly);
+        document.querySelectorAll('.plan-period-basic').forEach(e => e.textContent = yearly ? periods.yearly.basic : periods.monthly.basic);
+        document.querySelectorAll('.plan-period-pro').forEach(e => e.textContent = yearly ? periods.yearly.pro : periods.monthly.pro);
+        document.querySelectorAll('.plan-period-advanced').forEach(e => e.textContent = yearly ? periods.yearly.advanced : periods.monthly.advanced);
+        document.querySelectorAll('.plan-note-basic').forEach(e => e.textContent = yearly ? notes.yearly : notes.monthly);
+        document.querySelectorAll('.plan-note-pro').forEach(e => e.textContent = yearly ? notes.yearly : notes.monthly);
+        document.querySelectorAll('.plan-note-advanced').forEach(e => e.textContent = yearly ? notes.yearly : notes.monthly);
+        document.querySelectorAll('.discount-badge').forEach(e => e.style.display = yearly ? 'inline-block' : 'none');
+      }
+      toggle.addEventListener('change', updatePricing);
+      updatePricing();
+    });
+  </script>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <button onclick="location.href='index.html'" style="background:none;border:none;display:flex;align-items:center;gap:14px;font-size:2.2rem;font-weight:800;color:var(--primary);letter-spacing:-1px;cursor:pointer;padding:0;">
+        <svg viewBox="0 0 64 64" width="36" height="36" fill="currentColor"><path d="M32 4 L4 28 H12 V60 H26 V40 H38 V60 H52 V28 H60 Z"/></svg>
+        NestMate
+      </button>
+    </div>
+    <nav>
+  <a href="index.html">Home</a>
+  <a href="about.html">About</a>
+  <a href="contact.html">Contact</a>
+  <a href="faq.html">FAQ</a>
+  <a href="signin.html" class="cta">Sign In</a>
+    </nav>
+  </header>
+  <section class="pricing-hero">
+    <div class="pricing-title">Simple, Transparent Pricing</div>
+    <div class="pricing-desc">
+      Choose the plan that fits your home and lifestyle.<br>
+      No hidden fees. Cancel anytime.
+    </div>
+    <div class="toggle-row">
+      <span class="toggle-label">Monthly</span>
+      <label class="toggle-switch">
+        <input type="checkbox" id="pricing-toggle" />
+        <span class="slider"></span>
+      </label>
+      <span class="toggle-label">Yearly <span class="discount-badge" style="display:none;">Save 10%</span></span>
+    </div>
+  </section>
+  <section class="pricing-table">
+    <!-- Basic Plan -->
+    <div class="plan-card">
+      <span class="trial-badge">30 Day Free Trial</span>
+      <div class="plan-title">Basic</div>
+      <div class="plan-price plan-price-basic">$5</div>
+      <div class="plan-period plan-period-basic">per month</div>
+      <ul class="plan-features">
+  <li><span class="check">✔</span> Manage your first home with ease</li>
+  <li><span class="check">✔</span> Stay on top of 10 essential tasks & reminders</li>
+  <li><span class="check">✔</span> Instantly organize key home details</li>
+  <li><span class="check">✔</span> Rock-solid cloud backup for peace of mind</li>
+  <li><span class="check">✔</span> Save and revisit your favorite finds</li>
+  <li><span class="check">✔</span> Discover smart product picks just for you</li>
+      </ul>
+      <div class="plan-action">
+        <a href="signin.html">Start Free</a>
+      </div>
+      <div class="plan-note plan-note-basic">Enjoy all Basic features free for 30 days. No credit card required.</div>
+    </div>
+    <!-- Pro Plan -->
+    <div class="plan-card popular">
+      <div class="plan-badge">Most Popular</div>
+      <div class="plan-title">Pro</div>
+      <div class="plan-price plan-price-pro">$10</div>
+      <div class="plan-period plan-period-pro">per month</div>
+      <ul class="plan-features">
+  <li><span class="check">✔</span> Create unlimited home profiles for every property</li>
+  <li><span class="check">✔</span> Never miss a beat with unlimited tasks & reminders</li>
+  <li><span class="check">✔</span> Get your personalized Home Health Score</li>
+  <li><span class="check">✔</span> VIP priority support—get help fast</li>
+  <li><span class="check">✔</span> Effortlessly export and backup your data</li>
+  <li><span class="check">✔</span> All Basic features, supercharged</li>
+  <li><span class="check">✔</span> <b>Order your favorite products directly for your home</b></li>
+  <li><span class="check">✔</span> Real-time price tracking & instant alerts</li>
+  <li><span class="check">✔</span> Next-level product recommendations tailored to you</li>
+      </ul>
+      <div class="plan-action">
+        <a href="Startproshoppingcart.html">Start Pro</a>
+      </div>
+      <div class="plan-note plan-note-pro">Billed monthly. Cancel anytime.</div>
+    </div>
+    <!-- Advanced Pro Plan -->
+    <div class="plan-card">
+      <div class="plan-title">Advanced Pro</div>
+      <div class="plan-price plan-price-advanced">$16</div>
+      <div class="plan-period plan-period-advanced">per month</div>
+      <ul class="plan-features">
+  <li><span class="check">✔</span> All Pro features, plus more family power</li>
+  <li><span class="check">✔</span> Connect up to 5 family members—everyone’s included</li>
+  <li><span class="check">✔</span> Share tasks & reminders for total home harmony</li>
+  <li><span class="check">✔</span> Family dashboard for effortless collaboration</li>
+  <li><span class="check">✔</span> Dedicated family-first support</li>
+  <li><span class="check">✔</span> <b>Build and share product lists together</b></li>
+  <li><span class="check">✔</span> <b>Order products as a team—collaborate and save</b></li>
+  <li><span class="check">✔</span> Unlimited access to emergency home & contractor services, hand-picked by NestMate experts</li>
+      </ul>
+      <div class="plan-action">
+        <a href="signin.html">Start Advanced Pro</a>
+      </div>
+      <div class="plan-note plan-note-advanced">Billed monthly. Cancel anytime.</div>
+    </div>
+  </section>
+  <footer>
+    &copy; 2025 NestMate. Your home, organized.
+  </footer>
+</body>
+</html>

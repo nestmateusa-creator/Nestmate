@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Management - NestMate Advanced Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #7c3aed;
+            --primary-dark: #6d28d9;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #06b6d4;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .logo i {
+            font-size: 28px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+        }
+
+        .card-icon.primary { background: var(--primary); }
+        .card-icon.success { background: var(--success); }
+        .card-icon.warning { background: var(--warning); }
+        .card-icon.danger { background: var(--danger); }
+        .card-icon.info { background: var(--info); }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .card-subtitle {
+            font-size: 14px;
+            color: var(--secondary);
+        }
+
+        .family-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .family-member-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .family-member-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .member-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .member-avatar {
+            width: 60px;
+            height: 60px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+
+        .member-info {
+            flex: 1;
+        }
+
+        .member-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 4px;
+        }
+
+        .member-role {
+            font-size: 14px;
+            color: var(--secondary);
+        }
+
+        .member-status {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: var(--success);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .member-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .member-stat {
+            text-align: center;
+            padding: 12px;
+            background: var(--light);
+            border-radius: var(--radius);
+        }
+
+        .member-stat-number {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .member-stat-label {
+            font-size: 12px;
+            color: var(--secondary);
+        }
+
+        .member-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .member-actions .btn {
+            flex: 1;
+            text-align: center;
+            font-size: 12px;
+            padding: 8px 12px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 24px;
+            border-radius: var(--radius);
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .close {
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--secondary);
+        }
+
+        .invite-link {
+            background: var(--light);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .invite-link-text {
+            font-family: monospace;
+            font-size: 14px;
+            color: var(--dark);
+            word-break: break-all;
+        }
+
+        @media (max-width: 768px) {
+            .family-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-users"></i>
+                Family Management
+            </div>
+            <div>
+                <button class="btn btn-primary" onclick="openInviteModal()">
+                    <i class="fas fa-user-plus"></i>
+                    Invite Family Member
+                </button>
+                <a href="dashboard-advanced.html" class="btn btn-outline">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Dashboard
+                </a>
+            </div>
+        </div>
+
+        <!-- Family Members Grid -->
+        <div class="family-grid" id="familyGrid">
+            <!-- Family members will be populated here -->
+        </div>
+
+        <!-- Invite Family Member Modal -->
+        <div id="inviteModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Invite Family Member</h3>
+                    <span class="close" onclick="closeModal('inviteModal')">&times;</span>
+                </div>
+                <form id="inviteForm">
+                    <div class="form-group">
+                        <label class="form-label">Email Address *</label>
+                        <input type="email" class="form-input" id="inviteEmail" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">First Name *</label>
+                        <input type="text" class="form-input" id="inviteFirstName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Last Name *</label>
+                        <input type="text" class="form-input" id="inviteLastName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Role</label>
+                        <select class="form-select" id="inviteRole">
+                            <option value="member">Family Member</option>
+                            <option value="admin">Family Admin</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Message (Optional)</label>
+                        <textarea class="form-input" id="inviteMessage" rows="3" placeholder="Add a personal message to your invitation..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i>
+                            Send Invitation
+                        </button>
+                        <button type="button" class="btn btn-outline" onclick="closeModal('inviteModal')">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Invite Link Modal -->
+        <div id="inviteLinkModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Family Invite Link</h3>
+                    <span class="close" onclick="closeModal('inviteLinkModal')">&times;</span>
+                </div>
+                <div class="invite-link">
+                    <div class="form-label">Share this link with your family members:</div>
+                    <div class="invite-link-text" id="inviteLinkText">https://nestmate.com/family/join/abc123xyz</div>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary" onclick="copyInviteLink()">
+                        <i class="fas fa-copy"></i>
+                        Copy Link
+                    </button>
+                    <button class="btn btn-outline" onclick="closeModal('inviteLinkModal')">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample family members data
+        let familyMembers = [
+            {
+                id: 1,
+                name: "John Smith",
+                email: "john@example.com",
+                role: "admin",
+                status: "active",
+                tasksAssigned: 12,
+                tasksCompleted: 8,
+                joinDate: "2024-01-15"
+            },
+            {
+                id: 2,
+                name: "Sarah Smith",
+                email: "sarah@example.com",
+                role: "member",
+                status: "active",
+                tasksAssigned: 6,
+                tasksCompleted: 4,
+                joinDate: "2024-01-20"
+            },
+            {
+                id: 3,
+                name: "Mike Smith",
+                email: "mike@example.com",
+                role: "member",
+                status: "pending",
+                tasksAssigned: 0,
+                tasksCompleted: 0,
+                joinDate: "2024-02-01"
+            }
+        ];
+
+        function renderFamilyMembers() {
+            const grid = document.getElementById('familyGrid');
+            grid.innerHTML = familyMembers.map(member => `
+                <div class="family-member-card">
+                    <div class="member-status">${member.status}</div>
+                    
+                    <div class="member-header">
+                        <div class="member-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="member-info">
+                            <div class="member-name">${member.name}</div>
+                            <div class="member-role">${member.role === 'admin' ? 'Family Admin' : 'Family Member'}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="member-stats">
+                        <div class="member-stat">
+                            <div class="member-stat-number">${member.tasksAssigned}</div>
+                            <div class="member-stat-label">Tasks Assigned</div>
+                        </div>
+                        <div class="member-stat">
+                            <div class="member-stat-number">${member.tasksCompleted}</div>
+                            <div class="member-stat-label">Completed</div>
+                        </div>
+                        <div class="member-stat">
+                            <div class="member-stat-number">${member.status === 'active' ? '100%' : '0%'}</div>
+                            <div class="member-stat-label">Participation</div>
+                        </div>
+                    </div>
+                    
+                    <div class="member-actions">
+                        <button class="btn btn-primary" onclick="viewMember(${member.id})">
+                            <i class="fas fa-eye"></i>
+                            View
+                        </button>
+                        <button class="btn btn-outline" onclick="editMember(${member.id})">
+                            <i class="fas fa-edit"></i>
+                            Edit
+                        </button>
+                        <button class="btn btn-outline" onclick="removeMember(${member.id})">
+                            <i class="fas fa-trash"></i>
+                            Remove
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openInviteModal() {
+            document.getElementById('inviteModal').style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function viewMember(memberId) {
+            const member = familyMembers.find(m => m.id === memberId);
+            if (member) {
+                alert(`Family Member Details:\n\nName: ${member.name}\nEmail: ${member.email}\nRole: ${member.role === 'admin' ? 'Family Admin' : 'Family Member'}\nStatus: ${member.status}\nTasks Assigned: ${member.tasksAssigned}\nTasks Completed: ${member.tasksCompleted}\nJoined: ${member.joinDate}`);
+            }
+        }
+
+        function editMember(memberId) {
+            const member = familyMembers.find(m => m.id === memberId);
+            if (member) {
+                alert(`Editing member: ${member.name}`);
+                // This would open an edit modal
+            }
+        }
+
+        function removeMember(memberId) {
+            if (confirm('Are you sure you want to remove this family member? They will lose access to the family dashboard.')) {
+                familyMembers = familyMembers.filter(m => m.id !== memberId);
+                renderFamilyMembers();
+                alert('Family member removed successfully!');
+            }
+        }
+
+        function copyInviteLink() {
+            const linkText = document.getElementById('inviteLinkText').textContent;
+            navigator.clipboard.writeText(linkText).then(() => {
+                alert('Invite link copied to clipboard!');
+            });
+        }
+
+        // Handle invite form
+        document.getElementById('inviteForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newMember = {
+                id: Date.now(),
+                name: document.getElementById('inviteFirstName').value + ' ' + document.getElementById('inviteLastName').value,
+                email: document.getElementById('inviteEmail').value,
+                role: document.getElementById('inviteRole').value,
+                status: 'pending',
+                tasksAssigned: 0,
+                tasksCompleted: 0,
+                joinDate: new Date().toISOString().split('T')[0]
+            };
+            
+            familyMembers.push(newMember);
+            renderFamilyMembers();
+            closeModal('inviteModal');
+            document.getElementById('inviteForm').reset();
+            
+            // Show invite link modal
+            document.getElementById('inviteLinkModal').style.display = 'block';
+            
+            alert('Invitation sent successfully!');
+        });
+
+        // Initialize the page
+        window.addEventListener('load', function() {
+            renderFamilyMembers();
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NestMate Advanced Pro - Family Home Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #7c3aed;
+            --primary-dark: #6d28d9;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #06b6d4;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .logo i {
+            font-size: 28px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .plan-badge {
+            background: var(--primary);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+        }
+
+        .card-icon.primary { background: var(--primary); }
+        .card-icon.success { background: var(--success); }
+        .card-icon.warning { background: var(--warning); }
+        .card-icon.danger { background: var(--danger); }
+        .card-icon.info { background: var(--info); }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .card-subtitle {
+            font-size: 14px;
+            color: var(--secondary);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .feature-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            margin: 0 auto 16px;
+        }
+
+        .feature-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+
+        .feature-description {
+            color: var(--secondary);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .family-section {
+            background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+            border: 2px solid var(--primary);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .family-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .family-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .family-subtitle {
+            color: var(--secondary);
+            font-size: 16px;
+        }
+
+        .family-members {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .family-member {
+            background: white;
+            border-radius: var(--radius);
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        .member-avatar {
+            width: 60px;
+            height: 60px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            margin: 0 auto 12px;
+        }
+
+        .member-name {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 4px;
+        }
+
+        .member-role {
+            font-size: 12px;
+            color: var(--secondary);
+            margin-bottom: 8px;
+        }
+
+        .member-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 12px;
+        }
+
+        .member-stat {
+            text-align: center;
+        }
+
+        .member-stat-number {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .member-stat-label {
+            font-size: 10px;
+            color: var(--secondary);
+        }
+
+        .health-score {
+            background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+            border: 2px solid var(--primary);
+            border-radius: var(--radius);
+            padding: 24px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .health-score-number {
+            font-size: 72px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .health-score-label {
+            font-size: 18px;
+            color: var(--dark);
+            margin-bottom: 16px;
+        }
+
+        .health-score-description {
+            color: var(--secondary);
+            font-size: 14px;
+        }
+
+        .properties-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .property-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            transition: var(--transition);
+        }
+
+        .property-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .property-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .property-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .property-status {
+            background: var(--success);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .property-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .property-stat {
+            text-align: center;
+        }
+
+        .property-stat-number {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .property-stat-label {
+            font-size: 12px;
+            color: var(--secondary);
+        }
+
+        .task-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .task-item:last-child {
+            border-bottom: none;
+        }
+
+        .task-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--primary);
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .task-checkbox.checked {
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .task-content {
+            flex: 1;
+        }
+
+        .task-title {
+            font-weight: 500;
+            color: var(--dark);
+            margin-bottom: 4px;
+        }
+
+        .task-due {
+            font-size: 12px;
+            color: var(--secondary);
+        }
+
+        .task-assigned {
+            font-size: 10px;
+            color: var(--primary);
+            background: var(--light);
+            padding: 2px 6px;
+            border-radius: 8px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--light);
+            border-radius: var(--radius);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--secondary);
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-users"></i>
+                NestMate Advanced Pro
+            </div>
+            <div class="user-info">
+                <div class="plan-badge">Advanced Pro</div>
+                <div>
+                    <div style="font-weight: 600; color: var(--dark);" id="userName">Loading...</div>
+                    <div style="color: var(--secondary); font-size: 14px;" id="userEmail">Loading...</div>
+                </div>
+                <button class="btn btn-outline" onclick="signOut()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Sign Out
+                </button>
+            </div>
+        </div>
+
+        <!-- Family Section -->
+        <div class="family-section">
+            <div class="family-header">
+                <div class="family-title">👨‍👩‍👧‍👦 Family Home Management</div>
+                <div class="family-subtitle">Collaborate with up to 5 family members for total home harmony</div>
+            </div>
+            <div class="family-members">
+                <div class="family-member">
+                    <div class="member-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="member-name">John Smith</div>
+                    <div class="member-role">Family Admin</div>
+                    <div class="member-stats">
+                        <div class="member-stat">
+                            <div class="member-stat-number">12</div>
+                            <div class="member-stat-label">Tasks</div>
+                        </div>
+                        <div class="member-stat">
+                            <div class="member-stat-number">8</div>
+                            <div class="member-stat-label">Completed</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="family-member">
+                    <div class="member-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="member-name">Sarah Smith</div>
+                    <div class="member-role">Family Member</div>
+                    <div class="member-stats">
+                        <div class="member-stat">
+                            <div class="member-stat-number">6</div>
+                            <div class="member-stat-label">Tasks</div>
+                        </div>
+                        <div class="member-stat">
+                            <div class="member-stat-number">4</div>
+                            <div class="member-stat-label">Completed</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="family-member">
+                    <div class="member-avatar">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <div class="member-name">Add Member</div>
+                    <div class="member-role">Invite Family</div>
+                    <div class="member-stats">
+                        <div class="member-stat">
+                            <div class="member-stat-number">3</div>
+                            <div class="member-stat-label">Slots Left</div>
+                        </div>
+                        <div class="member-stat">
+                            <div class="member-stat-number">0</div>
+                            <div class="member-stat-label">Pending</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Home Health Score -->
+        <div class="health-score">
+            <div class="health-score-number">92</div>
+            <div class="health-score-label">Family Home Health Score</div>
+            <div class="health-score-description">Excellent! Your family is working together to keep your home in perfect condition.</div>
+        </div>
+
+        <!-- Properties Overview -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon primary">
+                    <i class="fas fa-home"></i>
+                </div>
+                <div>
+                    <div class="card-title">Family Properties</div>
+                    <div class="card-subtitle">Unlimited home profiles with family collaboration</div>
+                </div>
+                <button class="btn btn-primary" onclick="addProperty()">
+                    <i class="fas fa-plus"></i>
+                    Add Property
+                </button>
+                <button class="btn btn-success" onclick="viewHomeDetails()">
+                    <i class="fas fa-clipboard-list"></i>
+                    Home Details
+                </button>
+            </div>
+            <div class="properties-grid">
+                <div class="property-card">
+                    <div class="property-header">
+                        <div class="property-title">Main Residence</div>
+                        <div class="property-status">Active</div>
+                    </div>
+                    <div class="property-stats">
+                        <div class="property-stat">
+                            <div class="property-stat-number">92</div>
+                            <div class="property-stat-label">Health Score</div>
+                        </div>
+                        <div class="property-stat">
+                            <div class="property-stat-number">18</div>
+                            <div class="property-stat-label">Active Tasks</div>
+                        </div>
+                        <div class="property-stat">
+                            <div class="property-stat-number">234</div>
+                            <div class="property-stat-label">Completed</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="property-card">
+                    <div class="property-header">
+                        <div class="property-title">Vacation Home</div>
+                        <div class="property-status">Active</div>
+                    </div>
+                    <div class="property-stats">
+                        <div class="property-stat">
+                            <div class="property-stat-number">85</div>
+                            <div class="property-stat-label">Health Score</div>
+                        </div>
+                        <div class="property-stat">
+                            <div class="property-stat-number">6</div>
+                            <div class="property-stat-label">Active Tasks</div>
+                        </div>
+                        <div class="property-stat">
+                            <div class="property-stat-number">156</div>
+                            <div class="property-stat-label">Completed</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="property-card">
+                    <div class="property-header">
+                        <div class="property-title">Rental Property</div>
+                        <div class="property-status">Active</div>
+                    </div>
+                    <div class="property-stats">
+                        <div class="property-stat">
+                            <div class="property-stat-number">78</div>
+                            <div class="property-stat-label">Health Score</div>
+                        </div>
+                        <div class="property-stat">
+                            <div class="property-stat-number">4</div>
+                            <div class="property-stat-label">Active Tasks</div>
+                        </div>
+                        <div class="property-stat">
+                            <div class="property-stat-number">89</div>
+                            <div class="property-stat-label">Completed</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Advanced Pro Features -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon success">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div>
+                    <div class="card-title">Your Advanced Pro Features</div>
+                    <div class="card-subtitle">All Pro features plus family power</div>
+                </div>
+            </div>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="feature-title">Family Collaboration</div>
+                    <div class="feature-description">Connect up to 5 family members and share tasks & reminders for total home harmony.</div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </div>
+                    <div class="feature-title">Family Dashboard</div>
+                    <div class="feature-description">Family dashboard for effortless collaboration and task management across all members.</div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="feature-title">Family-First Support</div>
+                    <div class="feature-description">Dedicated family-first support to help your entire household succeed.</div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-list"></i>
+                    </div>
+                    <div class="feature-title">Shared Product Lists</div>
+                    <div class="feature-description">Build and share product lists together as a family team.</div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="feature-title">Team Ordering</div>
+                    <div class="feature-description">Order products as a team—collaborate and save on family purchases.</div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <div class="feature-title">Emergency Services</div>
+                    <div class="feature-description">Unlimited access to emergency home & contractor services, hand-picked by experts.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Family Tasks -->
+        <div class="dashboard-grid">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon warning">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Family Tasks</div>
+                        <div class="card-subtitle">Collaborative task management</div>
+                    </div>
+                </div>
+                <ul class="task-list" id="taskList">
+                    <li class="task-item">
+                        <div class="task-checkbox" onclick="toggleTask(this)"></div>
+                        <div class="task-content">
+                            <div class="task-title">HVAC Annual Service</div>
+                            <div class="task-due">Due in 3 days - Main Residence</div>
+                            <div class="task-assigned">Assigned to: John</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <div class="task-checkbox" onclick="toggleTask(this)"></div>
+                        <div class="task-content">
+                            <div class="task-title">Garden Maintenance</div>
+                            <div class="task-due">Due in 5 days - Main Residence</div>
+                            <div class="task-assigned">Assigned to: Sarah</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <div class="task-checkbox" onclick="toggleTask(this)"></div>
+                        <div class="task-content">
+                            <div class="task-title">Pool Cleaning</div>
+                            <div class="task-due">Due in 7 days - Vacation Home</div>
+                            <div class="task-assigned">Assigned to: John</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <div class="task-checkbox" onclick="toggleTask(this)"></div>
+                        <div class="task-content">
+                            <div class="task-title">Security System Check</div>
+                            <div class="task-due">Due in 10 days - Rental Property</div>
+                            <div class="task-assigned">Assigned to: Sarah</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon info">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Family Shopping</div>
+                        <div class="card-subtitle">Collaborate and save on purchases</div>
+                    </div>
+                </div>
+                <div style="text-align: center; padding: 20px; color: var(--secondary);">
+                    <i class="fas fa-shopping-cart" style="font-size: 48px; margin-bottom: 16px; opacity: 0.3;"></i>
+                    <p>Build shared product lists with your family and order together to save money.</p>
+                    <button class="btn btn-primary" style="margin-top: 16px;" onclick="viewFamilyShopping()">
+                        <i class="fas fa-users"></i>
+                        Family Shopping
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Emergency Services -->
+        <div class="card">
+                <div class="card-header">
+                    <div class="card-icon danger">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Emergency Services</div>
+                        <div class="card-subtitle">24/7 access to trusted contractors</div>
+                    </div>
+                    <button class="btn btn-danger" onclick="openEmergencyServices()">
+                        <i class="fas fa-phone"></i>
+                        Emergency Services
+                    </button>
+                </div>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <div class="feature-title">Emergency Repairs</div>
+                    <div class="feature-description">24/7 access to emergency home repair services for urgent issues.</div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="feature-title">Security Services</div>
+                    <div class="feature-description">Emergency security and lockout services available 24/7.</div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <div class="feature-title">Fire & Water Damage</div>
+                    <div class="feature-description">Rapid response for fire, water, and storm damage restoration.</div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-thermometer-half"></i>
+                    </div>
+                    <div class="feature-title">HVAC Emergency</div>
+                    <div class="feature-description">Emergency heating and cooling services for extreme weather.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Advanced Pro functionality for the Advanced Pro plan dashboard
+        function toggleTask(checkbox) {
+            if (checkbox.classList.contains('checked')) {
+                checkbox.classList.remove('checked');
+                checkbox.innerHTML = '';
+            } else {
+                checkbox.classList.add('checked');
+                checkbox.innerHTML = '<i class="fas fa-check"></i>';
+            }
+        }
+
+        function addProperty() {
+            window.location.href = 'property-management.html';
+        }
+
+        function viewFamilyShopping() {
+            window.location.href = 'family-management.html';
+        }
+
+        function openEmergencyServices() {
+            window.location.href = 'emergency-services.html';
+        }
+
+        function viewHomeDetails() {
+            window.location.href = 'home-details.html';
+        }
+
+        function signOut() {
+            if (confirm('Are you sure you want to sign out?')) {
+                // This would handle the sign out process
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Load user data
+        function loadUserData() {
+            // This would load the user's data from Firebase
+            document.getElementById('userName').textContent = 'Advanced Pro User';
+            document.getElementById('userEmail').textContent = 'user@example.com';
+        }
+
+        // Initialize the dashboard
+        window.addEventListener('load', function() {
+            loadUserData();
+        });
+    </script>
+</body>
+</html>

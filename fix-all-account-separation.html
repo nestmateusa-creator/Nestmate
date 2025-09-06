@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fix All Account Separation Issues</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .warning { background: #fff3cd; color: #856404; }
+        #log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        .account-item {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .account-email {
+            font-weight: bold;
+        }
+        .account-collections {
+            font-size: 12px;
+            color: #666;
+        }
+        .fix-button {
+            background: #dc3545;
+            font-size: 12px;
+            padding: 5px 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Fix All Account Separation Issues</h1>
+    <p>This page will find and fix all accounts that exist in both regular and seller collections.</p>
+    
+    <div class="test-section">
+        <h3>Step 1: Find All Separation Issues</h3>
+        <button onclick="findAllSeparationIssues()">Find All Separation Issues</button>
+        <div id="issuesResult"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Step 2: Fix All Issues Automatically</h3>
+        <button onclick="fixAllIssues()" style="background: #dc3545;">Fix All Issues (Auto)</button>
+        <div id="fixResult"></div>
+    </div>
+    
+    <div id="log"></div>
+    <button onclick="clearLog()" style="background: #6c757d;">Clear Log</button>
+
+    <!-- Firebase v8 SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
+            authDomain: "nestmate-167ed.firebaseapp.com",
+            projectId: "nestmate-167ed",
+            storageBucket: "nestmate-167ed.firebasestorage.app",
+            messagingSenderId: "865171535257",
+            appId: "1:865171535257:web:9944a48a952e99f55f0f08",
+            measurementId: "G-1DYR2RGY4G"
+        };
+
+        let auth, db;
+        let isFirebaseReady = false;
+        let separationIssues = [];
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logElement = document.getElementById('log');
+            const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
+            logElement.textContent += `[${timestamp}] ${prefix} ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(message);
+        }
+
+        function showResult(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="result ${type}">${message}</div>`;
+        }
+
+        function clearLog() {
+            document.getElementById('log').textContent = '';
+        }
+
+        // Initialize Firebase
+        async function initFirebase() {
+            try {
+                log('🔄 Initializing Firebase...');
+                
+                if (typeof firebase === 'undefined') {
+                    log('❌ Firebase SDK not loaded', 'error');
+                    return false;
+                }
+                
+                firebase.initializeApp(firebaseConfig);
+                auth = firebase.auth();
+                db = firebase.firestore();
+                
+                log('✅ Firebase initialized successfully', 'success');
+                isFirebaseReady = true;
+                return true;
+                
+            } catch (error) {
+                log('❌ Firebase initialization failed: ' + error.message, 'error');
+                return false;
+            }
+        }
+
+        // Find all separation issues
+        async function findAllSeparationIssues() {
+            if (!isFirebaseReady) {
+                showResult('issuesResult', 'Firebase not ready', 'error');
+                return;
+            }
+
+            try {
+                log('🔍 Finding all account separation issues...');
+                
+                const collections = ['userProfiles', 'accounts', 'SELLER USER ACCOUNTS'];
+                let allUsers = {};
+                separationIssues = [];
+                
+                // Get all users from all collections
+                for (const collectionName of collections) {
+                    try {
+                        log(`Getting users from ${collectionName}...`);
+                        const snapshot = await db.collection(collectionName).get();
+                        
+                        snapshot.forEach(doc => {
+                            const data = doc.data();
+                            const email = data.email;
+                            
+                            if (!allUsers[email]) {
+                                allUsers[email] = [];
+                            }
+                            allUsers[email].push({
+                                collection: collectionName,
+                                uid: doc.id,
+                                data: data
+                            });
+                        });
+                        
+                        log(`Found ${snapshot.size} users in ${collectionName}`, 'success');
+                    } catch (error) {
+                        log(`Error getting users from ${collectionName}: ${error.message}`, 'error');
+                    }
+                }
+                
+                // Find separation issues
+                for (const [email, accounts] of Object.entries(allUsers)) {
+                    const collections = accounts.map(acc => acc.collection);
+                    const hasRegular = collections.includes('userProfiles') || collections.includes('accounts');
+                    const hasSeller = collections.includes('SELLER USER ACCOUNTS');
+                    
+                    if (hasRegular && hasSeller) {
+                        separationIssues.push({
+                            email: email,
+                            collections: collections,
+                            accounts: accounts
+                        });
+                    }
+                }
+                
+                let result = `Account Separation Analysis:<br>`;
+                result += `Total unique emails: ${Object.keys(allUsers).length}<br>`;
+                result += `Separation issues found: ${separationIssues.length}<br><br>`;
+                
+                if (separationIssues.length > 0) {
+                    result += `<strong>⚠️ Accounts with separation issues:</strong><br>`;
+                    separationIssues.forEach((issue, index) => {
+                        result += `<div class="account-item">
+                            <div>
+                                <div class="account-email">${issue.email}</div>
+                                <div class="account-collections">Found in: ${issue.collections.join(', ')}</div>
+                            </div>
+                            <button class="fix-button" onclick="fixSingleAccount(${index})">Fix This Account</button>
+                        </div>`;
+                    });
+                    showResult('issuesResult', result, 'error');
+                } else {
+                    result += `✅ All accounts are properly separated!`;
+                    showResult('issuesResult', result, 'success');
+                }
+                
+            } catch (error) {
+                showResult('issuesResult', 'Error: ' + error.message, 'error');
+                log('Error finding separation issues: ' + error.message, 'error');
+            }
+        }
+
+        // Fix a single account
+        async function fixSingleAccount(index) {
+            if (!isFirebaseReady) {
+                return;
+            }
+
+            const issue = separationIssues[index];
+            if (!issue) {
+                log('Account not found', 'error');
+                return;
+            }
+
+            try {
+                log(`🔧 Fixing account: ${issue.email}`);
+                
+                // Check current state
+                const userProfile = await db.collection('userProfiles').doc(issue.accounts[0].uid).get();
+                const account = await db.collection('accounts').doc(issue.accounts[0].uid).get();
+                const sellerDoc = await db.collection('SELLER USER ACCOUNTS').doc(issue.accounts[0].uid).get();
+                
+                const hasRegular = userProfile.exists || account.exists;
+                const hasSeller = sellerDoc.exists;
+                
+                if (hasRegular && hasSeller) {
+                    // Ask user which type to keep
+                    const keepSeller = confirm(`${issue.email} exists in both collections. Click OK to keep as SELLER, Cancel to keep as REGULAR USER.`);
+                    
+                    if (keepSeller) {
+                        // Remove from regular collections
+                        if (userProfile.exists) {
+                            await db.collection('userProfiles').doc(issue.accounts[0].uid).delete();
+                            log(`Removed ${issue.email} from userProfiles`, 'success');
+                        }
+                        if (account.exists) {
+                            await db.collection('accounts').doc(issue.accounts[0].uid).delete();
+                            log(`Removed ${issue.email} from accounts`, 'success');
+                        }
+                        log(`✅ ${issue.email} converted to SELLER only`, 'success');
+                    } else {
+                        // Remove from seller collection
+                        if (sellerDoc.exists) {
+                            await db.collection('SELLER USER ACCOUNTS').doc(issue.accounts[0].uid).delete();
+                            log(`Removed ${issue.email} from SELLER USER ACCOUNTS`, 'success');
+                        }
+                        log(`✅ ${issue.email} converted to REGULAR USER only`, 'success');
+                    }
+                    
+                    // Refresh the issues list
+                    setTimeout(() => {
+                        findAllSeparationIssues();
+                    }, 1000);
+                }
+                
+            } catch (error) {
+                log(`Error fixing account ${issue.email}: ${error.message}`, 'error');
+            }
+        }
+
+        // Fix all issues automatically
+        async function fixAllIssues() {
+            if (!isFirebaseReady) {
+                showResult('fixResult', 'Firebase not ready', 'error');
+                return;
+            }
+
+            if (separationIssues.length === 0) {
+                showResult('fixResult', 'No separation issues found', 'success');
+                return;
+            }
+
+            try {
+                log(`🔧 Fixing ${separationIssues.length} accounts automatically...`);
+                
+                let fixedCount = 0;
+                
+                for (const issue of separationIssues) {
+                    try {
+                        log(`Fixing ${issue.email}...`);
+                        
+                        // Check current state
+                        const userProfile = await db.collection('userProfiles').doc(issue.accounts[0].uid).get();
+                        const account = await db.collection('accounts').doc(issue.accounts[0].uid).get();
+                        const sellerDoc = await db.collection('SELLER USER ACCOUNTS').doc(issue.accounts[0].uid).get();
+                        
+                        const hasRegular = userProfile.exists || account.exists;
+                        const hasSeller = sellerDoc.exists;
+                        
+                        if (hasRegular && hasSeller) {
+                            // Default strategy: Keep as SELLER (remove from regular collections)
+                            if (userProfile.exists) {
+                                await db.collection('userProfiles').doc(issue.accounts[0].uid).delete();
+                                log(`Removed ${issue.email} from userProfiles`, 'success');
+                            }
+                            if (account.exists) {
+                                await db.collection('accounts').doc(issue.accounts[0].uid).delete();
+                                log(`Removed ${issue.email} from accounts`, 'success');
+                            }
+                            log(`✅ ${issue.email} converted to SELLER only`, 'success');
+                            fixedCount++;
+                        }
+                    } catch (error) {
+                        log(`Error fixing ${issue.email}: ${error.message}`, 'error');
+                    }
+                }
+                
+                showResult('fixResult', `✅ Fixed ${fixedCount} accounts automatically. All accounts converted to SELLER only.`, 'success');
+                
+                // Refresh the issues list
+                setTimeout(() => {
+                    findAllSeparationIssues();
+                }, 1000);
+                
+            } catch (error) {
+                showResult('fixResult', 'Error: ' + error.message, 'error');
+                log('Error fixing all issues: ' + error.message, 'error');
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', async function() {
+            log('🚀 Page loaded');
+            await initFirebase();
+        });
+    </script>
+</body>
+</html>
+

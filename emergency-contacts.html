@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NestMate - Emergency Contacts</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+            <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
+            authDomain: "nestmate-167ed.firebaseapp.com",
+            projectId: "nestmate-167ed",
+            storageBucket: "nestmate-167ed.firebasestorage.app",
+            messagingSenderId: "865171535257",
+            appId: "1:865171535257:web:9944a48a952e99f55f0f08",
+            measurementId: "G-1DYR2RGY4G"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        window.firebaseAuth = auth;
+        window.firebaseDb = db;
+    </script>
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .back-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: white;
+            border-radius: var(--radius);
+            padding: 8px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            background: none;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            color: var(--secondary);
+            white-space: nowrap;
+        }
+
+        .nav-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .nav-tab:hover:not(.active) {
+            background: var(--light);
+        }
+
+        .content-section {
+            background: white;
+            border-radius: var(--radius);
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .section-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .section-subtitle {
+            color: var(--secondary);
+            font-size: 16px;
+        }
+
+        .emergency-banner {
+            background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%);
+            color: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .emergency-number {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .emergency-label {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .contacts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .contact-card {
+            background: var(--light);
+            border-radius: var(--radius);
+            padding: 24px;
+            border: 2px solid var(--border);
+            transition: var(--transition);
+        }
+
+        .contact-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .contact-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .contact-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .contact-info {
+            flex: 1;
+        }
+
+        .contact-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--dark);
+        }
+
+        .contact-role {
+            color: var(--secondary);
+            font-size: 14px;
+        }
+
+        .contact-details {
+            margin-bottom: 16px;
+        }
+
+        .contact-detail {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            color: var(--dark);
+        }
+
+        .contact-detail i {
+            color: var(--primary);
+            width: 16px;
+        }
+
+        .contact-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .quick-dial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .quick-dial-card {
+            background: var(--light);
+            border-radius: var(--radius);
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid var(--border);
+        }
+
+        .quick-dial-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .quick-dial-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            margin: 0 auto 16px;
+        }
+
+        .quick-dial-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--dark);
+        }
+
+        .quick-dial-number {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .quick-dial-description {
+            color: var(--secondary);
+            font-size: 14px;
+        }
+
+        .procedures-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+        }
+
+        .procedure-card {
+            background: var(--light);
+            border-radius: var(--radius);
+            padding: 24px;
+            border-left: 4px solid var(--danger);
+            transition: var(--transition);
+        }
+
+        .procedure-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .procedure-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .procedure-icon {
+            color: var(--danger);
+            font-size: 24px;
+        }
+
+        .procedure-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .procedure-steps {
+            list-style: none;
+            counter-reset: step-counter;
+        }
+
+        .procedure-step {
+            counter-increment: step-counter;
+            margin-bottom: 12px;
+            padding-left: 32px;
+            position: relative;
+            color: var(--dark);
+        }
+
+        .procedure-step::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 24px;
+            height: 24px;
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--radius);
+            padding: 32px;
+            max-width: 600px;
+            margin: 50px auto;
+            position: relative;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--secondary);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .nav-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .contacts-grid,
+            .quick-dial-grid,
+            .procedures-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div>
+                <h1><i class="fas fa-phone-alt"></i> Emergency Contacts</h1>
+                <p>Quick access to emergency services and important contacts</p>
+            </div>
+            <button class="back-btn" onclick="window.location.href='NestMate.html'">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </button>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showSection('emergency')">Emergency</button>
+            <button class="nav-tab" onclick="showSection('contacts')">Contacts</button>
+            <button class="nav-tab" onclick="showSection('procedures')">Procedures</button>
+            <button class="nav-tab" onclick="showSection('quick-dial')">Quick Dial</button>
+        </div>
+
+        <!-- Emergency Section -->
+        <div id="emergency" class="content-section">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div>
+                    <h2 class="section-title">Emergency Services</h2>
+                    <p class="section-subtitle">Immediate access to emergency services</p>
+                </div>
+            </div>
+
+            <!-- Emergency Banner -->
+            <div class="emergency-banner">
+                <div class="emergency-number">911</div>
+                <div class="emergency-label">Emergency Services</div>
+                <p style="margin-top: 16px; opacity: 0.8;">Call immediately for police, fire, or medical emergencies</p>
+            </div>
+
+            <!-- Quick Emergency Contacts -->
+            <div class="quick-dial-grid">
+                <div class="quick-dial-card" onclick="callNumber('911')">
+                    <div class="quick-dial-icon">
+                        <i class="fas fa-ambulance"></i>
+                    </div>
+                    <div class="quick-dial-name">Emergency</div>
+                    <div class="quick-dial-number">911</div>
+                    <div class="quick-dial-description">Police, Fire, Ambulance</div>
+                </div>
+
+                <div class="quick-dial-card" onclick="callNumber('1-800-GAS-LEAK')">
+                    <div class="quick-dial-icon">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <div class="quick-dial-name">Gas Emergency</div>
+                    <div class="quick-dial-number">1-800-GAS-LEAK</div>
+                    <div class="quick-dial-description">Gas Company Emergency</div>
+                </div>
+
+                <div class="quick-dial-card" onclick="callNumber('1-800-POWER')">
+                    <div class="quick-dial-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="quick-dial-name">Power Emergency</div>
+                    <div class="quick-dial-number">1-800-POWER</div>
+                    <div class="quick-dial-description">Electric Company</div>
+                </div>
+
+                <div class="quick-dial-card" onclick="callNumber('1-800-WATER')">
+                    <div class="quick-dial-icon">
+                        <i class="fas fa-tint"></i>
+                    </div>
+                    <div class="quick-dial-name">Water Emergency</div>
+                    <div class="quick-dial-number">1-800-WATER</div>
+                    <div class="quick-dial-description">Water Company</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contacts Section -->
+        <div id="contacts" class="content-section" style="display: none;">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-address-book"></i>
+                </div>
+                <div>
+                    <h2 class="section-title">Important Contacts</h2>
+                    <p class="section-subtitle">Manage your emergency and service contacts</p>
+                </div>
+            </div>
+
+            <div style="text-align: right; margin-bottom: 24px;">
+                <button class="btn btn-primary" onclick="openAddContactModal()">
+                    <i class="fas fa-plus"></i> Add Contact
+                </button>
+            </div>
+
+            <div class="contacts-grid">
+                <!-- Plumber -->
+                <div class="contact-card">
+                    <div class="contact-header">
+                        <div class="contact-avatar">
+                            <i class="fas fa-wrench"></i>
+                        </div>
+                        <div class="contact-info">
+                            <div class="contact-name">Mike's Plumbing</div>
+                            <div class="contact-role">Emergency Plumber</div>
+                        </div>
+                    </div>
+                    <div class="contact-details">
+                        <div class="contact-detail">
+                            <i class="fas fa-phone"></i>
+                            <span>(555) 123-4567</span>
+                        </div>
+                        <div class="contact-detail">
+                            <i class="fas fa-clock"></i>
+                            <span>24/7 Emergency Service</span>
+                        </div>
+                        <div class="contact-detail">
+                            <i class="fas fa-star"></i>
+                            <span>4.8/5 Rating</span>
+                        </div>
+                    </div>
+                    <div class="contact-actions">
+                        <button class="btn btn-success" onclick="callNumber('(555) 123-4567')">
+                            <i class="fas fa-phone"></i> Call
+                        </button>
+                        <button class="btn btn-outline" onclick="textNumber('(555) 123-4567')">
+                            <i class="fas fa-sms"></i> Text
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Electrician -->
+                <div class="contact-card">
+                    <div class="contact-header">
+                        <div class="contact-avatar">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="contact-info">
+                            <div class="contact-name">Spark Electric</div>
+                            <div class="contact-role">Emergency Electrician</div>
+                        </div>
+                    </div>
+                    <div class="contact-details">
+                        <div class="contact-detail">
+                            <i class="fas fa-phone"></i>
+                            <span>(555) 987-6543</span>
+                        </div>
+                        <div class="contact-detail">
+                            <i class="fas fa-clock"></i>
+                            <span>24/7 Emergency Service</span>
+                        </div>
+                        <div class="contact-detail">
+                            <i class="fas fa-star"></i>
+                            <span>4.9/5 Rating</span>
+                        </div>
+                    </div>
+                    <div class="contact-actions">
+                        <button class="btn btn-success" onclick="callNumber('(555) 987-6543')">
+                            <i class="fas fa-phone"></i> Call
+                        </button>
+                        <button class="btn btn-outline" onclick="textNumber('(555) 987-6543')">
+                            <i class="fas fa-sms"></i> Text
+                        </button>
+                    </div>
+                </div>
+
+                <!-- HVAC -->
+                <div class="contact-card">
+                    <div class="contact-header">
+                        <div class="contact-avatar">
+                            <i class="fas fa-thermometer-half"></i>
+                        </div>
+                        <div class="contact-info">
+                            <div class="contact-name">Cool Air HVAC</div>
+                            <div class="contact-role">HVAC Emergency</div>
+                        </div>
+                    </div>
+                    <div class="contact-details">
+                        <div class="contact-detail">
+                            <i class="fas fa-phone"></i>
+                            <span>(555) 456-7890</span>
+                        </div>
+                        <div class="contact-detail">
+                            <i class="fas fa-clock"></i>
+                            <span>24/7 Emergency Service</span>
+                        </div>
+                        <div class="contact-detail">
+                            <i class="fas fa-star"></i>
+                            <span>4.7/5 Rating</span>
+                        </div>
+                    </div>
+                    <div class="contact-actions">
+                        <button class="btn btn-success" onclick="callNumber('(555) 456-7890')">
+                            <i class="fas fa-phone"></i> Call
+                        </button>
+                        <button class="btn btn-outline" onclick="textNumber('(555) 456-7890')">
+                            <i class="fas fa-sms"></i> Text
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Locksmith -->
+                <div class="contact-card">
+                    <div class="contact-header">
+                        <div class="contact-avatar">
+                            <i class="fas fa-key"></i>
+                        </div>
+                        <div class="contact-info">
+                            <div class="contact-name">Quick Key Locksmith</div>
+                            <div class="contact-role">Emergency Locksmith</div>
+                        </div>
+                    </div>
+                    <div class="contact-details">
+                        <div class="contact-detail">
+                            <i class="fas fa-phone"></i>
+                            <span>(555) 321-0987</span>
+                        </div>
+                        <div class="contact-detail">
+                            <i class="fas fa-clock"></i>
+                            <span>24/7 Emergency Service</span>
+                        </div>
+                        <div class="contact-detail">
+                            <i class="fas fa-star"></i>
+                            <span>4.6/5 Rating</span>
+                        </div>
+                    </div>
+                    <div class="contact-actions">
+                        <button class="btn btn-success" onclick="callNumber('(555) 321-0987')">
+                            <i class="fas fa-phone"></i> Call
+                        </button>
+                        <button class="btn btn-outline" onclick="textNumber('(555) 321-0987')">
+                            <i class="fas fa-sms"></i> Text
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Procedures Section -->
+        <div id="procedures" class="content-section" style="display: none;">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+                <div>
+                    <h2 class="section-title">Emergency Procedures</h2>
+                    <p class="section-subtitle">Step-by-step procedures for common emergencies</p>
+                </div>
+            </div>
+
+            <div class="procedures-grid">
+                <!-- Fire Emergency -->
+                <div class="procedure-card">
+                    <div class="procedure-header">
+                        <i class="fas fa-fire procedure-icon"></i>
+                        <h3 class="procedure-title">Fire Emergency</h3>
+                    </div>
+                    <ol class="procedure-steps">
+                        <li class="procedure-step">Evacuate immediately - don't try to save belongings</li>
+                        <li class="procedure-step">Call 911 from outside the building</li>
+                        <li class="procedure-step">Stay low to avoid smoke inhalation</li>
+                        <li class="procedure-step">Meet at designated meeting point</li>
+                        <li class="procedure-step">Do not re-enter until cleared by firefighters</li>
+                    </ol>
+                </div>
+
+                <!-- Gas Leak -->
+                <div class="procedure-card">
+                    <div class="procedure-header">
+                        <i class="fas fa-fire procedure-icon"></i>
+                        <h3 class="procedure-title">Gas Leak</h3>
+                    </div>
+                    <ol class="procedure-steps">
+                        <li class="procedure-step">Evacuate immediately - don't use phones or electronics</li>
+                        <li class="procedure-step">Call gas company from outside: 1-800-GAS-LEAK</li>
+                        <li class="procedure-step">Do not turn on/off any electrical switches</li>
+                        <li class="procedure-step">Stay away from the building</li>
+                        <li class="procedure-step">Wait for gas company to arrive</li>
+                    </ol>
+                </div>
+
+                <!-- Water Leak -->
+                <div class="procedure-card">
+                    <div class="procedure-header">
+                        <i class="fas fa-tint procedure-icon"></i>
+                        <h3 class="procedure-title">Water Leak/Flood</h3>
+                    </div>
+                    <ol class="procedure-steps">
+                        <li class="procedure-step">Turn off main water valve immediately</li>
+                        <li class="procedure-step">Turn off electricity if water near electrical</li>
+                        <li class="procedure-step">Call emergency plumber</li>
+                        <li class="procedure-step">Document damage with photos</li>
+                        <li class="procedure-step">Contact insurance company</li>
+                    </ol>
+                </div>
+
+                <!-- Power Outage -->
+                <div class="procedure-card">
+                    <div class="procedure-header">
+                        <i class="fas fa-bolt procedure-icon"></i>
+                        <h3 class="procedure-title">Power Outage</h3>
+                    </div>
+                    <ol class="procedure-steps">
+                        <li class="procedure-step">Check if neighbors have power</li>
+                        <li class="procedure-step">Call power company: 1-800-POWER</li>
+                        <li class="procedure-step">Unplug sensitive electronics</li>
+                        <li class="procedure-step">Use flashlights, not candles</li>
+                        <li class="procedure-step">Keep refrigerator/freezer closed</li>
+                    </ol>
+                </div>
+
+                <!-- Medical Emergency -->
+                <div class="procedure-card">
+                    <div class="procedure-header">
+                        <i class="fas fa-heartbeat procedure-icon"></i>
+                        <h3 class="procedure-title">Medical Emergency</h3>
+                    </div>
+                    <ol class="procedure-steps">
+                        <li class="procedure-step">Call 911 immediately</li>
+                        <li class="procedure-step">Stay with the person</li>
+                        <li class="procedure-step">Follow dispatcher instructions</li>
+                        <li class="procedure-step">Gather medical information</li>
+                        <li class="procedure-step">Clear path for emergency vehicles</li>
+                    </ol>
+                </div>
+
+                <!-- Break-in -->
+                <div class="procedure-card">
+                    <div class="procedure-header">
+                        <i class="fas fa-shield-alt procedure-icon"></i>
+                        <h3 class="procedure-title">Break-in/Security</h3>
+                    </div>
+                    <ol class="procedure-steps">
+                        <li class="procedure-step">Call 911 immediately</li>
+                        <li class="procedure-step">Do not confront intruders</li>
+                        <li class="procedure-step">Stay in safe room if inside</li>
+                        <li class="procedure-step">Document everything for police</li>
+                        <li class="procedure-step">Contact insurance company</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Dial Section -->
+        <div id="quick-dial" class="content-section" style="display: none;">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-phone-square"></i>
+                </div>
+                <div>
+                    <h2 class="section-title">Quick Dial</h2>
+                    <p class="section-subtitle">One-tap calling for frequently used contacts</p>
+                </div>
+            </div>
+
+            <div class="quick-dial-grid">
+                <div class="quick-dial-card" onclick="callNumber('(555) 123-4567')">
+                    <div class="quick-dial-icon">
+                        <i class="fas fa-wrench"></i>
+                    </div>
+                    <div class="quick-dial-name">Plumber</div>
+                    <div class="quick-dial-number">(555) 123-4567</div>
+                    <div class="quick-dial-description">Mike's Plumbing</div>
+                </div>
+
+                <div class="quick-dial-card" onclick="callNumber('(555) 987-6543')">
+                    <div class="quick-dial-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="quick-dial-name">Electrician</div>
+                    <div class="quick-dial-number">(555) 987-6543</div>
+                    <div class="quick-dial-description">Spark Electric</div>
+                </div>
+
+                <div class="quick-dial-card" onclick="callNumber('(555) 456-7890')">
+                    <div class="quick-dial-icon">
+                        <i class="fas fa-thermometer-half"></i>
+                    </div>
+                    <div class="quick-dial-name">HVAC</div>
+                    <div class="quick-dial-number">(555) 456-7890</div>
+                    <div class="quick-dial-description">Cool Air HVAC</div>
+                </div>
+
+                <div class="quick-dial-card" onclick="callNumber('(555) 321-0987')">
+                    <div class="quick-dial-icon">
+                        <i class="fas fa-key"></i>
+                    </div>
+                    <div class="quick-dial-name">Locksmith</div>
+                    <div class="quick-dial-number">(555) 321-0987</div>
+                    <div class="quick-dial-description">Quick Key Locksmith</div>
+                </div>
+
+                <div class="quick-dial-card" onclick="callNumber('(555) 111-2222')">
+                    <div class="quick-dial-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <div class="quick-dial-name">Insurance</div>
+                    <div class="quick-dial-number">(555) 111-2222</div>
+                    <div class="quick-dial-description">Home Insurance</div>
+                </div>
+
+                <div class="quick-dial-card" onclick="callNumber('(555) 333-4444')">
+                    <div class="quick-dial-icon">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <div class="quick-dial-name">Handyman</div>
+                    <div class="quick-dial-number">(555) 333-4444</div>
+                    <div class="quick-dial-description">Fix-It-All Services</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Contact Modal -->
+    <div id="addContactModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('addContactModal')">&times;</button>
+            <h2>Add Emergency Contact</h2>
+            
+            <form id="addContactForm">
+                <div class="form-group">
+                    <label class="form-label">Contact Name</label>
+                    <input type="text" class="form-input" id="contactName" placeholder="Enter contact name" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Role/Service</label>
+                    <input type="text" class="form-input" id="contactRole" placeholder="e.g., Emergency Plumber" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Phone Number</label>
+                    <input type="tel" class="form-input" id="contactPhone" placeholder="(555) 123-4567" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Service Type</label>
+                    <select class="form-select" id="contactType" required>
+                        <option value="">Select service type...</option>
+                        <option value="plumber">Plumber</option>
+                        <option value="electrician">Electrician</option>
+                        <option value="hvac">HVAC</option>
+                        <option value="locksmith">Locksmith</option>
+                        <option value="handyman">Handyman</option>
+                        <option value="insurance">Insurance</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <input type="text" class="form-input" id="contactNotes" placeholder="Additional information">
+                </div>
+
+                <div class="contact-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save Contact
+                    </button>
+                    <button type="button" class="btn btn-outline" onclick="closeModal('addContactModal')">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentSection = 'emergency';
+
+        // Show section
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).style.display = 'block';
+            
+            // Update active tab
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            currentSection = sectionId;
+        }
+
+        // Call number
+        function callNumber(phoneNumber) {
+            if (confirm(`Call ${phoneNumber}?`)) {
+                window.location.href = `tel:${phoneNumber}`;
+            }
+        }
+
+        // Text number
+        function textNumber(phoneNumber) {
+            if (confirm(`Send text to ${phoneNumber}?`)) {
+                window.location.href = `sms:${phoneNumber}`;
+            }
+        }
+
+        // Open add contact modal
+        function openAddContactModal() {
+            document.getElementById('addContactModal').style.display = 'block';
+        }
+
+        // Close modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Handle form submission
+        document.getElementById('addContactForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('contactName').value,
+                role: document.getElementById('contactRole').value,
+                phone: document.getElementById('contactPhone').value,
+                type: document.getElementById('contactType').value,
+                notes: document.getElementById('contactNotes').value,
+                userId: window.firebaseAuth?.currentUser?.uid || 'anonymous',
+                timestamp: new Date().toISOString()
+            };
+
+            try {
+                // Save contact to Firebase
+                if (window.firebaseDb) {
+                    await addDoc(collection(window.firebaseDb, 'emergencyContacts'), formData);
+                }
+                
+                alert('Contact added successfully!');
+                closeModal('addContactModal');
+                document.getElementById('addContactForm').reset();
+            } catch (error) {
+                console.error('Error adding contact:', error);
+                alert('There was an error adding your contact. Please try again.');
+            }
+        });
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+
+        // Check authentication
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.firebaseAuth) {
+                window.firebaseAuth.onAuthStateChanged(function(user) {
+                    if (!user) {
+                        // Redirect to sign in if not authenticated
+                        window.location.href = 'signin.html';
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proposal Builder - NestMate Sales</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #06b6d4;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+            background: var(--primary);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .message.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .message.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+        .proposal-sections {
+            margin-bottom: 24px;
+        }
+
+        .section-item {
+            background: var(--light);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .section-item:hover {
+            background: #e2e8f0;
+        }
+
+        .section-item.selected {
+            background: var(--primary);
+            color: white;
+        }
+
+        .section-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .section-description {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .proposal-preview {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-top: 24px;
+        }
+
+        .proposal-header {
+            text-align: center;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .proposal-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .proposal-subtitle {
+            font-size: 16px;
+            color: var(--secondary);
+        }
+
+        .proposal-section {
+            margin-bottom: 24px;
+        }
+
+        .section-header {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .pricing-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+
+        .pricing-table th,
+        .pricing-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .pricing-table th {
+            background: var(--light);
+            font-weight: 600;
+        }
+
+        .total-row {
+            font-weight: 700;
+            background: var(--light);
+        }
+
+        .proposal-actions {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 2px solid var(--border);
+            text-align: center;
+        }
+
+        .proposals-list {
+            margin-top: 24px;
+        }
+
+        .proposal-item {
+            background: var(--light);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .proposal-info h4 {
+            margin-bottom: 4px;
+            color: var(--dark);
+        }
+
+        .proposal-info p {
+            color: var(--secondary);
+            font-size: 14px;
+        }
+
+        .proposal-actions-list {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .proposal-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-file-contract"></i>
+                Proposal Builder
+            </div>
+            <div>
+                <button class="btn btn-outline" onclick="window.location.href='Sales.html'">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Dashboard
+                </button>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        <div id="message" class="message"></div>
+
+        <!-- Proposal Templates -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div>
+                    <div class="card-title">Proposal Templates</div>
+                </div>
+            </div>
+            <div class="proposal-sections">
+                <div class="section-item" onclick="selectTemplate('basic')">
+                    <div class="section-title">Basic Proposal</div>
+                    <div class="section-description">Simple proposal with essential sections</div>
+                </div>
+                <div class="section-item" onclick="selectTemplate('detailed')">
+                    <div class="section-title">Detailed Proposal</div>
+                    <div class="section-description">Comprehensive proposal with all sections</div>
+                </div>
+                <div class="section-item" onclick="selectTemplate('enterprise')">
+                    <div class="section-title">Enterprise Proposal</div>
+                    <div class="section-description">Advanced proposal for large organizations</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create Proposal Form -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon">
+                    <i class="fas fa-plus"></i>
+                </div>
+                <div>
+                    <div class="card-title">Create New Proposal</div>
+                </div>
+            </div>
+            <form id="proposalForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Client Name *</label>
+                        <input type="text" class="form-input" id="clientName" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Contact Person *</label>
+                        <input type="text" class="form-input" id="contactPerson" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Client Email *</label>
+                        <input type="email" class="form-input" id="clientEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Proposal Date *</label>
+                        <input type="date" class="form-input" id="proposalDate" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Project Title *</label>
+                    <input type="text" class="form-input" id="projectTitle" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Project Description</label>
+                    <textarea class="form-textarea" id="projectDescription" rows="4" placeholder="Describe the project scope and objectives..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Services Included</label>
+                    <textarea class="form-textarea" id="servicesIncluded" rows="4" placeholder="List the services included in this proposal..."></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Project Timeline (weeks)</label>
+                        <input type="number" class="form-input" id="projectTimeline" min="1" max="52">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Total Investment</label>
+                        <input type="number" class="form-input" id="totalInvestment" placeholder="50000">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Terms & Conditions</label>
+                    <textarea class="form-textarea" id="termsConditions" rows="4" placeholder="Payment terms, deliverables, etc..."></textarea>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        Create Proposal
+                    </button>
+                    <button type="button" class="btn btn-outline" onclick="previewProposal()">
+                        <i class="fas fa-eye"></i>
+                        Preview
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Proposal Preview -->
+        <div id="proposalPreview" class="proposal-preview" style="display: none;">
+            <div class="proposal-header">
+                <div class="proposal-title">NestMate Solutions</div>
+                <div class="proposal-subtitle">Professional Proposal</div>
+            </div>
+            <div id="previewContent"></div>
+        </div>
+
+        <!-- Saved Proposals -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon">
+                    <i class="fas fa-folder"></i>
+                </div>
+                <div>
+                    <div class="card-title">Saved Proposals</div>
+                </div>
+            </div>
+            <div id="savedProposals" class="proposals-list">
+                <!-- Saved proposals will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedTemplate = '';
+        let savedProposals = [];
+
+        // Load saved proposals from localStorage
+        function loadSavedProposals() {
+            const saved = localStorage.getItem('savedProposals');
+            if (saved) {
+                savedProposals = JSON.parse(saved);
+            }
+            renderSavedProposals();
+        }
+
+        // Save proposals to localStorage
+        function saveProposals() {
+            localStorage.setItem('savedProposals', JSON.stringify(savedProposals));
+        }
+
+        // Select proposal template
+        function selectTemplate(templateType) {
+            selectedTemplate = templateType;
+            
+            // Update UI
+            document.querySelectorAll('.section-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            event.target.closest('.section-item').classList.add('selected');
+            
+            // Pre-fill form based on template
+            prefillTemplate(templateType);
+        }
+
+        // Pre-fill form based on template
+        function prefillTemplate(templateType) {
+            const templates = {
+                basic: {
+                    projectDescription: 'We will provide a comprehensive solution tailored to your specific needs, ensuring optimal results and maximum value for your investment.',
+                    servicesIncluded: '• Initial consultation and needs assessment\n• Solution design and implementation\n• Training and support\n• 30-day warranty period',
+                    projectTimeline: '4',
+                    totalInvestment: '25000',
+                    termsConditions: 'Payment: 50% upfront, 50% upon completion\nDeliverables: Project documentation and training materials\nWarranty: 30 days post-completion'
+                },
+                detailed: {
+                    projectDescription: 'Our comprehensive solution includes detailed analysis, custom development, thorough testing, and ongoing support to ensure your project\'s success.',
+                    servicesIncluded: '• Comprehensive needs analysis\n• Custom solution development\n• Quality assurance and testing\n• User training and documentation\n• 90-day support period\n• Performance optimization',
+                    projectTimeline: '8',
+                    totalInvestment: '50000',
+                    termsConditions: 'Payment: 30% upfront, 40% at milestone, 30% upon completion\nDeliverables: Complete documentation, training, and source code\nWarranty: 90 days post-completion'
+                },
+                enterprise: {
+                    projectDescription: 'Enterprise-grade solution with advanced features, scalability, security, and comprehensive support for large-scale implementation.',
+                    servicesIncluded: '• Enterprise architecture design\n• Advanced feature development\n• Security implementation\n• Performance optimization\n• Comprehensive training\n• 1-year support and maintenance\n• Scalability planning',
+                    projectTimeline: '12',
+                    totalInvestment: '100000',
+                    termsConditions: 'Payment: 25% upfront, 25% at each milestone, 25% upon completion\nDeliverables: Enterprise documentation, training, and ongoing support\nWarranty: 1 year post-completion'
+                }
+            };
+
+            const template = templates[templateType];
+            if (template) {
+                document.getElementById('projectDescription').value = template.projectDescription;
+                document.getElementById('servicesIncluded').value = template.servicesIncluded;
+                document.getElementById('projectTimeline').value = template.projectTimeline;
+                document.getElementById('totalInvestment').value = template.totalInvestment;
+                document.getElementById('termsConditions').value = template.termsConditions;
+            }
+        }
+
+        // Preview proposal
+        function previewProposal() {
+            const clientName = document.getElementById('clientName').value;
+            const contactPerson = document.getElementById('contactPerson').value;
+            const projectTitle = document.getElementById('projectTitle').value;
+            const projectDescription = document.getElementById('projectDescription').value;
+            const servicesIncluded = document.getElementById('servicesIncluded').value;
+            const projectTimeline = document.getElementById('projectTimeline').value;
+            const totalInvestment = document.getElementById('totalInvestment').value;
+            const termsConditions = document.getElementById('termsConditions').value;
+            const proposalDate = document.getElementById('proposalDate').value;
+
+            if (!clientName || !contactPerson || !projectTitle) {
+                showMessage('Please fill in the required fields first.', 'error');
+                return;
+            }
+
+            const previewContent = `
+                <div class="proposal-section">
+                    <div class="section-header">Client Information</div>
+                    <p><strong>Client:</strong> ${clientName}</p>
+                    <p><strong>Contact:</strong> ${contactPerson}</p>
+                    <p><strong>Date:</strong> ${proposalDate}</p>
+                </div>
+
+                <div class="proposal-section">
+                    <div class="section-header">Project Overview</div>
+                    <p><strong>Project:</strong> ${projectTitle}</p>
+                    <p>${projectDescription}</p>
+                </div>
+
+                <div class="proposal-section">
+                    <div class="section-header">Services Included</div>
+                    <div style="white-space: pre-line;">${servicesIncluded}</div>
+                </div>
+
+                <div class="proposal-section">
+                    <div class="section-header">Project Details</div>
+                    <table class="pricing-table">
+                        <tr>
+                            <th>Item</th>
+                            <th>Details</th>
+                        </tr>
+                        <tr>
+                            <td>Timeline</td>
+                            <td>${projectTimeline} weeks</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td>Total Investment</td>
+                            <td>$${parseInt(totalInvestment).toLocaleString()}</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="proposal-section">
+                    <div class="section-header">Terms & Conditions</div>
+                    <div style="white-space: pre-line;">${termsConditions}</div>
+                </div>
+
+                <div class="proposal-actions">
+                    <button class="btn btn-primary" onclick="acceptProposal()">
+                        <i class="fas fa-check"></i>
+                        Accept Proposal
+                    </button>
+                    <button class="btn btn-outline" onclick="requestChanges()">
+                        <i class="fas fa-edit"></i>
+                        Request Changes
+                    </button>
+                </div>
+            `;
+
+            document.getElementById('previewContent').innerHTML = previewContent;
+            document.getElementById('proposalPreview').style.display = 'block';
+        }
+
+        // Render saved proposals
+        function renderSavedProposals() {
+            const container = document.getElementById('savedProposals');
+            if (savedProposals.length === 0) {
+                container.innerHTML = '<p style="color: var(--secondary); text-align: center;">No saved proposals yet.</p>';
+                return;
+            }
+
+            container.innerHTML = savedProposals.map((proposal, index) => `
+                <div class="proposal-item">
+                    <div class="proposal-info">
+                        <h4>${proposal.projectTitle}</h4>
+                        <p>${proposal.clientName} • $${parseInt(proposal.totalInvestment).toLocaleString()} • ${proposal.proposalDate}</p>
+                    </div>
+                    <div class="proposal-actions-list">
+                        <button class="btn btn-primary btn-small" onclick="viewProposal(${index})">
+                            <i class="fas fa-eye"></i>
+                            View
+                        </button>
+                        <button class="btn btn-warning btn-small" onclick="editProposal(${index})">
+                            <i class="fas fa-edit"></i>
+                            Edit
+                        </button>
+                        <button class="btn btn-danger btn-small" onclick="deleteProposal(${index})">
+                            <i class="fas fa-trash"></i>
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // View proposal
+        function viewProposal(index) {
+            const proposal = savedProposals[index];
+            // Fill form with proposal data
+            Object.keys(proposal).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.value = proposal[key];
+                }
+            });
+            previewProposal();
+        }
+
+        // Edit proposal
+        function editProposal(index) {
+            const proposal = savedProposals[index];
+            // Fill form with proposal data for editing
+            Object.keys(proposal).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.value = proposal[key];
+                }
+            });
+            showMessage('Proposal loaded for editing. Make changes and save.', 'success');
+        }
+
+        // Delete proposal
+        function deleteProposal(index) {
+            const proposal = savedProposals[index];
+            if (confirm(`Are you sure you want to delete the proposal for ${proposal.clientName}?`)) {
+                savedProposals.splice(index, 1);
+                saveProposals();
+                renderSavedProposals();
+                showMessage('Proposal deleted successfully!', 'success');
+            }
+        }
+
+        // Accept proposal (demo function)
+        function acceptProposal() {
+            showMessage('Proposal accepted! This would trigger the next steps in your sales process.', 'success');
+        }
+
+        // Request changes (demo function)
+        function requestChanges() {
+            showMessage('Change request sent! The client will be notified.', 'success');
+        }
+
+        // Show message
+        function showMessage(text, type) {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = text;
+            messageEl.className = `message ${type}`;
+            messageEl.style.display = 'block';
+            
+            setTimeout(() => {
+                messageEl.style.display = 'none';
+            }, 5000);
+        }
+
+        // Handle form submission
+        document.getElementById('proposalForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newProposal = {
+                id: Date.now(),
+                clientName: document.getElementById('clientName').value,
+                contactPerson: document.getElementById('contactPerson').value,
+                clientEmail: document.getElementById('clientEmail').value,
+                proposalDate: document.getElementById('proposalDate').value,
+                projectTitle: document.getElementById('projectTitle').value,
+                projectDescription: document.getElementById('projectDescription').value,
+                servicesIncluded: document.getElementById('servicesIncluded').value,
+                projectTimeline: document.getElementById('projectTimeline').value,
+                totalInvestment: document.getElementById('totalInvestment').value,
+                termsConditions: document.getElementById('termsConditions').value,
+                template: selectedTemplate,
+                createdAt: new Date().toISOString()
+            };
+            
+            savedProposals.push(newProposal);
+            saveProposals();
+            renderSavedProposals();
+            
+            showMessage('Proposal created successfully!', 'success');
+            document.getElementById('proposalForm').reset();
+            document.getElementById('proposalPreview').style.display = 'none';
+            
+            // Clear template selection
+            selectedTemplate = '';
+            document.querySelectorAll('.section-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+        });
+
+        // Set default date to today
+        document.getElementById('proposalDate').value = new Date().toISOString().split('T')[0];
+
+        // Load saved proposals on page load
+        loadSavedProposals();
+    </script>
+</body>
+</html>
+
+

@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Details - NestMate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #06b6d4;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .logo i {
+            font-size: 28px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+        }
+
+        .card-icon.primary { background: var(--primary); }
+        .card-icon.success { background: var(--success); }
+        .card-icon.warning { background: var(--warning); }
+        .card-icon.danger { background: var(--danger); }
+        .card-icon.info { background: var(--info); }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .card-subtitle {
+            font-size: 14px;
+            color: var(--secondary);
+        }
+
+        /* Home Details Sections */
+        .home-sections {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+        }
+
+        .section-item {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .section-item:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+        .section-header {
+            background: var(--light);
+            padding: 16px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-toggle {
+            background: none;
+            border: none;
+            font-size: 16px;
+            color: var(--secondary);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .section-content {
+            padding: 20px;
+            display: none;
+        }
+
+        .section-content.active {
+            display: block;
+        }
+
+        .section-details {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .detail-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr auto;
+            gap: 16px;
+            align-items: center;
+            padding: 12px;
+            background: var(--light);
+            border-radius: var(--radius);
+        }
+
+        .detail-field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: var(--secondary);
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .detail-value {
+            font-size: 14px;
+            color: var(--dark);
+            font-weight: 500;
+        }
+
+        .detail-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-icon {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: var(--transition);
+        }
+
+        .action-icon.edit {
+            background: var(--info);
+            color: white;
+        }
+
+        .action-icon.delete {
+            background: var(--danger);
+            color: white;
+        }
+
+        .action-icon:hover {
+            transform: scale(1.1);
+        }
+
+        .add-detail-btn {
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            padding: 12px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+            margin-top: 8px;
+        }
+
+        .add-detail-btn:hover {
+            background: #059669;
+        }
+
+        .home-selector {
+            background: white;
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .home-dropdown {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .form-select {
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 14px;
+            background: white;
+            min-width: 200px;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 24px;
+            border-radius: var(--radius);
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .close {
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--secondary);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn-group .btn {
+            flex: 1;
+        }
+
+        @media (max-width: 768px) {
+            .home-sections {
+                grid-template-columns: 1fr;
+            }
+            
+            .detail-row {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-clipboard-list"></i>
+                Home Details & Specifications
+            </div>
+            <div>
+                <button class="btn btn-primary" onclick="addNewDetail()">
+                    <i class="fas fa-plus"></i>
+                    Add Detail
+                </button>
+                <a href="dashboard-pro.html" class="btn btn-outline">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Dashboard
+                </a>
+            </div>
+        </div>
+
+        <!-- Home Selector -->
+        <div class="home-selector">
+            <h3 style="margin-bottom: 16px;">Select Your Home</h3>
+            <div class="home-dropdown">
+                <select id="homeSelect" onchange="loadHomeData()" class="form-select">
+                    <option value="">Select a home...</option>
+                    <option value="home1">My First Home</option>
+                    <option value="home2">Vacation House</option>
+                </select>
+                <button class="btn btn-success" onclick="addNewHome()">
+                    <i class="fas fa-plus"></i>
+                    Add Home
+                </button>
+            </div>
+        </div>
+
+        <!-- Comprehensive Home Details -->
+        <div class="home-sections">
+            <!-- Roof Section -->
+            <div class="section-item">
+                <div class="section-header" onclick="toggleSection('roof')">
+                    <h3><i class="fas fa-home"></i> Roof & Attic</h3>
+                    <button class="section-toggle" id="roof-toggle">▼</button>
+                </div>
+                <div class="section-content" id="roof-content">
+                    <div class="section-details">
+                        <div class="detail-row">
+                            <div class="detail-field">
+                                <div class="detail-label">Roof Type</div>
+                                <div class="detail-value">Asphalt Shingle</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-label">Installation Date</div>
+                                <div class="detail-value">2020-05-15</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-label">Warranty Expiry</div>
+                                <div class="detail-value">2030-05-15</div>
+                            </div>
+                            <div class="detail-actions">
+                                <button class="action-icon edit" onclick="editDetail('roof')"><i class="fas fa-edit"></i></button>
+                                <button class="action-icon delete" onclick="deleteDetail('roof')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-field">
+                                <div class="detail-label">Attic Insulation</div>
+                                <div class="detail-value">R-38 Fiberglass</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-label">Ventilation</div>
+                                <div class="detail-value">Ridge & Soffit Vents</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-label">Last Inspection</div>
+                                <div class="detail-value">2024-03-10</div>
+                            </div>
+                            <div class="detail-actions">
+                                <button class="action-icon edit" onclick="editDetail('roof')"><i class="fas fa-edit"></i></button>
+                                <button class="action-icon delete" onclick="deleteDetail('roof')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <button class="add-detail-btn" onclick="addDetail('roof')">
+                            <i class="fas fa-plus"></i> Add Roof Detail
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exterior Section -->
+            <div class="section-item">
+                <div class="section-header" onclick="toggleSection('exterior')">
+                    <h3><i class="fas fa-paint-brush"></i> Exterior & Siding</h3>
+                    <button class="section-toggle" id="exterior-toggle">▼</button>
+                </div>
+                <div class="section-content" id="exterior-content">
+                    <div class="section-details">
+                        <div class="detail-row">
+                            <div class="detail-field">
+                                <div class="detail-label">Siding Material</div>
+                                <div class="detail-value">Vinyl</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-label">Color</div>
+                                <div class="detail-value">Beige</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-label">Last Paint Date</div>
+                                <div class="detail-value">2022-08-20</div>
+                            </div>
+                            <div class="detail-actions">
+                                <button class="action-icon edit" onclick="editDetail('exterior')"><i class="fas fa-edit"></i></button>
+                                <button class="action-icon delete" onclick="deleteDetail('exterior')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-field">
+                                <div class="detail-label">Gutters</div>
+                                <div class="detail-value">Aluminum, 6"</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-label">Downspouts</div>
+                                <div class="detail-value">4 total</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-label">Last Cleaning</div>
+                                <div class="detail-value">2024-04-15</div>
+                            </div>
+                            <div class="detail-actions">
+                                <button class="action-icon edit" onclick="editDetail('exterior')"><i class="fas fa-edit"></i></button>
+                                <button class="action-icon delete" onclick="deleteDetail('exterior')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <button class="add-detail-btn" onclick="addDetail('exterior')">
+                            <i class="fas fa-plus"></i> Add Exterior Detail
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HVAC Section -->
+            <div class="section-item">
+                <div class="section-header" onclick="toggleSection('hvac')">
+                    <h3><i class="fas fa-thermometer-half"></i> HVAC & Climate Control</h3>
+                    <button class="section-toggle" id="hvac-toggle">▼</button>
+                </div>
+                <div class="section-content" id="hvac-content">
+                    <div class="section-details">
+                        <div class="detail-row">
+                            <div class="detail-field">
+                                <div class="detail-label">Furnace Type</div>
+                                <div class="detail-value">Gas Forced Air</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-label">Age</div>
+                                <div class="detail-value">8 years</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-label">Last Service</div>
+                                <div class="detail-value">2024-01-15</div>
+                            </div>
+                            <div class="detail-actions">
+                                <button class="action-icon edit" onclick="editDetail('hvac')"><i class="fas fa-edit"></i></button>
+                                <button class="action-icon delete" onclick="deleteDetail('hvac')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-field">
+                                <div class="detail-label">AC Unit</div>
+                                <div class="detail-value">Central Air, 3.5 Ton</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-label">SEER Rating</div>
+                                <div class="detail-value">16</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-label">Filter Type</div>
+                                <div class="detail-value">MERV 8</div>
+                            </div>
+                            <div class="detail-actions">
+                                <button class="action-icon edit" onclick="editDetail('hvac')"><i class="fas fa-edit"></i></button>
+                                <button class="action-icon delete" onclick="deleteDetail('hvac')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <button class="add-detail-btn" onclick="addDetail('hvac')">
+                            <i class="fas fa-plus"></i> Add HVAC Detail
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Plumbing Section -->
+            <div class="section-item">
+                <div class="section-header" onclick="toggleSection('plumbing')">
+                    <h3><i class="fas fa-tint"></i> Plumbing & Water Systems</h3>
+                    <button class="section-toggle" id="plumbing-toggle">▼</button>
+                </div>
+                <div class="section-content" id="plumbing-content">
+                    <div class="section-details">
+                        <div class="detail-row">
+                            <div class="detail-field">
+                                <div class="detail-label">Water Heater</div>
+                                <div class="detail-value">Gas, 50 Gallon</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-label">Age</div>
+                                <div class="detail-value">6 years</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-label">Last Flush</div>
+                                <div class="detail-value">2024-02-20</div>
+                            </div>
+                            <div class="detail-actions">
+                                <button class="action-icon edit" onclick="editDetail('plumbing')"><i class="fas fa-edit"></i></button>
+                                <button class="action-icon delete" onclick="deleteDetail('plumbing')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-field">
+                                <div class="detail-label">Main Water Line</div>
+                                <div class="detail-value">Copper, 3/4"</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-label">Water Pressure</div>
+                                <div class="detail-value">45 PSI</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-label">Last Inspection</div>
+                                <div class="detail-value">2024-01-10</div>
+                            </div>
+                            <div class="detail-actions">
+                                <button class="action-icon edit" onclick="editDetail('plumbing')"><i class="fas fa-edit"></i></button>
+                                <button class="action-icon delete" onclick="deleteDetail('plumbing')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <button class="add-detail-btn" onclick="addDetail('plumbing')">
+                            <i class="fas fa-plus"></i> Add Plumbing Detail
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Electrical Section -->
+            <div class="section-item">
+                <div class="section-header" onclick="toggleSection('electrical')">
+                    <h3><i class="fas fa-bolt"></i> Electrical Systems</h3>
+                    <button class="section-toggle" id="electrical-toggle">▼</button>
+                </div>
+                <div class="section-content" id="electrical-content">
+                    <div class="section-details">
+                        <div class="detail-row">
+                            <div class="detail-field">
+                                <div class="detail-label">Main Panel</div>
+                                <div class="detail-value">200 Amp</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-label">Circuit Breakers</div>
+                                <div class="detail-value">24 slots</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-label">Last Inspection</div>
+                                <div class="detail-value">2023-11-15</div>
+                            </div>
+                            <div class="detail-actions">
+                                <button class="action-icon edit" onclick="editDetail('electrical')"><i class="fas fa-edit"></i></button>
+                                <button class="action-icon delete" onclick="deleteDetail('electrical')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-field">
+                                <div class="detail-label">Wiring Type</div>
+                                <div class="detail-value">Copper</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-label">GFCI Outlets</div>
+                                <div class="detail-value">8 total</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-label">Smoke Detectors</div>
+                                <div class="detail-value">6 total</div>
+                            </div>
+                            <div class="detail-actions">
+                                <button class="action-icon edit" onclick="editDetail('electrical')"><i class="fas fa-edit"></i></button>
+                                <button class="action-icon delete" onclick="deleteDetail('electrical')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <button class="add-detail-btn" onclick="addDetail('electrical')">
+                            <i class="fas fa-plus"></i> Add Electrical Detail
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interior Section -->
+            <div class="section-item">
+                <div class="section-header" onclick="toggleSection('interior')">
+                    <h3><i class="fas fa-couch"></i> Interior & Finishes</h3>
+                    <button class="section-toggle" id="interior-toggle">▼</button>
+                </div>
+                <div class="section-content" id="interior-content">
+                    <div class="section-details">
+                        <div class="detail-row">
+                            <div class="detail-field">
+                                <div class="detail-label">Flooring</div>
+                                <div class="detail-value">Hardwood & Carpet</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-label">Paint</div>
+                                <div class="detail-value">Eggshell Finish</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-label">Last Update</div>
+                                <div class="detail-value">2023-06-20</div>
+                            </div>
+                            <div class="detail-actions">
+                                <button class="action-icon edit" onclick="editDetail('interior')"><i class="fas fa-edit"></i></button>
+                                <button class="action-icon delete" onclick="deleteDetail('interior')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <button class="add-detail-btn" onclick="addDetail('interior')">
+                            <i class="fas fa-plus"></i> Add Interior Detail
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Foundation Section -->
+            <div class="section-item">
+                <div class="section-header" onclick="toggleSection('foundation')">
+                    <h3><i class="fas fa-building"></i> Foundation & Structure</h3>
+                    <button class="section-toggle" id="foundation-toggle">▼</button>
+                </div>
+                <div class="section-content" id="foundation-content">
+                    <div class="section-details">
+                        <div class="detail-row">
+                            <div class="detail-field">
+                                <div class="detail-label">Foundation Type</div>
+                                <div class="detail-value">Concrete Slab</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-label">Age</div>
+                                <div class="detail-value">15 years</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-label">Last Inspection</div>
+                                <div class="detail-value">2023-09-10</div>
+                            </div>
+                            <div class="detail-actions">
+                                <button class="action-icon edit" onclick="editDetail('foundation')"><i class="fas fa-edit"></i></button>
+                                <button class="action-icon delete" onclick="deleteDetail('foundation')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <button class="add-detail-btn" onclick="addDetail('foundation')">
+                            <i class="fas fa-plus"></i> Add Foundation Detail
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Garage Section -->
+            <div class="section-item">
+                <div class="section-header" onclick="toggleSection('garage')">
+                    <h3><i class="fas fa-car"></i> Garage & Storage</h3>
+                    <button class="section-toggle" id="garage-toggle">▼</button>
+                </div>
+                <div class="section-content" id="garage-content">
+                    <div class="section-details">
+                        <div class="detail-row">
+                            <div class="detail-field">
+                                <div class="detail-label">Garage Type</div>
+                                <div class="detail-value">2-Car Attached</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-label">Door Type</div>
+                                <div class="detail-value">Automatic</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-label">Last Service</div>
+                                <div class="detail-value">2024-01-05</div>
+                            </div>
+                            <div class="detail-actions">
+                                <button class="action-icon edit" onclick="editDetail('garage')"><i class="fas fa-edit"></i></button>
+                                <button class="action-icon delete" onclick="deleteDetail('garage')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <button class="add-detail-btn" onclick="addDetail('garage')">
+                            <i class="fas fa-plus"></i> Add Garage Detail
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Windows Section -->
+            <div class="section-item">
+                <div class="section-header" onclick="toggleSection('windows')">
+                    <h3><i class="fas fa-window-maximize"></i> Windows & Doors</h3>
+                    <button class="section-toggle" id="windows-toggle">▼</button>
+                </div>
+                <div class="section-content" id="windows-content">
+                    <div class="section-details">
+                        <div class="detail-row">
+                            <div class="detail-field">
+                                <div class="detail-label">Window Type</div>
+                                <div class="detail-value">Double Pane Vinyl</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-label">Total Windows</div>
+                                <div class="detail-value">12</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-label">Last Cleaning</div>
+                                <div class="detail-value">2024-03-15</div>
+                            </div>
+                            <div class="detail-actions">
+                                <button class="action-icon edit" onclick="editDetail('windows')"><i class="fas fa-edit"></i></button>
+                                <button class="action-icon delete" onclick="deleteDetail('windows')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <button class="add-detail-btn" onclick="addDetail('windows')">
+                            <i class="fas fa-plus"></i> Add Window Detail
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Outdoor Section -->
+            <div class="section-item">
+                <div class="section-header" onclick="toggleSection('outdoor')">
+                    <h3><i class="fas fa-tree"></i> Outdoor & Patio</h3>
+                    <button class="section-toggle" id="outdoor-toggle">▼</button>
+                </div>
+                <div class="section-content" id="outdoor-content">
+                    <div class="section-details">
+                        <div class="detail-row">
+                            <div class="detail-field">
+                                <div class="detail-label">Deck/Patio</div>
+                                <div class="detail-value">Wood Deck, 200 sq ft</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-label">Last Stain</div>
+                                <div class="detail-value">2023-08-15</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-label">Outdoor Furniture</div>
+                                <div class="detail-value">Table & 6 Chairs</div>
+                            </div>
+                            <div class="detail-actions">
+                                <button class="action-icon edit" onclick="editDetail('outdoor')"><i class="fas fa-edit"></i></button>
+                                <button class="action-icon delete" onclick="deleteDetail('outdoor')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <button class="add-detail-btn" onclick="addDetail('outdoor')">
+                            <i class="fas fa-plus"></i> Add Outdoor Detail
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Landscaping Section -->
+            <div class="section-item">
+                <div class="section-header" onclick="toggleSection('landscaping')">
+                    <h3><i class="fas fa-seedling"></i> Landscaping & Garden</h3>
+                    <button class="section-toggle" id="landscaping-toggle">▼</button>
+                </div>
+                <div class="section-content" id="landscaping-content">
+                    <div class="section-details">
+                        <div class="detail-row">
+                            <div class="detail-field">
+                                <div class="detail-label">Lawn Type</div>
+                                <div class="detail-value">Kentucky Bluegrass</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-label">Last Fertilizer</div>
+                                <div class="detail-value">2024-04-01</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-label">Garden Beds</div>
+                                <div class="detail-value">3 total</div>
+                            </div>
+                            <div class="detail-actions">
+                                <button class="action-icon edit" onclick="editDetail('landscaping')"><i class="fas fa-edit"></i></button>
+                                <button class="action-icon delete" onclick="deleteDetail('landscaping')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <button class="add-detail-btn" onclick="addDetail('landscaping')">
+                            <i class="fas fa-plus"></i> Add Landscaping Detail
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Irrigation Section -->
+            <div class="section-item">
+                <div class="section-header" onclick="toggleSection('irrigation')">
+                    <h3><i class="fas fa-tint"></i> Irrigation & Sprinklers</h3>
+                    <button class="section-toggle" id="irrigation-toggle">▼</button>
+                </div>
+                <div class="section-content" id="irrigation-content">
+                    <div class="section-details">
+                        <div class="detail-row">
+                            <div class="detail-field">
+                                <div class="detail-label">System Type</div>
+                                <div class="detail-value">Automatic Sprinkler</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-label">Zones</div>
+                                <div class="detail-value">6 zones</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-label">Last Service</div>
+                                <div class="detail-value">2024-03-20</div>
+                            </div>
+                            <div class="detail-actions">
+                                <button class="action-icon edit" onclick="editDetail('irrigation')"><i class="fas fa-edit"></i></button>
+                                <button class="action-icon delete" onclick="deleteDetail('irrigation')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <button class="add-detail-btn" onclick="addDetail('irrigation')">
+                            <i class="fas fa-plus"></i> Add Irrigation Detail
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fencing Section -->
+            <div class="section-item">
+                <div class="section-header" onclick="toggleSection('fencing')">
+                    <h3><i class="fas fa-border-all"></i> Fencing & Gates</h3>
+                    <button class="section-toggle" id="fencing-toggle">▼</button>
+                </div>
+                <div class="section-content" id="fencing-content">
+                    <div class="section-details">
+                        <div class="detail-row">
+                            <div class="detail-field">
+                                <div class="detail-label">Fence Type</div>
+                                <div class="detail-value">Wood Privacy</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-label">Height</div>
+                                <div class="detail-value">6 feet</div>
+                            </div>
+                            <div class="detail-field">
+                                <div class="detail-label">Last Repair</div>
+                                <div class="detail-value">2023-10-15</div>
+                            </div>
+                            <div class="detail-actions">
+                                <button class="action-icon edit" onclick="editDetail('fencing')"><i class="fas fa-edit"></i></button>
+                                <button class="action-icon delete" onclick="deleteDetail('fencing')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <button class="add-detail-btn" onclick="addDetail('fencing')">
+                            <i class="fas fa-plus"></i> Add Fencing Detail
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Detail Modal -->
+        <div id="addDetailModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Add New Detail</h3>
+                    <span class="close" onclick="closeModal('addDetailModal')">&times;</span>
+                </div>
+                <form id="addDetailForm">
+                    <div class="form-group">
+                        <label class="form-label">Section *</label>
+                        <select class="form-select" id="detailSection" required>
+                            <option value="">Select Section</option>
+                            <option value="roof">Roof & Attic</option>
+                            <option value="exterior">Exterior & Siding</option>
+                            <option value="hvac">HVAC & Climate Control</option>
+                            <option value="plumbing">Plumbing & Water Systems</option>
+                            <option value="electrical">Electrical Systems</option>
+                            <option value="interior">Interior & Finishes</option>
+                            <option value="foundation">Foundation & Structure</option>
+                            <option value="garage">Garage & Storage</option>
+                            <option value="windows">Windows & Doors</option>
+                            <option value="outdoor">Outdoor & Patio</option>
+                            <option value="landscaping">Landscaping & Garden</option>
+                            <option value="irrigation">Irrigation & Sprinklers</option>
+                            <option value="fencing">Fencing & Gates</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Detail Label *</label>
+                            <input type="text" class="form-input" id="detailLabel" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Detail Value *</label>
+                            <input type="text" class="form-input" id="detailValue" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Additional Label</label>
+                            <input type="text" class="form-input" id="detailLabel2">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Additional Value</label>
+                            <input type="text" class="form-input" id="detailValue2">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Third Label</label>
+                            <input type="text" class="form-input" id="detailLabel3">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Third Value</label>
+                            <input type="text" class="form-input" id="detailValue3">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-textarea" id="detailNotes" placeholder="Additional notes about this detail..."></textarea>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            Add Detail
+                        </button>
+                        <button type="button" class="btn btn-outline" onclick="closeModal('addDetailModal')">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Edit Detail Modal -->
+        <div id="editDetailModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Edit Detail</h3>
+                    <span class="close" onclick="closeModal('editDetailModal')">&times;</span>
+                </div>
+                <form id="editDetailForm">
+                    <div class="form-group">
+                        <label class="form-label">Section *</label>
+                        <select class="form-select" id="editDetailSection" required>
+                            <option value="">Select Section</option>
+                            <option value="roof">Roof & Attic</option>
+                            <option value="exterior">Exterior & Siding</option>
+                            <option value="hvac">HVAC & Climate Control</option>
+                            <option value="plumbing">Plumbing & Water Systems</option>
+                            <option value="electrical">Electrical Systems</option>
+                            <option value="interior">Interior & Finishes</option>
+                            <option value="foundation">Foundation & Structure</option>
+                            <option value="garage">Garage & Storage</option>
+                            <option value="windows">Windows & Doors</option>
+                            <option value="outdoor">Outdoor & Patio</option>
+                            <option value="landscaping">Landscaping & Garden</option>
+                            <option value="irrigation">Irrigation & Sprinklers</option>
+                            <option value="fencing">Fencing & Gates</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Detail Label *</label>
+                            <input type="text" class="form-input" id="editDetailLabel" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Detail Value *</label>
+                            <input type="text" class="form-input" id="editDetailValue" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Additional Label</label>
+                            <input type="text" class="form-input" id="editDetailLabel2">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Additional Value</label>
+                            <input type="text" class="form-input" id="editDetailValue2">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Third Label</label>
+                            <input type="text" class="form-input" id="editDetailLabel3">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Third Value</label>
+                            <input type="text" class="form-input" id="editDetailValue3">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-textarea" id="editDetailNotes" placeholder="Additional notes about this detail..."></textarea>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            Save Changes
+                        </button>
+                        <button type="button" class="btn btn-outline" onclick="closeModal('editDetailModal')">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Add Home Modal -->
+        <div id="addHomeModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Add New Home</h3>
+                    <span class="close" onclick="closeModal('addHomeModal')">&times;</span>
+                </div>
+                <form id="addHomeForm">
+                    <div class="form-group">
+                        <label class="form-label">Home Name *</label>
+                        <input type="text" class="form-input" id="homeName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Address *</label>
+                        <input type="text" class="form-input" id="homeAddress" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">City *</label>
+                            <input type="text" class="form-input" id="homeCity" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">State *</label>
+                            <input type="text" class="form-input" id="homeState" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">ZIP Code *</label>
+                            <input type="text" class="form-input" id="homeZip" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Year Built</label>
+                            <input type="number" class="form-input" id="homeYearBuilt" min="1800" max="2024">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Square Feet</label>
+                            <input type="number" class="form-input" id="homeSquareFeet" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Property Type</label>
+                            <select class="form-select" id="homePropertyType">
+                                <option value="single-family">Single Family</option>
+                                <option value="condo">Condominium</option>
+                                <option value="townhouse">Townhouse</option>
+                                <option value="apartment">Apartment</option>
+                                <option value="vacation">Vacation Home</option>
+                                <option value="rental">Rental Property</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            Add Home
+                        </button>
+                        <button type="button" class="btn btn-outline" onclick="closeModal('addHomeModal')">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentEditingDetail = null;
+        let currentEditingSection = null;
+        let currentSelectedHome = null;
+        let homeDetailsData = {};
+
+        // Sample home data with different details for each home
+        const sampleHomeData = {
+            'home1': {
+                name: 'My First Home',
+                address: '123 Main St, City, State',
+                details: {
+                    roof: [
+                        { label1: 'Roof Type', value1: 'Asphalt Shingle', label2: 'Installation Date', value2: '2020-05-15', label3: 'Warranty Expiry', value3: '2030-05-15' },
+                        { label1: 'Attic Insulation', value1: 'R-38 Fiberglass', label2: 'Ventilation', value2: 'Ridge & Soffit Vents', label3: 'Last Inspection', value3: '2024-03-10' }
+                    ],
+                    exterior: [
+                        { label1: 'Siding Material', value1: 'Vinyl', label2: 'Color', value2: 'Beige', label3: 'Last Paint Date', value3: '2022-08-20' },
+                        { label1: 'Gutters', value1: 'Aluminum, 6"', label2: 'Downspouts', value2: '4 total', label3: 'Last Cleaning', value3: '2024-04-15' }
+                    ],
+                    hvac: [
+                        { label1: 'Furnace Type', value1: 'Gas Forced Air', label2: 'Age', value2: '8 years', label3: 'Last Service', value3: '2024-01-15' },
+                        { label1: 'AC Unit', value1: 'Central Air, 3.5 Ton', label2: 'SEER Rating', value2: '16', label3: 'Filter Type', value3: 'MERV 8' }
+                    ],
+                    plumbing: [
+                        { label1: 'Water Heater', value1: 'Gas, 50 Gallon', label2: 'Age', value2: '6 years', label3: 'Last Flush', value3: '2024-02-20' },
+                        { label1: 'Main Water Line', value1: 'Copper, 3/4"', label2: 'Water Pressure', value2: '45 PSI', label3: 'Last Inspection', value3: '2024-01-10' }
+                    ],
+                    electrical: [
+                        { label1: 'Main Panel', value1: '200 Amp', label2: 'Circuit Breakers', value2: '24 slots', label3: 'Last Inspection', value3: '2023-11-15' },
+                        { label1: 'Wiring Type', value1: 'Copper', label2: 'GFCI Outlets', value2: '8 total', label3: 'Smoke Detectors', value3: '6 total' }
+                    ],
+                    interior: [
+                        { label1: 'Flooring', value1: 'Hardwood & Carpet', label2: 'Paint', value2: 'Eggshell Finish', label3: 'Last Update', value3: '2023-06-20' }
+                    ],
+                    foundation: [
+                        { label1: 'Foundation Type', value1: 'Concrete Slab', label2: 'Age', value2: '15 years', label3: 'Last Inspection', value3: '2023-09-10' }
+                    ],
+                    garage: [
+                        { label1: 'Garage Type', value1: '2-Car Attached', label2: 'Door Type', value2: 'Automatic', label3: 'Last Service', value3: '2024-01-05' }
+                    ],
+                    windows: [
+                        { label1: 'Window Type', value1: 'Double Pane Vinyl', label2: 'Total Windows', value2: '12', label3: 'Last Cleaning', value3: '2024-03-15' }
+                    ],
+                    outdoor: [
+                        { label1: 'Deck/Patio', value1: 'Wood Deck, 200 sq ft', label2: 'Last Stain', value2: '2023-08-15', label3: 'Outdoor Furniture', value3: 'Table & 6 Chairs' }
+                    ],
+                    landscaping: [
+                        { label1: 'Lawn Type', value1: 'Kentucky Bluegrass', label2: 'Last Fertilizer', value2: '2024-04-01', label3: 'Garden Beds', value3: '3 total' }
+                    ],
+                    irrigation: [
+                        { label1: 'System Type', value1: 'Automatic Sprinkler', label2: 'Zones', value2: '6 zones', label3: 'Last Service', value3: '2024-03-20' }
+                    ],
+                    fencing: [
+                        { label1: 'Fence Type', value1: 'Wood Privacy', label2: 'Height', value2: '6 feet', label3: 'Last Repair', value3: '2023-10-15' }
+                    ]
+                }
+            },
+            'home2': {
+                name: 'Vacation House',
+                address: '456 Beach Blvd, Coastal City, State',
+                details: {
+                    roof: [
+                        { label1: 'Roof Type', value1: 'Metal Roof', label2: 'Installation Date', value2: '2018-03-20', label3: 'Warranty Expiry', value3: '2028-03-20' },
+                        { label1: 'Attic Insulation', value1: 'R-30 Fiberglass', label2: 'Ventilation', value2: 'Gable Vents', label3: 'Last Inspection', value3: '2024-02-15' }
+                    ],
+                    exterior: [
+                        { label1: 'Siding Material', value1: 'Cedar Shake', label2: 'Color', value2: 'Natural Wood', label3: 'Last Treatment', value3: '2023-09-10' },
+                        { label1: 'Gutters', value1: 'Copper, 5"', label2: 'Downspouts', value2: '3 total', label3: 'Last Cleaning', value3: '2024-03-20' }
+                    ],
+                    hvac: [
+                        { label1: 'Furnace Type', value1: 'Heat Pump', label2: 'Age', value2: '5 years', label3: 'Last Service', value3: '2024-02-10' },
+                        { label1: 'AC Unit', value1: 'Split System, 2.5 Ton', label2: 'SEER Rating', value2: '18', label3: 'Filter Type', value3: 'MERV 11' }
+                    ],
+                    plumbing: [
+                        { label1: 'Water Heater', value1: 'Electric, 40 Gallon', label2: 'Age', value2: '4 years', label3: 'Last Flush', value3: '2024-01-25' },
+                        { label1: 'Main Water Line', value1: 'PEX, 1"', label2: 'Water Pressure', value2: '50 PSI', label3: 'Last Inspection', value3: '2023-12-15' }
+                    ],
+                    electrical: [
+                        { label1: 'Main Panel', value1: '150 Amp', label2: 'Circuit Breakers', value2: '20 slots', label3: 'Last Inspection', value3: '2023-10-20' },
+                        { label1: 'Wiring Type', value1: 'Copper', label2: 'GFCI Outlets', value2: '6 total', label3: 'Smoke Detectors', value3: '4 total' }
+                    ],
+                    interior: [
+                        { label1: 'Flooring', value1: 'Tile & Laminate', label2: 'Paint', value2: 'Semi-Gloss', label3: 'Last Update', value3: '2023-04-15' }
+                    ],
+                    foundation: [
+                        { label1: 'Foundation Type', value1: 'Crawl Space', label2: 'Age', value2: '12 years', label3: 'Last Inspection', value3: '2023-08-05' }
+                    ],
+                    garage: [
+                        { label1: 'Garage Type', value1: '1-Car Detached', label2: 'Door Type', value2: 'Manual', label3: 'Last Service', value3: '2023-11-20' }
+                    ],
+                    windows: [
+                        { label1: 'Window Type', value1: 'Single Pane Wood', label2: 'Total Windows', value2: '8', label3: 'Last Cleaning', value3: '2024-02-28' }
+                    ],
+                    outdoor: [
+                        { label1: 'Deck/Patio', value1: 'Concrete Patio, 150 sq ft', label2: 'Last Sealing', value2: '2023-07-20', label3: 'Outdoor Furniture', value3: '2 Chairs & Table' }
+                    ],
+                    landscaping: [
+                        { label1: 'Lawn Type', value1: 'Bermuda Grass', label2: 'Last Fertilizer', value2: '2024-03-15', label3: 'Garden Beds', value2: '2 total' }
+                    ],
+                    irrigation: [
+                        { label1: 'System Type', value1: 'Manual Sprinkler', label2: 'Zones', value2: '3 zones', label3: 'Last Service', value3: '2024-02-05' }
+                    ],
+                    fencing: [
+                        { label1: 'Fence Type', value1: 'Chain Link', label2: 'Height', value2: '4 feet', label3: 'Last Repair', value3: '2023-09-25' }
+                    ]
+                }
+            }
+        };
+
+        // Toggle section visibility
+        function toggleSection(sectionId) {
+            const content = document.getElementById(sectionId + '-content');
+            const toggle = document.getElementById(sectionId + '-toggle');
+            
+            if (content.classList.contains('active')) {
+                content.classList.remove('active');
+                toggle.textContent = '▼';
+            } else {
+                content.classList.add('active');
+                toggle.textContent = '▲';
+            }
+        }
+
+        // Load home data when a home is selected
+        function loadHomeData() {
+            const homeSelect = document.getElementById('homeSelect');
+            const selectedHomeId = homeSelect.value;
+            
+            if (!selectedHomeId || selectedHomeId === '') {
+                console.log('No home selected');
+                clearAllSections();
+                return;
+            }
+            
+            currentSelectedHome = selectedHomeId;
+            console.log('Loading home details for:', selectedHomeId);
+            
+            // Load the home data
+            const homeData = sampleHomeData[selectedHomeId];
+            if (homeData) {
+                homeDetailsData[selectedHomeId] = homeData.details;
+                updateAllSections(homeData.details);
+            } else {
+                // Initialize empty details for new homes
+                homeDetailsData[selectedHomeId] = {};
+                clearAllSections();
+            }
+        }
+
+        // Update all sections with home data
+        function updateAllSections(details) {
+            const sectionIds = ['roof', 'exterior', 'hvac', 'plumbing', 'electrical', 'interior', 'foundation', 'garage', 'windows', 'outdoor', 'landscaping', 'irrigation', 'fencing'];
+            
+            sectionIds.forEach(sectionId => {
+                updateSection(sectionId, details[sectionId] || []);
+            });
+        }
+
+        // Update a specific section with data
+        function updateSection(sectionId, sectionDetails) {
+            const sectionContent = document.getElementById(sectionId + '-content');
+            const sectionDetailsContainer = sectionContent.querySelector('.section-details');
+            
+            // Clear existing detail rows (keep the add button)
+            const existingRows = sectionDetailsContainer.querySelectorAll('.detail-row');
+            existingRows.forEach(row => row.remove());
+            
+            // Add new detail rows
+            sectionDetails.forEach(detail => {
+                const detailRow = document.createElement('div');
+                detailRow.className = 'detail-row';
+                detailRow.innerHTML = `
+                    <div class="detail-field">
+                        <div class="detail-label">${detail.label1}</div>
+                        <div class="detail-value">${detail.value1}</div>
+                    </div>
+                    <div class="detail-field">
+                        <div class="detail-label">${detail.label2 || 'Additional Info'}</div>
+                        <div class="detail-value">${detail.value2 || 'N/A'}</div>
+                    </div>
+                    <div class="detail-field">
+                        <div class="detail-label">${detail.label3 || 'Notes'}</div>
+                        <div class="detail-value">${detail.value3 || 'N/A'}</div>
+                    </div>
+                    <div class="detail-actions">
+                        <button class="action-icon edit" onclick="editDetail('${sectionId}')"><i class="fas fa-edit"></i></button>
+                        <button class="action-icon delete" onclick="deleteDetail('${sectionId}')"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+                
+                // Insert before the add button
+                const addButton = sectionDetailsContainer.querySelector('.add-detail-btn');
+                sectionDetailsContainer.insertBefore(detailRow, addButton);
+            });
+        }
+
+        // Clear all sections
+        function clearAllSections() {
+            const sectionIds = ['roof', 'exterior', 'hvac', 'plumbing', 'electrical', 'interior', 'foundation', 'garage', 'windows', 'outdoor', 'landscaping', 'irrigation', 'fencing'];
+            
+            sectionIds.forEach(sectionId => {
+                updateSection(sectionId, []);
+            });
+        }
+
+        // Modal functions
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            if (modalId === 'addDetailModal' || modalId === 'editDetailModal') {
+                document.getElementById(modalId.replace('Modal', 'Form')).reset();
+            }
+        }
+
+        // Add new home
+        function addNewHome() {
+            document.getElementById('addHomeModal').style.display = 'block';
+        }
+
+        // Add new detail
+        function addNewDetail() {
+            document.getElementById('addDetailModal').style.display = 'block';
+        }
+
+        // Add detail to specific section
+        function addDetail(sectionId) {
+            document.getElementById('detailSection').value = sectionId;
+            document.getElementById('addDetailModal').style.display = 'block';
+        }
+
+        // Edit detail
+        function editDetail(sectionId) {
+            currentEditingSection = sectionId;
+            // In a real app, this would populate the form with existing data
+            document.getElementById('editDetailSection').value = sectionId;
+            document.getElementById('editDetailModal').style.display = 'block';
+        }
+
+        // Delete detail
+        function deleteDetail(sectionId) {
+            if (!currentSelectedHome) {
+                alert('Please select a home first!');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to delete this detail from the ${sectionId} section?`)) {
+                // Find and remove the detail row
+                const sectionContent = document.getElementById(sectionId + '-content');
+                const detailRows = sectionContent.querySelectorAll('.detail-row');
+                
+                if (detailRows.length > 0) {
+                    // Remove the last detail row (in a real app, you'd identify the specific row)
+                    const lastRow = detailRows[detailRows.length - 1];
+                    lastRow.remove();
+                    
+                    // Remove from home data
+                    if (homeDetailsData[currentSelectedHome] && homeDetailsData[currentSelectedHome][sectionId]) {
+                        homeDetailsData[currentSelectedHome][sectionId].pop();
+                    }
+                    
+                    alert(`Detail deleted from ${sectionId} section`);
+                } else {
+                    alert('No details to delete in this section');
+                }
+            }
+        }
+
+        // Handle add detail form submission
+        document.getElementById('addDetailForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!currentSelectedHome) {
+                alert('Please select a home first!');
+                return;
+            }
+            
+            const sectionId = document.getElementById('detailSection').value;
+            const label1 = document.getElementById('detailLabel').value;
+            const value1 = document.getElementById('detailValue').value;
+            const label2 = document.getElementById('detailLabel2').value;
+            const value2 = document.getElementById('detailValue2').value;
+            const label3 = document.getElementById('detailLabel3').value;
+            const value3 = document.getElementById('detailValue3').value;
+            const notes = document.getElementById('detailNotes').value;
+            
+            // Create new detail object
+            const newDetail = {
+                label1: label1,
+                value1: value1,
+                label2: label2 || 'Additional Info',
+                value2: value2 || 'N/A',
+                label3: label3 || 'Notes',
+                value3: value3 || notes || 'N/A'
+            };
+            
+            // Add to home data
+            if (!homeDetailsData[currentSelectedHome]) {
+                homeDetailsData[currentSelectedHome] = {};
+            }
+            if (!homeDetailsData[currentSelectedHome][sectionId]) {
+                homeDetailsData[currentSelectedHome][sectionId] = [];
+            }
+            homeDetailsData[currentSelectedHome][sectionId].push(newDetail);
+            
+            // Update the section display
+            updateSection(sectionId, homeDetailsData[currentSelectedHome][sectionId]);
+            
+            // Close modal and reset form
+            closeModal('addDetailModal');
+            alert('Detail added successfully!');
+        });
+
+        // Handle edit detail form submission
+        document.getElementById('editDetailForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const sectionId = document.getElementById('editDetailSection').value;
+            const label1 = document.getElementById('editDetailLabel').value;
+            const value1 = document.getElementById('editDetailValue').value;
+            const label2 = document.getElementById('editDetailLabel2').value;
+            const value2 = document.getElementById('editDetailValue2').value;
+            const label3 = document.getElementById('editDetailLabel3').value;
+            const value3 = document.getElementById('editDetailValue3').value;
+            const notes = document.getElementById('editDetailNotes').value;
+            
+            // In a real app, this would update the specific detail row
+            // For now, we'll just show a success message
+            closeModal('editDetailModal');
+            alert('Detail updated successfully!');
+        });
+
+        // Handle add home form submission
+        document.getElementById('addHomeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const homeName = document.getElementById('homeName').value;
+            const homeAddress = document.getElementById('homeAddress').value;
+            const homeCity = document.getElementById('homeCity').value;
+            const homeState = document.getElementById('homeState').value;
+            const homeZip = document.getElementById('homeZip').value;
+            const yearBuilt = document.getElementById('homeYearBuilt').value;
+            const squareFeet = document.getElementById('homeSquareFeet').value;
+            const propertyType = document.getElementById('homePropertyType').value;
+            
+            // Create new home ID
+            const newHomeId = 'home' + Date.now();
+            
+            // Add to dropdown
+            const homeSelect = document.getElementById('homeSelect');
+            const newOption = document.createElement('option');
+            newOption.value = newHomeId;
+            newOption.textContent = homeName;
+            homeSelect.appendChild(newOption);
+            
+            // Initialize empty details for the new home
+            homeDetailsData[newHomeId] = {};
+            
+            // Add to sample data for persistence
+            sampleHomeData[newHomeId] = {
+                name: homeName,
+                address: `${homeAddress}, ${homeCity}, ${homeState} ${homeZip}`,
+                details: {}
+            };
+            
+            // Close modal and reset form
+            closeModal('addHomeModal');
+            alert('Home added successfully!');
+        });
+
+        // Close modals when clicking outside
+        window.addEventListener('click', function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+
+        // Initialize the page
+        window.addEventListener('load', function() {
+            console.log('Home Details page loaded');
+        });
+    </script>
+</body>
+</html>

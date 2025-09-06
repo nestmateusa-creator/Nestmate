@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Test - NestMate</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background: #2563eb;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background: #1d4ed8;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .error {
+            color: #ef4444;
+            margin-top: 10px;
+            padding: 10px;
+            background: #fef2f2;
+            border-radius: 5px;
+        }
+        .success {
+            color: #10b981;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f0fdf4;
+            border-radius: 5px;
+        }
+        .loading {
+            color: #f59e0b;
+            margin-top: 10px;
+            padding: 10px;
+            background: #fffbeb;
+            border-radius: 5px;
+        }
+        #card-element {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: white;
+        }
+        .StripeElement--focus {
+            border-color: #2563eb;
+        }
+        .StripeElement--invalid {
+            border-color: #ef4444;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Payment System Test</h1>
+        <p>This page helps debug payment issues. Use test card: <strong>4242 4242 4242 4242</strong></p>
+        
+        <form id="payment-form">
+            <div class="form-group">
+                <label for="plan">Select Plan:</label>
+                <select id="plan">
+                    <option value="basic">Basic - $5/month</option>
+                    <option value="pro">Pro - $10/month</option>
+                    <option value="advanced">Advanced Pro - $16/month</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" value="test@example.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Card Details:</label>
+                <div id="card-element"></div>
+                <div id="card-errors" role="alert"></div>
+            </div>
+            
+            <button type="submit" id="submit-button">
+                Test Payment
+            </button>
+        </form>
+        
+        <div id="payment-status"></div>
+        
+        <div style="margin-top: 30px; padding: 20px; background: #f8fafc; border-radius: 5px;">
+            <h3>Debug Info:</h3>
+            <div id="debug-info"></div>
+        </div>
+    </div>
+
+    <script>
+        // Stripe configuration
+        const stripe = Stripe('pk_test_51S4C0sAmpksixclYeG19nYyKaIrbc41a2Twtw8uNCPTEFO9BLQl6BRN6V9HxLNyCZZrMdPIy9wzk5xOGfd943BNM00Z3gp2GuY');
+        const elements = stripe.elements();
+
+        // Create card element
+        const cardElement = elements.create('card', {
+            style: {
+                base: {
+                    fontSize: '16px',
+                    color: '#424770',
+                    '::placeholder': {
+                        color: '#aab7c4',
+                    },
+                },
+                invalid: {
+                    color: '#9e2146',
+                },
+            },
+        });
+
+        // Mount the card element
+        cardElement.mount('#card-element');
+
+        // Handle real-time validation errors from the card Element
+        cardElement.on('change', function(event) {
+            const displayError = document.getElementById('card-errors');
+            if (event.error) {
+                displayError.textContent = event.error.message;
+            } else {
+                displayError.textContent = '';
+            }
+        });
+
+        // Handle form submission
+        const form = document.getElementById('payment-form');
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const submitButton = document.getElementById('submit-button');
+            const paymentStatus = document.getElementById('payment-status');
+            const debugInfo = document.getElementById('debug-info');
+
+            // Show loading state
+            showStatus('loading', 'Processing payment...');
+            setLoadingState(true);
+            debugInfo.innerHTML = 'Starting payment process...';
+
+            try {
+                // Get plan details
+                const plan = document.getElementById('plan').value;
+                const planAmounts = {
+                    basic: 500,    // $5.00 in cents
+                    pro: 1000,     // $10.00 in cents
+                    advanced: 1600 // $16.00 in cents
+                };
+                const amount = planAmounts[plan];
+
+                debugInfo.innerHTML += `<br>Plan: ${plan}, Amount: ${amount} cents`;
+
+                // Create payment method
+                const {error, paymentMethod} = await stripe.createPaymentMethod({
+                    type: 'card',
+                    card: cardElement,
+                    billing_details: {
+                        email: document.getElementById('email').value,
+                    },
+                });
+
+                if (error) {
+                    showStatus('error', error.message);
+                    setLoadingState(false);
+                    debugInfo.innerHTML += `<br>❌ Payment method error: ${error.message}`;
+                    return;
+                }
+
+                debugInfo.innerHTML += `<br>✅ Payment method created: ${paymentMethod.id}`;
+
+                // Test server connection
+                debugInfo.innerHTML += `<br>Testing server connection...`;
+                
+                const response = await fetch('http://localhost:3001/create-payment-intent', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        paymentMethodId: paymentMethod.id,
+                        planType: plan,
+                        amount: amount,
+                        currency: 'usd'
+                    }),
+                });
+
+                debugInfo.innerHTML += `<br>Server response status: ${response.status}`;
+
+                const result = await response.json();
+                debugInfo.innerHTML += `<br>Server response: ${JSON.stringify(result, null, 2)}`;
+
+                if (!response.ok) {
+                    throw new Error(result.error || 'Payment failed');
+                }
+
+                // Show success
+                showStatus('success', 'Payment test successful!');
+                debugInfo.innerHTML += `<br>🎉 Payment test completed successfully!`;
+
+            } catch (error) {
+                console.error('Payment error:', error);
+                showStatus('error', error.message);
+                debugInfo.innerHTML += `<br>❌ Error: ${error.message}`;
+            } finally {
+                setLoadingState(false);
+            }
+        });
+
+        function showStatus(type, message) {
+            const statusDiv = document.getElementById('payment-status');
+            statusDiv.className = type;
+            statusDiv.textContent = message;
+            statusDiv.style.display = 'block';
+        }
+
+        function setLoadingState(loading) {
+            const submitButton = document.getElementById('submit-button');
+            if (loading) {
+                submitButton.innerHTML = 'Processing...';
+                submitButton.disabled = true;
+            } else {
+                submitButton.innerHTML = 'Test Payment';
+                submitButton.disabled = false;
+            }
+        }
+
+        // Test server connection on page load
+        window.addEventListener('load', async function() {
+            const debugInfo = document.getElementById('debug-info');
+            try {
+                const response = await fetch('http://localhost:3001/create-payment-intent', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        test: true
+                    }),
+                });
+                debugInfo.innerHTML = `✅ Server connection test: ${response.status}`;
+            } catch (error) {
+                debugInfo.innerHTML = `❌ Server connection failed: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>
+

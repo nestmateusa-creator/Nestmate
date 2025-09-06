@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NestMate - Maintenance Guide</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
+            authDomain: "nestmate-167ed.firebaseapp.com",
+            projectId: "nestmate-167ed",
+            storageBucket: "nestmate-167ed.firebasestorage.app",
+            messagingSenderId: "865171535257",
+            appId: "1:865171535257:web:9944a48a952e99f55f0f08",
+            measurementId: "G-1DYR2RGY4G"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        window.firebaseAuth = auth;
+        window.firebaseDb = db;
+    </script>
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .back-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: white;
+            border-radius: var(--radius);
+            padding: 8px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            background: none;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            color: var(--secondary);
+            white-space: nowrap;
+        }
+
+        .nav-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .nav-tab:hover:not(.active) {
+            background: var(--light);
+        }
+
+        .content-section {
+            background: white;
+            border-radius: var(--radius);
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .section-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .section-subtitle {
+            color: var(--secondary);
+            font-size: 16px;
+        }
+
+        .checklist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .checklist-card {
+            background: var(--light);
+            border-radius: var(--radius);
+            padding: 24px;
+            border: 2px solid var(--border);
+            transition: var(--transition);
+        }
+
+        .checklist-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .checklist-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .checklist-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .checklist-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .checklist-items {
+            list-style: none;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .checklist-item:last-child {
+            border-bottom: none;
+        }
+
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .checkbox.checked {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .checkbox:hover {
+            border-color: var(--primary);
+        }
+
+        .item-text {
+            flex: 1;
+            color: var(--dark);
+        }
+
+        .item-text.completed {
+            text-decoration: line-through;
+            color: var(--secondary);
+        }
+
+        .difficulty-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .difficulty-badge.easy {
+            background: var(--success);
+            color: white;
+        }
+
+        .difficulty-badge.medium {
+            background: var(--warning);
+            color: white;
+        }
+
+        .difficulty-badge.hard {
+            background: var(--danger);
+            color: white;
+        }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+        }
+
+        .tip-card {
+            background: var(--light);
+            border-radius: var(--radius);
+            padding: 24px;
+            border-left: 4px solid var(--primary);
+            transition: var(--transition);
+        }
+
+        .tip-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .tip-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .tip-icon {
+            color: var(--primary);
+            font-size: 24px;
+        }
+
+        .tip-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .tip-content {
+            color: var(--secondary);
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .tip-steps {
+            list-style: none;
+            counter-reset: step-counter;
+        }
+
+        .tip-step {
+            counter-increment: step-counter;
+            margin-bottom: 12px;
+            padding-left: 32px;
+            position: relative;
+            color: var(--dark);
+        }
+
+        .tip-step::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 24px;
+            height: 24px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+        }
+
+        .schedule-card {
+            background: var(--light);
+            border-radius: var(--radius);
+            padding: 24px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .schedule-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .schedule-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            margin: 0 auto 16px;
+        }
+
+        .schedule-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--dark);
+        }
+
+        .schedule-description {
+            color: var(--secondary);
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        .schedule-tasks {
+            list-style: none;
+            text-align: left;
+        }
+
+        .schedule-task {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            color: var(--dark);
+            font-size: 14px;
+        }
+
+        .schedule-task:last-child {
+            border-bottom: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 16px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--success);
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 12px;
+            color: var(--secondary);
+            margin-top: 8px;
+        }
+
+        .emergency-section {
+            background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%);
+            color: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .emergency-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .emergency-icon {
+            font-size: 32px;
+        }
+
+        .emergency-title {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .emergency-list {
+            list-style: none;
+        }
+
+        .emergency-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .emergency-item:last-child {
+            border-bottom: none;
+        }
+
+        .emergency-number {
+            background: white;
+            color: var(--danger);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--radius);
+            padding: 32px;
+            max-width: 600px;
+            margin: 50px auto;
+            position: relative;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--secondary);
+        }
+
+        @media (max-width: 768px) {
+            .nav-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .checklist-grid,
+            .tips-grid,
+            .schedule-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div>
+                <h1><i class="fas fa-book-open"></i> Maintenance Guide</h1>
+                <p>DIY tips, seasonal checklists, and maintenance schedules for your home</p>
+            </div>
+            <button class="back-btn" onclick="window.location.href='NestMate.html'">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </button>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showSection('seasonal')">Seasonal Checklists</button>
+            <button class="nav-tab" onclick="showSection('diy')">DIY Tips</button>
+            <button class="nav-tab" onclick="showSection('schedule')">Maintenance Schedule</button>
+            <button class="nav-tab" onclick="showSection('emergency')">Emergency Procedures</button>
+        </div>
+
+        <!-- Seasonal Checklists Section -->
+        <div id="seasonal" class="content-section">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <div>
+                    <h2 class="section-title">Seasonal Checklists</h2>
+                    <p class="section-subtitle">Stay on top of seasonal maintenance tasks</p>
+                </div>
+            </div>
+
+            <div class="checklist-grid">
+                <!-- Spring Checklist -->
+                <div class="checklist-card">
+                    <div class="checklist-header">
+                        <div class="checklist-icon">
+                            <i class="fas fa-seedling"></i>
+                        </div>
+                        <h3 class="checklist-title">Spring Maintenance</h3>
+                    </div>
+                    <ul class="checklist-items">
+                        <li class="checklist-item">
+                            <div class="checkbox" onclick="toggleCheckbox(this)"></div>
+                            <span class="item-text">Clean gutters and downspouts</span>
+                            <span class="difficulty-badge easy">Easy</span>
+                        </li>
+                        <li class="checklist-item">
+                            <div class="checkbox" onclick="toggleCheckbox(this)"></div>
+                            <span class="item-text">Inspect roof for winter damage</span>
+                            <span class="difficulty-badge medium">Medium</span>
+                        </li>
+                        <li class="checklist-item">
+                            <div class="checkbox" onclick="toggleCheckbox(this)"></div>
+                            <span class="item-text">Service HVAC system</span>
+                            <span class="difficulty-badge hard">Hard</span>
+                        </li>
+                        <li class="checklist-item">
+                            <div class="checkbox" onclick="toggleCheckbox(this)"></div>
+                            <span class="item-text">Test smoke and CO detectors</span>
+                            <span class="difficulty-badge easy">Easy</span>
+                        </li>
+                        <li class="checklist-item">
+                            <div class="checkbox" onclick="toggleCheckbox(this)"></div>
+                            <span class="item-text">Clean dryer vent</span>
+                            <span class="difficulty-badge medium">Medium</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Summer Checklist -->
+                <div class="checklist-card">
+                    <div class="checklist-header">
+                        <div class="checklist-icon">
+                            <i class="fas fa-sun"></i>
+                        </div>
+                        <h3 class="checklist-title">Summer Maintenance</h3>
+                    </div>
+                    <ul class="checklist-items">
+                        <li class="checklist-item">
+                            <div class="checkbox" onclick="toggleCheckbox(this)"></div>
+                            <span class="item-text">Inspect and clean AC filters</span>
+                            <span class="difficulty-badge easy">Easy</span>
+                        </li>
+                        <li class="checklist-item">
+                            <div class="checkbox" onclick="toggleCheckbox(this)"></div>
+                            <span class="item-text">Check irrigation system</span>
+                            <span class="difficulty-badge medium">Medium</span>
+                        </li>
+                        <li class="checklist-item">
+                            <div class="checkbox" onclick="toggleCheckbox(this)"></div>
+                            <span class="item-text">Inspect exterior paint</span>
+                            <span class="difficulty-badge easy">Easy</span>
+                        </li>
+                        <li class="checklist-item">
+                            <div class="checkbox" onclick="toggleCheckbox(this)"></div>
+                            <span class="item-text">Clean outdoor furniture</span>
+                            <span class="difficulty-badge easy">Easy</span>
+                        </li>
+                        <li class="checklist-item">
+                            <div class="checkbox" onclick="toggleCheckbox(this)"></div>
+                            <span class="item-text">Check deck/patio for damage</span>
+                            <span class="difficulty-badge medium">Medium</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Fall Checklist -->
+                <div class="checklist-card">
+                    <div class="checklist-header">
+                        <div class="checklist-icon">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <h3 class="checklist-title">Fall Maintenance</h3>
+                    </div>
+                    <ul class="checklist-items">
+                        <li class="checklist-item">
+                            <div class="checkbox" onclick="toggleCheckbox(this)"></div>
+                            <span class="item-text">Clean gutters again</span>
+                            <span class="difficulty-badge easy">Easy</span>
+                        </li>
+                        <li class="checklist-item">
+                            <div class="checkbox" onclick="toggleCheckbox(this)"></div>
+                            <span class="item-text">Winterize sprinkler system</span>
+                            <span class="difficulty-badge medium">Medium</span>
+                        </li>
+                        <li class="checklist-item">
+                            <div class="checkbox" onclick="toggleCheckbox(this)"></div>
+                            <span class="item-text">Inspect and clean chimney</span>
+                            <span class="difficulty-badge hard">Hard</span>
+                        </li>
+                        <li class="checklist-item">
+                            <div class="checkbox" onclick="toggleCheckbox(this)"></div>
+                            <span class="item-text">Check weather stripping</span>
+                            <span class="difficulty-badge easy">Easy</span>
+                        </li>
+                        <li class="checklist-item">
+                            <div class="checkbox" onclick="toggleCheckbox(this)"></div>
+                            <span class="item-text">Test heating system</span>
+                            <span class="difficulty-badge medium">Medium</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Winter Checklist -->
+                <div class="checklist-card">
+                    <div class="checklist-header">
+                        <div class="checklist-icon">
+                            <i class="fas fa-snowflake"></i>
+                        </div>
+                        <h3 class="checklist-title">Winter Maintenance</h3>
+                    </div>
+                    <ul class="checklist-items">
+                        <li class="checklist-item">
+                            <div class="checkbox" onclick="toggleCheckbox(this)"></div>
+                            <span class="item-text">Check for ice dams</span>
+                            <span class="difficulty-badge easy">Easy</span>
+                        </li>
+                        <li class="checklist-item">
+                            <div class="checkbox" onclick="toggleCheckbox(this)"></div>
+                            <span class="item-text">Inspect insulation</span>
+                            <span class="difficulty-badge medium">Medium</span>
+                        </li>
+                        <li class="checklist-item">
+                            <div class="checkbox" onclick="toggleCheckbox(this)"></div>
+                            <span class="item-text">Check for drafts</span>
+                            <span class="difficulty-badge easy">Easy</span>
+                        </li>
+                        <li class="checklist-item">
+                            <div class="checkbox" onclick="toggleCheckbox(this)"></div>
+                            <span class="item-text">Test emergency generator</span>
+                            <span class="difficulty-badge medium">Medium</span>
+                        </li>
+                        <li class="checklist-item">
+                            <div class="checkbox" onclick="toggleCheckbox(this)"></div>
+                            <span class="item-text">Inspect pipes for freezing</span>
+                            <span class="difficulty-badge easy">Easy</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- DIY Tips Section -->
+        <div id="diy" class="content-section" style="display: none;">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <div>
+                    <h2 class="section-title">DIY Tips & Tricks</h2>
+                    <p class="section-subtitle">Learn how to handle common home maintenance tasks</p>
+                </div>
+            </div>
+
+            <div class="tips-grid">
+                <!-- Plumbing Tips -->
+                <div class="tip-card">
+                    <div class="tip-header">
+                        <i class="fas fa-faucet tip-icon"></i>
+                        <h3 class="tip-title">Fixing a Leaky Faucet</h3>
+                    </div>
+                    <p class="tip-content">A dripping faucet can waste gallons of water and increase your utility bills. Here's how to fix it:</p>
+                    <ol class="tip-steps">
+                        <li class="tip-step">Turn off the water supply under the sink</li>
+                        <li class="tip-step">Remove the faucet handle and cap</li>
+                        <li class="tip-step">Unscrew the cartridge or valve stem</li>
+                        <li class="tip-step">Replace the O-ring and washer</li>
+                        <li class="tip-step">Reassemble and test for leaks</li>
+                    </ol>
+                    <button class="btn btn-outline" onclick="showVideo('faucet-repair')">
+                        <i class="fas fa-play"></i> Watch Video
+                    </button>
+                </div>
+
+                <!-- Electrical Tips -->
+                <div class="tip-card">
+                    <div class="tip-header">
+                        <i class="fas fa-bolt tip-icon"></i>
+                        <h3 class="tip-title">Replacing a Light Switch</h3>
+                    </div>
+                    <p class="tip-content">Upgrade your light switches or fix faulty ones with these safety-first steps:</p>
+                    <ol class="tip-steps">
+                        <li class="tip-step">Turn off power at the circuit breaker</li>
+                        <li class="tip-step">Remove the switch plate and mounting screws</li>
+                        <li class="tip-step">Disconnect wires from old switch</li>
+                        <li class="tip-step">Connect wires to new switch (note colors)</li>
+                        <li class="tip-step">Mount and test the new switch</li>
+                    </ol>
+                    <button class="btn btn-outline" onclick="showVideo('switch-replacement')">
+                        <i class="fas fa-play"></i> Watch Video
+                    </button>
+                </div>
+
+                <!-- HVAC Tips -->
+                <div class="tip-card">
+                    <div class="tip-header">
+                        <i class="fas fa-thermometer-half tip-icon"></i>
+                        <h3 class="tip-title">Cleaning AC Filters</h3>
+                    </div>
+                    <p class="tip-content">Regular filter cleaning improves air quality and system efficiency:</p>
+                    <ol class="tip-steps">
+                        <li class="tip-step">Locate your air filter (usually in return duct)</li>
+                        <li class="tip-step">Turn off the HVAC system</li>
+                        <li class="tip-step">Remove the filter and inspect for damage</li>
+                        <li class="tip-step">Clean with mild soap and water</li>
+                        <li class="tip-step">Let dry completely before reinstalling</li>
+                    </ol>
+                    <button class="btn btn-outline" onclick="showVideo('ac-filter-cleaning')">
+                        <i class="fas fa-play"></i> Watch Video
+                    </button>
+                </div>
+
+                <!-- Painting Tips -->
+                <div class="tip-card">
+                    <div class="tip-header">
+                        <i class="fas fa-paint-roller tip-icon"></i>
+                        <h3 class="tip-title">Interior Painting Tips</h3>
+                    </div>
+                    <p class="tip-content">Achieve professional-looking results with these painting techniques:</p>
+                    <ol class="tip-steps">
+                        <li class="tip-step">Clean and prepare the surface</li>
+                        <li class="tip-step">Use painter's tape for clean edges</li>
+                        <li class="tip-step">Apply primer for better adhesion</li>
+                        <li class="tip-step">Paint in W-pattern for even coverage</li>
+                        <li class="tip-step">Allow proper drying time between coats</li>
+                    </ol>
+                    <button class="btn btn-outline" onclick="showVideo('interior-painting')">
+                        <i class="fas fa-play"></i> Watch Video
+                    </button>
+                </div>
+
+                <!-- Gutter Cleaning -->
+                <div class="tip-card">
+                    <div class="tip-header">
+                        <i class="fas fa-home tip-icon"></i>
+                        <h3 class="tip-title">Gutter Cleaning</h3>
+                    </div>
+                    <p class="tip-content">Keep your gutters flowing freely to prevent water damage:</p>
+                    <ol class="tip-steps">
+                        <li class="tip-step">Set up a secure ladder</li>
+                        <li class="tip-step">Remove large debris by hand</li>
+                        <li class="tip-step">Use a garden hose to flush remaining debris</li>
+                        <li class="tip-step">Check downspouts for clogs</li>
+                        <li class="tip-step">Inspect for damage and repair as needed</li>
+                    </ol>
+                    <button class="btn btn-outline" onclick="showVideo('gutter-cleaning')">
+                        <i class="fas fa-play"></i> Watch Video
+                    </button>
+                </div>
+
+                <!-- Weather Stripping -->
+                <div class="tip-card">
+                    <div class="tip-header">
+                        <i class="fas fa-door-open tip-icon"></i>
+                        <h3 class="tip-title">Installing Weather Stripping</h3>
+                    </div>
+                    <p class="tip-content">Seal air leaks around doors and windows to improve energy efficiency:</p>
+                    <ol class="tip-steps">
+                        <li class="tip-step">Clean the door/window frame</li>
+                        <li class="tip-step">Measure and cut weather stripping</li>
+                        <li class="tip-step">Apply adhesive-backed stripping</li>
+                        <li class="tip-step">Test door/window operation</li>
+                        <li class="tip-step">Adjust if needed for proper seal</li>
+                    </ol>
+                    <button class="btn btn-outline" onclick="showVideo('weather-stripping')">
+                        <i class="fas fa-play"></i> Watch Video
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Maintenance Schedule Section -->
+        <div id="schedule" class="content-section" style="display: none;">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div>
+                    <h2 class="section-title">Maintenance Schedule</h2>
+                    <p class="section-subtitle">Track your maintenance tasks and progress</p>
+                </div>
+            </div>
+
+            <div class="schedule-grid">
+                <!-- Monthly Tasks -->
+                <div class="schedule-card">
+                    <div class="schedule-icon">
+                        <i class="fas fa-calendar"></i>
+                    </div>
+                    <h3 class="schedule-title">Monthly Tasks</h3>
+                    <p class="schedule-description">Regular maintenance to keep your home running smoothly</p>
+                    <ul class="schedule-tasks">
+                        <li class="schedule-task">• Test smoke detectors</li>
+                        <li class="schedule-task">• Clean range hood filter</li>
+                        <li class="schedule-task">• Inspect fire extinguishers</li>
+                        <li class="schedule-task">• Check for water leaks</li>
+                    </ul>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 75%"></div>
+                    </div>
+                    <div class="progress-text">3 of 4 tasks completed</div>
+                </div>
+
+                <!-- Quarterly Tasks -->
+                <div class="schedule-card">
+                    <div class="schedule-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <h3 class="schedule-title">Quarterly Tasks</h3>
+                    <p class="schedule-description">Seasonal maintenance and inspections</p>
+                    <ul class="schedule-tasks">
+                        <li class="schedule-task">• Change HVAC filters</li>
+                        <li class="schedule-task">• Clean dryer vent</li>
+                        <li class="schedule-task">• Inspect roof and gutters</li>
+                        <li class="schedule-task">• Test garage door sensors</li>
+                    </ul>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 50%"></div>
+                    </div>
+                    <div class="progress-text">2 of 4 tasks completed</div>
+                </div>
+
+                <!-- Annual Tasks -->
+                <div class="schedule-card">
+                    <div class="schedule-icon">
+                        <i class="fas fa-calendar-day"></i>
+                    </div>
+                    <h3 class="schedule-title">Annual Tasks</h3>
+                    <p class="schedule-description">Major maintenance and professional inspections</p>
+                    <ul class="schedule-tasks">
+                        <li class="schedule-task">• Professional HVAC service</li>
+                        <li class="schedule-task">• Chimney inspection</li>
+                        <li class="schedule-task">• Exterior paint inspection</li>
+                        <li class="schedule-task">• Foundation inspection</li>
+                    </ul>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 25%"></div>
+                    </div>
+                    <div class="progress-text">1 of 4 tasks completed</div>
+                </div>
+
+                <!-- 5-Year Tasks -->
+                <div class="schedule-card">
+                    <div class="schedule-icon">
+                        <i class="fas fa-calendar-week"></i>
+                    </div>
+                    <h3 class="schedule-title">5-Year Tasks</h3>
+                    <p class="schedule-description">Major replacements and upgrades</p>
+                    <ul class="schedule-tasks">
+                        <li class="schedule-task">• Replace water heater</li>
+                        <li class="schedule-task">• Roof inspection/replacement</li>
+                        <li class="schedule-task">• Major appliance updates</li>
+                        <li class="schedule-task">• Electrical panel inspection</li>
+                    </ul>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-text">0 of 4 tasks completed</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Emergency Procedures Section -->
+        <div id="emergency" class="content-section" style="display: none;">
+            <div class="emergency-section">
+                <div class="emergency-header">
+                    <i class="fas fa-exclamation-triangle emergency-icon"></i>
+                    <h2 class="emergency-title">Emergency Procedures</h2>
+                </div>
+                <p style="margin-bottom: 24px; opacity: 0.9;">Know what to do in case of home emergencies. Always prioritize safety and call professionals when needed.</p>
+                
+                <ul class="emergency-list">
+                    <li class="emergency-item">
+                        <div class="emergency-number">1</div>
+                        <div>
+                            <strong>Water Leak/Flood:</strong> Turn off main water valve, call plumber immediately
+                        </div>
+                    </li>
+                    <li class="emergency-item">
+                        <div class="emergency-number">2</div>
+                        <div>
+                            <strong>Electrical Issue:</strong> Turn off power at breaker, call electrician
+                        </div>
+                    </li>
+                    <li class="emergency-item">
+                        <div class="emergency-number">3</div>
+                        <div>
+                            <strong>Gas Leak:</strong> Evacuate immediately, call gas company and 911
+                        </div>
+                    </li>
+                    <li class="emergency-item">
+                        <div class="emergency-number">4</div>
+                        <div>
+                            <strong>Fire:</strong> Evacuate immediately, call 911, don't re-enter
+                        </div>
+                    </li>
+                    <li class="emergency-item">
+                        <div class="emergency-number">5</div>
+                        <div>
+                            <strong>HVAC Failure:</strong> Check thermostat and circuit breaker first
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <h3 style="margin-bottom: 16px;">Emergency Contacts</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+                    <div style="background: var(--light); padding: 16px; border-radius: var(--radius);">
+                        <strong>Emergency Services:</strong> 911
+                    </div>
+                    <div style="background: var(--light); padding: 16px; border-radius: var(--radius);">
+                        <strong>NestMate Emergency:</strong> 1-800-NESTMATE
+                    </div>
+                    <div style="background: var(--light); padding: 16px; border-radius: var(--radius);">
+                        <strong>Gas Company:</strong> 1-800-GAS-LEAK
+                    </div>
+                    <div style="background: var(--light); padding: 16px; border-radius: var(--radius);">
+                        <strong>Electric Company:</strong> 1-800-POWER
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Video Modal -->
+    <div id="videoModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('videoModal')">&times;</button>
+            <h2 id="videoTitle">DIY Tutorial</h2>
+            <div style="background: var(--light); height: 300px; border-radius: var(--radius); display: flex; align-items: center; justify-content: center; margin: 20px 0;">
+                <i class="fas fa-play" style="font-size: 48px; color: var(--secondary);"></i>
+                <p style="margin-left: 16px; color: var(--secondary);">Video tutorial will be displayed here</p>
+            </div>
+            <p id="videoDescription">Detailed step-by-step video tutorial for this maintenance task.</p>
+        </div>
+    </div>
+
+    <script>
+        let currentSection = 'seasonal';
+
+        // Show section
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).style.display = 'block';
+            
+            // Update active tab
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            currentSection = sectionId;
+        }
+
+        // Toggle checkbox
+        function toggleCheckbox(checkbox) {
+            checkbox.classList.toggle('checked');
+            const itemText = checkbox.nextElementSibling;
+            itemText.classList.toggle('completed');
+            
+            // Update progress
+            updateProgress();
+        }
+
+        // Update progress
+        function updateProgress() {
+            const cards = document.querySelectorAll('.schedule-card');
+            cards.forEach(card => {
+                const tasks = card.querySelectorAll('.schedule-task');
+                const progressFill = card.querySelector('.progress-fill');
+                const progressText = card.querySelector('.progress-text');
+                
+                // This is a simplified progress calculation
+                // In a real app, you'd track actual completion status
+                const completed = Math.floor(Math.random() * tasks.length) + 1;
+                const total = tasks.length;
+                const percentage = (completed / total) * 100;
+                
+                progressFill.style.width = percentage + '%';
+                progressText.textContent = `${completed} of ${total} tasks completed`;
+            });
+        }
+
+        // Show video
+        function showVideo(videoId) {
+            const videoTitles = {
+                'faucet-repair': 'How to Fix a Leaky Faucet',
+                'switch-replacement': 'Replacing a Light Switch',
+                'ac-filter-cleaning': 'Cleaning AC Filters',
+                'interior-painting': 'Interior Painting Tips',
+                'gutter-cleaning': 'Gutter Cleaning Guide',
+                'weather-stripping': 'Installing Weather Stripping'
+            };
+            
+            const videoDescriptions = {
+                'faucet-repair': 'Learn how to fix a dripping faucet with simple tools and basic plumbing knowledge.',
+                'switch-replacement': 'Safely replace a light switch following electrical safety guidelines.',
+                'ac-filter-cleaning': 'Improve your HVAC efficiency by properly cleaning and maintaining filters.',
+                'interior-painting': 'Achieve professional-looking paint jobs with these expert techniques.',
+                'gutter-cleaning': 'Keep your gutters flowing freely to prevent water damage to your home.',
+                'weather-stripping': 'Seal air leaks and improve energy efficiency around doors and windows.'
+            };
+            
+            document.getElementById('videoTitle').textContent = videoTitles[videoId] || 'DIY Tutorial';
+            document.getElementById('videoDescription').textContent = videoDescriptions[videoId] || 'Detailed step-by-step video tutorial.';
+            document.getElementById('videoModal').style.display = 'block';
+        }
+
+        // Close modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+
+        // Check authentication
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.firebaseAuth) {
+                window.firebaseAuth.onAuthStateChanged(function(user) {
+                    if (!user) {
+                        // Redirect to sign in if not authenticated
+                        window.location.href = 'signin.html';
+                    }
+                });
+            }
+            
+            // Initialize progress
+            updateProgress();
+        });
+
+        // Save checklist progress to Firebase
+        function saveProgress() {
+            const checkboxes = document.querySelectorAll('.checkbox.checked');
+            const completedTasks = Array.from(checkboxes).map(checkbox => {
+                return checkbox.nextElementSibling.textContent;
+            });
+            
+            const progressData = {
+                userId: window.firebaseAuth?.currentUser?.uid || 'anonymous',
+                completedTasks: completedTasks,
+                timestamp: new Date().toISOString()
+            };
+            
+            try {
+                if (window.firebaseDb) {
+                    addDoc(collection(window.firebaseDb, 'maintenanceProgress'), progressData);
+                }
+            } catch (error) {
+                console.error('Error saving progress:', error);
+            }
+        }
+
+        // Auto-save progress when checkboxes are toggled
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('checkbox')) {
+                setTimeout(saveProgress, 1000); // Save after 1 second
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NestMate Firebase Setup & Data Migration</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .hero {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .hero h1 {
+            color: #2563eb;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .hero p {
+            color: #64748b;
+            font-size: 1.2em;
+        }
+        .auto-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            font-size: 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            margin: 20px 10px;
+            transition: all 0.3s ease;
+        }
+        .auto-btn:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+        .manual-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+        .manual-btn:hover {
+            background: #2563eb;
+        }
+        .migrate-btn {
+            background: #f59e0b;
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            font-size: 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            margin: 20px 10px;
+            transition: all 0.3s ease;
+        }
+        .migrate-btn:hover {
+            background: #d97706;
+            transform: translateY(-2px);
+        }
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e5e7eb;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #3b82f6);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .log {
+            background: #1f2937;
+            color: #f9fafb;
+            padding: 20px;
+            border-radius: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 400px;
+            overflow-y: auto;
+            margin: 20px 0;
+            white-space: pre-wrap;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-weight: 500;
+        }
+        .status.success { background: #d1fae5; color: #065f46; }
+        .status.error { background: #fee2e2; color: #991b1b; }
+        .status.info { background: #dbeafe; color: #1e40af; }
+        .warning { background: #fef3c7; color: #92400e; }
+        .steps {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+        .steps h3 {
+            color: #1e293b;
+            margin-bottom: 15px;
+        }
+        .steps ol {
+            color: #475569;
+            line-height: 1.6;
+        }
+        .steps li {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="hero">
+            <h1>🚀 NestMate Firebase Setup</h1>
+            <p>Complete Firebase setup and data migration for your NestMate platform</p>
+        </div>
+        
+        <div id="status"></div>
+        
+        <div id="setup-section">
+            <button class="auto-btn" onclick="startAutoSetup()">
+                🎯 START AUTOMATIC SETUP
+            </button>
+            <button class="migrate-btn" onclick="migrateUserData()">
+                🔄 MIGRATE USERS TO ACCOUNTS
+            </button>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <div id="log" class="log" style="display: none;"></div>
+        </div>
+        
+        <div class="steps">
+            <h3>📋 What This Setup Does:</h3>
+            <ol>
+                <li><strong>Creates Collections:</strong> users, userProfiles, accounts, sellers</li>
+                <li><strong>Adds Sample Data:</strong> Demo users and sellers for testing</li>
+                <li><strong>Migrates Existing Data:</strong> Transfers users from userProfiles to accounts collection</li>
+                <li><strong>Ensures Consistency:</strong> New users will be saved to both collections</li>
+            </ol>
+        </div>
+        
+        <div class="steps">
+            <h3>⚠️ Important Notes:</h3>
+            <ol>
+                <li><strong>Firebase Security Rules:</strong> Make sure your Firestore rules allow read/write access</li>
+                <li><strong>Data Duplication:</strong> Users will exist in both userProfiles and accounts collections</li>
+                <li><strong>Admin Dashboard:</strong> Will now display users from both collections</li>
+                <li><strong>Backup:</strong> Consider backing up your data before migration</li>
+            </ol>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="admin-dashboard.html" class="manual-btn">📊 Go to Admin Dashboard</a>
+            <a href="signin.html" class="manual-btn">🔐 Go to Sign In</a>
+        </div>
+        
+        <button class="manual-btn" onclick="testFirebaseWrite()" style="background: #e17055;">
+            🧪 Test Firebase Write
+        </button>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
+    
+    <script>
+        // Firebase configuration (same as admin-dashboard.html)
+        const firebaseConfig = {
+            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
+            authDomain: "nestmate-167ed.firebaseapp.com",
+            projectId: "nestmate-167ed",
+            storageBucket: "nestmate-167ed.firebasestorage.app",
+            messagingSenderId: "865171535257",
+            appId: "1:865171535257:web:9944a48a952e99f55f0f08",
+            measurementId: "G-1DYR2RGY4G"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Utility functions
+        function log(message, type = 'info') {
+            const logEl = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
+            logEl.innerHTML += `[${timestamp}] ${prefix} ${message}\n`;
+            logEl.scrollTop = logEl.scrollHeight;
+            console.log(`[${timestamp}] ${message}`);
+        }
+
+        function showStatus(message, type = 'info') {
+            const statusEl = document.getElementById('status');
+            statusEl.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        function updateProgress(percentage) {
+            const progressFill = document.getElementById('progress-fill');
+            progressFill.style.width = percentage + '%';
+        }
+
+        // Main setup function
+        async function startAutoSetup() {
+            try {
+                log('🚀 Starting automatic Firebase setup...');
+                showStatus('🚀 Starting automatic Firebase setup...', 'info');
+                document.getElementById('log').style.display = 'block';
+                
+                // Check Firebase connection
+                log('📡 Checking Firebase connection...');
+                showStatus('📡 Checking Firebase connection...', 'info');
+                updateProgress(10);
+                
+                try {
+                    const testDoc = await db.collection('test').add({ test: true, timestamp: new Date().toISOString() });
+                    await testDoc.delete();
+                    log('✅ Firebase connection successful');
+                    showStatus('✅ Firebase connection successful', 'success');
+                } catch (error) {
+                    throw new Error('Firebase connection failed: ' + error.message);
+                }
+                
+                updateProgress(20);
+                
+                // Create users collection
+                log('📊 Creating users collection...');
+                const usersData = [
+                    {
+                        email: 'john.doe@example.com',
+                        displayName: 'John Doe',
+                        role: 'user',
+                        accountType: 'regular',
+                        createdAt: new Date().toISOString(),
+                        status: 'active'
+                    },
+                    {
+                        email: 'jane.smith@example.com',
+                        displayName: 'Jane Smith',
+                        role: 'user',
+                        accountType: 'regular',
+                        createdAt: new Date().toISOString(),
+                        status: 'active'
+                    },
+                    {
+                        email: 'admin@nestmate.com',
+                        displayName: 'Admin User',
+                        role: 'admin',
+                        accountType: 'admin',
+                        createdAt: new Date().toISOString(),
+                        status: 'active'
+                    }
+                ];
+                
+                for (let i = 0; i < usersData.length; i++) {
+                    try {
+                        const userData = usersData[i];
+                        log(`📝 Adding user ${i + 1}/${usersData.length}: ${userData.email}`);
+                        await db.collection('users').add(userData);
+                        log(`✅ Added user: ${userData.email}`);
+                        updateProgress(20 + (i + 1) * 5);
+                    } catch (userError) {
+                        log(`⚠️ Failed to add user ${usersData[i].email}: ${userError.message}`, 'error');
+                    }
+                }
+                
+                updateProgress(40);
+                
+                // Create userProfiles collection
+                log('📊 Creating userProfiles collection...');
+                const profilesData = [
+                    {
+                        uid: 'demo-user-1',
+                        displayName: 'John Doe',
+                        email: 'john.doe@example.com',
+                        role: 'user',
+                        accountType: 'regular',
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    },
+                    {
+                        uid: 'demo-user-2',
+                        displayName: 'Jane Smith',
+                        email: 'jane.smith@example.com',
+                        role: 'user',
+                        accountType: 'regular',
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    }
+                ];
+                
+                for (let i = 0; i < profilesData.length; i++) {
+                    try {
+                        const profileData = profilesData[i];
+                        log(`📝 Adding profile ${i + 1}/${profilesData.length}: ${profileData.email}`);
+                        await db.collection('userProfiles').doc(profileData.uid).set(profileData);
+                        log(`✅ Added profile: ${profileData.email}`);
+                        updateProgress(40 + (i + 1) * 5);
+                    } catch (profileError) {
+                        log(`⚠️ Failed to add profile ${profilesData[i].email}: ${profileError.message}`, 'error');
+                    }
+                }
+                
+                updateProgress(60);
+                
+                // Create accounts collection
+                log('📊 Creating accounts collection...');
+                const accountsData = [
+                    {
+                        uid: 'demo-account-1',
+                        displayName: 'John Doe',
+                        email: 'john.doe@example.com',
+                        role: 'user',
+                        accountType: 'regular',
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
+                        status: 'active'
+                    },
+                    {
+                        uid: 'demo-account-2',
+                        displayName: 'Jane Smith',
+                        email: 'jane.smith@example.com',
+                        role: 'user',
+                        accountType: 'regular',
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
+                        status: 'active'
+                    }
+                ];
+                
+                for (let i = 0; i < accountsData.length; i++) {
+                    try {
+                        const accountData = accountsData[i];
+                        log(`📝 Adding account ${i + 1}/${accountsData.length}: ${accountData.email}`);
+                        await db.collection('accounts').doc(accountData.uid).set(accountData);
+                        log(`✅ Added account: ${accountData.email}`);
+                        updateProgress(60 + (i + 1) * 5);
+                    } catch (accountError) {
+                        log(`⚠️ Failed to add account ${accountsData[i].email}: ${accountError.message}`, 'error');
+                    }
+                }
+                
+                updateProgress(80);
+                
+                // Create sellers collection
+                log('🏪 Creating sellers collection...');
+                const sellersData = [
+                    {
+                        businessName: 'ABC Contractors',
+                        contactPerson: 'Mike Johnson',
+                        email: 'mike@abccontractors.com',
+                        phone: '+1-555-0123',
+                        businessType: 'contractor',
+                        status: 'verified',
+                        createdAt: new Date().toISOString()
+                    },
+                    {
+                        businessName: 'XYZ Real Estate',
+                        contactPerson: 'Sarah Wilson',
+                        email: 'sarah@xyzrealestate.com',
+                        phone: '+1-555-0456',
+                        businessType: 'real-estate',
+                        status: 'pending',
+                        createdAt: new Date().toISOString()
+                    }
+                ];
+                
+                for (let i = 0; i < sellersData.length; i++) {
+                    try {
+                        const sellerData = sellersData[i];
+                        log(`📝 Adding seller ${i + 1}/${sellersData.length}: ${sellerData.businessName}`);
+                        await db.collection('sellers').add(sellerData);
+                        log(`✅ Added seller: ${sellerData.businessName}`);
+                        updateProgress(80 + (i + 1) * 5);
+                    } catch (sellerError) {
+                        log(`⚠️ Failed to add seller ${sellersData[i].businessName}: ${sellerError.message}`, 'error');
+                    }
+                }
+                
+                updateProgress(100);
+                log('🎉 Setup completed successfully!');
+                showStatus('🎉 Setup completed successfully! Redirecting to admin dashboard...', 'success');
+                
+                // Auto-redirect to admin dashboard
+                setTimeout(() => {
+                    window.location.href = 'admin-dashboard.html';
+                }, 3000);
+                
+            } catch (error) {
+                log('❌ Error during setup: ' + error.message, 'error');
+                showStatus('❌ Setup failed: ' + error.message, 'error');
+            }
+        }
+
+        // Data migration function
+        async function migrateUserData() {
+            try {
+                log('🔄 Starting user data migration from userProfiles to accounts...');
+                showStatus('🔄 Starting user data migration...', 'info');
+                document.getElementById('log').style.display = 'block';
+                
+                // Check Firebase connection
+                try {
+                    const testDoc = await db.collection('test').add({ test: true, timestamp: new Date().toISOString() });
+                    await testDoc.delete();
+                    log('✅ Firebase connection verified');
+                } catch (error) {
+                    throw new Error('Firebase connection failed: ' + error.message);
+                }
+                
+                // Get all users from userProfiles collection
+                log('📊 Fetching users from userProfiles collection...');
+                const userProfilesSnapshot = await db.collection('userProfiles').get();
+                
+                if (userProfilesSnapshot.empty) {
+                    log('ℹ️ No users found in userProfiles collection');
+                    showStatus('ℹ️ No users found to migrate', 'info');
+                    return;
+                }
+                
+                log(`📊 Found ${userProfilesSnapshot.size} users in userProfiles collection`);
+                
+                let migratedCount = 0;
+                let skippedCount = 0;
+                let errorCount = 0;
+                
+                // Process each user
+                for (const doc of userProfilesSnapshot.docs) {
+                    try {
+                        const userData = doc.data();
+                        const userId = doc.id;
+                        
+                        log(`🔄 Migrating user: ${userData.email || userId}`);
+                        
+                        // Check if user already exists in accounts collection
+                        const existingAccount = await db.collection('accounts').doc(userId).get();
+                        
+                        if (existingAccount.exists) {
+                            log(`⏭️ User ${userData.email || userId} already exists in accounts, skipping...`);
+                            skippedCount++;
+                            continue;
+                        }
+                        
+                        // Prepare account data
+                        const accountData = {
+                            uid: userId,
+                            displayName: userData.displayName || userData.firstName + ' ' + userData.lastName || 'User',
+                            email: userData.email || '',
+                            role: userData.role || userData.userType || 'user',
+                            accountType: userData.accountType || 'regular',
+                            createdAt: userData.createdAt || userData.timestamp || new Date().toISOString(),
+                            updatedAt: new Date().toISOString(),
+                            status: userData.status || 'active',
+                            // Copy any additional fields
+                            ...userData
+                        };
+                        
+                        // Save to accounts collection
+                        await db.collection('accounts').doc(userId).set(accountData);
+                        log(`✅ Successfully migrated user: ${userData.email || userId}`);
+                        migratedCount++;
+                        
+                    } catch (error) {
+                        log(`❌ Error migrating user ${doc.id}: ${error.message}`, 'error');
+                        errorCount++;
+                    }
+                }
+                
+                // Summary
+                log(`📊 Migration Summary:`);
+                log(`   ✅ Successfully migrated: ${migratedCount} users`);
+                log(`   ⏭️ Skipped (already exists): ${skippedCount} users`);
+                log(`   ❌ Errors: ${errorCount} users`);
+                
+                if (errorCount === 0) {
+                    showStatus(`🎉 Migration completed! Migrated ${migratedCount} users to accounts collection.`, 'success');
+                } else {
+                    showStatus(`⚠️ Migration completed with ${errorCount} errors. Check log for details.`, 'warning');
+                }
+                
+            } catch (error) {
+                log('❌ Migration failed: ' + error.message, 'error');
+                showStatus('❌ Migration failed: ' + error.message, 'error');
+            }
+        }
+
+        // Test Firebase write permissions
+        async function testFirebaseWrite() {
+            try {
+                log('🧪 Testing Firebase write permissions...');
+                showStatus('🧪 Testing Firebase write permissions...', 'info');
+                const testDoc = await db.collection('test').add({ 
+                    message: 'Test write permission', 
+                    timestamp: new Date().toISOString(), 
+                    test: true 
+                });
+                log('✅ Write test successful! Document ID: ' + testDoc.id);
+                showStatus('✅ Write test successful! Firebase permissions are working.', 'success');
+                await testDoc.delete();
+                log('🧹 Cleaned up test document');
+            } catch (error) {
+                log('❌ Write test failed: ' + error.message, 'error');
+                showStatus('❌ Write test failed. Please update Firebase security rules.', 'error');
+            }
+        }
+
+        // Initialize when page loads
+        window.addEventListener('load', function() {
+            log('🚀 Firebase Setup & Migration page loaded');
+            log('Your Firebase config is loaded and ready');
+            log('Click the buttons above to start setup or migration!');
+            showStatus('🚀 Firebase Setup & Migration page loaded', 'info');
+        });
+    </script>
+</body>
+</html>

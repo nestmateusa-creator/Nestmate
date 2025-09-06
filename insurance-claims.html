@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NestMate - Insurance Claims</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
+            authDomain: "nestmate-167ed.firebaseapp.com",
+            projectId: "nestmate-167ed",
+            storageBucket: "nestmate-167ed.firebasestorage.app",
+            messagingSenderId: "865171535257",
+            appId: "1:865171535257:web:9944a48a952e99f55f0f08",
+            measurementId: "G-1DYR2RGY4G"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        window.firebaseAuth = auth;
+        window.firebaseDb = db;
+    </script>
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .back-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: white;
+            border-radius: var(--radius);
+            padding: 8px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            background: none;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            color: var(--secondary);
+            white-space: nowrap;
+        }
+
+        .nav-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .nav-tab:hover:not(.active) {
+            background: var(--light);
+        }
+
+        .content-section {
+            background: white;
+            border-radius: var(--radius);
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .section-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .section-subtitle {
+            color: var(--secondary);
+            font-size: 16px;
+        }
+
+        .claims-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+        }
+
+        .claim-card {
+            background: var(--light);
+            border-radius: var(--radius);
+            padding: 24px;
+            border: 2px solid var(--border);
+            transition: var(--transition);
+        }
+
+        .claim-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .claim-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .claim-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .claim-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .claim-status.pending {
+            background: var(--warning);
+            color: white;
+        }
+
+        .claim-status.approved {
+            background: var(--success);
+            color: white;
+        }
+
+        .claim-status.denied {
+            background: var(--danger);
+            color: white;
+        }
+
+        .claim-status.in-review {
+            background: var(--primary);
+            color: white;
+        }
+
+        .claim-details {
+            margin-bottom: 16px;
+        }
+
+        .claim-detail {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .claim-detail:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: var(--secondary);
+            font-size: 14px;
+        }
+
+        .detail-value {
+            color: var(--dark);
+            font-weight: 500;
+        }
+
+        .claim-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .file-upload {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius);
+            padding: 32px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .file-upload:hover {
+            border-color: var(--primary);
+            background: var(--light);
+        }
+
+        .file-upload i {
+            font-size: 48px;
+            color: var(--secondary);
+            margin-bottom: 16px;
+        }
+
+        .damage-tracker {
+            background: var(--light);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .damage-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: white;
+            border-radius: var(--radius);
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .damage-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .damage-info {
+            flex: 1;
+        }
+
+        .damage-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .damage-description {
+            color: var(--secondary);
+            font-size: 14px;
+        }
+
+        .damage-severity {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .damage-severity.low {
+            background: var(--success);
+            color: white;
+        }
+
+        .damage-severity.medium {
+            background: var(--warning);
+            color: white;
+        }
+
+        .damage-severity.high {
+            background: var(--danger);
+            color: white;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--radius);
+            padding: 32px;
+            max-width: 600px;
+            margin: 50px auto;
+            position: relative;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--secondary);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--light);
+            border-radius: var(--radius);
+            padding: 24px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: var(--secondary);
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .nav-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .claims-grid,
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div>
+                <h1><i class="fas fa-shield-alt"></i> Insurance Claims</h1>
+                <p>Track damage, file claims, and manage insurance documentation</p>
+            </div>
+            <button class="back-btn" onclick="window.location.href='NestMate.html'">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </button>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showSection('overview')">Overview</button>
+            <button class="nav-tab" onclick="showSection('file-claim')">File New Claim</button>
+            <button class="nav-tab" onclick="showSection('damage-tracker')">Damage Tracker</button>
+            <button class="nav-tab" onclick="showSection('documents')">Documents</button>
+        </div>
+
+        <!-- Overview Section -->
+        <div id="overview" class="content-section">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <div>
+                    <h2 class="section-title">Claims Overview</h2>
+                    <p class="section-subtitle">Track your insurance claims and coverage status</p>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">Active Claims</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">$15,750</div>
+                    <div class="stat-label">Total Claimed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">$12,300</div>
+                    <div class="stat-label">Approved Amount</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">78%</div>
+                    <div class="stat-label">Approval Rate</div>
+                </div>
+            </div>
+
+            <!-- Claims Grid -->
+            <div class="claims-grid">
+                <!-- Claim 1 -->
+                <div class="claim-card">
+                    <div class="claim-header">
+                        <h3 class="claim-title">Storm Damage - Roof</h3>
+                        <span class="claim-status approved">Approved</span>
+                    </div>
+                    <div class="claim-details">
+                        <div class="claim-detail">
+                            <span class="detail-label">Claim Number:</span>
+                            <span class="detail-value">CLM-2024-001</span>
+                        </div>
+                        <div class="claim-detail">
+                            <span class="detail-label">Filed Date:</span>
+                            <span class="detail-value">Mar 15, 2024</span>
+                        </div>
+                        <div class="claim-detail">
+                            <span class="detail-label">Claimed Amount:</span>
+                            <span class="detail-value">$8,500</span>
+                        </div>
+                        <div class="claim-detail">
+                            <span class="detail-label">Approved Amount:</span>
+                            <span class="detail-value">$7,200</span>
+                        </div>
+                        <div class="claim-detail">
+                            <span class="detail-label">Status:</span>
+                            <span class="detail-value">Payment Processing</span>
+                        </div>
+                    </div>
+                    <div class="claim-actions">
+                        <button class="btn btn-outline" onclick="viewClaim('CLM-2024-001')">
+                            <i class="fas fa-eye"></i> View Details
+                        </button>
+                        <button class="btn btn-primary" onclick="downloadDocuments('CLM-2024-001')">
+                            <i class="fas fa-download"></i> Documents
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Claim 2 -->
+                <div class="claim-card">
+                    <div class="claim-header">
+                        <h3 class="claim-title">Water Damage - Basement</h3>
+                        <span class="claim-status in-review">In Review</span>
+                    </div>
+                    <div class="claim-details">
+                        <div class="claim-detail">
+                            <span class="detail-label">Claim Number:</span>
+                            <span class="detail-value">CLM-2024-002</span>
+                        </div>
+                        <div class="claim-detail">
+                            <span class="detail-label">Filed Date:</span>
+                            <span class="detail-value">Apr 2, 2024</span>
+                        </div>
+                        <div class="claim-detail">
+                            <span class="detail-label">Claimed Amount:</span>
+                            <span class="detail-value">$5,200</span>
+                        </div>
+                        <div class="claim-detail">
+                            <span class="detail-label">Estimated Review:</span>
+                            <span class="detail-value">5-7 days</span>
+                        </div>
+                        <div class="claim-detail">
+                            <span class="detail-label">Status:</span>
+                            <span class="detail-value">Under Investigation</span>
+                        </div>
+                    </div>
+                    <div class="claim-actions">
+                        <button class="btn btn-outline" onclick="viewClaim('CLM-2024-002')">
+                            <i class="fas fa-eye"></i> View Details
+                        </button>
+                        <button class="btn btn-primary" onclick="uploadDocuments('CLM-2024-002')">
+                            <i class="fas fa-upload"></i> Upload Docs
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Claim 3 -->
+                <div class="claim-card">
+                    <div class="claim-header">
+                        <h3 class="claim-title">Theft - Electronics</h3>
+                        <span class="claim-status pending">Pending</span>
+                    </div>
+                    <div class="claim-details">
+                        <div class="claim-detail">
+                            <span class="detail-label">Claim Number:</span>
+                            <span class="detail-value">CLM-2024-003</span>
+                        </div>
+                        <div class="claim-detail">
+                            <span class="detail-label">Filed Date:</span>
+                            <span class="detail-value">Apr 10, 2024</span>
+                        </div>
+                        <div class="claim-detail">
+                            <span class="detail-label">Claimed Amount:</span>
+                            <span class="detail-value">$2,050</span>
+                        </div>
+                        <div class="claim-detail">
+                            <span class="detail-label">Police Report:</span>
+                            <span class="detail-value">Required</span>
+                        </div>
+                        <div class="claim-detail">
+                            <span class="detail-label">Status:</span>
+                            <span class="detail-value">Awaiting Documentation</span>
+                        </div>
+                    </div>
+                    <div class="claim-actions">
+                        <button class="btn btn-outline" onclick="viewClaim('CLM-2024-003')">
+                            <i class="fas fa-eye"></i> View Details
+                        </button>
+                        <button class="btn btn-primary" onclick="uploadDocuments('CLM-2024-003')">
+                            <i class="fas fa-upload"></i> Upload Docs
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- File New Claim Section -->
+        <div id="file-claim" class="content-section" style="display: none;">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-plus-circle"></i>
+                </div>
+                <div>
+                    <h2 class="section-title">File New Claim</h2>
+                    <p class="section-subtitle">Report damage and start your insurance claim process</p>
+                </div>
+            </div>
+
+            <form id="claimForm">
+                <div class="form-grid">
+                    <div>
+                        <div class="form-group">
+                            <label class="form-label">Claim Type</label>
+                            <select class="form-select" id="claimType" required>
+                                <option value="">Select claim type...</option>
+                                <option value="storm-damage">Storm Damage</option>
+                                <option value="water-damage">Water Damage</option>
+                                <option value="fire-damage">Fire Damage</option>
+                                <option value="theft">Theft</option>
+                                <option value="vandalism">Vandalism</option>
+                                <option value="appliance-failure">Appliance Failure</option>
+                                <option value="structural-damage">Structural Damage</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Date of Incident</label>
+                            <input type="date" class="form-input" id="incidentDate" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Estimated Damage Amount</label>
+                            <input type="number" class="form-input" id="damageAmount" placeholder="$0.00" min="0" step="0.01" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Location of Damage</label>
+                            <select class="form-select" id="damageLocation" required>
+                                <option value="">Select location...</option>
+                                <option value="roof">Roof</option>
+                                <option value="basement">Basement</option>
+                                <option value="kitchen">Kitchen</option>
+                                <option value="bathroom">Bathroom</option>
+                                <option value="living-room">Living Room</option>
+                                <option value="bedroom">Bedroom</option>
+                                <option value="garage">Garage</option>
+                                <option value="exterior">Exterior</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="form-group">
+                            <label class="form-label">Description of Damage</label>
+                            <textarea class="form-textarea" id="damageDescription" placeholder="Describe what happened and the extent of the damage..." required></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Were Police/Authorities Contacted?</label>
+                            <select class="form-select" id="authoritiesContacted">
+                                <option value="no">No</option>
+                                <option value="yes">Yes</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Contact Information</label>
+                            <input type="tel" class="form-input" id="contactPhone" placeholder="Phone number" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Preferred Contact Time</label>
+                            <select class="form-select" id="contactTime">
+                                <option value="morning">Morning (8 AM - 12 PM)</option>
+                                <option value="afternoon">Afternoon (12 PM - 4 PM)</option>
+                                <option value="evening">Evening (4 PM - 8 PM)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Upload Photos/Documents</label>
+                    <div class="file-upload" onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Click to upload photos, receipts, or other documentation</p>
+                        <p style="font-size: 12px; color: var(--secondary);">Max file size: 10MB each</p>
+                    </div>
+                    <input type="file" id="fileInput" multiple accept="image/*,.pdf,.doc,.docx" style="display: none;">
+                    <div id="fileList" style="margin-top: 16px;"></div>
+                </div>
+
+                <div class="claim-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i> Submit Claim
+                    </button>
+                    <button type="button" class="btn btn-outline" onclick="resetForm()">
+                        <i class="fas fa-undo"></i> Reset Form
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Damage Tracker Section -->
+        <div id="damage-tracker" class="content-section" style="display: none;">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div>
+                    <h2 class="section-title">Damage Tracker</h2>
+                    <p class="section-subtitle">Monitor and document damage to your property</p>
+                </div>
+            </div>
+
+            <div class="damage-tracker">
+                <div class="damage-item">
+                    <div class="damage-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <div class="damage-info">
+                        <div class="damage-title">Roof Shingle Damage</div>
+                        <div class="damage-description">Missing and damaged shingles from recent storm</div>
+                    </div>
+                    <span class="damage-severity high">High</span>
+                </div>
+
+                <div class="damage-item">
+                    <div class="damage-icon">
+                        <i class="fas fa-tint"></i>
+                    </div>
+                    <div class="damage-info">
+                        <div class="damage-title">Basement Water Intrusion</div>
+                        <div class="damage-description">Water seepage through foundation cracks</div>
+                    </div>
+                    <span class="damage-severity medium">Medium</span>
+                </div>
+
+                <div class="damage-item">
+                    <div class="damage-icon">
+                        <i class="fas fa-window-maximize"></i>
+                    </div>
+                    <div class="damage-info">
+                        <div class="damage-title">Broken Window</div>
+                        <div class="damage-description">Cracked window pane in living room</div>
+                    </div>
+                    <span class="damage-severity low">Low</span>
+                </div>
+
+                <div class="damage-item">
+                    <div class="damage-icon">
+                        <i class="fas fa-door-open"></i>
+                    </div>
+                    <div class="damage-info">
+                        <div class="damage-title">Damaged Garage Door</div>
+                        <div class="damage-description">Dent in garage door from vehicle impact</div>
+                    </div>
+                    <span class="damage-severity medium">Medium</span>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="addDamageReport()">
+                <i class="fas fa-plus"></i> Add Damage Report
+            </button>
+        </div>
+
+        <!-- Documents Section -->
+        <div id="documents" class="content-section" style="display: none;">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div>
+                    <h2 class="section-title">Documents</h2>
+                    <p class="section-subtitle">Manage your insurance documents and claim files</p>
+                </div>
+            </div>
+
+            <div class="claims-grid">
+                <div class="claim-card">
+                    <div class="claim-header">
+                        <h3 class="claim-title">Policy Documents</h3>
+                    </div>
+                    <div class="claim-details">
+                        <div class="claim-detail">
+                            <span class="detail-label">Policy Number:</span>
+                            <span class="detail-value">POL-2024-001</span>
+                        </div>
+                        <div class="claim-detail">
+                            <span class="detail-label">Coverage Type:</span>
+                            <span class="detail-value">Homeowners</span>
+                        </div>
+                        <div class="claim-detail">
+                            <span class="detail-label">Effective Date:</span>
+                            <span class="detail-value">Jan 1, 2024</span>
+                        </div>
+                        <div class="claim-detail">
+                            <span class="detail-label">Expiration Date:</span>
+                            <span class="detail-value">Dec 31, 2024</span>
+                        </div>
+                    </div>
+                    <div class="claim-actions">
+                        <button class="btn btn-primary" onclick="downloadPolicy()">
+                            <i class="fas fa-download"></i> Download Policy
+                        </button>
+                    </div>
+                </div>
+
+                <div class="claim-card">
+                    <div class="claim-header">
+                        <h3 class="claim-title">Claim Documents</h3>
+                    </div>
+                    <div class="claim-details">
+                        <div class="claim-detail">
+                            <span class="detail-label">Total Files:</span>
+                            <span class="detail-value">12</span>
+                        </div>
+                        <div class="claim-detail">
+                            <span class="detail-label">Photos:</span>
+                            <span class="detail-value">8</span>
+                        </div>
+                        <div class="claim-detail">
+                            <span class="detail-label">Receipts:</span>
+                            <span class="detail-value">3</span>
+                        </div>
+                        <div class="claim-detail">
+                            <span class="detail-label">Reports:</span>
+                            <span class="detail-value">1</span>
+                        </div>
+                    </div>
+                    <div class="claim-actions">
+                        <button class="btn btn-outline" onclick="viewDocuments()">
+                            <i class="fas fa-eye"></i> View All
+                        </button>
+                        <button class="btn btn-primary" onclick="uploadDocuments()">
+                            <i class="fas fa-upload"></i> Upload
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Claim Details Modal -->
+    <div id="claimModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('claimModal')">&times;</button>
+            <h2 id="modalTitle">Claim Details</h2>
+            <div id="modalContent">
+                <!-- Claim details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSection = 'overview';
+
+        // Show section
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).style.display = 'block';
+            
+            // Update active tab
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            currentSection = sectionId;
+        }
+
+        // View claim details
+        function viewClaim(claimNumber) {
+            const claimData = {
+                'CLM-2024-001': {
+                    title: 'Storm Damage - Roof',
+                    status: 'Approved',
+                    details: {
+                        'Claim Number': 'CLM-2024-001',
+                        'Filed Date': 'Mar 15, 2024',
+                        'Claimed Amount': '$8,500',
+                        'Approved Amount': '$7,200',
+                        'Status': 'Payment Processing',
+                        'Description': 'Severe storm caused damage to roof shingles and flashing. Multiple areas affected requiring replacement.',
+                        'Adjuster': 'John Smith',
+                        'Phone': '(555) 123-4567',
+                        'Email': 'john.smith@insurance.com'
+                    }
+                },
+                'CLM-2024-002': {
+                    title: 'Water Damage - Basement',
+                    status: 'In Review',
+                    details: {
+                        'Claim Number': 'CLM-2024-002',
+                        'Filed Date': 'Apr 2, 2024',
+                        'Claimed Amount': '$5,200',
+                        'Status': 'Under Investigation',
+                        'Description': 'Water intrusion in basement through foundation cracks. Damage to drywall and flooring.',
+                        'Adjuster': 'Sarah Johnson',
+                        'Phone': '(555) 987-6543',
+                        'Email': 'sarah.johnson@insurance.com'
+                    }
+                },
+                'CLM-2024-003': {
+                    title: 'Theft - Electronics',
+                    status: 'Pending',
+                    details: {
+                        'Claim Number': 'CLM-2024-003',
+                        'Filed Date': 'Apr 10, 2024',
+                        'Claimed Amount': '$2,050',
+                        'Status': 'Awaiting Documentation',
+                        'Description': 'Burglary resulting in theft of electronics and jewelry. Police report filed.',
+                        'Required Documents': 'Police Report, Receipts, Photos'
+                    }
+                }
+            };
+
+            const claim = claimData[claimNumber];
+            if (claim) {
+                document.getElementById('modalTitle').textContent = claim.title;
+                
+                let content = '<div style="margin-bottom: 24px;">';
+                for (const [key, value] of Object.entries(claim.details)) {
+                    content += `
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border);">
+                            <strong>${key}:</strong>
+                            <span>${value}</span>
+                        </div>
+                    `;
+                }
+                content += '</div>';
+                
+                content += `
+                    <div class="claim-actions">
+                        <button class="btn btn-primary" onclick="downloadClaimDocuments('${claimNumber}')">
+                            <i class="fas fa-download"></i> Download Documents
+                        </button>
+                        <button class="btn btn-outline" onclick="closeModal('claimModal')">
+                            Close
+                        </button>
+                    </div>
+                `;
+                
+                document.getElementById('modalContent').innerHTML = content;
+                document.getElementById('claimModal').style.display = 'block';
+            }
+        }
+
+        // File upload handling
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const files = e.target.files;
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = '';
+            
+            for (let file of files) {
+                const fileItem = document.createElement('div');
+                fileItem.style.cssText = `
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    padding: 8px;
+                    background: var(--light);
+                    border-radius: var(--radius);
+                    margin-bottom: 8px;
+                `;
+                fileItem.innerHTML = `
+                    <i class="fas fa-file" style="color: var(--primary);"></i>
+                    <span>${file.name}</span>
+                    <span style="color: var(--secondary); font-size: 12px;">(${(file.size / 1024 / 1024).toFixed(2)} MB)</span>
+                `;
+                fileList.appendChild(fileItem);
+            }
+        });
+
+        // Handle form submission
+        document.getElementById('claimForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                claimType: document.getElementById('claimType').value,
+                incidentDate: document.getElementById('incidentDate').value,
+                damageAmount: document.getElementById('damageAmount').value,
+                damageLocation: document.getElementById('damageLocation').value,
+                damageDescription: document.getElementById('damageDescription').value,
+                authoritiesContacted: document.getElementById('authoritiesContacted').value,
+                contactPhone: document.getElementById('contactPhone').value,
+                contactTime: document.getElementById('contactTime').value,
+                userId: window.firebaseAuth?.currentUser?.uid || 'anonymous',
+                timestamp: new Date().toISOString(),
+                status: 'pending'
+            };
+
+            try {
+                // Save claim to Firebase
+                if (window.firebaseDb) {
+                    await addDoc(collection(window.firebaseDb, 'insuranceClaims'), formData);
+                }
+                
+                alert('Claim submitted successfully! You will receive a confirmation email shortly.');
+                resetForm();
+                showSection('overview');
+            } catch (error) {
+                console.error('Error submitting claim:', error);
+                alert('There was an error submitting your claim. Please try again.');
+            }
+        });
+
+        // Reset form
+        function resetForm() {
+            document.getElementById('claimForm').reset();
+            document.getElementById('fileList').innerHTML = '';
+        }
+
+        // Add damage report
+        function addDamageReport() {
+            alert('Add damage report feature will open a form to document new damage.');
+        }
+
+        // Download functions
+        function downloadPolicy() {
+            alert('Policy document download will begin shortly.');
+        }
+
+        function downloadClaimDocuments(claimNumber) {
+            alert(`Downloading documents for claim ${claimNumber}...`);
+        }
+
+        function downloadDocuments(claimNumber) {
+            alert(`Downloading all documents for claim ${claimNumber}...`);
+        }
+
+        // Upload functions
+        function uploadDocuments(claimNumber) {
+            alert(`Upload documents for claim ${claimNumber}. This will open a file upload dialog.`);
+        }
+
+        function viewDocuments() {
+            alert('View all claim documents. This will show a gallery of uploaded files.');
+        }
+
+        // Close modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+
+        // Check authentication
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.firebaseAuth) {
+                window.firebaseAuth.onAuthStateChanged(function(user) {
+                    if (!user) {
+                        // Redirect to sign in if not authenticated
+                        window.location.href = 'signin.html';
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

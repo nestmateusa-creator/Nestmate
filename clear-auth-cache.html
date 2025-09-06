@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clear Authentication Cache - NestMate</title>
+    
+    <!-- Firebase SDK v12 -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+        import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+
+        // Old Firebase config (to sign out from old project)
+        const oldFirebaseConfig = {
+            apiKey: "AIzaSyD-4kmEmEH6OPtGK-ez7GkCHV31mg5iNhk",
+            authDomain: "nestmateusa-4914c.firebaseapp.com",
+            projectId: "nestmateusa-4914c",
+            storageBucket: "nestmateusa-4914c.firebasestorage.app",
+            messagingSenderId: "907781112999",
+            appId: "1:907781112999:web:b9585789c6cceac0e64782",
+            measurementId: "G-35WBBNXHB8"
+        };
+
+        // New Firebase config
+        const newFirebaseConfig = {
+            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
+            authDomain: "nestmate-167ed.firebaseapp.com",
+            projectId: "nestmate-167ed",
+            storageBucket: "nestmate-167ed.firebasestorage.app",
+            messagingSenderId: "865171535257",
+            appId: "1:865171535257:web:9944a48a952e99f55f0f08",
+            measurementId: "G-1DYR2RGY4G"
+        };
+
+        // Initialize both Firebase instances
+        const oldApp = initializeApp(oldFirebaseConfig, 'old');
+        const newApp = initializeApp(newFirebaseConfig, 'new');
+        
+        const oldAuth = getAuth(oldApp);
+        const newAuth = getAuth(newApp);
+
+        window.oldAuth = oldAuth;
+        window.newAuth = newAuth;
+        window.signOut = signOut;
+
+        console.log('Firebase instances initialized for cache clearing');
+    </script>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 10px 5px;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #1d4ed8;
+        }
+        button.danger {
+            background: #dc2626;
+        }
+        button.danger:hover {
+            background: #b91c1c;
+        }
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 6px;
+        }
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .step {
+            background: #f8fafc;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border-left: 4px solid #2563eb;
+        }
+        .step h4 {
+            margin: 0 0 10px 0;
+            color: #1e293b;
+        }
+        .step p {
+            margin: 5px 0;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Clear Authentication Cache</h1>
+        <p>This tool will help you completely clear all authentication data and resolve the auto-redirection issue.</p>
+        
+        <div class="step">
+            <h4>Step 1: Sign Out from Both Firebase Projects</h4>
+            <p>This will clear the authentication state from both old and new Firebase projects.</p>
+            <button onclick="signOutFromBoth()">Sign Out from Both Projects</button>
+        </div>
+        
+        <div class="step">
+            <h4>Step 2: Clear Browser Storage</h4>
+            <p>This will clear localStorage, sessionStorage, and other cached data.</p>
+            <button onclick="clearBrowserStorage()">Clear Browser Storage</button>
+        </div>
+        
+        <div class="step">
+            <h4>Step 3: Clear IndexedDB</h4>
+            <p>This will clear any IndexedDB data that might be storing authentication tokens.</p>
+            <button onclick="clearIndexedDB()">Clear IndexedDB</button>
+        </div>
+        
+        <div class="step">
+            <h4>Step 4: Clear All Cache (Nuclear Option)</h4>
+            <p>This will attempt to clear everything. Use this if the above steps don't work.</p>
+            <button class="danger" onclick="clearEverything()">Clear Everything</button>
+        </div>
+        
+        <div class="step">
+            <h4>Step 5: Manual Browser Cache Clear</h4>
+            <p>You should also manually clear your browser cache:</p>
+            <ul>
+                <li><strong>Chrome/Edge:</strong> Press Ctrl+Shift+Delete, select "All time", check all boxes, click "Clear data"</li>
+                <li><strong>Firefox:</strong> Press Ctrl+Shift+Delete, select "Everything", click "Clear Now"</li>
+                <li><strong>Safari:</strong> Press Cmd+Option+E to clear cache</li>
+            </ul>
+        </div>
+        
+        <div id="status"></div>
+        
+        <div class="step">
+            <h4>Next Steps After Clearing Cache:</h4>
+            <ol>
+                <li>Close all browser tabs with your application</li>
+                <li>Open a new incognito/private window</li>
+                <li>Go to <code>signin.html</code></li>
+                <li>Try creating a new account</li>
+                <li>If you still get redirected to the old account, try a different browser</li>
+            </ol>
+        </div>
+        
+        <div class="step">
+            <h4>Firebase Security Rules</h4>
+            <p>Don't forget to set up proper Firestore security rules in your Firebase Console to fix the "Permission denied" errors. See the <code>firebase-security-rules.md</code> file for instructions.</p>
+        </div>
+    </div>
+
+    <script>
+        function showStatus(message, type = 'success') {
+            document.getElementById('status').innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        async function signOutFromBoth() {
+            try {
+                await Promise.all([
+                    window.signOut(window.oldAuth),
+                    window.signOut(window.newAuth)
+                ]);
+                showStatus('✅ Successfully signed out from both Firebase projects', 'success');
+            } catch (error) {
+                showStatus(`❌ Error signing out: ${error.message}`, 'error');
+            }
+        }
+
+        function clearBrowserStorage() {
+            try {
+                // Clear localStorage
+                localStorage.clear();
+                
+                // Clear sessionStorage
+                sessionStorage.clear();
+                
+                // Clear cookies for the domain
+                document.cookie.split(";").forEach(function(c) { 
+                    document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+                });
+                
+                showStatus('✅ Browser storage cleared successfully', 'success');
+            } catch (error) {
+                showStatus(`❌ Error clearing browser storage: ${error.message}`, 'error');
+            }
+        }
+
+        async function clearIndexedDB() {
+            try {
+                // Try to clear IndexedDB
+                const databases = await window.indexedDB.databases();
+                for (const db of databases) {
+                    if (db.name) {
+                        window.indexedDB.deleteDatabase(db.name);
+                    }
+                }
+                showStatus('✅ IndexedDB cleared successfully', 'success');
+            } catch (error) {
+                showStatus(`⚠️ IndexedDB clear attempted (may not be supported in all browsers): ${error.message}`, 'warning');
+            }
+        }
+
+        async function clearEverything() {
+            try {
+                // Sign out from both projects
+                await signOutFromBoth();
+                
+                // Clear browser storage
+                clearBrowserStorage();
+                
+                // Clear IndexedDB
+                await clearIndexedDB();
+                
+                // Additional cache clearing attempts
+                if ('caches' in window) {
+                    const cacheNames = await caches.keys();
+                    await Promise.all(cacheNames.map(name => caches.delete(name)));
+                }
+                
+                showStatus('✅ All cache clearing operations completed', 'success');
+            } catch (error) {
+                showStatus(`❌ Error during comprehensive cache clear: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-detect current authentication state
+        window.addEventListener('load', async function() {
+            try {
+                const oldUser = window.oldAuth.currentUser;
+                const newUser = window.newAuth.currentUser;
+                
+                if (oldUser || newUser) {
+                    showStatus(`⚠️ Currently signed in: Old project: ${oldUser ? oldUser.email : 'None'}, New project: ${newUser ? newUser.email : 'None'}`, 'warning');
+                } else {
+                    showStatus('ℹ️ No users currently signed in to either Firebase project', 'info');
+                }
+            } catch (error) {
+                showStatus(`ℹ️ Could not check authentication state: ${error.message}`, 'info');
+            }
+        });
+    </script>
+</body>
+</html>
+
+

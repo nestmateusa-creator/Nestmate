@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Checkout — NestMate Pro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;500&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+      background: linear-gradient(120deg, #e0e7ff 0%, #f8fafc 100%);
+      color: #1e293b;
+      min-height: 100vh;
+    }
+    .checkout-container {
+      max-width: 420px;
+      margin: 64px auto;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 4px 32px rgba(37,99,235,0.10);
+      padding: 36px 28px 32px 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border: 2px solid #e5e7eb;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 2rem;
+      font-weight: 800;
+      color: #2563eb;
+      margin-bottom: 18px;
+      letter-spacing: -1px;
+    }
+    .checkout-title {
+      font-size: 1.7rem;
+      font-weight: 900;
+      color: #2563eb;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .checkout-desc {
+      font-size: 1.08rem;
+      color: #334155;
+      margin-bottom: 28px;
+      text-align: center;
+    }
+    .plan-summary {
+      background: #e0e7ff;
+      border-radius: 12px;
+      padding: 18px 16px;
+      margin-bottom: 28px;
+      width: 100%;
+      box-sizing: border-box;
+      text-align: left;
+    }
+    .plan-name {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #2563eb;
+      margin-bottom: 6px;
+    }
+    .plan-price {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: #1e293b;
+      margin-bottom: 4px;
+    }
+    .plan-features {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      color: #334155;
+      font-size: 1.01rem;
+    }
+    .plan-features li {
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .plan-features .check {
+      color: #22c55e;
+      font-size: 1.1em;
+    }
+    .checkout-btn {
+      display: block;
+      width: 100%;
+      padding: 16px 0;
+      background: #2563eb;
+      color: #fff;
+      font-size: 1.18rem;
+      font-weight: 800;
+      border: none;
+      border-radius: 12px;
+      text-decoration: none;
+      text-align: center;
+      margin-top: 12px;
+      box-shadow: 0 2px 12px rgba(37,99,235,0.10);
+      transition: background 0.18s;
+      cursor: pointer;
+    }
+    .checkout-btn:hover {
+      background: #1d4ed8;
+    }
+    .secure {
+      margin-top: 18px;
+      color: #64748b;
+      font-size: 0.98rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      justify-content: center;
+    }
+    .secure svg {
+      color: #22c55e;
+      vertical-align: middle;
+    }
+    @media (max-width: 600px) {
+      .checkout-container {
+        margin: 24px 6px;
+        padding: 18px 6px 18px 6px;
+      }
+      .brand {
+        font-size: 1.3rem;
+      }
+      .checkout-title {
+        font-size: 1.1rem;
+      }
+      .plan-summary {
+        padding: 10px 6px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="checkout-container">
+    <div class="brand">
+      <svg viewBox="0 0 64 64" width="32" height="32" fill="currentColor"><path d="M32 4 L4 28 H12 V60 H26 V40 H38 V60 H52 V28 H60 Z"/></svg>
+      NestMate
+    </div>
+    <div class="checkout-title">Upgrade to Pro</div>
+    <div class="checkout-desc">
+      Unlock unlimited home profiles, advanced features, and the ability to order saved products for your home.
+    </div>
+    <div class="plan-summary">
+      <div class="plan-name">Pro Plan</div>
+      <div class="plan-price">$10<span style="font-size:1rem;font-weight:500;color:#64748b;">/month</span></div>
+      <ul class="plan-features">
+        <li><span class="check">✔</span> Unlimited Home Profiles</li>
+        <li><span class="check">✔</span> Unlimited Tasks & Reminders</li>
+        <li><span class="check">✔</span> Home Health Score</li>
+        <li><span class="check">✔</span> Priority Support</li>
+        <li><span class="check">✔</span> Export & Backup</li>
+        <li><span class="check">✔</span> Order Saved Products for Your Home</li>
+        <li><span class="check">✔</span> Product Price Tracking & Alerts</li>
+        <li><span class="check">✔</span> Advanced Product Recommendations</li>
+      </ul>
+    </div>
+    <a class="checkout-btn" href="https://buy.stripe.com/test_28E9AT7R93VN1rP1EMaR200" target="_blank" rel="noopener">
+      Proceed to Secure Payment
+    </a>
+    <div class="secure">
+      <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5Zm-3 5a3 3 0 1 1 6 0v3h-6V7Zm-2 5h12v8H7v-8Z"/></svg>
+      100% Secure Payment with Stripe
+    </div>
+  </div>
+</body>
+</html>

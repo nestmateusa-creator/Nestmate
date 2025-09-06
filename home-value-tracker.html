@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NestMate - Home Value Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
+            authDomain: "nestmate-167ed.firebaseapp.com",
+            projectId: "nestmate-167ed",
+            storageBucket: "nestmate-167ed.firebasestorage.app",
+            messagingSenderId: "865171535257",
+            appId: "1:865171535257:web:9944a48a952e99f55f0f08",
+            measurementId: "G-1DYR2RGY4G"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        window.firebaseAuth = auth;
+        window.firebaseDb = db;
+    </script>
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .back-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: white;
+            border-radius: var(--radius);
+            padding: 8px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            background: none;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            color: var(--secondary);
+            white-space: nowrap;
+        }
+
+        .nav-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .nav-tab:hover:not(.active) {
+            background: var(--light);
+        }
+
+        .content-section {
+            background: white;
+            border-radius: var(--radius);
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .section-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .section-subtitle {
+            color: var(--secondary);
+            font-size: 16px;
+        }
+
+        .value-overview {
+            background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+            color: white;
+            border-radius: var(--radius);
+            padding: 32px;
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .current-value {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .value-change {
+            font-size: 18px;
+            opacity: 0.9;
+            margin-bottom: 16px;
+        }
+
+        .value-description {
+            opacity: 0.8;
+            font-size: 14px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--light);
+            border-radius: var(--radius);
+            padding: 24px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: var(--secondary);
+            font-size: 14px;
+        }
+
+        .chart-container {
+            background: var(--light);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--dark);
+        }
+
+        .chart-placeholder {
+            height: 300px;
+            background: white;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--secondary);
+            border: 2px dashed var(--border);
+        }
+
+        .improvements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+        }
+
+        .improvement-card {
+            background: var(--light);
+            border-radius: var(--radius);
+            padding: 24px;
+            border-left: 4px solid var(--primary);
+            transition: var(--transition);
+        }
+
+        .improvement-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .improvement-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .improvement-icon {
+            color: var(--primary);
+            font-size: 24px;
+        }
+
+        .improvement-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .improvement-content {
+            color: var(--secondary);
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .roi-badge {
+            display: inline-block;
+            background: var(--success);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .cost-badge {
+            display: inline-block;
+            background: var(--warning);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .market-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+        }
+
+        .market-card {
+            background: var(--light);
+            border-radius: var(--radius);
+            padding: 20px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .market-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .market-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            margin: 0 auto 16px;
+        }
+
+        .market-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--dark);
+        }
+
+        .market-value {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .market-change {
+            color: var(--secondary);
+            font-size: 14px;
+        }
+
+        .market-change.positive {
+            color: var(--success);
+        }
+
+        .market-change.negative {
+            color: var(--danger);
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .comparison-table th {
+            background: var(--light);
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .comparison-table tr:hover {
+            background: var(--light);
+        }
+
+        @media (max-width: 768px) {
+            .nav-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .improvements-grid,
+            .market-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div>
+                <h1><i class="fas fa-chart-line"></i> Home Value Tracker</h1>
+                <p>Monitor your home's value and track improvements</p>
+            </div>
+            <button class="back-btn" onclick="window.location.href='NestMate.html'">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </button>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showSection('overview')">Overview</button>
+            <button class="nav-tab" onclick="showSection('market')">Market Analysis</button>
+            <button class="nav-tab" onclick="showSection('improvements')">Improvements</button>
+            <button class="nav-tab" onclick="showSection('comparison')">Comparisons</button>
+        </div>
+
+        <!-- Overview Section -->
+        <div id="overview" class="content-section">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-home"></i>
+                </div>
+                <div>
+                    <h2 class="section-title">Home Value Overview</h2>
+                    <p class="section-subtitle">Track your property's current value and growth</p>
+                </div>
+            </div>
+
+            <!-- Current Value -->
+            <div class="value-overview">
+                <div class="current-value">$485,000</div>
+                <div class="value-change">+$32,500 (+7.2%) in the last 12 months</div>
+                <div class="value-description">Based on recent market analysis and comparable sales in your area</div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">$452,500</div>
+                    <div class="stat-label">Purchase Price</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">$32,500</div>
+                    <div class="stat-label">Total Appreciation</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">7.2%</div>
+                    <div class="stat-label">Annual Growth</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">$15,200</div>
+                    <div class="stat-label">Improvement Value</div>
+                </div>
+            </div>
+
+            <!-- Value Chart -->
+            <div class="chart-container">
+                <h3 class="chart-title">Home Value Over Time</h3>
+                <div class="chart-placeholder">
+                    <div style="text-align: center;">
+                        <i class="fas fa-chart-line" style="font-size: 48px; margin-bottom: 16px; display: block;"></i>
+                        <p>Interactive home value chart will be displayed here</p>
+                        <p style="font-size: 12px; margin-top: 8px;">Showing value trends and market comparisons</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Market Analysis Section -->
+        <div id="market" class="content-section" style="display: none;">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-analytics"></i>
+                </div>
+                <div>
+                    <h2 class="section-title">Market Analysis</h2>
+                    <p class="section-subtitle">Compare your home to the local real estate market</p>
+                </div>
+            </div>
+
+            <div class="market-grid">
+                <div class="market-card">
+                    <div class="market-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <div class="market-name">Your Home</div>
+                    <div class="market-value">$485,000</div>
+                    <div class="market-change positive">+7.2% this year</div>
+                </div>
+
+                <div class="market-card">
+                    <div class="market-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <div class="market-name">Average Home</div>
+                    <div class="market-value">$472,000</div>
+                    <div class="market-change positive">+6.8% this year</div>
+                </div>
+
+                <div class="market-card">
+                    <div class="market-icon">
+                        <i class="fas fa-trending-up"></i>
+                    </div>
+                    <div class="market-name">Market Trend</div>
+                    <div class="market-value">$478,500</div>
+                    <div class="market-change positive">+5.9% this year</div>
+                </div>
+
+                <div class="market-card">
+                    <div class="market-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="market-name">Days on Market</div>
+                    <div class="market-value">18 days</div>
+                    <div class="market-change">Average: 22 days</div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h3 class="chart-title">Market Comparison</h3>
+                <div class="chart-placeholder">
+                    <div style="text-align: center;">
+                        <i class="fas fa-chart-bar" style="font-size: 48px; margin-bottom: 16px; display: block;"></i>
+                        <p>Market comparison chart showing your home vs. local averages</p>
+                        <p style="font-size: 12px; margin-top: 8px;">Price per square foot, features, and market positioning</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Improvements Section -->
+        <div id="improvements" class="content-section" style="display: none;">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <div>
+                    <h2 class="section-title">Home Improvements</h2>
+                    <p class="section-subtitle">Track improvements and their impact on home value</p>
+                </div>
+            </div>
+
+            <div class="improvements-grid">
+                <!-- Kitchen Remodel -->
+                <div class="improvement-card">
+                    <div class="improvement-header">
+                        <i class="fas fa-utensils improvement-icon"></i>
+                        <h3 class="improvement-title">Kitchen Remodel</h3>
+                    </div>
+                    <span class="roi-badge">ROI: 85%</span>
+                    <span class="cost-badge">Cost: $25,000</span>
+                    <p class="improvement-content">
+                        Complete kitchen renovation with new cabinets, countertops, and appliances. 
+                        Added $21,250 to home value.
+                    </p>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-eye"></i> View Details
+                    </button>
+                </div>
+
+                <!-- Bathroom Update -->
+                <div class="improvement-card">
+                    <div class="improvement-header">
+                        <i class="fas fa-bath improvement-icon"></i>
+                        <h3 class="improvement-title">Bathroom Update</h3>
+                    </div>
+                    <span class="roi-badge">ROI: 70%</span>
+                    <span class="cost-badge">Cost: $12,000</span>
+                    <p class="improvement-content">
+                        Updated master bathroom with new fixtures, tile, and lighting. 
+                        Added $8,400 to home value.
+                    </p>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-eye"></i> View Details
+                    </button>
+                </div>
+
+                <!-- Landscaping -->
+                <div class="improvement-card">
+                    <div class="improvement-header">
+                        <i class="fas fa-seedling improvement-icon"></i>
+                        <h3 class="improvement-title">Landscaping</h3>
+                    </div>
+                    <span class="roI-badge">ROI: 100%</span>
+                    <span class="cost-badge">Cost: $8,000</span>
+                    <p class="improvement-content">
+                        Professional landscaping with native plants, irrigation system, and hardscaping. 
+                        Added $8,000 to home value.
+                    </p>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-eye"></i> View Details
+                    </button>
+                </div>
+
+                <!-- Roof Replacement -->
+                <div class="improvement-card">
+                    <div class="improvement-header">
+                        <i class="fas fa-home improvement-icon"></i>
+                        <h3 class="improvement-title">Roof Replacement</h3>
+                    </div>
+                    <span class="roi-badge">ROI: 60%</span>
+                    <span class="cost-badge">Cost: $15,000</span>
+                    <p class="improvement-content">
+                        New architectural shingle roof with improved ventilation. 
+                        Added $9,000 to home value.
+                    </p>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-eye"></i> View Details
+                    </button>
+                </div>
+
+                <!-- HVAC Upgrade -->
+                <div class="improvement-card">
+                    <div class="improvement-header">
+                        <i class="fas fa-thermometer-half improvement-icon"></i>
+                        <h3 class="improvement-title">HVAC Upgrade</h3>
+                    </div>
+                    <span class="roi-badge">ROI: 50%</span>
+                    <span class="cost-badge">Cost: $10,000</span>
+                    <p class="improvement-content">
+                        Energy-efficient HVAC system with smart thermostat. 
+                        Added $5,000 to home value.
+                    </p>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-eye"></i> View Details
+                    </button>
+                </div>
+
+                <!-- Smart Home Features -->
+                <div class="improvement-card">
+                    <div class="improvement-header">
+                        <i class="fas fa-wifi improvement-icon"></i>
+                        <h3 class="improvement-title">Smart Home Features</h3>
+                    </div>
+                    <span class="roi-badge">ROI: 75%</span>
+                    <span class="cost-badge">Cost: $6,000</span>
+                    <p class="improvement-content">
+                        Smart locks, security system, and home automation. 
+                        Added $4,500 to home value.
+                    </p>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-eye"></i> View Details
+                    </button>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 32px;">
+                <button class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add Improvement
+                </button>
+                <button class="btn btn-outline">
+                    <i class="fas fa-calculator"></i> ROI Calculator
+                </button>
+            </div>
+        </div>
+
+        <!-- Comparisons Section -->
+        <div id="comparison" class="content-section" style="display: none;">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-balance-scale"></i>
+                </div>
+                <div>
+                    <h2 class="section-title">Comparable Sales</h2>
+                    <p class="section-subtitle">Compare your home to recent sales in your neighborhood</p>
+                </div>
+            </div>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Address</th>
+                        <th>Sale Price</th>
+                        <th>Sale Date</th>
+                        <th>Sq Ft</th>
+                        <th>Price/Sq Ft</th>
+                        <th>Features</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1234 Oak Street</td>
+                        <td>$495,000</td>
+                        <td>Mar 2024</td>
+                        <td>2,200</td>
+                        <td>$225</td>
+                        <td>3BR, 2.5BA, Updated Kitchen</td>
+                    </tr>
+                    <tr>
+                        <td>5678 Pine Avenue</td>
+                        <td>$472,000</td>
+                        <td>Feb 2024</td>
+                        <td>2,100</td>
+                        <td>$225</td>
+                        <td>3BR, 2BA, Original Condition</td>
+                    </tr>
+                    <tr>
+                        <td>9012 Maple Drive</td>
+                        <td>$510,000</td>
+                        <td>Jan 2024</td>
+                        <td>2,300</td>
+                        <td>$222</td>
+                        <td>4BR, 3BA, Pool</td>
+                    </tr>
+                    <tr>
+                        <td>3456 Elm Court</td>
+                        <td>$485,000</td>
+                        <td>Dec 2023</td>
+                        <td>2,150</td>
+                        <td>$226</td>
+                        <td>3BR, 2.5BA, Finished Basement</td>
+                    </tr>
+                    <tr style="background: var(--light); font-weight: 600;">
+                        <td>Your Home</td>
+                        <td>$485,000</td>
+                        <td>Current</td>
+                        <td>2,200</td>
+                        <td>$220</td>
+                        <td>3BR, 2.5BA, Updated</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="chart-container" style="margin-top: 32px;">
+                <h3 class="chart-title">Price Per Square Foot Comparison</h3>
+                <div class="chart-placeholder">
+                    <div style="text-align: center;">
+                        <i class="fas fa-chart-bar" style="font-size: 48px; margin-bottom: 16px; display: block;"></i>
+                        <p>Price per square foot comparison chart</p>
+                        <p style="font-size: 12px; margin-top: 8px;">Your home vs. comparable properties</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSection = 'overview';
+
+        // Show section
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).style.display = 'block';
+            
+            // Update active tab
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            currentSection = sectionId;
+        }
+
+        // Check authentication
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.firebaseAuth) {
+                window.firebaseAuth.onAuthStateChanged(function(user) {
+                    if (!user) {
+                        // Redirect to sign in if not authenticated
+                        window.location.href = 'signin.html';
+                    }
+                });
+            }
+        });
+
+        // Save home value data to Firebase
+        function saveHomeValueData(data) {
+            try {
+                if (window.firebaseDb) {
+                    addDoc(collection(window.firebaseDb, 'homeValueData'), {
+                        ...data,
+                        userId: window.firebaseAuth?.currentUser?.uid || 'anonymous',
+                        timestamp: new Date().toISOString()
+                    });
+                }
+            } catch (error) {
+                console.error('Error saving home value data:', error);
+            }
+        }
+
+        // Update home value periodically
+        function updateHomeValue() {
+            // This would connect to real estate APIs for current market data
+            const mockData = {
+                currentValue: 485000,
+                monthlyChange: Math.floor(Math.random() * 5000) + 1000,
+                annualChange: Math.floor(Math.random() * 50000) + 20000
+            };
+            
+            // Update UI with new data
+            const currentValueEl = document.querySelector('.current-value');
+            if (currentValueEl) {
+                currentValueEl.textContent = '$' + mockData.currentValue.toLocaleString();
+            }
+            
+            // Save to Firebase
+            saveHomeValueData(mockData);
+        }
+
+        // Update home value every month
+        setInterval(updateHomeValue, 2592000000); // 30 days
+    </script>
+</body>
+</html>

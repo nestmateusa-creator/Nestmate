@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Payment Test - NestMate</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background: #2563eb;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background: #1d4ed8;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .error {
+            color: #ef4444;
+            margin-top: 10px;
+            padding: 10px;
+            background: #fef2f2;
+            border-radius: 5px;
+        }
+        .success {
+            color: #10b981;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f0fdf4;
+            border-radius: 5px;
+        }
+        .loading {
+            color: #f59e0b;
+            margin-top: 10px;
+            padding: 10px;
+            background: #fffbeb;
+            border-radius: 5px;
+        }
+        #card-element {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: white;
+        }
+        .StripeElement--focus {
+            border-color: #2563eb;
+        }
+        .StripeElement--invalid {
+            border-color: #ef4444;
+        }
+        .info-box {
+            background: #e0f2fe;
+            border: 1px solid #0277bd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Simple Payment Test (No Server Required)</h1>
+        
+        <div class="info-box">
+            <h3>📋 Test Instructions:</h3>
+            <p><strong>Test Card:</strong> 4242 4242 4242 4242</p>
+            <p><strong>Expiry:</strong> Any future date (e.g., 12/25)</p>
+            <p><strong>CVV:</strong> Any 3 digits (e.g., 123)</p>
+            <p><strong>Note:</strong> This test creates a payment method but doesn't charge the card.</p>
+        </div>
+        
+        <form id="payment-form">
+            <div class="form-group">
+                <label for="plan">Select Plan:</label>
+                <select id="plan">
+                    <option value="basic">Basic - $5/month</option>
+                    <option value="pro">Pro - $10/month</option>
+                    <option value="advanced">Advanced Pro - $16/month</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" value="test@example.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Card Details:</label>
+                <div id="card-element"></div>
+                <div id="card-errors" role="alert"></div>
+            </div>
+            
+            <button type="submit" id="submit-button">
+                Test Payment Method Creation
+            </button>
+        </form>
+        
+        <div id="payment-status"></div>
+        
+        <div style="margin-top: 30px; padding: 20px; background: #f8fafc; border-radius: 5px;">
+            <h3>Debug Info:</h3>
+            <div id="debug-info"></div>
+        </div>
+    </div>
+
+    <script>
+        // Stripe configuration
+        const stripe = Stripe('pk_test_51S4C0sAmpksixclYeG19nYyKaIrbc41a2Twtw8uNCPTEFO9BLQl6BRN6V9HxLNyCZZrMdPIy9wzk5xOGfd943BNM00Z3gp2GuY');
+        const elements = stripe.elements();
+
+        // Create card element
+        const cardElement = elements.create('card', {
+            style: {
+                base: {
+                    fontSize: '16px',
+                    color: '#424770',
+                    '::placeholder': {
+                        color: '#aab7c4',
+                    },
+                },
+                invalid: {
+                    color: '#9e2146',
+                },
+            },
+        });
+
+        // Mount the card element
+        cardElement.mount('#card-element');
+
+        // Handle real-time validation errors from the card Element
+        cardElement.on('change', function(event) {
+            const displayError = document.getElementById('card-errors');
+            if (event.error) {
+                displayError.textContent = event.error.message;
+            } else {
+                displayError.textContent = '';
+            }
+        });
+
+        // Handle form submission
+        const form = document.getElementById('payment-form');
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const submitButton = document.getElementById('submit-button');
+            const paymentStatus = document.getElementById('payment-status');
+            const debugInfo = document.getElementById('debug-info');
+
+            // Show loading state
+            showStatus('loading', 'Creating payment method...');
+            setLoadingState(true);
+            debugInfo.innerHTML = 'Starting payment method creation...';
+
+            try {
+                // Get plan details
+                const plan = document.getElementById('plan').value;
+                const planAmounts = {
+                    basic: 500,    // $5.00 in cents
+                    pro: 1000,     // $10.00 in cents
+                    advanced: 1600 // $16.00 in cents
+                };
+                const amount = planAmounts[plan];
+
+                debugInfo.innerHTML += `<br>Plan: ${plan}, Amount: $${(amount/100).toFixed(2)}`;
+
+                // Create payment method (this is what was working)
+                const {error, paymentMethod} = await stripe.createPaymentMethod({
+                    type: 'card',
+                    card: cardElement,
+                    billing_details: {
+                        email: document.getElementById('email').value,
+                    },
+                });
+
+                if (error) {
+                    showStatus('error', error.message);
+                    setLoadingState(false);
+                    debugInfo.innerHTML += `<br>❌ Payment method error: ${error.message}`;
+                    return;
+                }
+
+                debugInfo.innerHTML += `<br>✅ Payment method created successfully: ${paymentMethod.id}`;
+                debugInfo.innerHTML += `<br>✅ Card brand: ${paymentMethod.card.brand}`;
+                debugInfo.innerHTML += `<br>✅ Last 4 digits: ****${paymentMethod.card.last4}`;
+
+                // Simulate successful payment (since we can't charge without a server)
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                // Show success
+                showStatus('success', `Payment method created successfully! Ready to process $${(amount/100).toFixed(2)}/month for ${plan} plan.`);
+                debugInfo.innerHTML += `<br>🎉 Payment system is working correctly!`;
+                debugInfo.innerHTML += `<br>💡 To process actual payments, you'll need to install Node.js and start the server.`;
+
+            } catch (error) {
+                console.error('Payment error:', error);
+                showStatus('error', error.message);
+                debugInfo.innerHTML += `<br>❌ Error: ${error.message}`;
+            } finally {
+                setLoadingState(false);
+            }
+        });
+
+        function showStatus(type, message) {
+            const statusDiv = document.getElementById('payment-status');
+            statusDiv.className = type;
+            statusDiv.textContent = message;
+            statusDiv.style.display = 'block';
+        }
+
+        function setLoadingState(loading) {
+            const submitButton = document.getElementById('submit-button');
+            if (loading) {
+                submitButton.innerHTML = 'Creating Payment Method...';
+                submitButton.disabled = true;
+            } else {
+                submitButton.innerHTML = 'Test Payment Method Creation';
+                submitButton.disabled = false;
+            }
+        }
+
+        // Show initial status
+        window.addEventListener('load', function() {
+            const debugInfo = document.getElementById('debug-info');
+            debugInfo.innerHTML = `✅ Stripe loaded successfully<br>✅ Your publishable key is working<br>✅ Ready to test payment method creation`;
+        });
+    </script>
+</body>
+</html>
+

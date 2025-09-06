@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency Services - NestMate Advanced Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #7c3aed;
+            --primary-dark: #6d28d9;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #06b6d4;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .logo i {
+            font-size: 28px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+        }
+
+        .card-icon.primary { background: var(--primary); }
+        .card-icon.success { background: var(--success); }
+        .card-icon.warning { background: var(--warning); }
+        .card-icon.danger { background: var(--danger); }
+        .card-icon.info { background: var(--info); }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .card-subtitle {
+            font-size: 14px;
+            color: var(--secondary);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .service-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .service-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .service-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .service-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--danger);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+
+        .service-info {
+            flex: 1;
+        }
+
+        .service-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 4px;
+        }
+
+        .service-subtitle {
+            font-size: 14px;
+            color: var(--secondary);
+        }
+
+        .service-description {
+            color: var(--secondary);
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .service-features {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+
+        .service-features li {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--dark);
+        }
+
+        .service-features li i {
+            color: var(--success);
+            font-size: 12px;
+        }
+
+        .service-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .service-actions .btn {
+            flex: 1;
+            text-align: center;
+        }
+
+        .emergency-banner {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            border: 2px solid var(--danger);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .emergency-banner h3 {
+            color: var(--danger);
+            margin-bottom: 8px;
+        }
+
+        .emergency-banner p {
+            color: var(--dark);
+            margin-bottom: 16px;
+        }
+
+        .emergency-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--danger);
+            margin-bottom: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 24px;
+            border-radius: var(--radius);
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .close {
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--secondary);
+        }
+
+        @media (max-width: 768px) {
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-phone"></i>
+                Emergency Services
+            </div>
+            <div>
+                <button class="btn btn-danger" onclick="callEmergency()">
+                    <i class="fas fa-phone"></i>
+                    Call Emergency
+                </button>
+                <a href="dashboard-advanced.html" class="btn btn-outline">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Dashboard
+                </a>
+            </div>
+        </div>
+
+        <!-- Emergency Banner -->
+        <div class="emergency-banner">
+            <h3>🚨 24/7 Emergency Support</h3>
+            <p>For life-threatening emergencies, call 911 immediately. For home emergencies, use our trusted contractor network.</p>
+            <div class="emergency-number">1-800-NESTMATE</div>
+            <p>Available 24/7 for Advanced Pro members</p>
+        </div>
+
+        <!-- Emergency Services Grid -->
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-header">
+                    <div class="service-icon">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <div class="service-info">
+                        <div class="service-title">Emergency Repairs</div>
+                        <div class="service-subtitle">24/7 Emergency Home Repairs</div>
+                    </div>
+                </div>
+                
+                <div class="service-description">
+                    Get immediate help for urgent home repairs including plumbing, electrical, and structural issues.
+                </div>
+                
+                <ul class="service-features">
+                    <li><i class="fas fa-check"></i> 24/7 availability</li>
+                    <li><i class="fas fa-check"></i> Licensed contractors</li>
+                    <li><i class="fas fa-check"></i> 2-hour response time</li>
+                    <li><i class="fas fa-check"></i> Upfront pricing</li>
+                </ul>
+                
+                <div class="service-actions">
+                    <button class="btn btn-danger" onclick="requestEmergencyRepair()">
+                        <i class="fas fa-phone"></i>
+                        Call Now
+                    </button>
+                    <button class="btn btn-outline" onclick="scheduleRepair()">
+                        <i class="fas fa-calendar"></i>
+                        Schedule
+                    </button>
+                </div>
+            </div>
+
+            <div class="service-card">
+                <div class="service-header">
+                    <div class="service-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="service-info">
+                        <div class="service-title">Security Services</div>
+                        <div class="service-subtitle">Emergency Security & Lockout</div>
+                    </div>
+                </div>
+                
+                <div class="service-description">
+                    Emergency locksmith services, security system repairs, and home security consultations.
+                </div>
+                
+                <ul class="service-features">
+                    <li><i class="fas fa-check"></i> Lockout assistance</li>
+                    <li><i class="fas fa-check"></i> Security system repair</li>
+                    <li><i class="fas fa-check"></i> Key replacement</li>
+                    <li><i class="fas fa-check"></i> Security consultation</li>
+                </ul>
+                
+                <div class="service-actions">
+                    <button class="btn btn-danger" onclick="requestSecurityService()">
+                        <i class="fas fa-phone"></i>
+                        Call Now
+                    </button>
+                    <button class="btn btn-outline" onclick="scheduleSecurity()">
+                        <i class="fas fa-calendar"></i>
+                        Schedule
+                    </button>
+                </div>
+            </div>
+
+            <div class="service-card">
+                <div class="service-header">
+                    <div class="service-icon">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <div class="service-info">
+                        <div class="service-title">Fire & Water Damage</div>
+                        <div class="service-subtitle">Rapid Response Restoration</div>
+                    </div>
+                </div>
+                
+                <div class="service-description">
+                    Emergency response for fire, water, and storm damage with rapid restoration services.
+                </div>
+                
+                <ul class="service-features">
+                    <li><i class="fas fa-check"></i> 1-hour response time</li>
+                    <li><i class="fas fa-check"></i> Water extraction</li>
+                    <li><i class="fas fa-check"></i> Fire damage cleanup</li>
+                    <li><i class="fas fa-check"></i> Insurance coordination</li>
+                </ul>
+                
+                <div class="service-actions">
+                    <button class="btn btn-danger" onclick="requestDamageService()">
+                        <i class="fas fa-phone"></i>
+                        Call Now
+                    </button>
+                    <button class="btn btn-outline" onclick="scheduleDamage()">
+                        <i class="fas fa-calendar"></i>
+                        Schedule
+                    </button>
+                </div>
+            </div>
+
+            <div class="service-card">
+                <div class="service-header">
+                    <div class="service-icon">
+                        <i class="fas fa-thermometer-half"></i>
+                    </div>
+                    <div class="service-info">
+                        <div class="service-title">HVAC Emergency</div>
+                        <div class="service-subtitle">Heating & Cooling Emergency</div>
+                    </div>
+                </div>
+                
+                <div class="service-description">
+                    Emergency heating and cooling services for extreme weather conditions and system failures.
+                </div>
+                
+                <ul class="service-features">
+                    <li><i class="fas fa-check"></i> Extreme weather response</li>
+                    <li><i class="fas fa-check"></i> System failure repair</li>
+                    <li><i class="fas fa-check"></i> Temporary solutions</li>
+                    <li><i class="fas fa-check"></i> Priority scheduling</li>
+                </ul>
+                
+                <div class="service-actions">
+                    <button class="btn btn-danger" onclick="requestHVACService()">
+                        <i class="fas fa-phone"></i>
+                        Call Now
+                    </button>
+                    <button class="btn btn-outline" onclick="scheduleHVAC()">
+                        <i class="fas fa-calendar"></i>
+                        Schedule
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Emergency Request Modal -->
+        <div id="emergencyModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Emergency Service Request</h3>
+                    <span class="close" onclick="closeModal('emergencyModal')">&times;</span>
+                </div>
+                <form id="emergencyForm">
+                    <div class="form-group">
+                        <label class="form-label">Service Type *</label>
+                        <select class="form-select" id="serviceType" required>
+                            <option value="">Select Service Type</option>
+                            <option value="repair">Emergency Repair</option>
+                            <option value="security">Security Service</option>
+                            <option value="damage">Fire/Water Damage</option>
+                            <option value="hvac">HVAC Emergency</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Urgency Level *</label>
+                        <select class="form-select" id="urgencyLevel" required>
+                            <option value="">Select Urgency</option>
+                            <option value="critical">Critical - Immediate Response</option>
+                            <option value="high">High - Within 2 Hours</option>
+                            <option value="medium">Medium - Within 24 Hours</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Property Address *</label>
+                        <input type="text" class="form-input" id="propertyAddress" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Contact Phone *</label>
+                            <input type="tel" class="form-input" id="contactPhone" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Alternate Phone</label>
+                            <input type="tel" class="form-input" id="alternatePhone">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Problem Description *</label>
+                        <textarea class="form-textarea" id="problemDescription" required placeholder="Describe the emergency situation in detail..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Access Instructions</label>
+                        <textarea class="form-textarea" id="accessInstructions" placeholder="How can the contractor access your property?"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-phone"></i>
+                            Submit Emergency Request
+                        </button>
+                        <button type="button" class="btn btn-outline" onclick="closeModal('emergencyModal')">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function callEmergency() {
+            if (confirm('This will connect you to our 24/7 emergency hotline. Continue?')) {
+                alert('Connecting to emergency services...\n\nPhone: 1-800-NESTMATE\n\nA representative will assist you immediately.');
+            }
+        }
+
+        function requestEmergencyRepair() {
+            document.getElementById('serviceType').value = 'repair';
+            document.getElementById('emergencyModal').style.display = 'block';
+        }
+
+        function requestSecurityService() {
+            document.getElementById('serviceType').value = 'security';
+            document.getElementById('emergencyModal').style.display = 'block';
+        }
+
+        function requestDamageService() {
+            document.getElementById('serviceType').value = 'damage';
+            document.getElementById('emergencyModal').style.display = 'block';
+        }
+
+        function requestHVACService() {
+            document.getElementById('serviceType').value = 'hvac';
+            document.getElementById('emergencyModal').style.display = 'block';
+        }
+
+        function scheduleRepair() {
+            alert('Scheduling emergency repair service...\n\nA representative will contact you within 15 minutes to schedule your service.');
+        }
+
+        function scheduleSecurity() {
+            alert('Scheduling security service...\n\nA representative will contact you within 15 minutes to schedule your service.');
+        }
+
+        function scheduleDamage() {
+            alert('Scheduling damage restoration service...\n\nA representative will contact you within 15 minutes to schedule your service.');
+        }
+
+        function scheduleHVAC() {
+            alert('Scheduling HVAC emergency service...\n\nA representative will contact you within 15 minutes to schedule your service.');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Handle emergency form
+        document.getElementById('emergencyForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const serviceType = document.getElementById('serviceType').value;
+            const urgencyLevel = document.getElementById('urgencyLevel').value;
+            const propertyAddress = document.getElementById('propertyAddress').value;
+            const contactPhone = document.getElementById('contactPhone').value;
+            const problemDescription = document.getElementById('problemDescription').value;
+            
+            // Simulate emergency request submission
+            alert(`Emergency Service Request Submitted!\n\nService Type: ${serviceType}\nUrgency: ${urgencyLevel}\nAddress: ${propertyAddress}\nPhone: ${contactPhone}\n\nA contractor will contact you within 15 minutes.\n\nFor immediate assistance, call: 1-800-NESTMATE`);
+            
+            closeModal('emergencyModal');
+            document.getElementById('emergencyForm').reset();
+        });
+
+        // Initialize the page
+        window.addEventListener('load', function() {
+            // Page initialization code can go here
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NestMate - Warranty Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBxGUhxqQqQqQqQqQqQqQqQqQqQqQqQqQ",
+            authDomain: "nestmate-app.firebaseapp.com",
+            projectId: "nestmate-app",
+            storageBucket: "nestmate-app.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdefghijklmnop"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Make Firebase services available globally
+        window.firebaseServices = {
+            collection,
+            addDoc,
+            getDocs,
+            query,
+            where,
+            doc,
+            updateDoc,
+            deleteDoc
+        };
+        window.firebaseDB = db;
+        window.firebaseAuth = auth;
+
+        // Check authentication state
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                console.log('User is signed in:', user.uid);
+                loadWarranties();
+            } else {
+                console.log('User is signed out');
+                window.location.href = 'signin.html';
+            }
+        });
+    </script>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --accent-color: #3b82f6;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f9fafb;
+            --border-color: #e5e7eb;
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-primary);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .section {
+            background: var(--bg-primary);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: var(--primary-color);
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-header h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .section-content {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary-color);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .warranty-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .warranty-item {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background: var(--bg-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .warranty-item:hover {
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+        }
+
+        .warranty-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .warranty-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .warranty-brand {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .warranty-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+        }
+
+        .status-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+        }
+
+        .status-expired {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+        }
+
+        .warranty-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-value {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .warranty-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .search-bar {
+            margin-bottom: 1.5rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            background: var(--bg-primary);
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-tab {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-tab.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .warranty-details {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="NestMate.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i>
+            Back to Dashboard
+        </a>
+
+        <div class="header">
+            <h1><i class="fas fa-certificate"></i> Warranty Tracker</h1>
+            <p>Manage your appliance warranties and service contracts</p>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalWarranties">0</div>
+                <div class="stat-label">Total Warranties</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="activeWarranties">0</div>
+                <div class="stat-label">Active Warranties</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="expiringWarranties">0</div>
+                <div class="stat-label">Expiring Soon</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="expiredWarranties">0</div>
+                <div class="stat-label">Expired</div>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <!-- Add New Warranty -->
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-plus-circle"></i>
+                    <h2>Add New Warranty</h2>
+                </div>
+                <div class="section-content">
+                    <form id="warrantyForm">
+                        <div class="form-group">
+                            <label for="itemName">Item Name</label>
+                            <input type="text" id="itemName" class="form-input" placeholder="e.g., Refrigerator, HVAC System" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="brandModel">Brand/Model</label>
+                            <input type="text" id="brandModel" class="form-input" placeholder="e.g., Samsung RF28T5000SR" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="purchaseDate">Purchase Date</label>
+                            <input type="date" id="purchaseDate" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="warrantyExpiry">Warranty Expiry Date</label>
+                            <input type="date" id="warrantyExpiry" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="warrantyType">Warranty Type</label>
+                            <select id="warrantyType" class="form-input" required>
+                                <option value="">Select warranty type...</option>
+                                <option value="manufacturer">Manufacturer Warranty</option>
+                                <option value="extended">Extended Warranty</option>
+                                <option value="service">Service Contract</option>
+                                <option value="home">Home Warranty</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="warrantyProvider">Warranty Provider</label>
+                            <input type="text" id="warrantyProvider" class="form-input" placeholder="e.g., Samsung, Home Depot" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="warrantyNumber">Warranty Number</label>
+                            <input type="text" id="warrantyNumber" class="form-input" placeholder="Optional">
+                        </div>
+                        <div class="form-group">
+                            <label for="notes">Notes</label>
+                            <textarea id="notes" class="form-input" rows="3" placeholder="Additional notes about the warranty..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus"></i>
+                            Add Warranty
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Warranty List -->
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-list"></i>
+                    <h2>Your Warranties</h2>
+                </div>
+                <div class="section-content">
+                    <div class="search-bar">
+                        <input type="text" id="searchWarranties" class="search-input" placeholder="Search warranties...">
+                    </div>
+                    <div class="filter-tabs">
+                        <div class="filter-tab active" data-filter="all">All</div>
+                        <div class="filter-tab" data-filter="active">Active</div>
+                        <div class="filter-tab" data-filter="expiring">Expiring Soon</div>
+                        <div class="filter-tab" data-filter="expired">Expired</div>
+                    </div>
+                    <div class="warranty-list" id="warrantyList">
+                        <div class="empty-state">
+                            <i class="fas fa-certificate"></i>
+                            <h3>No warranties found</h3>
+                            <p>Add your first warranty to get started</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let warranties = [];
+        let currentFilter = 'all';
+
+        // Load warranties from Firebase
+        async function loadWarranties() {
+            try {
+                const user = window.firebaseAuth.currentUser;
+                if (!user) return;
+
+                const warrantiesRef = window.firebaseServices.collection(window.firebaseDB, 'warranties');
+                const q = window.firebaseServices.query(warrantiesRef, window.firebaseServices.where('userId', '==', user.uid));
+                const querySnapshot = await window.firebaseServices.getDocs(q);
+                
+                warranties = [];
+                querySnapshot.forEach((doc) => {
+                    warranties.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+
+                updateStats();
+                renderWarranties();
+            } catch (error) {
+                console.error('Error loading warranties:', error);
+            }
+        }
+
+        // Add new warranty
+        async function addWarranty(warrantyData) {
+            try {
+                const user = window.firebaseAuth.currentUser;
+                if (!user) return;
+
+                const warrantyRef = window.firebaseServices.collection(window.firebaseDB, 'warranties');
+                await window.firebaseServices.addDoc(warrantyRef, {
+                    ...warrantyData,
+                    userId: user.uid,
+                    createdAt: new Date()
+                });
+
+                await loadWarranties();
+                document.getElementById('warrantyForm').reset();
+            } catch (error) {
+                console.error('Error adding warranty:', error);
+            }
+        }
+
+        // Update warranty
+        async function updateWarranty(warrantyId, updates) {
+            try {
+                const warrantyRef = window.firebaseServices.doc(window.firebaseDB, 'warranties', warrantyId);
+                await window.firebaseServices.updateDoc(warrantyRef, updates);
+                await loadWarranties();
+            } catch (error) {
+                console.error('Error updating warranty:', error);
+            }
+        }
+
+        // Delete warranty
+        async function deleteWarranty(warrantyId) {
+            if (confirm('Are you sure you want to delete this warranty?')) {
+                try {
+                    const warrantyRef = window.firebaseServices.doc(window.firebaseDB, 'warranties', warrantyId);
+                    await window.firebaseServices.deleteDoc(warrantyRef);
+                    await loadWarranties();
+                } catch (error) {
+                    console.error('Error deleting warranty:', error);
+                }
+            }
+        }
+
+        // Update statistics
+        function updateStats() {
+            const total = warranties.length;
+            const active = warranties.filter(w => getWarrantyStatus(w) === 'active').length;
+            const expiring = warranties.filter(w => getWarrantyStatus(w) === 'expiring').length;
+            const expired = warranties.filter(w => getWarrantyStatus(w) === 'expired').length;
+
+            document.getElementById('totalWarranties').textContent = total;
+            document.getElementById('activeWarranties').textContent = active;
+            document.getElementById('expiringWarranties').textContent = expiring;
+            document.getElementById('expiredWarranties').textContent = expired;
+        }
+
+        // Get warranty status
+        function getWarrantyStatus(warranty) {
+            const today = new Date();
+            const expiryDate = new Date(warranty.warrantyExpiry);
+            const daysUntilExpiry = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
+
+            if (daysUntilExpiry < 0) return 'expired';
+            if (daysUntilExpiry <= 30) return 'expiring';
+            return 'active';
+        }
+
+        // Render warranties
+        function renderWarranties() {
+            const warrantyList = document.getElementById('warrantyList');
+            const searchTerm = document.getElementById('searchWarranties').value.toLowerCase();
+
+            let filteredWarranties = warranties.filter(warranty => {
+                const matchesSearch = warranty.itemName.toLowerCase().includes(searchTerm) ||
+                                     warranty.brandModel.toLowerCase().includes(searchTerm) ||
+                                     warranty.warrantyProvider.toLowerCase().includes(searchTerm);
+                
+                const matchesFilter = currentFilter === 'all' || getWarrantyStatus(warranty) === currentFilter;
+                
+                return matchesSearch && matchesFilter;
+            });
+
+            if (filteredWarranties.length === 0) {
+                warrantyList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-certificate"></i>
+                        <h3>No warranties found</h3>
+                        <p>${searchTerm ? 'Try adjusting your search' : 'Add your first warranty to get started'}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            warrantyList.innerHTML = filteredWarranties.map(warranty => {
+                const status = getWarrantyStatus(warranty);
+                const statusClass = `status-${status}`;
+                const statusText = status === 'active' ? 'Active' : 
+                                 status === 'expiring' ? 'Expiring Soon' : 'Expired';
+
+                return `
+                    <div class="warranty-item">
+                        <div class="warranty-header">
+                            <div>
+                                <div class="warranty-title">${warranty.itemName}</div>
+                                <div class="warranty-brand">${warranty.brandModel}</div>
+                            </div>
+                            <span class="warranty-status ${statusClass}">${statusText}</span>
+                        </div>
+                        <div class="warranty-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Provider</span>
+                                <span class="detail-value">${warranty.warrantyProvider}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Type</span>
+                                <span class="detail-value">${warranty.warrantyType}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Purchase Date</span>
+                                <span class="detail-value">${new Date(warranty.purchaseDate).toLocaleDateString()}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Expiry Date</span>
+                                <span class="detail-value">${new Date(warranty.warrantyExpiry).toLocaleDateString()}</span>
+                            </div>
+                        </div>
+                        ${warranty.notes ? `<div class="detail-item" style="grid-column: 1 / -1;">
+                            <span class="detail-label">Notes</span>
+                            <span class="detail-value">${warranty.notes}</span>
+                        </div>` : ''}
+                        <div class="warranty-actions">
+                            <button class="btn btn-sm btn-primary" onclick="editWarranty('${warranty.id}')">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteWarranty('${warranty.id}')">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Edit warranty (placeholder for future implementation)
+        function editWarranty(warrantyId) {
+            const warranty = warranties.find(w => w.id === warrantyId);
+            if (warranty) {
+                // Populate form with warranty data
+                document.getElementById('itemName').value = warranty.itemName;
+                document.getElementById('brandModel').value = warranty.brandModel;
+                document.getElementById('purchaseDate').value = warranty.purchaseDate;
+                document.getElementById('warrantyExpiry').value = warranty.warrantyExpiry;
+                document.getElementById('warrantyType').value = warranty.warrantyType;
+                document.getElementById('warrantyProvider').value = warranty.warrantyProvider;
+                document.getElementById('warrantyNumber').value = warranty.warrantyNumber || '';
+                document.getElementById('notes').value = warranty.notes || '';
+
+                // Change form submit behavior to update instead of add
+                const form = document.getElementById('warrantyForm');
+                form.dataset.editId = warrantyId;
+                form.querySelector('button[type="submit"]').innerHTML = '<i class="fas fa-save"></i> Update Warranty';
+            }
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Form submission
+            document.getElementById('warrantyForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = {
+                    itemName: document.getElementById('itemName').value,
+                    brandModel: document.getElementById('brandModel').value,
+                    purchaseDate: document.getElementById('purchaseDate').value,
+                    warrantyExpiry: document.getElementById('warrantyExpiry').value,
+                    warrantyType: document.getElementById('warrantyType').value,
+                    warrantyProvider: document.getElementById('warrantyProvider').value,
+                    warrantyNumber: document.getElementById('warrantyNumber').value,
+                    notes: document.getElementById('notes').value
+                };
+
+                if (this.dataset.editId) {
+                    // Update existing warranty
+                    updateWarranty(this.dataset.editId, formData);
+                    delete this.dataset.editId;
+                    this.querySelector('button[type="submit"]').innerHTML = '<i class="fas fa-plus"></i> Add Warranty';
+                } else {
+                    // Add new warranty
+                    addWarranty(formData);
+                }
+            });
+
+            // Search functionality
+            document.getElementById('searchWarranties').addEventListener('input', renderWarranties);
+
+            // Filter tabs
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilter = this.dataset.filter;
+                    renderWarranties();
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+
+

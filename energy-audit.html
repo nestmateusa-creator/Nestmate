@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NestMate - Energy Audit</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
+            authDomain: "nestmate-167ed.firebaseapp.com",
+            projectId: "nestmate-167ed",
+            storageBucket: "nestmate-167ed.firebasestorage.app",
+            messagingSenderId: "865171535257",
+            appId: "1:865171535257:web:9944a48a952e99f55f0f08",
+            measurementId: "G-1DYR2RGY4G"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        window.firebaseAuth = auth;
+        window.firebaseDb = db;
+    </script>
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .back-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: white;
+            border-radius: var(--radius);
+            padding: 8px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            background: none;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            color: var(--secondary);
+            white-space: nowrap;
+        }
+
+        .nav-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .nav-tab:hover:not(.active) {
+            background: var(--light);
+        }
+
+        .content-section {
+            background: white;
+            border-radius: var(--radius);
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .section-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .section-subtitle {
+            color: var(--secondary);
+            font-size: 16px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--light);
+            border-radius: var(--radius);
+            padding: 24px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: var(--secondary);
+            font-size: 14px;
+        }
+
+        .chart-container {
+            background: var(--light);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--dark);
+        }
+
+        .chart-placeholder {
+            height: 300px;
+            background: white;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--secondary);
+            border: 2px dashed var(--border);
+        }
+
+        .recommendations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+        }
+
+        .recommendation-card {
+            background: var(--light);
+            border-radius: var(--radius);
+            padding: 24px;
+            border-left: 4px solid var(--primary);
+            transition: var(--transition);
+        }
+
+        .recommendation-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .recommendation-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .recommendation-icon {
+            color: var(--primary);
+            font-size: 24px;
+        }
+
+        .recommendation-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .recommendation-content {
+            color: var(--secondary);
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .savings-badge {
+            display: inline-block;
+            background: var(--success);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .cost-badge {
+            display: inline-block;
+            background: var(--warning);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .appliance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+        }
+
+        .appliance-card {
+            background: var(--light);
+            border-radius: var(--radius);
+            padding: 20px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .appliance-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .appliance-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            margin: 0 auto 16px;
+        }
+
+        .appliance-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--dark);
+        }
+
+        .appliance-usage {
+            color: var(--secondary);
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .usage-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .usage-fill {
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .usage-fill.high {
+            background: var(--danger);
+        }
+
+        .usage-fill.medium {
+            background: var(--warning);
+        }
+
+        .usage-fill.low {
+            background: var(--success);
+        }
+
+        .efficiency-score {
+            background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+            color: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .score-value {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .score-label {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .score-description {
+            margin-top: 16px;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .nav-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .recommendations-grid,
+            .appliance-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div>
+                <h1><i class="fas fa-leaf"></i> Energy Audit</h1>
+                <p>Analyze energy usage and find ways to save on utilities</p>
+            </div>
+            <button class="back-btn" onclick="window.location.href='NestMate.html'">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </button>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showSection('overview')">Overview</button>
+            <button class="nav-tab" onclick="showSection('usage')">Usage Analysis</button>
+            <button class="nav-tab" onclick="showSection('recommendations')">Savings Tips</button>
+            <button class="nav-tab" onclick="showSection('appliances')">Appliances</button>
+        </div>
+
+        <!-- Overview Section -->
+        <div id="overview" class="content-section">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div>
+                    <h2 class="section-title">Energy Overview</h2>
+                    <p class="section-subtitle">Track your energy consumption and efficiency</p>
+                </div>
+            </div>
+
+            <!-- Efficiency Score -->
+            <div class="efficiency-score">
+                <div class="score-value">B+</div>
+                <div class="score-label">Energy Efficiency Score</div>
+                <div class="score-description">Your home is performing well above average for your area</div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">1,247</div>
+                    <div class="stat-label">kWh This Month</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">$156</div>
+                    <div class="stat-label">Monthly Bill</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">-12%</div>
+                    <div class="stat-label">vs Last Month</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">$45</div>
+                    <div class="stat-label">Potential Savings</div>
+                </div>
+            </div>
+
+            <!-- Usage Chart -->
+            <div class="chart-container">
+                <h3 class="chart-title">Monthly Energy Usage</h3>
+                <div class="chart-placeholder">
+                    <div style="text-align: center;">
+                        <i class="fas fa-chart-area" style="font-size: 48px; margin-bottom: 16px; display: block;"></i>
+                        <p>Interactive energy usage chart will be displayed here</p>
+                        <p style="font-size: 12px; margin-top: 8px;">Showing trends and patterns over time</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Usage Analysis Section -->
+        <div id="usage" class="content-section" style="display: none;">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-analytics"></i>
+                </div>
+                <div>
+                    <h2 class="section-title">Usage Analysis</h2>
+                    <p class="section-subtitle">Detailed breakdown of your energy consumption</p>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h3 class="chart-title">Daily Usage Pattern</h3>
+                <div class="chart-placeholder">
+                    <div style="text-align: center;">
+                        <i class="fas fa-clock" style="font-size: 48px; margin-bottom: 16px; display: block;"></i>
+                        <p>Daily energy consumption pattern chart</p>
+                        <p style="font-size: 12px; margin-top: 8px;">Peak usage times and energy-saving opportunities</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h3 class="chart-title">Energy Usage by Category</h3>
+                <div class="chart-placeholder">
+                    <div style="text-align: center;">
+                        <i class="fas fa-pie-chart" style="font-size: 48px; margin-bottom: 16px; display: block;"></i>
+                        <p>Breakdown of energy usage by appliance category</p>
+                        <p style="font-size: 12px; margin-top: 8px;">HVAC, lighting, appliances, and other systems</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h3 class="chart-title">Weather Correlation</h3>
+                <div class="chart-placeholder">
+                    <div style="text-align: center;">
+                        <i class="fas fa-cloud-sun" style="font-size: 48px; margin-bottom: 16px; display: block;"></i>
+                        <p>Energy usage correlation with weather patterns</p>
+                        <p style="font-size: 12px; margin-top: 8px;">Temperature, humidity, and seasonal effects</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Savings Recommendations Section -->
+        <div id="recommendations" class="content-section" style="display: none;">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <div>
+                    <h2 class="section-title">Savings Recommendations</h2>
+                    <p class="section-subtitle">Smart tips to reduce your energy consumption and bills</p>
+                </div>
+            </div>
+
+            <div class="recommendations-grid">
+                <!-- HVAC Optimization -->
+                <div class="recommendation-card">
+                    <div class="recommendation-header">
+                        <i class="fas fa-thermometer-half recommendation-icon"></i>
+                        <h3 class="recommendation-title">HVAC Optimization</h3>
+                    </div>
+                    <span class="savings-badge">Save up to $25/month</span>
+                    <p class="recommendation-content">
+                        Your HVAC system is running 15% more than similar homes. Consider upgrading to a smart thermostat 
+                        and scheduling regular maintenance to improve efficiency.
+                    </p>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-tools"></i> Schedule Maintenance
+                    </button>
+                </div>
+
+                <!-- LED Lighting -->
+                <div class="recommendation-card">
+                    <div class="recommendation-header">
+                        <i class="fas fa-lightbulb recommendation-icon"></i>
+                        <h3 class="recommendation-title">LED Lighting Upgrade</h3>
+                    </div>
+                    <span class="savings-badge">Save up to $15/month</span>
+                    <p class="recommendation-content">
+                        Replace 8 remaining incandescent bulbs with LED equivalents. LEDs use 75% less energy and last 
+                        25 times longer than traditional bulbs.
+                    </p>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-shopping-cart"></i> Shop LED Bulbs
+                    </button>
+                </div>
+
+                <!-- Smart Power Strips -->
+                <div class="recommendation-card">
+                    <div class="recommendation-header">
+                        <i class="fas fa-plug recommendation-icon"></i>
+                        <h3 class="recommendation-title">Smart Power Strips</h3>
+                    </div>
+                    <span class="savings-badge">Save up to $8/month</span>
+                    <p class="recommendation-content">
+                        Install smart power strips to eliminate phantom energy drain from electronics. This can reduce 
+                        standby power consumption by up to 10%.
+                    </p>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-shopping-cart"></i> Shop Power Strips
+                    </button>
+                </div>
+
+                <!-- Insulation Upgrade -->
+                <div class="recommendation-card">
+                    <div class="recommendation-header">
+                        <i class="fas fa-home recommendation-icon"></i>
+                        <h3 class="recommendation-title">Attic Insulation</h3>
+                    </div>
+                    <span class="savings-badge">Save up to $20/month</span>
+                    <span class="cost-badge">Cost: $1,200</span>
+                    <p class="recommendation-content">
+                        Your attic insulation is below recommended levels. Adding R-30 insulation can reduce heating 
+                        and cooling costs by up to 15%.
+                    </p>
+                    <button class="btn btn-outline">
+                        <i class="fas fa-calculator"></i> Calculate ROI
+                    </button>
+                </div>
+
+                <!-- Energy-Efficient Appliances -->
+                <div class="recommendation-card">
+                    <div class="recommendation-header">
+                        <i class="fas fa-refrigerator recommendation-icon"></i>
+                        <h3 class="recommendation-title">Appliance Upgrade</h3>
+                    </div>
+                    <span class="savings-badge">Save up to $30/month</span>
+                    <span class="cost-badge">Cost: $2,500</span>
+                    <p class="recommendation-content">
+                        Your refrigerator is 12 years old and consuming 40% more energy than modern Energy Star models. 
+                        Consider upgrading for significant long-term savings.
+                    </p>
+                    <button class="btn btn-outline">
+                        <i class="fas fa-search"></i> Compare Models
+                    </button>
+                </div>
+
+                <!-- Solar Panels -->
+                <div class="recommendation-card">
+                    <div class="recommendation-header">
+                        <i class="fas fa-solar-panel recommendation-icon"></i>
+                        <h3 class="recommendation-title">Solar Panel Installation</h3>
+                    </div>
+                    <span class="savings-badge">Save up to $150/month</span>
+                    <span class="cost-badge">Cost: $15,000</span>
+                    <p class="recommendation-content">
+                        Your roof is ideal for solar panels. With current incentives, you could reduce your energy bill 
+                        by 80% and pay for the system in 7-10 years.
+                    </p>
+                    <button class="btn btn-outline">
+                        <i class="fas fa-calculator"></i> Solar Calculator
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Appliances Section -->
+        <div id="appliances" class="content-section" style="display: none;">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-tv"></i>
+                </div>
+                <div>
+                    <h2 class="section-title">Appliance Energy Usage</h2>
+                    <p class="section-subtitle">Monitor individual appliance consumption and efficiency</p>
+                </div>
+            </div>
+
+            <div class="appliance-grid">
+                <!-- HVAC -->
+                <div class="appliance-card">
+                    <div class="appliance-icon">
+                        <i class="fas fa-thermometer-half"></i>
+                    </div>
+                    <div class="appliance-name">HVAC System</div>
+                    <div class="appliance-usage">45% of total usage</div>
+                    <div class="usage-bar">
+                        <div class="usage-fill high" style="width: 45%"></div>
+                    </div>
+                    <div style="font-size: 12px; color: var(--secondary);">561 kWh this month</div>
+                </div>
+
+                <!-- Refrigerator -->
+                <div class="appliance-card">
+                    <div class="appliance-icon">
+                        <i class="fas fa-refrigerator"></i>
+                    </div>
+                    <div class="appliance-name">Refrigerator</div>
+                    <div class="appliance-usage">18% of total usage</div>
+                    <div class="usage-bar">
+                        <div class="usage-fill medium" style="width: 18%"></div>
+                    </div>
+                    <div style="font-size: 12px; color: var(--secondary);">224 kWh this month</div>
+                </div>
+
+                <!-- Water Heater -->
+                <div class="appliance-card">
+                    <div class="appliance-icon">
+                        <i class="fas fa-tint"></i>
+                    </div>
+                    <div class="appliance-name">Water Heater</div>
+                    <div class="appliance-usage">15% of total usage</div>
+                    <div class="usage-bar">
+                        <div class="usage-fill medium" style="width: 15%"></div>
+                    </div>
+                    <div style="font-size: 12px; color: var(--secondary);">187 kWh this month</div>
+                </div>
+
+                <!-- Lighting -->
+                <div class="appliance-card">
+                    <div class="appliance-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <div class="appliance-name">Lighting</div>
+                    <div class="appliance-usage">12% of total usage</div>
+                    <div class="usage-bar">
+                        <div class="usage-fill low" style="width: 12%"></div>
+                    </div>
+                    <div style="font-size: 12px; color: var(--secondary);">150 kWh this month</div>
+                </div>
+
+                <!-- Washer/Dryer -->
+                <div class="appliance-card">
+                    <div class="appliance-icon">
+                        <i class="fas fa-tshirt"></i>
+                    </div>
+                    <div class="appliance-name">Washer & Dryer</div>
+                    <div class="appliance-usage">8% of total usage</div>
+                    <div class="usage-bar">
+                        <div class="usage-fill low" style="width: 8%"></div>
+                    </div>
+                    <div style="font-size: 12px; color: var(--secondary);">100 kWh this month</div>
+                </div>
+
+                <!-- Other Electronics -->
+                <div class="appliance-card">
+                    <div class="appliance-icon">
+                        <i class="fas fa-tv"></i>
+                    </div>
+                    <div class="appliance-name">Other Electronics</div>
+                    <div class="appliance-usage">2% of total usage</div>
+                    <div class="usage-bar">
+                        <div class="usage-fill low" style="width: 2%"></div>
+                    </div>
+                    <div style="font-size: 12px; color: var(--secondary);">25 kWh this month</div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 32px;">
+                <button class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add Smart Plug
+                </button>
+                <button class="btn btn-outline">
+                    <i class="fas fa-download"></i> Export Data
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSection = 'overview';
+
+        // Show section
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).style.display = 'block';
+            
+            // Update active tab
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            currentSection = sectionId;
+        }
+
+        // Check authentication
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.firebaseAuth) {
+                window.firebaseAuth.onAuthStateChanged(function(user) {
+                    if (!user) {
+                        // Redirect to sign in if not authenticated
+                        window.location.href = 'signin.html';
+                    }
+                });
+            }
+        });
+
+        // Save energy data to Firebase
+        function saveEnergyData(data) {
+            try {
+                if (window.firebaseDb) {
+                    addDoc(collection(window.firebaseDb, 'energyData'), {
+                        ...data,
+                        userId: window.firebaseAuth?.currentUser?.uid || 'anonymous',
+                        timestamp: new Date().toISOString()
+                    });
+                }
+            } catch (error) {
+                console.error('Error saving energy data:', error);
+            }
+        }
+
+        // Simulate real-time energy monitoring
+        function updateEnergyUsage() {
+            // This would connect to real energy monitoring devices
+            const mockData = {
+                currentUsage: Math.floor(Math.random() * 100) + 100,
+                dailyTotal: Math.floor(Math.random() * 50) + 40,
+                monthlyTotal: Math.floor(Math.random() * 200) + 1200
+            };
+            
+            // Update UI with new data
+            document.querySelectorAll('.stat-value').forEach((stat, index) => {
+                if (index === 0) {
+                    stat.textContent = mockData.monthlyTotal + ' kWh';
+                } else if (index === 1) {
+                    const cost = Math.round(mockData.monthlyTotal * 0.125);
+                    stat.textContent = '$' + cost;
+                }
+            });
+            
+            // Save to Firebase
+            saveEnergyData(mockData);
+        }
+
+        // Update energy usage every 5 minutes
+        setInterval(updateEnergyUsage, 300000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Follow-up Manager - NestMate Sales</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #06b6d4;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+            background: var(--primary);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .message.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .message.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+        .email-templates {
+            margin-bottom: 24px;
+        }
+
+        .template-item {
+            background: var(--light);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .template-item:hover {
+            background: #e2e8f0;
+        }
+
+        .template-item.selected {
+            background: var(--primary);
+            color: white;
+        }
+
+        .template-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .template-preview {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .follow-up-list {
+            margin-top: 24px;
+        }
+
+        .follow-up-item {
+            background: var(--light);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .follow-up-info h4 {
+            margin-bottom: 4px;
+            color: var(--dark);
+        }
+
+        .follow-up-info p {
+            color: var(--secondary);
+            font-size: 14px;
+        }
+
+        .follow-up-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .email-preview {
+            background: var(--light);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-top: 16px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .email-preview h4 {
+            margin-bottom: 8px;
+            color: var(--dark);
+        }
+
+        .email-preview p {
+            color: var(--secondary);
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .follow-up-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-envelope"></i>
+                Follow-up Manager
+            </div>
+            <div>
+                <button class="btn btn-outline" onclick="window.location.href='Sales.html'">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Dashboard
+                </button>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        <div id="message" class="message"></div>
+
+        <!-- Email Templates -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div>
+                    <div class="card-title">Email Templates</div>
+                </div>
+            </div>
+            <div class="email-templates">
+                <div class="template-item" onclick="selectTemplate('initial')">
+                    <div class="template-title">Initial Contact</div>
+                    <div class="template-preview">Professional introduction and value proposition</div>
+                </div>
+                <div class="template-item" onclick="selectTemplate('follow-up')">
+                    <div class="template-title">Follow-up</div>
+                    <div class="template-preview">Gentle reminder and next steps</div>
+                </div>
+                <div class="template-item" onclick="selectTemplate('proposal')">
+                    <div class="template-title">Proposal</div>
+                    <div class="template-preview">Detailed proposal with pricing</div>
+                </div>
+                <div class="template-item" onclick="selectTemplate('closing')">
+                    <div class="template-title">Closing</div>
+                    <div class="template-preview">Final push to close the deal</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Send Follow-up Form -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon">
+                    <i class="fas fa-paper-plane"></i>
+                </div>
+                <div>
+                    <div class="card-title">Send Follow-up Email</div>
+                </div>
+            </div>
+            <form id="followUpForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Lead Name *</label>
+                        <input type="text" class="form-input" id="leadName" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email Address *</label>
+                        <input type="email" class="form-input" id="emailAddress" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Subject Line *</label>
+                    <input type="text" class="form-input" id="emailSubject" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email Content *</label>
+                    <textarea class="form-textarea" id="emailContent" rows="8" required placeholder="Your email content will appear here when you select a template..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Follow-up Date</label>
+                    <input type="date" class="form-input" id="followUpDate">
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-send"></i>
+                        Send Follow-up
+                    </button>
+                    <button type="button" class="btn btn-outline" onclick="previewEmail()">
+                        <i class="fas fa-eye"></i>
+                        Preview
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Email Preview Modal -->
+        <div id="emailPreview" class="email-preview" style="display: none;">
+            <h4>Email Preview</h4>
+            <div id="previewContent"></div>
+        </div>
+
+        <!-- Follow-up History -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon">
+                    <i class="fas fa-history"></i>
+                </div>
+                <div>
+                    <div class="card-title">Follow-up History</div>
+                </div>
+            </div>
+            <div id="followUpHistory" class="follow-up-list">
+                <!-- Follow-up history will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedTemplate = '';
+        let followUpHistory = [];
+
+        // Email templates
+        const emailTemplates = {
+            initial: {
+                subject: 'Introduction - NestMate Solutions',
+                content: `Dear [Lead Name],
+
+I hope this email finds you well. My name is [Your Name] from NestMate, and I came across your company while researching innovative solutions in your industry.
+
+I believe we could help [Company Name] achieve significant improvements in [specific area] based on what I've learned about your business. Our solutions have helped similar companies increase their efficiency by up to 40% while reducing costs.
+
+Would you be interested in a brief 15-minute call to discuss how we might be able to help your organization? I'd be happy to share some relevant case studies and explore potential opportunities.
+
+Looking forward to connecting with you.
+
+Best regards,
+[Your Name]
+NestMate Sales Team`
+            },
+            follow-up: {
+                subject: 'Following up - NestMate Solutions',
+                content: `Hi [Lead Name],
+
+I wanted to follow up on our previous conversation about how NestMate can help [Company Name] achieve its goals.
+
+I understand you're busy, so I'll keep this brief. I'm still confident we can deliver significant value to your organization, and I'd love to schedule a quick call to discuss the next steps.
+
+If you're still interested, please let me know a time that works for you, or feel free to call me directly at [Your Phone].
+
+Looking forward to hearing from you.
+
+Best regards,
+[Your Name]
+NestMate Sales Team`
+            },
+            proposal: {
+                subject: 'Proposal - NestMate Solutions for [Company Name]',
+                content: `Dear [Lead Name],
+
+Thank you for taking the time to discuss your needs with us. As promised, I'm pleased to present our proposal for [Company Name].
+
+Based on our discussion, here's what we recommend:
+
+[Proposal Details]
+
+Investment: $[Amount]
+Timeline: [Timeline]
+Expected ROI: [ROI]
+
+I'm available to discuss this proposal in detail and answer any questions you may have. Would you be available for a call this week?
+
+Looking forward to your feedback.
+
+Best regards,
+[Your Name]
+NestMate Sales Team`
+            },
+            closing: {
+                subject: 'Final Opportunity - NestMate Solutions',
+                content: `Hi [Lead Name],
+
+I wanted to reach out one final time regarding our proposal for [Company Name]. I understand this is a significant decision, and I want to ensure you have all the information you need.
+
+Our offer is valid until [Date], and I'm confident this solution will deliver the results you're looking for.
+
+If you have any final questions or concerns, I'm here to address them. Otherwise, I'm ready to move forward with the implementation.
+
+Looking forward to partnering with you.
+
+Best regards,
+[Your Name]
+NestMate Sales Team`
+            }
+        };
+
+        // Load follow-up history from localStorage
+        function loadFollowUpHistory() {
+            const saved = localStorage.getItem('followUpHistory');
+            if (saved) {
+                followUpHistory = JSON.parse(saved);
+            }
+            renderFollowUpHistory();
+        }
+
+        // Save follow-up history to localStorage
+        function saveFollowUpHistory() {
+            localStorage.setItem('followUpHistory', JSON.stringify(followUpHistory));
+        }
+
+        // Select email template
+        function selectTemplate(templateType) {
+            selectedTemplate = templateType;
+            
+            // Update UI
+            document.querySelectorAll('.template-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            event.target.closest('.template-item').classList.add('selected');
+            
+            // Fill form with template
+            const template = emailTemplates[templateType];
+            document.getElementById('emailSubject').value = template.subject;
+            document.getElementById('emailContent').value = template.content;
+        }
+
+        // Preview email
+        function previewEmail() {
+            const subject = document.getElementById('emailSubject').value;
+            const content = document.getElementById('emailContent').value;
+            
+            if (!subject || !content) {
+                showMessage('Please fill in the subject and content first.', 'error');
+                return;
+            }
+            
+            const previewContent = `
+                <p><strong>Subject:</strong> ${subject}</p>
+                <p><strong>Content:</strong></p>
+                <div style="white-space: pre-wrap; background: white; padding: 16px; border-radius: 8px; margin-top: 8px;">${content}</div>
+            `;
+            
+            document.getElementById('previewContent').innerHTML = previewContent;
+            document.getElementById('emailPreview').style.display = 'block';
+        }
+
+        // Render follow-up history
+        function renderFollowUpHistory() {
+            const container = document.getElementById('followUpHistory');
+            if (followUpHistory.length === 0) {
+                container.innerHTML = '<p style="color: var(--secondary); text-align: center;">No follow-up emails sent yet.</p>';
+                return;
+            }
+
+            container.innerHTML = followUpHistory.map((followUp, index) => `
+                <div class="follow-up-item">
+                    <div class="follow-up-info">
+                        <h4>${followUp.leadName}</h4>
+                        <p>${followUp.emailAddress} • ${followUp.subject} • ${new Date(followUp.sentDate).toLocaleDateString()}</p>
+                        ${followUp.followUpDate ? `<p style="margin-top: 4px; color: var(--warning);">Follow-up scheduled: ${new Date(followUp.followUpDate).toLocaleDateString()}</p>` : ''}
+                    </div>
+                    <div class="follow-up-actions">
+                        <button class="btn btn-warning btn-small" onclick="rescheduleFollowUp(${index})">
+                            <i class="fas fa-calendar"></i>
+                            Reschedule
+                        </button>
+                        <button class="btn btn-danger btn-small" onclick="deleteFollowUp(${index})">
+                            <i class="fas fa-trash"></i>
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Reschedule follow-up
+        function rescheduleFollowUp(index) {
+            const followUp = followUpHistory[index];
+            const newDate = prompt('Enter new follow-up date (YYYY-MM-DD):', followUp.followUpDate || '');
+            if (newDate) {
+                followUp.followUpDate = newDate;
+                saveFollowUpHistory();
+                renderFollowUpHistory();
+                showMessage('Follow-up rescheduled successfully!', 'success');
+            }
+        }
+
+        // Delete follow-up
+        function deleteFollowUp(index) {
+            const followUp = followUpHistory[index];
+            if (confirm(`Are you sure you want to delete the follow-up for ${followUp.leadName}?`)) {
+                followUpHistory.splice(index, 1);
+                saveFollowUpHistory();
+                renderFollowUpHistory();
+                showMessage('Follow-up deleted successfully!', 'success');
+            }
+        }
+
+        // Show message
+        function showMessage(text, type) {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = text;
+            messageEl.className = `message ${type}`;
+            messageEl.style.display = 'block';
+            
+            setTimeout(() => {
+                messageEl.style.display = 'none';
+            }, 5000);
+        }
+
+        // Handle form submission
+        document.getElementById('followUpForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newFollowUp = {
+                id: Date.now(),
+                leadName: document.getElementById('leadName').value,
+                emailAddress: document.getElementById('emailAddress').value,
+                subject: document.getElementById('emailSubject').value,
+                content: document.getElementById('emailContent').value,
+                followUpDate: document.getElementById('followUpDate').value,
+                sentDate: new Date().toISOString(),
+                template: selectedTemplate
+            };
+            
+            followUpHistory.push(newFollowUp);
+            saveFollowUpHistory();
+            renderFollowUpHistory();
+            
+            showMessage('Follow-up email sent successfully!', 'success');
+            document.getElementById('followUpForm').reset();
+            document.getElementById('emailPreview').style.display = 'none';
+            
+            // Clear template selection
+            selectedTemplate = '';
+            document.querySelectorAll('.template-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+        });
+
+        // Load follow-up history on page load
+        loadFollowUpHistory();
+    </script>
+</body>
+</html>
+
+
