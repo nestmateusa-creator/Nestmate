@@ -105,3 +105,4 @@ After deployment, test these:
 **Total Time to Deploy: ~30 minutes with Netlify**
 **Total Time to Deploy: ~45 minutes with traditional hosting**
 
+
