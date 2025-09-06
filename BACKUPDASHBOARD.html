@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>NestMate — Home Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Plus+Jakarta+Sans:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/main.css">
+  <style>
+    /* ...existing CSS... */
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --accent: #facc15;
+      --bg: #f8fafc;
+      --card: #fff;
+      --border: #e5e7eb;
+      --radius: 18px;
+      --shadow: 0 4px 24px rgba(37,99,235,0.10);
+      --transition: 0.18s;
+      --btn-font: 'Plus Jakarta Sans', 'Inter', Arial, sans-serif;
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(120deg, #e0e7ff 0%, #f8fafc 100%);
+      font-family: var(--btn-font);
+      color: #1e293b;
+    }
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .dashboard-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 32px 0 32px;
+      position: relative;
+    }
+    .brand {
+      font-size:2rem;
+      font-weight:700;
+      color:var(--primary);
+      display:flex;
+      align-items:center;
+      gap:12px;
+      letter-spacing: -1px;
+      font-family: var(--btn-font);
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: absolute;
+      right: 32px;
+      top: 32px;
+      z-index: 10;
+    }
+    .profile-btn-top {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: box-shadow var(--transition), border var(--transition), background var(--transition);
+      box-shadow: var(--shadow);
+      padding: 0;
+      outline: none;
+    }
+    .profile-btn-top:hover, .profile-btn-top:focus {
+      border: 1.5px solid var(--primary);
+      background: #f1f5f9;
+      box-shadow: 0 6px 24px rgba(37,99,235,0.13);
+    }
+    .profile-btn-top svg {
+      width: 26px;
+      height: 26px;
+      color: var(--primary);
+      display: block;
+    }
+    .logout-btn-top {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      padding: 0 24px;
+      font-size: 1.08rem;
+      font-family: var(--btn-font);
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      transition: background var(--transition), box-shadow var(--transition), transform var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      height: 44px;
+      letter-spacing: 0.02em;
+      outline: none;
+    }
+    .logout-btn-top:hover, .logout-btn-top:focus {
+      background: var(--primary-dark);
+      box-shadow: 0 6px 24px rgba(37,99,235,0.18);
+      transform: translateY(-2px) scale(1.03);
+    }
+    .dashboard-actions-bar {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      max-width: 1200px;
+      margin: 32px auto 0 auto;
+      justify-content: flex-start;
+      padding: 0 32px;
+    }
+    .dashboard-actions-bar .action-btn,
+    .dashboard-actions-bar .quick-action-btn {
+      min-width: 180px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.09rem;
+      font-family: var(--btn-font);
+      font-weight: 700;
+      border-radius: var(--radius);
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: var(--shadow);
+      transition: background var(--transition), color var(--transition), box-shadow var(--transition), transform var(--transition);
+      gap: 12px;
+      padding: 0 28px;
+      background: #fff;
+      color: var(--primary);
+      outline: none;
+      letter-spacing: 0.01em;
+      border: 1.5px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .dashboard-actions-bar .action-btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+    }
+    .dashboard-actions-bar .action-btn:hover, .dashboard-actions-bar .action-btn:focus {
+      background: var(--primary-dark);
+      color: #fff;
+      box-shadow: 0 8px 32px #2563eb22;
+      transform: translateY(-2px) scale(1.03);
+    }
+    .dashboard-actions-bar .quick-action-btn {
+      background: linear-gradient(90deg, #facc15 60%, #2563eb 100%);
+      color: #1e293b;
+      border: none;
+    }
+    .dashboard-actions-bar .quick-action-btn.order {
+      background: linear-gradient(90deg, #2563eb 60%, #facc15 100%);
+      color: #fff;
+    }
+    .dashboard-actions-bar .quick-action-btn:hover, .dashboard-actions-bar .quick-action-btn:focus {
+      background: linear-gradient(90deg, #fde047 60%, #1d4ed8 100%);
+      color: #fff;
+      box-shadow: 0 8px 32px #2563eb22;
+      transform: translateY(-2px) scale(1.03);
+    }
+    .dashboard-actions-bar .quick-action-btn.order:hover, .dashboard-actions-bar .quick-action-btn.order:focus {
+      background: linear-gradient(90deg, #1d4ed8 60%, #fde047 100%);
+      color: #1e293b;
+    }
+    .dashboard-actions-bar .action-btn:active,
+    .dashboard-actions-bar .quick-action-btn:active,
+    .logout-btn-top:active {
+      transform: scale(0.98);
+      box-shadow: 0 2px 8px #2563eb22;
+    }
+    .user-email-label {
+      color: #64748b;
+      font-size: 1.05rem;
+      margin-left: 22px;
+      font-weight: 500;
+      font-family: 'Inter', Arial, sans-serif;
+    }
+    .dashboard-main-wrap {
+      max-width: 1200px;
+      margin: 32px auto 0 auto;
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 0;
+      display: flex;
+      min-height: 700px;
+      border: 1.5px solid var(--border);
+      gap: 0;
+      overflow: hidden;
+    }
+    .dashboard-sidebar {
+      flex: 0 0 220px;
+      background: var(--bg);
+      border-radius: var(--radius) 0 0 var(--radius);
+      box-shadow: none;
+      padding: 28px 0 28px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      min-height: 700px;
+      border-right: 2px solid var(--border);
+    }
+    .dashboard-tabs {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      width: 100%;
+    }
+    .dashboard-tabs button {
+      background: none;
+      border: none;
+      color: var(--primary);
+      font-size: 1.08rem;
+      font-family: var(--btn-font);
+      font-weight: 700;
+      padding: 18px 32px 18px 32px;
+      cursor: pointer;
+      border-left: 4px solid transparent;
+      transition: border-left var(--transition), color var(--transition), background var(--transition);
+      outline: none;
+      border-radius: 0 30px 30px 0;
+      text-align: left;
+      width: 100%;
+    }
+    .dashboard-tabs button.active,
+    .dashboard-tabs button:hover {
+      background: #f1f5f9;
+      color: var(--primary);
+      border-left: 4px solid var(--primary);
+    }
+    .dashboard-content {
+      flex: 1 1 0;
+      min-width: 0;
+      padding: 36px 40px 36px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      background: var(--card);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      min-height: 700px;
+    }
+    .dashboard-panel-section {
+      display: none;
+      animation: fadeIn 0.3s;
+      width: 100%;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    .dashboard-panel-section.active {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px);}
+      to { opacity: 1; transform: none;}
+    }
+    .dashboard-panel-section h2 {
+      font-size: 2rem;
+      color: var(--primary);
+      font-weight: 800;
+      margin-bottom: 24px;
+      letter-spacing: -1px;
+      font-family: var(--btn-font);
+    }
+    /* Dashboard summary section styles */
+    .dashboard-summary-section {
+      background: #f1f5f9;
+      border-radius: var(--radius);
+      box-shadow: 0 2px 12px #2563eb11;
+      padding: 32px 32px 24px 32px;
+      margin-bottom: 32px;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .dashboard-summary-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+    .dashboard-summary-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+    .dashboard-summary-card {
+      flex: 1 1 180px;
+      min-width: 180px;
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: 0 2px 8px #2563eb11;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+      border: 1.5px solid var(--border);
+    }
+    .dashboard-summary-label {
+      font-size: 1.01rem;
+      color: #64748b;
+      font-weight: 600;
+    }
+    .dashboard-summary-value {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+      letter-spacing: -0.5px;
+    }
+    @media (max-width: 900px) {
+      .dashboard-summary-grid {
+        flex-direction: column;
+        gap: 16px;
+      }
+      .dashboard-summary-section {
+        padding: 18px 10px 14px 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="dashboard-header">
+    <div class="brand">
+      <svg viewBox="0 0 64 64" width="32" height="32" fill="currentColor"><path d="M32 4 L4 28 H12 V60 H26 V40 H38 V60 H52 V28 H60 Z"/></svg>
+      NestMate Dashboard
+      <span class="user-email-label" id="userEmail"></span>
+    </div>
+    <div class="header-actions">
+      <a href="profile.html" class="profile-btn-top" title="Profile">
+        <svg viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/>
+          <path d="M4 20c0-3.3137 3.134-6 8-6s8 2.6863 8 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </a>
+      <button id="logoutBtn" class="logout-btn-top">🚪 Logout</button>
+    </div>
+  </header>
+  <div class="dashboard-actions-bar">
+    <a href="contact-contractor.html" class="quick-action-btn contractor">
+      🛠️ Contact a Pro Contractor
+    </a>
+    <a href="order-items.html" class="quick-action-btn order">
+      🛒 Order Items for My Home
+    </a>
+    <a href="index.html" id="homeBtn" class="action-btn">🏠 Home</a>
+    <a href="dashboard.html" id="myHomeBtn" class="action-btn">🏡 My Home</a>
+  </div>
+  <main>
+    <div class="dashboard-main-wrap">
+      <aside class="dashboard-sidebar">
+        <nav class="dashboard-tabs" id="dashboardTabs">
+          <button type="button" class="active" data-tab="dashboard">Home Details</button>
+          <button type="button" data-tab="overview">Home Overview</button>
+          <button type="button" data-tab="builder">Builder</button>
+          <button type="button" data-tab="bedrooms">Bedrooms</button>
+          <button type="button" data-tab="bathrooms">Bathrooms</button>
+          <button type="button" data-tab="roof">Roof</button>
+          <button type="button" data-tab="crawlspace">Crawlspace</button>
+          <button type="button" data-tab="paint">Paint Colors</button>
+          <button type="button" data-tab="floor">Floor Colors</button>
+          <button type="button" data-tab="windows">Windows</button>
+          <button type="button" data-tab="blinds">Blinds/Curtains</button>
+          <button type="button" data-tab="appliances">Appliances</button>
+          <button type="button" data-tab="other">Other</button>
+        </nav>
+      </aside>
+      <section class="dashboard-content">
+        <!-- Home Overview Section -->
+        <div class="dashboard-panel-section" id="panel-overview">
+          <h2>Home Overview</h2>
+          <div class="dashboard-summary-section" id="dashboardSummarySection">
+            <div class="dashboard-summary-grid">
+              <div class="dashboard-summary-card">
+                <div class="dashboard-summary-label">Address</div>
+                <div class="dashboard-summary-value" id="summaryAddress">—</div>
+              </div>
+              <div class="dashboard-summary-card">
+                <div class="dashboard-summary-label">Year Purchased</div>
+                <div class="dashboard-summary-value" id="summaryYearPurchased">—</div>
+              </div>
+              <div class="dashboard-summary-card">
+                <div class="dashboard-summary-label">Est. Value</div>
+                <div class="dashboard-summary-value" id="summaryEstimatedValue">—</div>
+              </div>
+              <div class="dashboard-summary-card">
+                <div class="dashboard-summary-label">Bedrooms</div>
+                <div class="dashboard-summary-value" id="summaryBedrooms">—</div>
+              </div>
+              <div class="dashboard-summary-card">
+                <div class="dashboard-summary-label">Bathrooms</div>
+                <div class="dashboard-summary-value" id="summaryBathrooms">—</div>
+              </div>
+              <div class="dashboard-summary-card">
+                <div class="dashboard-summary-label">Roof Type</div>
+                <div class="dashboard-summary-value" id="summaryRoofType">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- End Home Overview Section -->
+
+        <!-- Home Details Tab Section (was Dashboard) -->
+        <div class="dashboard-panel-section active" id="panel-dashboard">
+          <h2>Home Details</h2>
+          <form class="general-details-form" id="generalDetailsForm" autocomplete="off">
+            <label for="generalAddress">Home Address</label>
+            <input type="text" id="generalAddress" placeholder="Enter address">
+            <label for="generalYearPurchased">Year Purchased</label>
+            <input type="number" id="generalYearPurchased" placeholder="e.g. 2020">
+            <label for="generalPurchasePrice">Purchase Price</label>
+            <input type="number" id="generalPurchasePrice" placeholder="e.g. 350000">
+            <label for="generalEstimatedValue">Estimated Value</label>
+            <input type="number" id="generalEstimatedValue" placeholder="e.g. 400000">
+            <label for="generalBedrooms">Number of Bedrooms</label>
+            <input type="number" id="generalBedrooms" placeholder="e.g. 3">
+            <label for="generalBathrooms">Number of Bathrooms</label>
+            <input type="number" id="generalBathrooms" placeholder="e.g. 2">
+            <label for="generalOther">Other Details</label>
+            <input type="text" id="generalOther" placeholder="e.g. Pool, Solar Panels, etc.">
+            <div class="general-details-actions">
+              <button type="submit" id="saveGeneralBtn">Save</button>
+              <button type="button" class="delete-btn" id="deleteGeneralBtn">Delete All</button>
+            </div>
+            <div class="general-details-success" id="generalDetailsSuccess"></div>
+            <div class="general-details-error" id="generalDetailsError"></div>
+          </form>
+        </div>
+        <!-- End Home Details Tab Section -->
+
+        <!-- ...rest of your sections unchanged... -->
+        <!-- Builder Tab Section -->
+        <div class="dashboard-panel-section" id="panel-builder">
+          <h2>Builder Details</h2>
+          <form class="builder-details-form" id="builderDetailsForm" autocomplete="off">
+            <label for="builderName">Builder Name</label>
+            <input type="text" id="builderName" placeholder="e.g. ABC Homes">
+            <label for="builderContact">Builder Contact Info</label>
+            <input type="text" id="builderContact" placeholder="e.g. (555) 123-4567, builder@email.com">
+            <label for="builderYearBuilt">Year Built</label>
+            <input type="number" id="builderYearBuilt" placeholder="e.g. 2018">
+            <label for="builderOther">Other Builder Details</label>
+            <input type="text" id="builderOther" placeholder="e.g. Warranty, Notes, etc.">
+            <div class="builder-details-actions">
+              <button type="submit" id="saveBuilderBtn">Save</button>
+              <button type="button" class="delete-btn" id="deleteBuilderBtn">Delete All</button>
+            </div>
+            <div class="builder-details-success" id="builderDetailsSuccess"></div>
+            <div class="builder-details-error" id="builderDetailsError"></div>
+          </form>
+        </div>
+        <!-- End Builder Tab Section -->
+
+        <!-- Bedrooms Tab Section -->
+        <div class="dashboard-panel-section" id="panel-bedrooms">
+          <h2>Bedrooms</h2>
+          <form class="bedroom-details-form" id="bedroomDetailsForm" autocomplete="off">
+            <label for="bedroomName">Room Name</label>
+            <input type="text" id="bedroomName" placeholder="e.g. Master Bedroom" required>
+            <label for="bedroomPaintColor">Paint Color</label>
+            <input type="text" id="bedroomPaintColor" placeholder="e.g. Sky Blue">
+            <label for="bedroomFloorStyle">Floor Style</label>
+            <input type="text" id="bedroomFloorStyle" placeholder="e.g. Hardwood, Carpet">
+            <label for="bedroomFloorColor">Floor Color</label>
+            <input type="text" id="bedroomFloorColor" placeholder="e.g. Oak, Beige">
+            <label for="bedroomWindowCount">Amount of Windows</label>
+            <input type="number" id="bedroomWindowCount" min="0" placeholder="e.g. 2">
+            <label for="bedroomBlindsLength">Inside Window Length (for Blinds, inches)</label>
+            <input type="number" id="bedroomBlindsLength" min="0" placeholder="e.g. 48">
+            <label for="bedroomBlindsWidth">Inside Window Width (for Blinds, inches)</label>
+            <input type="number" id="bedroomBlindsWidth" min="0" placeholder="e.g. 36">
+            <label for="bedroomCurtainsWidth">Outside Window Width (for Curtains, inches)</label>
+            <input type="number" id="bedroomCurtainsWidth" min="0" placeholder="e.g. 40">
+            <label for="bedroomCurtainsLength">Outside Window Length (for Curtains, inches)</label>
+            <input type="number" id="bedroomCurtainsLength" min="0" placeholder="e.g. 50">
+            <label for="bedroomOther">Other Details</label>
+            <input type="text" id="bedroomOther" placeholder="e.g. Closet size, Notes, etc.">
+            <div class="bedroom-details-actions">
+              <button type="submit" id="saveBedroomBtn">Add Bedroom</button>
+            </div>
+            <div class="bedroom-details-success" id="bedroomDetailsSuccess"></div>
+            <div class="bedroom-details-error" id="bedroomDetailsError"></div>
+          </form>
+          <ul class="bedroom-list" id="bedroomList"></ul>
+        </div>
+        <!-- End Bedrooms Tab Section -->
+
+        <!-- Bathrooms Tab Section -->
+        <div class="dashboard-panel-section" id="panel-bathrooms">
+          <h2>Bathrooms</h2>
+          <form class="bathroom-details-form" id="bathroomDetailsForm" autocomplete="off">
+            <label for="bathroomName">Bathroom Name</label>
+            <input type="text" id="bathroomName" placeholder="e.g. Master Bath" required>
+            <label for="bathroomToilets">Number of Toilets</label>
+            <input type="number" id="bathroomToilets" min="0" placeholder="e.g. 1">
+            <label for="bathroomToiletType">Toilet Type</label>
+            <input type="text" id="bathroomToiletType" placeholder="e.g. Standard, Dual Flush">
+            <label for="bathroomSinks">Number of Sinks</label>
+            <input type="number" id="bathroomSinks" min="0" placeholder="e.g. 2">
+            <label for="bathroomSinkType">Sink Type</label>
+            <input type="text" id="bathroomSinkType" placeholder="e.g. Undermount, Vessel">
+            <label for="bathroomSinkMaterial">Sink Material</label>
+            <input type="text" id="bathroomSinkMaterial" placeholder="e.g. Porcelain, Glass">
+            <label for="bathroomShowerType">Shower/Bath Type</label>
+            <input type="text" id="bathroomShowerType" placeholder="e.g. Walk-in Shower, Tub/Shower Combo">
+            <label for="bathroomShowerFeatures">Shower/Bath Features</label>
+            <input type="text" id="bathroomShowerFeatures" placeholder="e.g. Rain Shower, Jets, Glass Door">
+            <label for="bathroomFloorStyle">Floor Style</label>
+            <input type="text" id="bathroomFloorStyle" placeholder="e.g. Tile, Vinyl">
+            <label for="bathroomFloorColor">Floor Color</label>
+            <input type="text" id="bathroomFloorColor" placeholder="e.g. White, Gray">
+            <label for="bathroomHeatedFloor">Heated Floor?</label>
+            <input type="text" id="bathroomHeatedFloor" placeholder="Yes/No">
+            <label for="bathroomWindowCount">Number of Windows</label>
+            <input type="number" id="bathroomWindowCount" min="0" placeholder="e.g. 1">
+            <label for="bathroomBlindsLength">Window Length (for Blinds, inches)</label>
+            <input type="number" id="bathroomBlindsLength" min="0" placeholder="e.g. 36">
+            <label for="bathroomBlindsWidth">Window Width (for Blinds, inches)</label>
+            <input type="number" id="bathroomBlindsWidth" min="0" placeholder="e.g. 24">
+            <label for="bathroomCurtainsLength">Window Length (for Curtains, inches)</label>
+            <input type="number" id="bathroomCurtainsLength" min="0" placeholder="e.g. 40">
+            <label for="bathroomCurtainsWidth">Window Width (for Curtains, inches)</label>
+            <input type="number" id="bathroomCurtainsWidth" min="0" placeholder="e.g. 30">
+            <label for="bathroomMirror">Mirror Details</label>
+            <input type="text" id="bathroomMirror" placeholder="e.g. Size, Shape, Lighting">
+            <label for="bathroomVanity">Vanity Details</label>
+            <input type="text" id="bathroomVanity" placeholder="e.g. Double, Single, Material">
+            <label for="bathroomOther">Other Details</label>
+            <input type="text" id="bathroomOther" placeholder="e.g. Storage, Notes, etc.">
+            <div class="bathroom-details-actions">
+              <button type="submit" id="saveBathroomBtn">Add Bathroom</button>
+            </div>
+            <div class="bathroom-details-success" id="bathroomDetailsSuccess"></div>
+            <div class="bathroom-details-error" id="bathroomDetailsError"></div>
+          </form>
+          <ul class="bathroom-list" id="bathroomList"></ul>
+        </div>
+        <!-- End Bathrooms Tab Section -->
+
+        <!-- Roof Tab Section -->
+        <div class="dashboard-panel-section" id="panel-roof">
+          <h2>Roof Details</h2>
+          <form class="roof-details-form" id="roofDetailsForm" autocomplete="off">
+            <label for="roofType">Roof Type</label>
+            <input type="text" id="roofType" placeholder="e.g. Gable, Hip, Flat" required>
+            <label for="roofPlywood">Type of Plywood Used</label>
+            <input type="text" id="roofPlywood" placeholder="e.g. OSB, CDX, Thickness">
+            <label for="roofPaper">Type of Paper/Underlayment</label>
+            <input type="text" id="roofPaper" placeholder="e.g. Synthetic, Felt, Ice & Water Shield">
+            <label for="roofShingles">Type of Shingles</label>
+            <input type="text" id="roofShingles" placeholder="e.g. Architectural, 3-tab, Metal">
+            <label for="roofColor">Shingle Color</label>
+            <input type="text" id="roofColor" placeholder="e.g. Charcoal, Brown">
+            <label for="roofWarranty">Warranty</label>
+            <input type="text" id="roofWarranty" placeholder="e.g. 30 years, Lifetime">
+            <label for="roofInstalledBy">Installed By</label>
+            <input type="text" id="roofInstalledBy" placeholder="e.g. Company Name, Contact">
+            <label for="roofInstallDate">Install Date</label>
+            <input type="text" id="roofInstallDate" placeholder="e.g. 2022-05-01">
+            <label for="roofOther">Other Details</label>
+            <input type="text" id="roofOther" placeholder="e.g. Ridge vent, Skylights, Notes">
+            <div class="roof-details-actions">
+              <button type="submit" id="saveRoofBtn">Add Roof Info</button>
+            </div>
+            <div class="roof-details-success" id="roofDetailsSuccess"></div>
+            <div class="roof-details-error" id="roofDetailsError"></div>
+          </form>
+          <ul class="roof-list" id="roofList"></ul>
+        </div>
+        <!-- End Roof Tab Section -->
+
+        <!-- Crawlspace Tab Section -->
+        <div class="dashboard-panel-section" id="panel-crawlspace">
+          <h2>Crawlspace</h2>
+          <form class="crawlspace-details-form" id="crawlspaceDetailsForm" autocomplete="off">
+            <label for="crawlspaceType">Crawlspace Type</label>
+            <input type="text" id="crawlspaceType" placeholder="e.g. Vented, Encapsulated, Unvented">
+            <label for="crawlspaceHeight">Crawlspace Height</label>
+            <input type="text" id="crawlspaceHeight" placeholder="e.g. 3 ft, 4 ft">
+            <label for="crawlspaceAccess">Access Location</label>
+            <input type="text" id="crawlspaceAccess" placeholder="e.g. Inside closet, Outside hatch">
+            <label for="crawlspaceVaporBarrier">Vapor Barrier</label>
+            <input type="text" id="crawlspaceVaporBarrier" placeholder="e.g. Yes, 6-mil poly, None">
+            <label for="crawlspaceInsulation">Insulation</label>
+            <input type="text" id="crawlspaceInsulation" placeholder="e.g. R-19 batts, Spray foam, None">
+            <label for="crawlspaceOther">Other Details</label>
+            <input type="text" id="crawlspaceOther" placeholder="e.g. Sump pump, Dehumidifier, Notes">
+            <div class="crawlspace-details-actions">
+              <button type="submit" id="saveCrawlspaceBtn">Save</button>
+              <button type="button" class="delete-btn" id="deleteCrawlspaceBtn">Delete All</button>
+            </div>
+            <div class="crawlspace-details-success" id="crawlspaceDetailsSuccess"></div>
+            <div class="crawlspace-details-error" id="crawlspaceDetailsError"></div>
+          </form>
+        </div>
+        <!-- End Crawlspace Tab Section -->
+
+        <!-- Add other sections here as needed -->
+      </section>
+    </div>
+  </main>
+  <footer style="text-align:center;margin-top:40px;color:#64748b;">
+    &copy; 2025 NestMate. All rights reserved.
+  </footer>
+  <script type="module">
+    // ...existing JS...
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD-4kmEmEH6OPtGK-ez7GkCHV31mg5iNhk",
+      authDomain: "nestmateusa-4914c.firebaseapp.com",
+      projectId: "nestmateusa-4914c",
+      storageBucket: "nestmateusa-4914c.appspot.com",
+      messagingSenderId: "907781112999",
+      appId: "1:907781112999:web:9b41582369804c42e64782",
+      measurementId: "G-DY2FMDMBYE"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // --- Tab Switching Logic ---
+    const tabButtons = document.querySelectorAll('.dashboard-tabs button');
+    const panelSections = document.querySelectorAll('.dashboard-panel-section');
+    tabButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        panelSections.forEach(section => {
+          section.classList.remove('active');
+        });
+        const tab = btn.getAttribute('data-tab');
+        const panel = document.getElementById(`panel-${tab}`);
+        if (panel) panel.classList.add('active');
+      });
+    });
+
+    // --- Dashboard Summary Update ---
+    function updateDashboardSummary({general, bedrooms, bathrooms, roofs}) {
+      document.getElementById('summaryAddress').textContent = general?.address || '—';
+      document.getElementById('summaryYearPurchased').textContent = general?.yearPurchased || '—';
+      document.getElementById('summaryEstimatedValue').textContent = general?.estimatedValue || '—';
+      document.getElementById('summaryBedrooms').textContent = bedrooms?.length ? bedrooms.length : (general?.bedrooms || '—');
+      document.getElementById('summaryBathrooms').textContent = bathrooms?.length ? bathrooms.length : (general?.bathrooms || '—');
+      document.getElementById('summaryRoofType').textContent = roofs?.length ? roofs[0].type : '—';
+    }
+
+    // --- Auth and load user data ---
+    let currentUser = null;
+    const userEmailLabel = document.getElementById('userEmail');
+    let _generalDetails = {};
+    let _bedrooms = [];
+    let _bathrooms = [];
+    let _roofs = [];
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUser = user;
+        userEmailLabel.textContent = user.email ? `(${user.email})` : '';
+        await loadGeneralDetailsFromFirestore();
+        await loadBuilderDetailsFromFirestore();
+        await loadBedroomsFromFirestore();
+        await loadBathroomsFromFirestore();
+        await loadRoofFromFirestore();
+        await loadCrawlspaceFromFirestore();
+        updateDashboardSummary({
+          general: _generalDetails,
+          bedrooms: _bedrooms,
+          bathrooms: _bathrooms,
+          roofs: _roofs
+        });
+      } else {
+        window.location.href = "index.html";
+      }
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await signOut(auth);
+      window.location.href = "index.html";
+    });
+
+    // --- General Details Logic ---
+    let generalDetails = {};
+    const generalDetailsForm = document.getElementById('generalDetailsForm');
+    const generalDetailsSuccess = document.getElementById('generalDetailsSuccess');
+    const generalDetailsError = document.getElementById('generalDetailsError');
+    function getGeneralFormData() {
+      return {
+        address: document.getElementById('generalAddress').value.trim(),
+        yearPurchased: document.getElementById('generalYearPurchased').value.trim(),
+        purchasePrice: document.getElementById('generalPurchasePrice').value.trim(),
+        estimatedValue: document.getElementById('generalEstimatedValue').value.trim(),
+        bedrooms: document.getElementById('generalBedrooms').value.trim(),
+        bathrooms: document.getElementById('generalBathrooms').value.trim(),
+        other: document.getElementById('generalOther').value.trim()
+      };
+    }
+    function setGeneralFormData(data) {
+      document.getElementById('generalAddress').value = data.address || '';
+      document.getElementById('generalYearPurchased').value = data.yearPurchased || '';
+      document.getElementById('generalPurchasePrice').value = data.purchasePrice || '';
+      document.getElementById('generalEstimatedValue').value = data.estimatedValue || '';
+      document.getElementById('generalBedrooms').value = data.bedrooms || '';
+      document.getElementById('generalBathrooms').value = data.bathrooms || '';
+      document.getElementById('generalOther').value = data.other || '';
+    }
+    function clearGeneralForm() {
+      setGeneralFormData({});
+    }
+    async function saveGeneralDetailsToFirestore() {
+      if (!currentUser) return;
+      const userDoc = doc(db, "users", currentUser.uid);
+      await setDoc(userDoc, { generalDetails }, { merge: true });
+      _generalDetails = generalDetails;
+      updateDashboardSummary({
+        general: _generalDetails,
+        bedrooms: _bedrooms,
+        bathrooms: _bathrooms,
+        roofs: _roofs
+      });
+    }
+    async function loadGeneralDetailsFromFirestore() {
+      if (!currentUser) return;
+      const userDoc = doc(db, "users", currentUser.uid);
+      const docSnap = await getDoc(userDoc);
+      if (docSnap.exists() && docSnap.data().generalDetails) {
+        generalDetails = docSnap.data().generalDetails;
+        _generalDetails = generalDetails;
+        setGeneralFormData(generalDetails);
+      } else {
+        generalDetails = {};
+        _generalDetails = {};
+        setGeneralFormData({});
+      }
+    }
+    generalDetailsForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      generalDetails = getGeneralFormData();
+      try {
+        await saveGeneralDetailsToFirestore();
+        generalDetailsSuccess.textContent = "General info saved!";
+        generalDetailsError.textContent = "";
+      } catch (err) {
+        generalDetailsError.textContent = "Error saving: " + err.message;
+        generalDetailsSuccess.textContent = "";
+      }
+    });
+    document.getElementById('deleteGeneralBtn')?.addEventListener('click', async () => {
+      if (!currentUser) return;
+      if (!confirm("Delete all general info?")) return;
+      generalDetails = {};
+      try {
+        await saveGeneralDetailsToFirestore();
+        clearGeneralForm();
+        generalDetailsSuccess.textContent = "General info deleted!";
+        generalDetailsError.textContent = "";
+      } catch (err) {
+        generalDetailsError.textContent = "Error deleting: " + err.message;
+        generalDetailsSuccess.textContent = "";
+      }
+    });
+
+    // --- Builder Details Logic ---
+    let builderDetails = {};
+    const builderDetailsForm = document.getElementById('builderDetailsForm');
+    const builderDetailsSuccess = document.getElementById('builderDetailsSuccess');
+    const builderDetailsError = document.getElementById('builderDetailsError');
+    function getBuilderFormData() {
+      return {
+        name: document.getElementById('builderName').value.trim(),
+        contact: document.getElementById('builderContact').value.trim(),
+        yearBuilt: document.getElementById('builderYearBuilt').value.trim(),
+        other: document.getElementById('builderOther').value.trim()
+      };
+    }
+    function setBuilderFormData(data) {
+      document.getElementById('builderName').value = data.name || '';
+      document.getElementById('builderContact').value = data.contact || '';
+      document.getElementById('builderYearBuilt').value = data.yearBuilt || '';
+      document.getElementById('builderOther').value = data.other || '';
+    }
+    function clearBuilderForm() {
+      setBuilderFormData({});
+    }
+    async function saveBuilderDetailsToFirestore() {
+      if (!currentUser) return;
+      const userDoc = doc(db, "users", currentUser.uid);
+      await setDoc(userDoc, { builderDetails }, { merge: true });
+    }
+    async function loadBuilderDetailsFromFirestore() {
+      if (!currentUser) return;
+      const userDoc = doc(db, "users", currentUser.uid);
+      const docSnap = await getDoc(userDoc);
+      if (docSnap.exists() && docSnap.data().builderDetails) {
+        builderDetails = docSnap.data().builderDetails;
+        setBuilderFormData(builderDetails);
+      } else {
+        builderDetails = {};
+        setBuilderFormData({});
+      }
+    }
+    builderDetailsForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      builderDetails = getBuilderFormData();
+      try {
+        await saveBuilderDetailsToFirestore();
+        builderDetailsSuccess.textContent = "Builder info saved!";
+        builderDetailsError.textContent = "";
+      } catch (err) {
+        builderDetailsError.textContent = "Error saving: " + err.message;
+        builderDetailsSuccess.textContent = "";
+      }
+    });
+    document.getElementById('deleteBuilderBtn')?.addEventListener('click', async () => {
+      if (!currentUser) return;
+      if (!confirm("Delete all builder info?")) return;
+      builderDetails = {};
+      try {
+        await saveBuilderDetailsToFirestore();
+        clearBuilderForm();
+        builderDetailsSuccess.textContent = "Builder info deleted!";
+        builderDetailsError.textContent = "";
+      } catch (err) {
+        builderDetailsError.textContent = "Error deleting: " + err.message;
+        builderDetailsSuccess.textContent = "";
+      }
+    });
+
+    // --- Bedrooms Logic ---
+    let bedrooms = [];
+    const bedroomDetailsForm = document.getElementById('bedroomDetailsForm');
+    const bedroomDetailsSuccess = document.getElementById('bedroomDetailsSuccess');
+    const bedroomDetailsError = document.getElementById('bedroomDetailsError');
+    const bedroomList = document.getElementById('bedroomList');
+    function getBedroomFormData() {
+      return {
+        name: document.getElementById('bedroomName').value.trim(),
+        paintColor: document.getElementById('bedroomPaintColor').value.trim(),
+        floorStyle: document.getElementById('bedroomFloorStyle').value.trim(),
+        floorColor: document.getElementById('bedroomFloorColor').value.trim(),
+        windowCount: document.getElementById('bedroomWindowCount').value.trim(),
+        blindsLength: document.getElementById('bedroomBlindsLength').value.trim(),
+        blindsWidth: document.getElementById('bedroomBlindsWidth').value.trim(),
+        curtainsWidth: document.getElementById('bedroomCurtainsWidth').value.trim(),
+        curtainsLength: document.getElementById('bedroomCurtainsLength').value.trim(),
+        other: document.getElementById('bedroomOther').value.trim()
+      };
+    }
+    function renderBedrooms() {
+      bedroomList.innerHTML = '';
+      bedrooms.forEach((b, idx) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <div><strong>${b.name}</strong></div>
+          <div><span>Paint:</span> ${b.paintColor || ''}</div>
+          <div><span>Floor:</span> ${b.floorStyle || ''} (${b.floorColor || ''})</div>
+          <div><span>Windows:</span> ${b.windowCount || ''}</div>
+          <div><span>Blinds:</span> ${b.blindsLength || ''} x ${b.blindsWidth || ''}</div>
+          <div><span>Curtains:</span> ${b.curtainsLength || ''} x ${b.curtainsWidth || ''}</div>
+          <div><span>Other:</span> ${b.other || ''}</div>
+          <div class="bedroom-actions">
+            <button type="button" data-idx="${idx}" class="delete-btn">Delete</button>
+          </div>
+        `;
+        bedroomList.appendChild(li);
+      });
+      bedroomList.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          const idx = parseInt(btn.getAttribute('data-idx'));
+          bedrooms.splice(idx, 1);
+          await saveBedroomsToFirestore();
+          renderBedrooms();
+          _bedrooms = bedrooms;
+          updateDashboardSummary({
+            general: _generalDetails,
+            bedrooms: _bedrooms,
+            bathrooms: _bathrooms,
+            roofs: _roofs
+          });
+        });
+      });
+      _bedrooms = bedrooms;
+      updateDashboardSummary({
+        general: _generalDetails,
+        bedrooms: _bedrooms,
+        bathrooms: _bathrooms,
+        roofs: _roofs
+      });
+    }
+    async function saveBedroomsToFirestore() {
+      if (!currentUser) return;
+      const bedroomsCol = collection(db, "users", currentUser.uid, "bedrooms");
+      const docs = await getDocs(bedroomsCol);
+      for (const docSnap of docs.docs) {
+        await deleteDoc(docSnap.ref);
+      }
+      for (const b of bedrooms) {
+        await addDoc(bedroomsCol, b);
+      }
+    }
+    async function loadBedroomsFromFirestore() {
+      if (!currentUser) return;
+      const bedroomsCol = collection(db, "users", currentUser.uid, "bedrooms");
+      const docs = await getDocs(bedroomsCol);
+      bedrooms = docs.docs.map(d => d.data());
+      _bedrooms = bedrooms;
+      renderBedrooms();
+    }
+    bedroomDetailsForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = getBedroomFormData();
+      if (!data.name) {
+        bedroomDetailsError.textContent = "Room name required";
+        return;
+      }
+      bedrooms.push(data);
+      try {
+        await saveBedroomsToFirestore();
+        renderBedrooms();
+        bedroomDetailsForm.reset();
+        bedroomDetailsSuccess.textContent = "Bedroom added!";
+        bedroomDetailsError.textContent = "";
+      } catch (err) {
+        bedroomDetailsError.textContent = "Error saving: " + err.message;
+        bedroomDetailsSuccess.textContent = "";
+      }
+    });
+
+    // --- Bathrooms Logic ---
+    let bathrooms = [];
+    const bathroomDetailsForm = document.getElementById('bathroomDetailsForm');
+    const bathroomDetailsSuccess = document.getElementById('bathroomDetailsSuccess');
+    const bathroomDetailsError = document.getElementById('bathroomDetailsError');
+    const bathroomList = document.getElementById('bathroomList');
+    function getBathroomFormData() {
+      return {
+        name: document.getElementById('bathroomName').value.trim(),
+        toilets: document.getElementById('bathroomToilets').value.trim(),
+        toiletType: document.getElementById('bathroomToiletType').value.trim(),
+        sinks: document.getElementById('bathroomSinks').value.trim(),
+        sinkType: document.getElementById('bathroomSinkType').value.trim(),
+        sinkMaterial: document.getElementById('bathroomSinkMaterial').value.trim(),
+        showerType: document.getElementById('bathroomShowerType').value.trim(),
+        showerFeatures: document.getElementById('bathroomShowerFeatures').value.trim(),
+        floorStyle: document.getElementById('bathroomFloorStyle').value.trim(),
+        floorColor: document.getElementById('bathroomFloorColor').value.trim(),
+        heatedFloor: document.getElementById('bathroomHeatedFloor').value.trim(),
+        windowCount: document.getElementById('bathroomWindowCount').value.trim(),
+        blindsLength: document.getElementById('bathroomBlindsLength').value.trim(),
+        blindsWidth: document.getElementById('bathroomBlindsWidth').value.trim(),
+        curtainsLength: document.getElementById('bathroomCurtainsLength').value.trim(),
+        curtainsWidth: document.getElementById('bathroomCurtainsWidth').value.trim(),
+        mirror: document.getElementById('bathroomMirror').value.trim(),
+        vanity: document.getElementById('bathroomVanity').value.trim(),
+        other: document.getElementById('bathroomOther').value.trim()
+      };
+    }
+    function renderBathrooms() {
+      bathroomList.innerHTML = '';
+      bathrooms.forEach((b, idx) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <div><strong>${b.name}</strong></div>
+          <div><span>Toilets:</span> ${b.toilets || ''} (${b.toiletType || ''})</div>
+          <div><span>Sinks:</span> ${b.sinks || ''} (${b.sinkType || ''}, ${b.sinkMaterial || ''})</div>
+          <div><span>Shower:</span> ${b.showerType || ''} (${b.showerFeatures || ''})</div>
+          <div><span>Floor:</span> ${b.floorStyle || ''} (${b.floorColor || ''})</div>
+          <div><span>Heated Floor:</span> ${b.heatedFloor || ''}</div>
+          <div><span>Windows:</span> ${b.windowCount || ''}</div>
+          <div><span>Blinds:</span> ${b.blindsLength || ''} x ${b.blindsWidth || ''}</div>
+          <div><span>Curtains:</span> ${b.curtainsLength || ''} x ${b.curtainsWidth || ''}</div>
+          <div><span>Mirror:</span> ${b.mirror || ''}</div>
+          <div><span>Vanity:</span> ${b.vanity || ''}</div>
+          <div><span>Other:</span> ${b.other || ''}</div>
+          <div class="bathroom-actions">
+            <button type="button" data-idx="${idx}" class="delete-btn">Delete</button>
+          </div>
+        `;
+        bathroomList.appendChild(li);
+      });
+      bathroomList.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          const idx = parseInt(btn.getAttribute('data-idx'));
+          bathrooms.splice(idx, 1);
+          await saveBathroomsToFirestore();
+          renderBathrooms();
+          _bathrooms = bathrooms;
+          updateDashboardSummary({
+            general: _generalDetails,
+            bedrooms: _bedrooms,
+            bathrooms: _bathrooms,
+            roofs: _roofs
+          });
+        });
+      });
+      _bathrooms = bathrooms;
+      updateDashboardSummary({
+        general: _generalDetails,
+        bedrooms: _bedrooms,
+        bathrooms: _bathrooms,
+        roofs: _roofs
+      });
+    }
+    async function saveBathroomsToFirestore() {
+      if (!currentUser) return;
+      const bathroomsCol = collection(db, "users", currentUser.uid, "bathrooms");
+      const docs = await getDocs(bathroomsCol);
+      for (const docSnap of docs.docs) {
+        await deleteDoc(docSnap.ref);
+      }
+      for (const b of bathrooms) {
+        await addDoc(bathroomsCol, b);
+      }
+    }
+    async function loadBathroomsFromFirestore() {
+      if (!currentUser) return;
+      const bathroomsCol = collection(db, "users", currentUser.uid, "bathrooms");
+      const docs = await getDocs(bathroomsCol);
+      bathrooms = docs.docs.map(d => d.data());
+      _bathrooms = bathrooms;
+      renderBathrooms();
+    }
+    bathroomDetailsForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = getBathroomFormData();
+      if (!data.name) {
+        bathroomDetailsError.textContent = "Bathroom name required";
+        return;
+      }
+      bathrooms.push(data);
+      try {
+        await saveBathroomsToFirestore();
+        renderBathrooms();
+        bathroomDetailsForm.reset();
+        bathroomDetailsSuccess.textContent = "Bathroom added!";
+        bathroomDetailsError.textContent = "";
+      } catch (err) {
+        bathroomDetailsError.textContent = "Error saving: " + err.message;
+        bathroomDetailsSuccess.textContent = "";
+      }
+    });
+
+    // --- Roof Logic ---
+    let roofs = [];
+    const roofDetailsForm = document.getElementById('roofDetailsForm');
+    const roofDetailsSuccess = document.getElementById('roofDetailsSuccess');
+    const roofDetailsError = document.getElementById('roofDetailsError');
+    const roofList = document.getElementById('roofList');
+    function getRoofFormData() {
+      return {
+        type: document.getElementById('roofType').value.trim(),
+        plywood: document.getElementById('roofPlywood').value.trim(),
+        paper: document.getElementById('roofPaper').value.trim(),
+        shingles: document.getElementById('roofShingles').value.trim(),
+        color: document.getElementById('roofColor').value.trim(),
+        warranty: document.getElementById('roofWarranty').value.trim(),
+        installedBy: document.getElementById('roofInstalledBy').value.trim(),
+        installDate: document.getElementById('roofInstallDate').value.trim(),
+        other: document.getElementById('roofOther').value.trim()
+      };
+    }
+    function renderRoofs() {
+      roofList.innerHTML = '';
+      roofs.forEach((r, idx) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <div><strong>${r.type}</strong></div>
+          <div><span>Plywood:</span> ${r.plywood || ''}</div>
+          <div><span>Paper:</span> ${r.paper || ''}</div>
+          <div><span>Shingles:</span> ${r.shingles || ''} (${r.color || ''})</div>
+          <div><span>Warranty:</span> ${r.warranty || ''}</div>
+          <div><span>Installed By:</span> ${r.installedBy || ''}</div>
+          <div><span>Install Date:</span> ${r.installDate || ''}</div>
+          <div><span>Other:</span> ${r.other || ''}</div>
+          <div class="roof-actions">
+            <button type="button" data-idx="${idx}" class="delete-btn">Delete</button>
+          </div>
+        `;
+        roofList.appendChild(li);
+      });
+      roofList.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          const idx = parseInt(btn.getAttribute('data-idx'));
+          roofs.splice(idx, 1);
+          await saveRoofsToFirestore();
+          renderRoofs();
+          _roofs = roofs;
+          updateDashboardSummary({
+            general: _generalDetails,
+            bedrooms: _bedrooms,
+            bathrooms: _bathrooms,
+            roofs: _roofs
+          });
+        });
+      });
+      _roofs = roofs;
+      updateDashboardSummary({
+        general: _generalDetails,
+        bedrooms: _bedrooms,
+        bathrooms: _bathrooms,
+        roofs: _roofs
+      });
+    }
+    async function saveRoofsToFirestore() {
+      if (!currentUser) return;
+      const roofsCol = collection(db, "users", currentUser.uid, "roofs");
+      const docs = await getDocs(roofsCol);
+      for (const docSnap of docs.docs) {
+        await deleteDoc(docSnap.ref);
+      }
+      for (const r of roofs) {
+        await addDoc(roofsCol, r);
+      }
+    }
+    async function loadRoofFromFirestore() {
+      if (!currentUser) return;
+      const roofsCol = collection(db, "users", currentUser.uid, "roofs");
+      const docs = await getDocs(roofsCol);
+      roofs = docs.docs.map(d => d.data());
+      _roofs = roofs;
+      renderRoofs();
+    }
+    roofDetailsForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = getRoofFormData();
+      if (!data.type) {
+        roofDetailsError.textContent = "Roof type required";
+        return;
+      }
+      roofs.push(data);
+      try {
+        await saveRoofsToFirestore();
+        renderRoofs();
+        roofDetailsForm.reset();
+        roofDetailsSuccess.textContent = "Roof info added!";
+        roofDetailsError.textContent = "";
+      } catch (err) {
+        roofDetailsError.textContent = "Error saving: " + err.message;
+        roofDetailsSuccess.textContent = "";
+      }
+    });
+
+    // --- Crawlspace Logic ---
+    let crawlspaceDetails = {};
+    const crawlspaceDetailsForm = document.getElementById('crawlspaceDetailsForm');
+    const crawlspaceDetailsSuccess = document.getElementById('crawlspaceDetailsSuccess');
+    const crawlspaceDetailsError = document.getElementById('crawlspaceDetailsError');
+    function getCrawlspaceFormData() {
+      return {
+        type: document.getElementById('crawlspaceType').value.trim(),
+        height: document.getElementById('crawlspaceHeight').value.trim(),
+        access: document.getElementById('crawlspaceAccess').value.trim(),
+        vaporBarrier: document.getElementById('crawlspaceVaporBarrier').value.trim(),
+        insulation: document.getElementById('crawlspaceInsulation').value.trim(),
+        other: document.getElementById('crawlspaceOther').value.trim()
+      };
+    }
+    function setCrawlspaceFormData(data) {
+      document.getElementById('crawlspaceType').value = data.type || '';
+      document.getElementById('crawlspaceHeight').value = data.height || '';
+      document.getElementById('crawlspaceAccess').value = data.access || '';
+      document.getElementById('crawlspaceVaporBarrier').value = data.vaporBarrier || '';
+      document.getElementById('crawlspaceInsulation').value = data.insulation || '';
+      document.getElementById('crawlspaceOther').value = data.other || '';
+    }
+    function clearCrawlspaceForm() {
+      setCrawlspaceFormData({});
+    }
+    async function saveCrawlspaceToFirestore() {
+      if (!currentUser) return;
+      const userDoc = doc(db, "users", currentUser.uid);
+      await setDoc(userDoc, { crawlspaceDetails }, { merge: true });
+    }
+    async function loadCrawlspaceFromFirestore() {
+      if (!currentUser) return;
+      const userDoc = doc(db, "users", currentUser.uid);
+      const docSnap = await getDoc(userDoc);
+      if (docSnap.exists() && docSnap.data().crawlspaceDetails) {
+        crawlspaceDetails = docSnap.data().crawlspaceDetails;
+        setCrawlspaceFormData(crawlspaceDetails);
+      } else {
+        crawlspaceDetails = {};
+        setCrawlspaceFormData({});
+      }
+    }
+    crawlspaceDetailsForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      crawlspaceDetails = getCrawlspaceFormData();
+      try {
+        await saveCrawlspaceToFirestore();
+        crawlspaceDetailsSuccess.textContent = "Crawlspace info saved!";
+        crawlspaceDetailsError.textContent = "";
+      } catch (err) {
+        crawlspaceDetailsError.textContent = "Error saving: " + err.message;
+        crawlspaceDetailsSuccess.textContent = "";
+      }
+    });
+    document.getElementById('deleteCrawlspaceBtn')?.addEventListener('click', async () => {
+      if (!currentUser) return;
+      if (!confirm("Delete all crawlspace info?")) return;
+      crawlspaceDetails = {};
+      try {
+        await saveCrawlspaceToFirestore();
+        clearCrawlspaceForm();
+        crawlspaceDetailsSuccess.textContent = "Crawlspace info deleted!";
+        crawlspaceDetailsError.textContent = "";
+      } catch (err) {
+        crawlspaceDetailsError.textContent = "Error deleting: " + err.message;
+        crawlspaceDetailsSuccess.textContent = "";
+      }
+    });
+
+    // ...other sections as needed...
+  </script>
+</body>
+</html>
