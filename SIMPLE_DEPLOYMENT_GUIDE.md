@@ -50,3 +50,4 @@ STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
 Your NextMate app will be live at www.nestmateusa.com
 
 **Which option would you like to try first?**
+

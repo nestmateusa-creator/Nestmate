@@ -28,3 +28,4 @@ Write-Host "3. Set environment variables" -ForegroundColor White
 Write-Host "4. Test your site" -ForegroundColor White
 Write-Host ""
 Read-Host "Press Enter to continue"
+

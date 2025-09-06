@@ -148,3 +148,4 @@ Your NextMate app should now be accessible at **www.nestmateusa.com**
 ---
 
 **Total Deployment Time: ~30 minutes**
+

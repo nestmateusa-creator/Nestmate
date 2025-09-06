@@ -86,3 +86,4 @@ Your payment system is now fully configured and ready to:
 
 All upgrade pages now use your actual Stripe publishable key and are ready for testing!
 
+

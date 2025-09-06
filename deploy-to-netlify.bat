@@ -28,3 +28,4 @@ echo 3. Set environment variables
 echo 4. Test your site
 echo.
 pause
+

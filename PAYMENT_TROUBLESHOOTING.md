@@ -143,3 +143,4 @@ curl -X POST http://localhost:3001/create-payment-intent \
 
 If you're still getting errors, the test page will show exactly what's happening! 🔍
 
+
