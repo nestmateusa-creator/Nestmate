@@ -1,4 +1,7 @@
-const stripe = require('stripe')('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');
+// VERSION 3.0 - COMPLETELY NEW APPROACH
+const API_KEY = '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';
+console.log('VERSION 3.0 - CHECKOUT SESSION - Using LIVE API Key:', API_KEY.substring(0, 20) + '...' + API_KEY.substring(API_KEY.length - 10));
+const stripe = require('stripe')(API_KEY);
 
 exports.handler = async (event, context) => {
   // Handle CORS preflight requests
