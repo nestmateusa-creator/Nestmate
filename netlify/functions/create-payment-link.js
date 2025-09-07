@@ -26,7 +26,23 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    const { planType, amount, currency = 'usd' } = JSON.parse(event.body);
+    const { planType, successUrl, cancelUrl, currency = 'usd' } = JSON.parse(event.body);
+    
+    // Set amount based on plan type
+    let amount;
+    switch(planType) {
+      case 'basic':
+        amount = 500; // $5.00 in cents
+        break;
+      case 'pro':
+        amount = 1000; // $10.00 in cents
+        break;
+      case 'advanced':
+        amount = 1600; // $16.00 in cents
+        break;
+      default:
+        throw new Error('Invalid plan type');
+    }
     
     console.log('Creating payment link for:', { planType, amount, currency });
     
@@ -51,7 +67,7 @@ exports.handler = async (event, context) => {
       after_completion: {
         type: 'redirect',
         redirect: {
-          url: `${event.headers.origin || 'https://www.nestmateus.com'}/dashboard-${planType}.html?payment=success`,
+          url: successUrl || `${event.headers.origin || 'https://www.nestmateus.com'}/dashboard-${planType}.html?payment=success`,
         },
       },
     });
@@ -65,7 +81,7 @@ exports.handler = async (event, context) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        paymentLink: paymentLink.url
+        url: paymentLink.url
       }),
     };
   } catch (err) {
