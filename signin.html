@@ -108,6 +108,23 @@
             display: block;
         }
 
+        /* Ensure forms are properly hidden/shown */
+        #signinForm {
+            display: block;
+        }
+
+        #signupForm {
+            display: none;
+        }
+
+        #signinForm.active {
+            display: block;
+        }
+
+        #signupForm.active {
+            display: block;
+        }
+
         .form-group {
             margin-bottom: 20px;
         }
@@ -348,16 +365,29 @@
 
         // Global functions
         function switchTab(tab) {
+            console.log('Switching to tab:', tab);
+            
             // Update tab buttons
             document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
             event.target.classList.add('active');
             
-            // Update forms
-            document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+            // Hide all forms first
+            document.querySelectorAll('.auth-form').forEach(f => {
+                f.classList.remove('active');
+                f.style.display = 'none';
+            });
+            
+            // Show the selected form
             if (tab === 'signup') {
-                document.getElementById('signupForm').classList.add('active');
+                const signupForm = document.getElementById('signupForm');
+                signupForm.classList.add('active');
+                signupForm.style.display = 'block';
+                console.log('Showing signup form');
             } else {
-                document.getElementById('signinForm').classList.add('active');
+                const signinForm = document.getElementById('signinForm');
+                signinForm.classList.add('active');
+                signinForm.style.display = 'block';
+                console.log('Showing signin form');
             }
             
             hideMessages();
