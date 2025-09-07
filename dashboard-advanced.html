@@ -880,10 +880,17 @@
             window.location.href = 'home-details.html';
         }
 
-        function signOut() {
+        async function signOut() {
             if (confirm('Are you sure you want to sign out?')) {
-                // This would handle the sign out process
-                window.location.href = 'index.html';
+                try {
+                    await auth.signOut();
+                    console.log('User signed out successfully');
+                    window.location.href = 'index.html';
+                } catch (error) {
+                    console.error('Error signing out:', error);
+                    // Still redirect even if signOut fails
+                    window.location.href = 'index.html';
+                }
             }
         }
 
@@ -938,18 +945,31 @@
         // Initialize Firebase and set up auth listener
         async function initFirebase() {
             try {
+                console.log('🔄 Starting Firebase initialization...');
+                
                 while (typeof firebase === 'undefined') {
+                    console.log('⏳ Waiting for Firebase SDK to load...');
                     await new Promise(resolve => setTimeout(resolve, 100));
                 }
                 
-                firebase.initializeApp(firebaseConfig);
+                console.log('📦 Firebase SDK loaded, initializing app...');
+                
+                // Check if Firebase is already initialized
+                if (!firebase.apps.length) {
+                    firebase.initializeApp(firebaseConfig);
+                    console.log('✅ Firebase app initialized');
+                } else {
+                    console.log('✅ Firebase app already initialized');
+                }
+                
                 auth = firebase.auth();
                 db = firebase.firestore();
                 
-                console.log('✅ Firebase initialized successfully');
+                console.log('✅ Firebase services ready');
                 
                 // Set up auth state listener
                 auth.onAuthStateChanged(async (user) => {
+                    console.log('🔐 Auth state changed:', user ? user.email : 'No user');
                     if (user) {
                         console.log('User authenticated:', user.email);
                         await loadUserData(user);
@@ -961,6 +981,8 @@
                 
             } catch (error) {
                 console.error('❌ Firebase initialization failed:', error);
+                document.getElementById('userName').textContent = 'Error Loading User';
+                document.getElementById('userEmail').textContent = 'Please refresh the page';
             }
         }
 
