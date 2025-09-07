@@ -505,71 +505,82 @@
                     <div style="color: var(--secondary); font-size: 14px;" id="userEmail">Loading...</div>
                 </div>
                 
-                <!-- WORKING FIREBASE SCRIPT -->
+                <!-- SIMPLE FIREBASE TEST -->
                 <script>
-                    console.log('🔥 FIREBASE SCRIPT RUNNING!');
+                    console.log('🔥 SIMPLE FIREBASE TEST RUNNING!');
                     
-                    // Firebase configuration
-                    const firebaseConfig = {
-                        apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
-                        authDomain: "nestmate-167ed.firebaseapp.com",
-                        projectId: "nestmate-167ed",
-                        storageBucket: "nestmate-167ed.firebasestorage.app",
-                        messagingSenderId: "865171535257",
-                        appId: "1:865171535257:web:9944a48a952e99f55f0f08",
-                        measurementId: "G-1DYR2RGY4G"
-                    };
+                    // Check if Firebase is available
+                    if (typeof firebase === 'undefined') {
+                        console.error('❌ Firebase not loaded!');
+                        document.getElementById('userName').textContent = 'Firebase Error';
+                        document.getElementById('userEmail').textContent = 'Firebase not loaded';
+                    } else {
+                        console.log('✅ Firebase is available');
+                        
+                        // Firebase configuration
+                        const firebaseConfig = {
+                            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
+                            authDomain: "nestmate-167ed.firebaseapp.com",
+                            projectId: "nestmate-167ed",
+                            storageBucket: "nestmate-167ed.firebasestorage.app",
+                            messagingSenderId: "865171535257",
+                            appId: "1:865171535257:web:9944a48a952e99f55f0f08",
+                            measurementId: "G-1DYR2RGY4G"
+                        };
 
-                    // Initialize Firebase
-                    firebase.initializeApp(firebaseConfig);
-                    const auth = firebase.auth();
-                    const db = firebase.firestore();
-                    
-                    console.log('✅ Firebase initialized');
+                        try {
+                            // Initialize Firebase
+                            firebase.initializeApp(firebaseConfig);
+                            const auth = firebase.auth();
+                            const db = firebase.firestore();
+                            
+                            console.log('✅ Firebase initialized successfully');
 
-                    // Update user display function
-                    function updateUserDisplay(user) {
-                        console.log('📝 Updating display for:', user.email);
-                        
-                        const nameEl = document.getElementById('userName');
-                        const emailEl = document.getElementById('userEmail');
-                        
-                        if (nameEl) {
-                            nameEl.textContent = user.displayName || 'Advanced User';
-                            console.log('✅ Name updated to:', nameEl.textContent);
-                        }
-                        
-                        if (emailEl) {
-                            emailEl.textContent = user.email;
-                            console.log('✅ Email updated to:', emailEl.textContent);
+                            // Check current user immediately
+                            const currentUser = auth.currentUser;
+                            console.log('👤 Current user:', currentUser ? currentUser.email : 'No current user');
+                            
+                            if (currentUser) {
+                                console.log('✅ User already authenticated:', currentUser.email);
+                                document.getElementById('userName').textContent = currentUser.displayName || 'Advanced User';
+                                document.getElementById('userEmail').textContent = currentUser.email;
+                            } else {
+                                console.log('❌ No current user found');
+                            }
+
+                            // Set up auth listener
+                            auth.onAuthStateChanged(async (user) => {
+                                console.log('🔄 Auth state changed:', user ? user.email : 'No user');
+                                
+                                if (user) {
+                                    console.log('✅ User authenticated, updating display');
+                                    document.getElementById('userName').textContent = user.displayName || 'Advanced User';
+                                    document.getElementById('userEmail').textContent = user.email;
+                                    
+                                    // Load additional user data
+                                    try {
+                                        const userDoc = await db.collection('userProfiles').doc(user.uid).get();
+                                        if (userDoc.exists) {
+                                            const userData = userDoc.data();
+                                            if (userData.displayName) {
+                                                document.getElementById('userName').textContent = userData.displayName;
+                                            }
+                                        }
+                                    } catch (error) {
+                                        console.error('Error loading user data:', error);
+                                    }
+                                } else {
+                                    console.log('❌ No user, redirecting to signin');
+                                    window.location.href = 'signin.html';
+                                }
+                            });
+                            
+                        } catch (error) {
+                            console.error('❌ Firebase initialization error:', error);
+                            document.getElementById('userName').textContent = 'Firebase Error';
+                            document.getElementById('userEmail').textContent = error.message;
                         }
                     }
-
-                    // Set up auth listener
-                    auth.onAuthStateChanged(async (user) => {
-                        console.log('🔄 Auth changed:', user ? user.email : 'No user');
-                        
-                        if (user) {
-                            // Update display immediately
-                            updateUserDisplay(user);
-                            
-                            // Load additional user data
-                            try {
-                                const userDoc = await db.collection('userProfiles').doc(user.uid).get();
-                                if (userDoc.exists) {
-                                    const userData = userDoc.data();
-                                    if (userData.displayName) {
-                                        document.getElementById('userName').textContent = userData.displayName;
-                                    }
-                                }
-                            } catch (error) {
-                                console.error('Error loading user data:', error);
-                            }
-                        } else {
-                            console.log('No user, redirecting to signin');
-                            window.location.href = 'signin.html';
-                        }
-                    });
                 </script>
                 <button class="btn btn-outline" onclick="signOut()">
                     <i class="fas fa-sign-out-alt"></i>
