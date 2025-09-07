@@ -564,6 +564,20 @@
                 paymentForm.scrollIntoView({ behavior: 'smooth' });
             }
         }
+        // Check for cancelled payment
+        function checkForCancelledPayment() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const paymentStatus = urlParams.get('payment');
+            
+            if (paymentStatus === 'cancelled') {
+                // Show a message and redirect to trial dashboard
+                alert('Payment was cancelled. Redirecting to your dashboard...');
+                window.location.href = 'dashboard-trial.html';
+            }
+        }
+
+        // Check for cancelled payment when page loads
+        document.addEventListener('DOMContentLoaded', checkForCancelledPayment);
     </script>
 </body>
 </html>

@@ -371,6 +371,9 @@
                         showSuccess(planType);
                     }
                     // If updateSuccess is false, user was redirected to sign in
+                } else if (params.payment === 'cancelled') {
+                    // Payment was cancelled, redirect to cancelled page
+                    window.location.href = 'payment-cancelled.html';
                 } else {
                     // Not a successful payment, redirect to trial dashboard
                     window.location.href = 'dashboard-trial.html';
