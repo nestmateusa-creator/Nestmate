@@ -1078,87 +1078,54 @@
         });
     </script>
 
-    <!-- Debug Firebase authentication script -->
+    <!-- Simple working Firebase authentication script (copied from trial dashboard) -->
     <script>
-        console.log('🔍 Debug Firebase script starting...');
-        
-        // Wait for page to load completely
-        window.addEventListener('load', function() {
-            console.log('📄 Page fully loaded, initializing Firebase...');
-            
-            // Firebase configuration
-            const firebaseConfig = {
-                apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
-                authDomain: "nestmate-167ed.firebaseapp.com",
-                projectId: "nestmate-167ed",
-                storageBucket: "nestmate-167ed.firebasestorage.app",
-                messagingSenderId: "865171535257",
-                appId: "1:865171535257:web:9944a48a952e99f55f0f08",
-                measurementId: "G-1DYR2RGY4G"
-            };
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
+            authDomain: "nestmate-167ed.firebaseapp.com",
+            projectId: "nestmate-167ed",
+            storageBucket: "nestmate-167ed.firebasestorage.app",
+            messagingSenderId: "865171535257",
+            appId: "1:865171535257:web:9944a48a952e99f55f0f08",
+            measurementId: "G-1DYR2RGY4G"
+        };
 
-            try {
-                // Initialize Firebase
-                firebase.initializeApp(firebaseConfig);
-                const auth = firebase.auth();
-                const db = firebase.firestore();
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Check authentication and load user data (same as trial dashboard)
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                console.log('User authenticated:', user.email);
                 
-                console.log('✅ Firebase initialized successfully');
+                // Update user info display immediately
+                document.getElementById('userName').textContent = user.displayName || 'Advanced User';
+                document.getElementById('userEmail').textContent = user.email;
                 
-                // Check current user immediately
-                const currentUser = auth.currentUser;
-                console.log('👤 Current user:', currentUser ? currentUser.email : 'No current user');
-                
-                if (currentUser) {
-                    console.log('✅ User already authenticated:', currentUser.email);
-                    updateUserDisplay(currentUser);
-                } else {
-                    console.log('❌ No current user found');
+                // Load user data from Firestore
+                try {
+                    console.log('🔍 Loading user data for:', user.email, 'UID:', user.uid);
+                    const userDoc = await db.collection('userProfiles').doc(user.uid).get();
+                    
+                    if (userDoc.exists) {
+                        const userData = userDoc.data();
+                        console.log('📄 User data from Firestore:', userData);
+                        
+                        if (userData.displayName) {
+                            document.getElementById('userName').textContent = userData.displayName;
+                        }
+                    } else {
+                        console.log('❌ User document does not exist in Firestore');
+                    }
+                } catch (error) {
+                    console.error('❌ Error loading user data:', error);
                 }
-                
-                // Set up auth state listener
-                auth.onAuthStateChanged(async (user) => {
-                    console.log('🔄 Auth state changed:', user ? user.email : 'No user');
-                    
-                    if (user) {
-                        console.log('✅ User authenticated, updating display');
-                        updateUserDisplay(user);
-                    } else {
-                        console.log('❌ No user, should redirect to signin');
-                        // Don't redirect immediately, let's see what happens
-                        setTimeout(() => {
-                            console.log('🔄 Redirecting to signin in 3 seconds...');
-                            window.location.href = 'signin.html';
-                        }, 3000);
-                    }
-                });
-                
-                function updateUserDisplay(user) {
-                    console.log('📝 Updating user display for:', user.email);
-                    
-                    const nameElement = document.getElementById('userName');
-                    const emailElement = document.getElementById('userEmail');
-                    
-                    console.log('🔍 Name element found:', !!nameElement);
-                    console.log('🔍 Email element found:', !!emailElement);
-                    
-                    if (nameElement) {
-                        nameElement.textContent = user.displayName || 'Advanced User';
-                        console.log('✅ Updated name to:', nameElement.textContent);
-                    } else {
-                        console.error('❌ userName element not found!');
-                    }
-                    
-                    if (emailElement) {
-                        emailElement.textContent = user.email;
-                        console.log('✅ Updated email to:', emailElement.textContent);
-                    } else {
-                        console.error('❌ userEmail element not found!');
-                    }
-                }
-                
-            } catch (error) {
-                console.error('❌ Firebase initialization error:', error);
+            } else {
+                console.log('No user authenticated, redirecting to signin');
+                window.location.href = 'signin.html';
             }
         });
     </script>
