@@ -511,106 +511,43 @@
                     <div style="color: var(--secondary); font-size: 14px;" id="userEmail">Please wait...</div>
                 </div>
                 
-                <!-- SIMPLE FIREBASE TEST -->
+                <!-- SIMPLIFIED AUTHENTICATION -->
                 <script>
-                    console.log('🔥 SIMPLE FIREBASE TEST RUNNING!');
+                    console.log('🔥 SIMPLIFIED AUTHENTICATION STARTING');
                     
-                    // Check if Firebase is available
-                    if (typeof firebase === 'undefined') {
-                        console.error('❌ Firebase not loaded!');
-                        document.getElementById('userName').textContent = 'Firebase Error';
-                        document.getElementById('userEmail').textContent = 'Firebase not loaded';
-                    } else {
-                        console.log('✅ Firebase is available');
+                    // Firebase configuration
+                    const firebaseConfig = {
+                        apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
+                        authDomain: "nestmate-167ed.firebaseapp.com",
+                        projectId: "nestmate-167ed",
+                        storageBucket: "nestmate-167ed.firebasestorage.app",
+                        messagingSenderId: "865171535257",
+                        appId: "1:865171535257:web:9944a48a952e99f55f0f08",
+                        measurementId: "G-1DYR2RGY4G"
+                    };
+
+                    // Initialize Firebase
+                    firebase.initializeApp(firebaseConfig);
+                    const auth = firebase.auth();
+                    const db = firebase.firestore();
+                    
+                    console.log('✅ Firebase initialized');
+
+                    // Simple auth state listener
+                    auth.onAuthStateChanged((user) => {
+                        console.log('🔄 Auth state changed:', user ? user.email : 'No user');
                         
-                        // Firebase configuration
-                        const firebaseConfig = {
-                            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
-                            authDomain: "nestmate-167ed.firebaseapp.com",
-                            projectId: "nestmate-167ed",
-                            storageBucket: "nestmate-167ed.firebasestorage.app",
-                            messagingSenderId: "865171535257",
-                            appId: "1:865171535257:web:9944a48a952e99f55f0f08",
-                            measurementId: "G-1DYR2RGY4G"
-                        };
-
-                        try {
-                            // Initialize Firebase
-                            firebase.initializeApp(firebaseConfig);
-                            const auth = firebase.auth();
-                            const db = firebase.firestore();
-                            
-                            // Enable Firebase persistence for better data reliability
-                            try {
-                                await firebase.firestore().enablePersistence({
-                                    synchronizeTabs: true
-                                });
-                                console.log('✅ Firebase persistence enabled');
-                            } catch (error) {
-                                console.log('⚠️ Firebase persistence not available:', error.message);
-                            }
-                            
-                            console.log('✅ Firebase initialized successfully');
-
-                            // Check current user immediately
-                            const currentUser = auth.currentUser;
-                            console.log('👤 Current user:', currentUser ? currentUser.email : 'No current user');
-                            
-                            if (currentUser) {
-                                console.log('✅ User already authenticated:', currentUser.email);
-                                document.getElementById('userName').textContent = currentUser.displayName || 'Advanced User';
-                                document.getElementById('userEmail').textContent = currentUser.email;
-                            } else {
-                                console.log('❌ No current user found');
-                            }
-
-                            // Set up auth listener
-                            auth.onAuthStateChanged(async (user) => {
-                                console.log('🔄 Auth state changed:', user ? user.email : 'No user');
-                                
-                                if (user) {
-                                    console.log('✅ User authenticated, updating display');
-                                    document.getElementById('userName').textContent = user.displayName || 'Advanced User';
-                                    document.getElementById('userEmail').textContent = user.email;
-                                    
-                                    // Load additional user data
-                                    try {
-                                        const userDoc = await db.collection('userProfiles').doc(user.uid).get();
-                                        if (userDoc.exists) {
-                                            const userData = userDoc.data();
-                                            if (userData.displayName) {
-                                                document.getElementById('userName').textContent = userData.displayName;
-                                            }
-                                            
-                                            // Check if user's account type matches this dashboard
-                                            if (userData.accountType !== 'advanced') {
-                                                console.log('User account type:', userData.accountType, 'does not match advanced dashboard');
-                                                // Don't redirect immediately - let user stay on this dashboard
-                                                console.log('⚠️ User on wrong dashboard but allowing access');
-                                            } else {
-                                                console.log('✅ User belongs on advanced dashboard');
-                                            }
-                                        } else {
-                                            // No user profile, redirect to trial
-                                            window.location.href = 'dashboard-trial.html';
-                                        }
-                                    } catch (error) {
-                                        console.error('Error loading user data:', error);
-                                        // On error, show dashboard anyway (don't redirect)
-                                        console.log('⚠️ Error loading user data, showing dashboard anyway');
-                                    }
-                                } else {
-                                    console.log('❌ No user, redirecting to signin');
-                                    window.location.href = 'signin.html';
-                                }
-                            });
-                            
-                        } catch (error) {
-                            console.error('❌ Firebase initialization error:', error);
-                            document.getElementById('userName').textContent = 'Firebase Error';
-                            document.getElementById('userEmail').textContent = error.message;
+                        if (user) {
+                            // Update display immediately
+                            document.getElementById('userName').textContent = user.displayName || 'Advanced User';
+                            document.getElementById('userEmail').textContent = user.email;
+                            console.log('✅ User display updated:', user.email);
+                        } else {
+                            // No user, redirect to signin
+                            console.log('❌ No user, redirecting to signin');
+                            window.location.href = 'signin.html';
                         }
-                    }
+                    });
                 </script>
                 <button class="btn btn-primary" onclick="openProfile()" style="margin-right: 10px;">
                     <i class="fas fa-user-cog"></i>
@@ -993,28 +930,6 @@
         }
 
 
-        function redirectToCorrectDashboard(accountType) {
-            const dashboardUrls = {
-                'trial': 'dashboard-trial.html',
-                'basic': 'dashboard-basic.html',
-                'pro': 'dashboard-pro.html',
-                'advanced': 'dashboard-advanced.html'
-            };
-            
-            const correctUrl = dashboardUrls[accountType] || 'dashboard-trial.html';
-            const currentPath = window.location.pathname.split('/').pop();
-            
-            // Only redirect if we're actually on the wrong dashboard
-            if (currentPath !== correctUrl) {
-                console.log('Redirecting from', currentPath, 'to', correctUrl, 'for account type:', accountType);
-                // Add a small delay to prevent flash
-                setTimeout(() => {
-                    window.location.href = correctUrl;
-                }, 100);
-            } else {
-                console.log('User is already on correct dashboard:', correctUrl);
-            }
-        }
 
         async function signOut() {
             if (confirm('Are you sure you want to sign out?')) {

@@ -571,44 +571,12 @@
             console.log('⚠️ Firebase persistence not available:', error.message);
         }
 
-        // Check authentication and load user data
-        auth.onAuthStateChanged(async (user) => {
+        // Simple authentication check
+        auth.onAuthStateChanged((user) => {
             if (user) {
                 console.log('User authenticated:', user.email);
                 document.getElementById('userEmail').textContent = user.email;
-                
-                // Load user stats
-                try {
-                    const userDoc = await db.collection('userProfiles').doc(user.uid).get();
-                    if (userDoc.exists) {
-                        const userData = userDoc.data();
-                        console.log('User data loaded:', userData);
-                        
-                        // Check if user's account type matches this dashboard
-                        if (userData.accountType !== 'pro') {
-                            console.log('User account type:', userData.accountType, 'does not match pro dashboard');
-                            // Don't redirect immediately - let user stay on this dashboard
-                            console.log('⚠️ User on wrong dashboard but allowing access');
-                        } else {
-                            console.log('✅ User belongs on pro dashboard');
-                        }
-                        
-                        // Update stats if available
-                        if (userData.homeCount) {
-                            document.getElementById('homeCount').textContent = userData.homeCount;
-                        }
-                        if (userData.taskCount) {
-                            document.getElementById('taskCount').textContent = userData.taskCount;
-                        }
-                        if (userData.healthScore) {
-                            document.getElementById('healthScore').textContent = userData.healthScore;
-                        }
-                    }
-                } catch (error) {
-                    console.error('Error loading user data:', error);
-                    // On error, show dashboard anyway
-                    console.log('⚠️ Error loading user data, showing dashboard anyway');
-                }
+                console.log('✅ User display updated:', user.email);
             } else {
                 console.log('No user authenticated, redirecting to signin');
                 window.location.href = 'signin.html';
@@ -620,19 +588,6 @@
             window.location.href = 'profile.html';
         }
 
-        function redirectToCorrectDashboard(accountType) {
-            const dashboardUrls = {
-                'trial': 'dashboard-trial.html',
-                'basic': 'dashboard-basic.html',
-                'pro': 'dashboard-pro.html',
-                'advanced': 'dashboard-advanced.html'
-            };
-            
-            const correctUrl = dashboardUrls[accountType] || 'dashboard-trial.html';
-            if (window.location.pathname !== correctUrl) {
-                window.location.href = correctUrl;
-            }
-        }
 
         // Sign out function
         async function signOut() {
