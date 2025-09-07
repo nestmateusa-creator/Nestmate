@@ -26,9 +26,14 @@ exports.handler = async (event, context) => {
   }
 
   try {
+    console.log('Received request:', event.body);
+    
     const { amount, currency = 'usd', planType, userId } = JSON.parse(event.body);
     
+    console.log('Parsed data:', { amount, currency, planType, userId });
+    
     if (!amount) {
+      console.log('Amount is missing');
       return {
         statusCode: 400,
         headers: {
@@ -38,6 +43,8 @@ exports.handler = async (event, context) => {
       };
     }
 
+    console.log('Creating payment intent with Stripe...');
+    
     // Create a PaymentIntent with the order amount and currency
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amount, // Amount is already in cents from frontend
@@ -50,6 +57,8 @@ exports.handler = async (event, context) => {
         userId: userId || 'demo-user'
       }
     });
+
+    console.log('Payment intent created:', paymentIntent.id);
 
     return {
       statusCode: 200,
@@ -64,6 +73,13 @@ exports.handler = async (event, context) => {
     };
   } catch (err) {
     console.error('Error creating payment intent:', err);
+    console.error('Error details:', {
+      message: err.message,
+      type: err.type,
+      code: err.code,
+      stack: err.stack
+    });
+    
     return {
       statusCode: 500,
       headers: {
@@ -72,7 +88,8 @@ exports.handler = async (event, context) => {
       },
       body: JSON.stringify({ 
         error: err.message,
-        type: err.type || 'unknown_error'
+        type: err.type || 'unknown_error',
+        code: err.code || 'unknown_code'
       }),
     };
   }

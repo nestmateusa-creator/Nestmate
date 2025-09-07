@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Debug Test</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+        button { padding: 10px 20px; margin: 10px; }
+        input { padding: 10px; margin: 5px; width: 200px; }
+    </style>
+</head>
+<body>
+    <h1>Payment System Debug Test</h1>
+    
+    <div class="test-section">
+        <h2>Test 1: Check Netlify Function</h2>
+        <button onclick="testNetlifyFunction()">Test Netlify Function</button>
+        <div id="netlifyResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 2: Simple Payment Test</h2>
+        <input type="text" id="cardNumber" placeholder="Card Number" value="4242424242424242">
+        <input type="text" id="expiry" placeholder="MM/YY" value="12/25">
+        <input type="text" id="cvc" placeholder="CVC" value="123">
+        <button onclick="testSimplePayment()">Test Simple Payment</button>
+        <div id="paymentResult"></div>
+    </div>
+
+    <script>
+        const stripe = Stripe('pk_live_51S4C0RPHhV91OxuKxSQuOHmbpH1BRYAC0l9ljv9WfFhL2IoLcaiwEljhORx8nZH4e8ifoWy7S7fJaGy1wPYgdmkd00zT9Z8PVx');
+        const elements = stripe.elements();
+
+        async function testNetlifyFunction() {
+            const resultDiv = document.getElementById('netlifyResult');
+            resultDiv.innerHTML = '<div class="info">Testing Netlify function...</div>';
+            
+            try {
+                const response = await fetch('/.netlify/functions/create-payment-intent', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        amount: 500,
+                        currency: 'usd',
+                        planType: 'basic',
+                        userId: 'test-user'
+                    }),
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `<div class="success">✅ Netlify function working! Response: ${JSON.stringify(result)}</div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ Netlify function error: ${JSON.stringify(result)}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Network error: ${error.message}</div>`;
+            }
+        }
+
+        async function testSimplePayment() {
+            const resultDiv = document.getElementById('paymentResult');
+            resultDiv.innerHTML = '<div class="info">Testing payment...</div>';
+            
+            try {
+                // Create payment method
+                const { paymentMethod, error: pmError } = await stripe.createPaymentMethod({
+                    type: 'card',
+                    card: {
+                        number: document.getElementById('cardNumber').value,
+                        exp_month: parseInt(document.getElementById('expiry').value.split('/')[0]),
+                        exp_year: parseInt('20' + document.getElementById('expiry').value.split('/')[1]),
+                        cvc: document.getElementById('cvc').value,
+                    },
+                });
+
+                if (pmError) {
+                    resultDiv.innerHTML = `<div class="error">❌ Payment method error: ${pmError.message}</div>`;
+                    return;
+                }
+
+                resultDiv.innerHTML = '<div class="info">Payment method created, creating payment intent...</div>';
+
+                // Create payment intent
+                const response = await fetch('/.netlify/functions/create-payment-intent', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        amount: 500,
+                        currency: 'usd',
+                        planType: 'basic',
+                        userId: 'test-user'
+                    }),
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    resultDiv.innerHTML = `<div class="error">❌ Payment intent failed: ${errorText}</div>`;
+                    return;
+                }
+
+                const { clientSecret } = await response.json();
+                resultDiv.innerHTML = '<div class="info">Payment intent created, confirming payment...</div>';
+
+                // Confirm payment
+                const { error: confirmError } = await stripe.confirmCardPayment(clientSecret, {
+                    payment_method: paymentMethod.id
+                });
+
+                if (confirmError) {
+                    resultDiv.innerHTML = `<div class="error">❌ Payment confirmation failed: ${confirmError.message}</div>`;
+                } else {
+                    resultDiv.innerHTML = '<div class="success">✅ Payment successful!</div>';
+                }
+
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>
