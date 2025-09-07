@@ -4522,6 +4522,18 @@
                 // Update home selector dropdown
                 updateHomeSelector();
                 
+                // Mark that user has initialized homes (so sample homes won't be created again)
+                try {
+                    const userProfileRef = window.firebaseServices.doc(window.firebaseDB, 'userProfiles', currentUserId);
+                    await window.firebaseServices.setDoc(userProfileRef, {
+                        hasInitializedHomes: true,
+                        lastUpdated: new Date().toISOString()
+                    }, { merge: true });
+                    console.log('Marked user as having initialized homes');
+                } catch (error) {
+                    console.error('Error updating user profile flag:', error);
+                }
+                
                 return docRef.id;
             } catch (error) {
                 console.error('Error saving home to Firebase:', error);
@@ -4724,39 +4736,67 @@
             }
         }
 
-        // Initialize sample homes if none exist
+        // Initialize sample homes if none exist (only for new users)
         async function initializeSampleHomes() {
             if (Object.keys(homes).length === 0) {
-                console.log('No homes found, initializing sample homes...');
+                console.log('No homes found, checking if user is new...');
                 
-                const sampleHomes = [
-                    {
-                        name: 'My First Home',
-                        address: '123 Main St, City, State',
-                        yearBuilt: 2020,
-                        squareFeet: 2500,
-                        bedrooms: 3,
-                        bathrooms: 2.5,
-                        purchasePrice: 350000,
-                        propertyType: 'single-family'
-                    },
-                    {
-                        name: 'Vacation Home',
-                        address: '456 Beach Blvd, Coastal City, State',
-                        yearBuilt: 2018,
-                        squareFeet: 1800,
-                        bedrooms: 2,
-                        bathrooms: 2,
-                        purchasePrice: 280000,
-                        propertyType: 'condo'
+                // Check if user has ever had homes by looking for a flag in user profile
+                try {
+                    const userProfileRef = window.firebaseServices.doc(window.firebaseDB, 'userProfiles', currentUserId);
+                    const userProfileDoc = await window.firebaseServices.getDoc(userProfileRef);
+                    
+                    if (userProfileDoc.exists()) {
+                        const userData = userProfileDoc.data();
+                        
+                        // If user has the hasInitializedHomes flag, don't create sample homes
+                        if (userData.hasInitializedHomes) {
+                            console.log('User has previously initialized homes, skipping sample home creation');
+                            return;
+                        }
                     }
-                ];
-                
-                for (const homeData of sampleHomes) {
-                    await saveHomeToFirebase(homeData);
+                    
+                    console.log('New user detected, initializing sample homes...');
+                    
+                    const sampleHomes = [
+                        {
+                            name: 'My First Home',
+                            address: '123 Main St, City, State',
+                            yearBuilt: 2020,
+                            squareFeet: 2500,
+                            bedrooms: 3,
+                            bathrooms: 2.5,
+                            purchasePrice: 350000,
+                            propertyType: 'single-family'
+                        },
+                        {
+                            name: 'Vacation Home',
+                            address: '456 Beach Blvd, Coastal City, State',
+                            yearBuilt: 2018,
+                            squareFeet: 1800,
+                            bedrooms: 2,
+                            bathrooms: 2,
+                            purchasePrice: 280000,
+                            propertyType: 'condo'
+                        }
+                    ];
+                    
+                    for (const homeData of sampleHomes) {
+                        await saveHomeToFirebase(homeData);
+                    }
+                    
+                    // Mark that user has initialized homes
+                    await window.firebaseServices.setDoc(userProfileRef, {
+                        hasInitializedHomes: true,
+                        lastUpdated: new Date().toISOString()
+                    }, { merge: true });
+                    
+                    console.log('Sample homes initialized for new user');
+                    
+                } catch (error) {
+                    console.error('Error checking user profile for sample home initialization:', error);
+                    // If there's an error, don't create sample homes to be safe
                 }
-                
-                console.log('Sample homes initialized');
             }
         }
 

@@ -335,12 +335,43 @@
                             <input type="tel" id="phone" class="form-input">
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Address</label>
-                            <input type="text" id="address" class="form-input">
+                            <label class="form-label">Spouse Name</label>
+                            <input type="text" id="spouseName" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Billing Address</label>
+                            <textarea id="billingAddress" class="form-input" rows="3" placeholder="Street address, city, state, zip code"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Mailing Address</label>
+                            <textarea id="mailingAddress" class="form-input" rows="3" placeholder="Street address, city, state, zip code"></textarea>
                         </div>
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-save"></i>
                             Save Changes
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Password Change -->
+                <div class="card">
+                    <h2><i class="fas fa-lock"></i> Change Password</h2>
+                    <form id="passwordForm">
+                        <div class="form-group">
+                            <label class="form-label">Current Password</label>
+                            <input type="password" id="currentPassword" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">New Password</label>
+                            <input type="password" id="newPassword" class="form-input" required minlength="6">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Confirm New Password</label>
+                            <input type="password" id="confirmPassword" class="form-input" required minlength="6">
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-key"></i>
+                            Change Password
                         </button>
                     </form>
                 </div>
@@ -427,7 +458,9 @@
                     document.getElementById('fullName').value = userData.displayName || '';
                     document.getElementById('email').value = currentUser.email;
                     document.getElementById('phone').value = userData.phone || '';
-                    document.getElementById('address').value = userData.address || '';
+                    document.getElementById('spouseName').value = userData.spouseName || '';
+                    document.getElementById('billingAddress').value = userData.billingAddress || '';
+                    document.getElementById('mailingAddress').value = userData.mailingAddress || '';
                     
                     // Update subscription info
                     updateSubscriptionInfo();
@@ -512,7 +545,8 @@
 
                 optionsHTML += `
                     <div class="upgrade-option ${isCurrent ? 'current' : ''}" 
-                         ${canUpgrade ? `onclick="upgradeToPlan('${plan.id}')"` : ''}>
+                         data-plan-id="${plan.id}" 
+                         ${canUpgrade ? 'data-clickable="true"' : ''}>
                         <h4>${plan.name}</h4>
                         <div class="price">${plan.price}</div>
                         ${isCurrent ? '<small>Current Plan</small>' : ''}
@@ -522,6 +556,15 @@
             });
 
             upgradeDiv.innerHTML = optionsHTML;
+            
+            // Add event listeners to clickable upgrade options
+            const clickableOptions = upgradeDiv.querySelectorAll('[data-clickable="true"]');
+            clickableOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const planId = this.getAttribute('data-plan-id');
+                    upgradeToPlan(planId);
+                });
+            });
         }
 
         // Save personal information
@@ -532,7 +575,9 @@
                 const updates = {
                     displayName: document.getElementById('fullName').value,
                     phone: document.getElementById('phone').value,
-                    address: document.getElementById('address').value,
+                    spouseName: document.getElementById('spouseName').value,
+                    billingAddress: document.getElementById('billingAddress').value,
+                    mailingAddress: document.getElementById('mailingAddress').value,
                     updatedAt: new Date().toISOString()
                 };
 
@@ -548,6 +593,52 @@
             } catch (error) {
                 console.error('Error updating profile:', error);
                 showAlert('Error updating profile. Please try again.', 'danger');
+            }
+        });
+
+        // Password change form
+        document.getElementById('passwordForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (newPassword !== confirmPassword) {
+                showAlert('New passwords do not match.', 'danger');
+                return;
+            }
+            
+            if (newPassword.length < 6) {
+                showAlert('New password must be at least 6 characters long.', 'danger');
+                return;
+            }
+            
+            try {
+                // Re-authenticate user with current password
+                const credential = firebase.auth.EmailAuthProvider.credential(
+                    currentUser.email, 
+                    currentPassword
+                );
+                
+                await currentUser.reauthenticateWithCredential(credential);
+                
+                // Update password
+                await currentUser.updatePassword(newPassword);
+                
+                // Clear form
+                document.getElementById('passwordForm').reset();
+                
+                showAlert('Password changed successfully!', 'success');
+            } catch (error) {
+                console.error('Error changing password:', error);
+                if (error.code === 'auth/wrong-password') {
+                    showAlert('Current password is incorrect.', 'danger');
+                } else if (error.code === 'auth/weak-password') {
+                    showAlert('New password is too weak.', 'danger');
+                } else {
+                    showAlert('Error changing password. Please try again.', 'danger');
+                }
             }
         });
 
