@@ -2,29 +2,33 @@
   "name": "nextmate-app-root",
   "version": "0.1.0",
   "scripts": {
-  "test": "mocha --recursive",
-  "test:e2e": "mocha test/e2e.spec.js --timeout 20000",
-  "lint": "eslint . --ext .js",
-  "format": "prettier --write .",
-  "build": "exit 0",
-  "deploy": "netlify deploy --prod"
+    "test": "mocha --recursive",
+    "test:e2e": "mocha test/e2e.spec.js --timeout 20000",
+    "lint": "eslint . --ext .js",
+    "format": "prettier --write .",
+    "build": "exit 0",
+    "deploy": "netlify deploy --prod"
   },
   "eslintConfig": {
-    "env": { "browser": true, "node": true, "es2021": true },
+    "env": {
+      "browser": true,
+      "node": true,
+      "es2021": true
+    },
     "extends": "eslint:recommended",
-    "parserOptions": { "ecmaVersion": 12 },
+    "parserOptions": {
+      "ecmaVersion": 12
+    },
     "rules": {}
   },
   "dependencies": {
-    "stripe": "^14.0.0"
+    "stripe": "^14.25.0"
   },
   "devDependencies": {
-  "mocha": "^10.2.0",
-  "chai": "^4.3.7",
-  "puppeteer": "^21.0.0",
-  "eslint": "^8.50.0",
-  "prettier": "^3.0.0"
+    "chai": "^4.3.7",
+    "eslint": "^8.50.0",
+    "mocha": "^10.2.0",
+    "prettier": "^3.0.0",
+    "puppeteer": "^21.0.0"
   }
-
-
 }
