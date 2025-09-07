@@ -470,7 +470,7 @@
         // Process payment with server
         async function processPaymentWithServer(paymentMethodId, planType, amount) {
             try {
-                const response = await fetch('http://localhost:3001/create-payment-intent', {
+                const response = await fetch('/.netlify/functions/create-payment-intent', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
