@@ -388,33 +388,48 @@
 
         // Smart redirect function - check account type but prevent flash
         async function redirectToUserDashboard() {
+            console.log('🚀 redirectToUserDashboard called');
+            
             try {
+                console.log('🔍 Checking Firebase connection...');
+                console.log('🔍 Auth object:', auth);
+                console.log('🔍 DB object:', db);
+                
                 const user = auth.currentUser;
+                console.log('🔍 Current user:', user);
+                
                 if (!user) {
-                    console.log('No user found, redirecting to trial dashboard');
+                    console.log('❌ No user found, redirecting to trial dashboard');
                     window.location.href = 'dashboard-trial.html';
                     return;
                 }
 
+                console.log('✅ User found:', user.email, 'UID:', user.uid);
+
                 // Get user's account type from Firestore
+                console.log('🔍 Fetching user document from Firestore...');
                 const userDoc = await db.collection('userProfiles').doc(user.uid).get();
+                console.log('🔍 User document exists:', userDoc.exists);
+                
                 if (userDoc.exists) {
                     const userData = userDoc.data();
+                    console.log('🔍 Raw user data:', userData);
+                    
                     let accountType = userData.accountType || 'trial';
+                    console.log('🔍 Original account type:', userData.accountType);
                     
                     // Normalize account type (handle different possible values)
-                    if (accountType.toLowerCase().includes('advanced')) {
+                    if (accountType && accountType.toLowerCase().includes('advanced')) {
                         accountType = 'advanced';
-                    } else if (accountType.toLowerCase().includes('pro')) {
+                    } else if (accountType && accountType.toLowerCase().includes('pro')) {
                         accountType = 'pro';
-                    } else if (accountType.toLowerCase().includes('basic')) {
+                    } else if (accountType && accountType.toLowerCase().includes('basic')) {
                         accountType = 'basic';
                     }
                     
-                    console.log('🔍 DEBUGGING - Original account type:', userData.accountType);
-                    console.log('🔍 DEBUGGING - Normalized account type:', accountType);
-                    console.log('🔍 DEBUGGING - Full user data:', userData);
-                    console.log('🔍 DEBUGGING - User email:', user.email);
+                    console.log('🔍 Normalized account type:', accountType);
+                    console.log('🔍 Full user data:', userData);
+                    console.log('🔍 User email:', user.email);
                     
                     // Redirect based on account type
                     switch (accountType) {
@@ -435,15 +450,18 @@
                             window.location.href = 'dashboard-advanced.html';
                             break;
                         default:
-                            console.log('🎯 Unknown account type, redirecting to trial dashboard');
+                            console.log('🎯 Unknown account type:', accountType, 'redirecting to trial dashboard');
                             window.location.href = 'dashboard-trial.html';
                     }
                 } else {
-                    console.log('User document not found, redirecting to trial dashboard');
+                    console.log('❌ User document not found in Firestore, redirecting to trial dashboard');
+                    console.log('🔍 Attempted to fetch from path: userProfiles/' + user.uid);
                     window.location.href = 'dashboard-trial.html';
                 }
             } catch (error) {
-                console.error('Error getting user data:', error);
+                console.error('❌ Error in redirectToUserDashboard:', error);
+                console.error('❌ Error details:', error.message);
+                console.error('❌ Error stack:', error.stack);
                 window.location.href = 'dashboard-trial.html';
             }
         }
