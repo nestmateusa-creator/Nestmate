@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Environment Variable</title>
+</head>
+<body>
+    <h1>Test Environment Variable</h1>
+    <button onclick="testEnv()">Test Environment Variable</button>
+    <div id="result"></div>
+
+    <script>
+        async function testEnv() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Testing...';
+            
+            try {
+                const response = await fetch('/.netlify/functions/create-payment-link', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        planType: 'test',
+                        amount: 1,
+                        successUrl: 'https://example.com/success',
+                        cancelUrl: 'https://example.com/cancel'
+                    })
+                });
+
+                const data = await response.json();
+                resultDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                resultDiv.innerHTML = `Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>
