@@ -1,5 +1,5 @@
 // VERSION 3.0 - COMPLETELY NEW APPROACH
-const API_KEY = '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';
+const API_KEY = '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';
 console.log('VERSION 3.0 - COMPLETELY NEW APPROACH - Using LIVE API Key:', API_KEY.substring(0, 20) + '...' + API_KEY.substring(API_KEY.length - 10));
 const stripe = require('stripe')(API_KEY);
 
