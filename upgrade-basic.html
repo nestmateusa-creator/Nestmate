@@ -330,7 +330,7 @@
                 <li><i class="fas fa-check"></i> Keep all your trial data</li>
             </ul>
 
-            <button class="btn btn-primary" onclick="processUpgrade()">
+            <button class="btn btn-primary" onclick="createCheckoutSession('basic', 500)">
                 <i class="fas fa-credit-card"></i>
                 Upgrade to Basic - $5/month
             </button>
@@ -652,10 +652,14 @@
 
         // Create checkout session with user's email
         async function createCheckoutSession(planType, amount) {
+            console.log('createCheckoutSession called with:', planType, amount);
             try {
                 // Get current user's email from Firebase
                 const user = firebase.auth().currentUser;
+                console.log('Current user:', user);
+                
                 if (!user) {
+                    console.log('No user found, redirecting to signin');
                     alert('Please sign in to continue with payment');
                     window.location.href = 'signin.html';
                     return;
@@ -671,6 +675,7 @@
                 button.disabled = true;
 
                 // Create checkout session via Netlify function
+                console.log('Making request to Netlify function...');
                 const response = await fetch('/.netlify/functions/create-checkout-session', {
                     method: 'POST',
                     headers: {
@@ -684,8 +689,13 @@
                     }),
                 });
 
+                console.log('Response status:', response.status);
+                console.log('Response ok:', response.ok);
+
                 if (!response.ok) {
-                    throw new Error('Failed to create checkout session');
+                    const errorText = await response.text();
+                    console.error('Response error:', errorText);
+                    throw new Error(`Failed to create checkout session: ${response.status} ${errorText}`);
                 }
 
                 const result = await response.json();
