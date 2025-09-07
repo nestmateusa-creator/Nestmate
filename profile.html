@@ -571,6 +571,10 @@
         document.getElementById('personalForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
+            console.log('Profile form submitted');
+            console.log('Current user:', currentUser);
+            console.log('User UID:', currentUser?.uid);
+            
             try {
                 const updates = {
                     displayName: document.getElementById('fullName').value,
@@ -581,17 +585,32 @@
                     updatedAt: new Date().toISOString()
                 };
 
-                await db.collection('userProfiles').doc(currentUser.uid).update(updates);
+                console.log('Updates to save:', updates);
+
+                // Use setDoc with merge instead of update to ensure it works
+                await db.collection('userProfiles').doc(currentUser.uid).set(updates, { merge: true });
+                console.log('Profile data saved to Firestore successfully');
                 
                 // Update Firebase Auth display name
-                await currentUser.updateProfile({
-                    displayName: updates.displayName
-                });
+                if (updates.displayName) {
+                    await currentUser.updateProfile({
+                        displayName: updates.displayName
+                    });
+                    console.log('Firebase Auth display name updated');
+                }
 
                 userData = { ...userData, ...updates };
                 showAlert('Profile updated successfully!', 'success');
+                
+                // Reload user data to reflect changes
+                await loadUserData();
             } catch (error) {
                 console.error('Error updating profile:', error);
+                console.error('Error details:', {
+                    code: error.code,
+                    message: error.message,
+                    stack: error.stack
+                });
                 showAlert('Error updating profile. Please try again.', 'danger');
             }
         });
