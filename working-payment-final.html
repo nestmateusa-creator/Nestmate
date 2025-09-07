@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NestMate Payment - Working Solution</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            padding: 20px; 
+            max-width: 500px; 
+            margin: 0 auto; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .payment-card { 
+            background: white; 
+            padding: 40px; 
+            border-radius: 15px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        .payment-button { 
+            display: inline-block;
+            padding: 20px 40px; 
+            background: #28a745; 
+            color: white; 
+            text-decoration: none;
+            border-radius: 10px; 
+            font-size: 20px; 
+            font-weight: bold;
+            margin: 20px 0;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+            border: none;
+            cursor: pointer;
+        }
+        .payment-button:hover { 
+            background: #218838; 
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+        }
+        .payment-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .plan-info {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 25px 0;
+            border-left: 5px solid #007bff;
+        }
+        .features {
+            text-align: left;
+            margin: 25px 0;
+        }
+        .features li {
+            margin: 10px 0;
+            color: #28a745;
+            font-size: 16px;
+        }
+        .security-note {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 1px solid #b3d9ff;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <div class="payment-card">
+        <h1>🏠 NestMate Basic Plan</h1>
+        <div class="plan-info">
+            <h2 style="color: #007bff; margin: 0; font-size: 32px;">$5/month</h2>
+            <p style="color: #666; margin: 5px 0; font-size: 16px;">Billed monthly • Cancel anytime</p>
+        </div>
+        
+        <div class="features">
+            <h3>What's included:</h3>
+            <ul>
+                <li>✅ Smart home device management</li>
+                <li>✅ Basic automation rules</li>
+                <li>✅ Mobile app access</li>
+                <li>✅ Email support</li>
+                <li>✅ Basic analytics</li>
+            </ul>
+        </div>
+        
+        <button onclick="processPayment()" class="payment-button" id="payButton">
+            💳 Subscribe Now - $5/month
+        </button>
+        
+        <div class="security-note">
+            <p style="margin: 0; font-size: 14px; color: #0066cc;">
+                🔒 <strong>100% Secure:</strong> Powered by Stripe. Your payment information is never stored on our servers.
+            </p>
+        </div>
+        
+        <div id="status"></div>
+    </div>
+
+    <script>
+        const stripe = Stripe('pk_live_51S4C0RPHhV91OxuKxSQuOHmbpH1BRYAC0l9ljv9WfFhL2IoLcaiwEljhORx8nZH4e8ifoWy7S7fJaGy1wPYgdmkd00zT9Z8PVx');
+
+        async function processPayment() {
+            const button = document.getElementById('payButton');
+            const statusDiv = document.getElementById('status');
+            
+            button.disabled = true;
+            button.textContent = 'Processing...';
+            statusDiv.innerHTML = '<div class="status info">Creating secure payment session...</div>';
+            
+            try {
+                // Create a simple checkout session using Stripe's API
+                const response = await fetch('/.netlify/functions/create-checkout-session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        planType: 'basic',
+                        amount: 500,
+                        currency: 'usd'
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to create payment session');
+                }
+
+                const { sessionId } = await response.json();
+                statusDiv.innerHTML = '<div class="status info">Redirecting to secure payment page...</div>';
+
+                // Redirect to Stripe Checkout
+                const { error } = await stripe.redirectToCheckout({
+                    sessionId: sessionId
+                });
+
+                if (error) {
+                    throw new Error(error.message);
+                }
+                
+            } catch (error) {
+                console.error('Payment error:', error);
+                statusDiv.innerHTML = `<div class="status error">❌ Payment failed: ${error.message}</div>`;
+                button.disabled = false;
+                button.textContent = '💳 Subscribe Now - $5/month';
+            }
+        }
+
+        // Check if user came back from payment
+        const urlParams = new URLSearchParams(window.location.search);
+        const paymentStatus = urlParams.get('payment');
+        
+        if (paymentStatus === 'success') {
+            document.getElementById('status').innerHTML = '<div class="status success">🎉 Payment successful! Redirecting to your dashboard...</div>';
+            setTimeout(() => {
+                window.location.href = 'dashboard-basic.html';
+            }, 2000);
+        } else if (paymentStatus === 'cancelled') {
+            document.getElementById('status').innerHTML = '<div class="status error">❌ Payment was cancelled. You can try again anytime.</div>';
+        }
+    </script>
+</body>
+</html>
