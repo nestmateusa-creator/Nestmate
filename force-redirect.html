@@ -46,34 +46,28 @@
     <script>
         console.log('🚀 FORCE REDIRECT PAGE LOADED');
         
-        // Get current user from Firebase
-        function getCurrentUser() {
-            if (typeof firebase !== 'undefined' && firebase.auth) {
-                return firebase.auth().currentUser;
-            }
-            return null;
-        }
-        
         // Force redirect function
         function forceRedirect() {
             console.log('🚀 FORCE REDIRECT: Starting redirect process');
             
-            const user = getCurrentUser();
-            console.log('🚀 FORCE REDIRECT: Current user:', user);
-            
-            if (user && user.email === 'jillmullins09@gmail.com') {
-                console.log('✅ FORCE REDIRECT: jillmullins09@gmail.com detected - going to advanced dashboard');
-                window.location.href = 'dashboard-advanced.html';
-                return;
-            }
-            
-            console.log('📊 FORCE REDIRECT: Other user - going to trial dashboard');
-            window.location.href = 'dashboard-trial.html';
+            // Wait for auth state to be ready
+            firebase.auth().onAuthStateChanged((user) => {
+                console.log('🚀 FORCE REDIRECT: Auth state changed, user:', user);
+                
+                if (user && user.email === 'jillmullins09@gmail.com') {
+                    console.log('✅ FORCE REDIRECT: jillmullins09@gmail.com detected - going to advanced dashboard');
+                    window.location.href = 'dashboard-advanced.html';
+                    return;
+                }
+                
+                console.log('📊 FORCE REDIRECT: Other user - going to trial dashboard');
+                window.location.href = 'dashboard-trial.html';
+            });
         }
         
         // Wait for Firebase to load
         function waitForFirebase() {
-            if (typeof firebase !== 'undefined') {
+            if (typeof firebase !== 'undefined' && firebase.auth) {
                 console.log('✅ FORCE REDIRECT: Firebase loaded');
                 forceRedirect();
             } else {
@@ -85,11 +79,11 @@
         // Start the process
         waitForFirebase();
         
-        // Fallback redirect after 3 seconds
+        // Fallback redirect after 5 seconds
         setTimeout(() => {
-            console.log('⏰ FORCE REDIRECT: Fallback redirect after 3 seconds');
-            forceRedirect();
-        }, 3000);
+            console.log('⏰ FORCE REDIRECT: Fallback redirect after 5 seconds');
+            window.location.href = 'dashboard-trial.html';
+        }, 5000);
     </script>
     
     <!-- Firebase CDN -->
