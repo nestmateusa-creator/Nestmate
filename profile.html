@@ -599,7 +599,11 @@
 
                 // Use setDoc with merge instead of update to ensure it works
                 await db.collection('userProfiles').doc(currentUser.uid).set(updates, { merge: true });
-                console.log('Profile data saved to Firestore successfully');
+                console.log('✅ Profile data saved to Firestore successfully');
+                console.log('✅ Saved data:', updates);
+                
+                // Show success message
+                showSuccess('Profile updated successfully!');
                 
                 // Update Firebase Auth display name
                 if (updates.displayName) {
@@ -759,6 +763,18 @@
             setTimeout(() => {
                 alertDiv.remove();
             }, 5000);
+        }
+
+        // Show success message
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            if (successDiv) {
+                successDiv.textContent = message;
+                successDiv.style.display = 'block';
+                setTimeout(() => {
+                    successDiv.style.display = 'none';
+                }, 3000);
+            }
         }
   </script>
 </body>
