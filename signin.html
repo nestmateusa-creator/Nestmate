@@ -262,18 +262,6 @@
 
         <div id="message" class="message"></div>
 
-        <!-- Dashboard Access for Signed In Users -->
-        <div id="dashboardAccess" class="dashboard-access" style="display: none;">
-            <div class="dashboard-access-content">
-                <i class="fas fa-check-circle" style="color: var(--success); font-size: 24px; margin-bottom: 16px;"></i>
-                <h3>Welcome back!</h3>
-                <p>You're already signed in.</p>
-                <button class="btn btn-primary" onclick="goToDashboard()">
-                    <i class="fas fa-home"></i>
-                    Go to Dashboard
-                </button>
-            </div>
-        </div>
 
         <!-- Sign In Form -->
         <form id="signinForm" class="auth-form active">
@@ -465,41 +453,10 @@
             showError('Password reset functionality will be available soon.');
         }
 
-        function showDashboardAccess() {
-            document.getElementById('dashboardAccess').style.display = 'block';
-            document.getElementById('signinForm').style.display = 'none';
-            document.getElementById('signupForm').style.display = 'none';
-            document.querySelector('.auth-tabs').style.display = 'none';
-        }
 
         function showAlreadySignedInMessage(user) {
-            // Hide auth forms
-            document.getElementById('signinForm').style.display = 'none';
-            document.getElementById('signupForm').style.display = 'none';
-            document.querySelector('.auth-tabs').style.display = 'none';
-            
-            // Show message
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'auth-message';
-            messageDiv.innerHTML = `
-                <div class="message-content">
-                    <h3>Already Signed In</h3>
-                    <p>You are already signed in as: <strong>${user.email}</strong></p>
-                    <div class="button-group">
-                        <button class="btn btn-primary" onclick="goToDashboard()">Go to Dashboard</button>
-                        <button class="btn btn-secondary" onclick="signOutAndShowForms()">Sign Out</button>
-                    </div>
-                </div>
-            `;
-            
-            // Replace the auth container content
-            const authContainer = document.querySelector('.auth-container');
-            authContainer.innerHTML = '';
-            authContainer.appendChild(messageDiv);
-        }
-
-        function goToDashboard() {
-            // Redirect to appropriate dashboard based on user's account type
+            // Automatically redirect to dashboard instead of showing message
+            console.log('User already signed in, redirecting to dashboard:', user.email);
             redirectToUserDashboard();
         }
 
@@ -516,7 +473,6 @@
         }
 
         function showAuthForms() {
-            document.getElementById('dashboardAccess').style.display = 'none';
             document.getElementById('signinForm').style.display = 'block';
             document.getElementById('signupForm').style.display = 'none';
             document.querySelector('.auth-tabs').style.display = 'flex';
