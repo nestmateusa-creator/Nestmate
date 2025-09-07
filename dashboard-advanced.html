@@ -901,9 +901,29 @@
                 
                 if (user) {
                     console.log('📝 Setting user display name and email...');
-                    document.getElementById('userName').textContent = user.displayName || 'Advanced User';
-                    document.getElementById('userEmail').textContent = user.email;
-                    console.log('✅ User display updated');
+                    console.log('User object:', user);
+                    console.log('User displayName:', user.displayName);
+                    console.log('User email:', user.email);
+                    
+                    const nameElement = document.getElementById('userName');
+                    const emailElement = document.getElementById('userEmail');
+                    
+                    console.log('Name element found:', !!nameElement);
+                    console.log('Email element found:', !!emailElement);
+                    
+                    if (nameElement) {
+                        nameElement.textContent = user.displayName || 'Advanced User';
+                        console.log('✅ Name updated to:', nameElement.textContent);
+                    } else {
+                        console.error('❌ userName element not found!');
+                    }
+                    
+                    if (emailElement) {
+                        emailElement.textContent = user.email;
+                        console.log('✅ Email updated to:', emailElement.textContent);
+                    } else {
+                        console.error('❌ userEmail element not found!');
+                    }
                     
                     // Load user profile data from Firestore
                     console.log('📊 Loading Firestore data...');
