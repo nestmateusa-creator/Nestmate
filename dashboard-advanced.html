@@ -888,9 +888,8 @@
         }
 
         // Load user data
-        async function loadUserData() {
+        async function loadUserData(user) {
             try {
-                const user = auth.currentUser;
                 if (user) {
                     document.getElementById('userName').textContent = user.displayName || 'Advanced User';
                     document.getElementById('userEmail').textContent = user.email;
@@ -936,9 +935,38 @@
             }
         }
 
+        // Initialize Firebase and set up auth listener
+        async function initFirebase() {
+            try {
+                while (typeof firebase === 'undefined') {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+                
+                firebase.initializeApp(firebaseConfig);
+                auth = firebase.auth();
+                db = firebase.firestore();
+                
+                console.log('✅ Firebase initialized successfully');
+                
+                // Set up auth state listener
+                auth.onAuthStateChanged(async (user) => {
+                    if (user) {
+                        console.log('User authenticated:', user.email);
+                        await loadUserData(user);
+                    } else {
+                        console.log('No user authenticated, redirecting to signin');
+                        window.location.href = 'signin.html';
+                    }
+                });
+                
+            } catch (error) {
+                console.error('❌ Firebase initialization failed:', error);
+            }
+        }
+
         // Initialize the dashboard
         window.addEventListener('load', function() {
-            loadUserData();
+            initFirebase();
         });
     </script>
 </body>
