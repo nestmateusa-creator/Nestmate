@@ -29,7 +29,7 @@ exports.handler = async (event, context) => {
     console.log('Event body:', event.body);
     console.log('Event headers:', event.headers);
     
-    const { planType, amount, currency = 'usd' } = JSON.parse(event.body);
+    const { planType, amount, currency = 'usd', customerEmail } = JSON.parse(event.body);
     
     console.log('Creating checkout session for:', { planType, amount, currency });
     
@@ -39,7 +39,7 @@ exports.handler = async (event, context) => {
     }
     
     // Create a checkout session
-    const session = await stripe.checkout.sessions.create({
+    const sessionConfig = {
       payment_method_types: ['card'],
       line_items: [
         {
@@ -58,13 +58,20 @@ exports.handler = async (event, context) => {
         },
       ],
       mode: 'subscription',
-      success_url: `${event.headers.origin || 'https://www.nestmateus.com'}/dashboard-${planType}.html?payment=success`,
+      success_url: `${event.headers.origin || 'https://www.nestmateus.com'}/payment-confirmation.html?payment=success&plan=${planType}`,
       cancel_url: `${event.headers.origin || 'https://www.nestmateus.com'}/upgrade-${planType}.html?payment=cancelled`,
       metadata: {
         planType: planType,
-        userId: 'demo-user'
+        customerEmail: customerEmail || 'unknown'
       }
-    });
+    };
+
+    // Add customer email if provided
+    if (customerEmail) {
+      sessionConfig.customer_email = customerEmail;
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionConfig);
 
     console.log('Checkout session created:', session.id);
     console.log('Session URL:', session.url);

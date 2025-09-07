@@ -393,10 +393,10 @@
                     </label>
                 </div>
                 
-                <a href="https://buy.stripe.com/fZu7sN8Ui087bLT84J1sQ06" class="btn btn-primary" target="_blank" style="text-decoration: none; display: block; text-align: center;">
+                <button class="btn btn-primary" onclick="createCheckoutSession('basic', 500)" style="text-decoration: none; display: block; text-align: center; width: 100%;">
                     <i class="fas fa-credit-card"></i>
                     Complete Payment - $5/month
-                </a>
+                </button>
                 <p style="text-align: center; margin-top: 10px; font-size: 14px; color: #666;">
                     You'll be redirected to Stripe for secure payment processing
                 </p>
@@ -617,6 +617,65 @@
         function processUpgrade() {
             // Scroll to payment form
             document.getElementById('paymentForm').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Create checkout session with user's email
+        async function createCheckoutSession(planType, amount) {
+            try {
+                // Get current user's email from Firebase
+                const user = firebase.auth().currentUser;
+                if (!user) {
+                    alert('Please sign in to continue with payment');
+                    window.location.href = 'signin.html';
+                    return;
+                }
+
+                const userEmail = user.email;
+                console.log('Creating checkout session for user:', userEmail);
+
+                // Show loading state
+                const button = event.target;
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating checkout...';
+                button.disabled = true;
+
+                // Create checkout session via Netlify function
+                const response = await fetch('/.netlify/functions/create-checkout-session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        planType: planType,
+                        amount: amount,
+                        currency: 'usd',
+                        customerEmail: userEmail
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to create checkout session');
+                }
+
+                const result = await response.json();
+                console.log('Checkout session created:', result);
+
+                // Redirect to Stripe Checkout
+                if (result.url) {
+                    window.location.href = result.url;
+                } else {
+                    throw new Error('No checkout URL received');
+                }
+
+            } catch (error) {
+                console.error('Error creating checkout session:', error);
+                alert('Error creating checkout session. Please try again.');
+                
+                // Reset button state
+                const button = event.target;
+                button.innerHTML = '<i class="fas fa-credit-card"></i> Complete Payment - $5/month';
+                button.disabled = false;
+            }
         }
     </script>
 </body>
