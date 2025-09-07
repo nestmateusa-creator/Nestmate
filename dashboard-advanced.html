@@ -643,8 +643,9 @@
                                         }
                                     } catch (error) {
                                         console.error('Error loading user data:', error);
-                                        // On error, redirect to trial dashboard
-                                        window.location.href = 'dashboard-trial.html';
+                                        // On error, show dashboard anyway (don't redirect)
+                                        console.log('⚠️ Error loading user data, showing dashboard anyway');
+                                        showDashboard();
                                     }
                                 } else {
                                     console.log('❌ No user, redirecting to signin');
@@ -1044,6 +1045,15 @@
             document.getElementById('loadingScreen').style.display = 'none';
             document.getElementById('mainContent').classList.add('loaded');
         }
+
+        // Add timeout to prevent infinite loading
+        setTimeout(() => {
+            const loadingScreen = document.getElementById('loadingScreen');
+            if (loadingScreen && loadingScreen.style.display !== 'none') {
+                console.log('⚠️ Loading timeout - showing dashboard anyway');
+                showDashboard();
+            }
+        }, 10000); // 10 second timeout
 
         function redirectToCorrectDashboard(accountType) {
             const dashboardUrls = {

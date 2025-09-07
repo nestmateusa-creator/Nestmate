@@ -653,6 +653,9 @@
                     }
                 } catch (error) {
                     console.error('Error loading user data:', error);
+                    // On error, show dashboard anyway
+                    console.log('⚠️ Error loading user data, showing dashboard anyway');
+                    showDashboard();
                 }
             } else {
                 console.log('No user authenticated, redirecting to signin');
@@ -707,6 +710,15 @@
             document.getElementById('loadingScreen').style.display = 'none';
             document.getElementById('mainContent').classList.add('loaded');
         }
+
+        // Add timeout to prevent infinite loading
+        setTimeout(() => {
+            const loadingScreen = document.getElementById('loadingScreen');
+            if (loadingScreen && loadingScreen.style.display !== 'none') {
+                console.log('⚠️ Loading timeout - showing dashboard anyway');
+                showDashboard();
+            }
+        }, 10000); // 10 second timeout
         </div>
     </div>
 
