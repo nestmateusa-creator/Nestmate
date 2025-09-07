@@ -533,6 +533,39 @@
         window.addEventListener('load', function() {
             renderProducts();
         });
+
+        // Go back to correct dashboard based on user's account type
+        async function goBackToDashboard() {
+            try {
+                // Get current user
+                const user = firebase.auth().currentUser;
+                if (!user) {
+                    window.location.href = 'signin.html';
+                    return;
+                }
+
+                // Get user's account type from Firestore
+                const userDoc = await firebase.firestore().collection('userProfiles').doc(user.uid).get();
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    const accountType = userData.accountType || 'trial';
+                    
+                    const dashboardUrls = {
+                        'trial': 'dashboard-trial.html',
+                        'basic': 'dashboard-basic.html',
+                        'pro': 'dashboard-pro.html',
+                        'advanced': 'dashboard-advanced.html'
+                    };
+                    
+                    window.location.href = dashboardUrls[accountType] || 'dashboard-trial.html';
+                } else {
+                    window.location.href = 'dashboard-trial.html';
+                }
+            } catch (error) {
+                console.error('Error getting user data:', error);
+                window.location.href = 'dashboard-trial.html';
+            }
+        }
     </script>
 </body>
 </html>
