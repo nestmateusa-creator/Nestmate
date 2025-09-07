@@ -332,21 +332,27 @@
         async function initFirebase() {
             try {
                 console.log('🔄 Initializing Firebase...');
+                console.log('🔍 Firebase config:', firebaseConfig);
                 
                 // Wait for Firebase to load
                 while (typeof firebase === 'undefined') {
+                    console.log('⏳ Waiting for Firebase to load...');
                     await new Promise(resolve => setTimeout(resolve, 100));
                 }
                 
+                console.log('✅ Firebase loaded, initializing app...');
                 firebase.initializeApp(firebaseConfig);
                 auth = firebase.auth();
                 db = firebase.firestore();
                 
                 console.log('✅ Firebase initialized successfully');
+                console.log('🔍 Auth object:', auth);
+                console.log('🔍 DB object:', db);
                 isFirebaseReady = true;
                 return true;
             } catch (error) {
                 console.error('❌ Firebase initialization failed:', error);
+                console.error('❌ Error details:', error.message);
                 return false;
             }
         }
@@ -382,6 +388,11 @@
         }
 
         async function goToDashboard() {
+            console.log('🎯 goToDashboard called');
+            console.log('🔍 Auth object:', auth);
+            console.log('🔍 DB object:', db);
+            console.log('🔍 Firebase ready:', isFirebaseReady);
+            
             // Get user's plan and redirect to appropriate dashboard
             await redirectToUserDashboard();
         }
