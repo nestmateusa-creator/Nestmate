@@ -586,13 +586,12 @@
                         
                         // Check if user's account type matches this dashboard
                         if (userData.accountType !== 'pro') {
-                            console.log('User account type:', userData.accountType, 'does not match pro dashboard, redirecting...');
-                            redirectToCorrectDashboard(userData.accountType);
-                            return;
+                            console.log('User account type:', userData.accountType, 'does not match pro dashboard');
+                            // Don't redirect immediately - let user stay on this dashboard
+                            console.log('⚠️ User on wrong dashboard but allowing access');
+                        } else {
+                            console.log('✅ User belongs on pro dashboard');
                         }
-                        
-                        // User belongs on this dashboard
-                        console.log('✅ User belongs on pro dashboard');
                         
                         // Update stats if available
                         if (userData.homeCount) {

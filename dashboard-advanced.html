@@ -508,7 +508,7 @@
                 <div class="plan-badge">Advanced Pro</div>
                 <div>
                     <div style="font-weight: 600; color: var(--dark);" id="userName">Advanced User</div>
-                    <div style="color: var(--secondary); font-size: 14px;" id="userEmail">Loading...</div>
+                    <div style="color: var(--secondary); font-size: 14px;" id="userEmail">Please wait...</div>
                 </div>
                 
                 <!-- SIMPLE FIREBASE TEST -->
@@ -584,13 +584,12 @@
                                             
                                             // Check if user's account type matches this dashboard
                                             if (userData.accountType !== 'advanced') {
-                                                console.log('User account type:', userData.accountType, 'does not match advanced dashboard, redirecting...');
-                                                redirectToCorrectDashboard(userData.accountType);
-                                                return;
+                                                console.log('User account type:', userData.accountType, 'does not match advanced dashboard');
+                                                // Don't redirect immediately - let user stay on this dashboard
+                                                console.log('⚠️ User on wrong dashboard but allowing access');
+                                            } else {
+                                                console.log('✅ User belongs on advanced dashboard');
                                             }
-                                            
-                                            // User belongs on this dashboard
-                                            console.log('✅ User belongs on advanced dashboard');
                                         } else {
                                             // No user profile, redirect to trial
                                             window.location.href = 'dashboard-trial.html';

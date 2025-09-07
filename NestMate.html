@@ -4699,11 +4699,80 @@
             const success = await saveHomeDetailsSection(sectionId, sectionData);
             
             if (success) {
-                console.log(`Section ${sectionId} saved successfully`);
+                console.log(`✅ Section ${sectionId} saved successfully`);
+                // Show success message to user
+                showSaveSuccessMessage(sectionId);
             } else {
-                console.error(`Failed to save section ${sectionId}`);
+                console.error(`❌ Failed to save section ${sectionId}`);
+                // Show error message to user
+                showSaveErrorMessage(sectionId);
             }
         }
+
+        // Show save success message
+        function showSaveSuccessMessage(sectionId) {
+            const sectionElement = document.querySelector(`#${sectionId}-content`);
+            if (sectionElement) {
+                // Create or update success message
+                let successMsg = sectionElement.querySelector('.save-success-msg');
+                if (!successMsg) {
+                    successMsg = document.createElement('div');
+                    successMsg.className = 'save-success-msg';
+                    successMsg.style.cssText = 'color: green; font-size: 12px; margin-top: 5px;';
+                    sectionElement.appendChild(successMsg);
+                }
+                successMsg.textContent = '✅ Saved successfully';
+                
+                // Hide after 3 seconds
+                setTimeout(() => {
+                    if (successMsg) successMsg.textContent = '';
+                }, 3000);
+            }
+        }
+
+        // Show save error message
+        function showSaveErrorMessage(sectionId) {
+            const sectionElement = document.querySelector(`#${sectionId}-content`);
+            if (sectionElement) {
+                // Create or update error message
+                let errorMsg = sectionElement.querySelector('.save-error-msg');
+                if (!errorMsg) {
+                    errorMsg = document.createElement('div');
+                    errorMsg.className = 'save-error-msg';
+                    errorMsg.style.cssText = 'color: red; font-size: 12px; margin-top: 5px;';
+                    sectionElement.appendChild(errorMsg);
+                }
+                errorMsg.textContent = '❌ Save failed - check console';
+                
+                // Hide after 5 seconds
+                setTimeout(() => {
+                    if (errorMsg) errorMsg.textContent = '';
+                }, 5000);
+            }
+        }
+
+        // Save all sections function (can be called manually)
+        async function saveAllSections() {
+            console.log('🔍 saveAllSections called');
+            const sections = ['general', 'builder', 'bedrooms', 'bathrooms', 'roofs', 'crawlspace', 'appliances'];
+            
+            for (const sectionId of sections) {
+                try {
+                    await saveSectionToFirebase(sectionId);
+                } catch (error) {
+                    console.error(`Error saving section ${sectionId}:`, error);
+                }
+            }
+        }
+
+        // Auto-save function (saves all sections)
+        function autoSave() {
+            console.log('🔄 Auto-saving all sections...');
+            saveAllSections();
+        }
+
+        // Add auto-save every 30 seconds
+        setInterval(autoSave, 30000);
 
         // Update home in Firebase
         async function updateHomeInFirebase(homeId, homeData) {
