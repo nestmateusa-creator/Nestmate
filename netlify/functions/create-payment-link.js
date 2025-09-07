@@ -1,9 +1,11 @@
-// VERSION 2.0 - Force redeploy with correct live key
+// VERSION 3.0 - COMPLETELY NEW APPROACH
 const API_KEY = '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';
-console.log('VERSION 2.0 - Using LIVE API Key:', API_KEY.substring(0, 20) + '...' + API_KEY.substring(API_KEY.length - 10));
+console.log('VERSION 3.0 - COMPLETELY NEW APPROACH - Using LIVE API Key:', API_KEY.substring(0, 20) + '...' + API_KEY.substring(API_KEY.length - 10));
 const stripe = require('stripe')(API_KEY);
 
 exports.handler = async (event, context) => {
+  console.log('VERSION 3.0 - FUNCTION CALLED!', new Date().toISOString());
+  
   // Handle CORS preflight requests
   if (event.httpMethod === 'OPTIONS') {
     return {
