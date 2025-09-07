@@ -32,12 +32,13 @@
     <div class="instructions">
         <h3>📋 Instructions:</h3>
         <ol>
-            <li><strong>Go to your Stripe Dashboard</strong> → Products → Create Product</li>
-            <li><strong>Create 3 products:</strong> Basic Plan, Pro Plan, Advanced Plan</li>
-            <li><strong>Set up recurring pricing:</strong> $5/month, $10/month, $16/month</li>
-            <li><strong>Create payment links</strong> for each product</li>
-            <li><strong>Set success URLs</strong> to redirect to the correct dashboards</li>
+            <li><strong>Click the "Create Payment Link" buttons below</strong> to generate Stripe payment links</li>
+            <li><strong>Copy the generated payment links</strong> and use them in your upgrade pages</li>
+            <li><strong>Success URLs are set to:</strong> payment-confirmation.html (which updates user account and redirects to correct dashboard)</li>
+            <li><strong>Cancel URLs are set to:</strong> the respective upgrade pages</li>
+            <li><strong>Payment flow:</strong> User pays → payment-confirmation.html → account updated → correct dashboard</li>
         </ol>
+        <p><strong>✅ System Fixed:</strong> Users will now stay on their paid plan dashboard after signout!</p>
     </div>
 
     <div class="plan">
@@ -109,7 +110,7 @@
                     },
                     body: JSON.stringify({
                         planType: planType,
-                        successUrl: `https://www.nestmateus.com/dashboard-${planType}.html?payment=success&plan=${planType}`,
+                        successUrl: `https://www.nestmateus.com/payment-confirmation.html?payment=success&plan=${planType}`,
                         cancelUrl: `https://www.nestmateus.com/upgrade-${planType}.html?payment=cancelled`
                     }),
                 });
