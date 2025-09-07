@@ -328,18 +328,12 @@
                 'advanced': '$16/month'
             };
 
-            const dashboardUrls = {
-                'basic': 'dashboard-basic.html',
-                'pro': 'dashboard-pro.html',
-                'advanced': 'dashboard-advanced.html'
-            };
-
             document.getElementById('loadingState').style.display = 'none';
             document.getElementById('successState').style.display = 'block';
             
             document.getElementById('planName').textContent = planNames[planType] || 'Plan';
             document.getElementById('planPrice').textContent = planPrices[planType] || '';
-            document.getElementById('dashboardLink').href = dashboardUrls[planType] || 'dashboard-trial.html';
+            document.getElementById('dashboardLink').href = 'dashboard-trial.html';
         }
 
         // Show error state
