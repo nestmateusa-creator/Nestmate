@@ -980,10 +980,21 @@
         auth = firebase.auth();
         db = firebase.firestore();
 
-        // Set up auth state listener
+        // Check current user immediately
+        const currentUser = auth.currentUser;
+        if (currentUser) {
+            console.log('User is signed in:', currentUser.email);
+            document.getElementById('userName').textContent = currentUser.displayName || 'Advanced User';
+            document.getElementById('userEmail').textContent = currentUser.email;
+        } else {
+            console.log('No user signed in, redirecting to signin');
+            window.location.href = 'signin.html';
+        }
+
+        // Set up auth state listener for future changes
         auth.onAuthStateChanged(async (user) => {
             if (user) {
-                // Update user display immediately
+                console.log('Auth state changed - user signed in:', user.email);
                 document.getElementById('userName').textContent = user.displayName || 'Advanced User';
                 document.getElementById('userEmail').textContent = user.email;
                 
@@ -1000,6 +1011,7 @@
                     console.error('Error checking account type:', error);
                 }
             } else {
+                console.log('Auth state changed - user signed out');
                 window.location.href = 'signin.html';
             }
         });
