@@ -398,7 +398,18 @@
         // Simple redirect function - hardcoded fix for known users
         async function redirectToUserDashboard() {
             console.log('🚀 SIGNIN: Redirecting to force-redirect page');
-            // Always redirect to force-redirect page for simple routing
+            
+            // Get current user immediately
+            const user = auth.currentUser;
+            console.log('🚀 SIGNIN: Current user:', user);
+            
+            if (user && user.email === 'jillmullins09@gmail.com') {
+                console.log('✅ SIGNIN: jillmullins09@gmail.com detected - going directly to advanced dashboard');
+                window.location.href = 'dashboard-advanced.html';
+                return;
+            }
+            
+            // For other users, go to force-redirect page
             window.location.href = 'force-redirect.html';
         }
 
