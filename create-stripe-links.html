@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Stripe Payment Links</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+        .plan { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+        .plan h3 { color: #10b981; margin-bottom: 10px; }
+        .price { font-size: 24px; font-weight: bold; color: #059669; }
+        .features { list-style: none; padding: 0; }
+        .features li { margin: 5px 0; }
+        .features li:before { content: "✅ "; }
+        .payment-link { 
+            display: inline-block; 
+            background: #10b981; 
+            color: white; 
+            padding: 12px 24px; 
+            text-decoration: none; 
+            border-radius: 6px; 
+            font-weight: bold;
+            margin-top: 15px;
+        }
+        .payment-link:hover { background: #059669; }
+        .instructions { background: #f0f9ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <h1>🎯 Direct Stripe Payment Links</h1>
+    
+    <div class="instructions">
+        <h3>📋 Instructions:</h3>
+        <ol>
+            <li><strong>Go to your Stripe Dashboard</strong> → Products → Create Product</li>
+            <li><strong>Create 3 products:</strong> Basic Plan, Pro Plan, Advanced Plan</li>
+            <li><strong>Set up recurring pricing:</strong> $5/month, $10/month, $16/month</li>
+            <li><strong>Create payment links</strong> for each product</li>
+            <li><strong>Set success URLs</strong> to redirect to the correct dashboards</li>
+        </ol>
+    </div>
+
+    <div class="plan">
+        <h3>Basic Plan - $5/month</h3>
+        <div class="price">$5/month</div>
+        <ul class="features">
+            <li>Manage your first home with ease</li>
+            <li>Stay on top of 10 essential tasks & reminders</li>
+            <li>Instantly organize key home details</li>
+            <li>Rock-solid cloud backup for peace of mind</li>
+            <li>Save and revisit your favorite finds</li>
+            <li>Discover smart product picks just for you</li>
+        </ul>
+        <p><strong>Success URL:</strong> <code>https://www.nestmateus.com/dashboard-basic.html?payment=success&plan=basic</code></p>
+        <p><strong>Cancel URL:</strong> <code>https://www.nestmateus.com/upgrade-basic.html?payment=cancelled</code></p>
+        <a href="#" class="payment-link" onclick="createPaymentLink('basic')">Create Basic Payment Link</a>
+    </div>
+
+    <div class="plan">
+        <h3>Pro Plan - $10/month</h3>
+        <div class="price">$10/month</div>
+        <ul class="features">
+            <li>Create unlimited home profiles for every property</li>
+            <li>Never miss a beat with unlimited tasks & reminders</li>
+            <li>Get your personalized Home Health Score</li>
+            <li>VIP priority support—get help fast</li>
+            <li>Effortlessly export and backup your data</li>
+            <li>All Basic features, supercharged</li>
+            <li>Order your favorite products directly for your home</li>
+            <li>Real-time price tracking & instant alerts</li>
+            <li>Next-level product recommendations tailored to you</li>
+        </ul>
+        <p><strong>Success URL:</strong> <code>https://www.nestmateus.com/dashboard-pro.html?payment=success&plan=pro</code></p>
+        <p><strong>Cancel URL:</strong> <code>https://www.nestmateus.com/upgrade-pro.html?payment=cancelled</code></p>
+        <a href="#" class="payment-link" onclick="createPaymentLink('pro')">Create Pro Payment Link</a>
+    </div>
+
+    <div class="plan">
+        <h3>Advanced Plan - $16/month</h3>
+        <div class="price">$16/month</div>
+        <ul class="features">
+            <li>All Pro features, plus more family power</li>
+            <li>Connect up to 5 family members—everyone's included</li>
+            <li>Share tasks & reminders for total home harmony</li>
+            <li>Family dashboard for effortless collaboration</li>
+            <li>Dedicated family-first support</li>
+            <li>Build and share product lists together</li>
+            <li>Order products as a team—collaborate and save</li>
+            <li>Unlimited access to premium features</li>
+        </ul>
+        <p><strong>Success URL:</strong> <code>https://www.nestmateus.com/dashboard-advanced.html?payment=success&plan=advanced</code></p>
+        <p><strong>Cancel URL:</strong> <code>https://www.nestmateus.com/upgrade-advanced.html?payment=cancelled</code></p>
+        <a href="#" class="payment-link" onclick="createPaymentLink('advanced')">Create Advanced Payment Link</a>
+    </div>
+
+    <div id="result" style="margin-top: 30px; padding: 15px; background: #f9f9f9; border-radius: 8px; display: none;"></div>
+
+    <script>
+        async function createPaymentLink(planType) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = 'Creating payment link...';
+            
+            try {
+                const response = await fetch('/.netlify/functions/create-payment-link', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        planType: planType,
+                        successUrl: `https://www.nestmateus.com/dashboard-${planType}.html?payment=success&plan=${planType}`,
+                        cancelUrl: `https://www.nestmateus.com/upgrade-${planType}.html?payment=cancelled`
+                    }),
+                });
+
+                const result = await response.json();
+                
+                if (response.ok && result.url) {
+                    resultDiv.innerHTML = `
+                        <h3>✅ Payment Link Created!</h3>
+                        <p><strong>Plan:</strong> ${planType.charAt(0).toUpperCase() + planType.slice(1)}</p>
+                        <p><strong>Payment Link:</strong></p>
+                        <input type="text" value="${result.url}" style="width: 100%; padding: 8px; margin: 10px 0;" readonly>
+                        <br>
+                        <a href="${result.url}" target="_blank" class="payment-link">Test Payment Link</a>
+                        <br><br>
+                        <p><strong>Copy this link and use it in your upgrade pages!</strong></p>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <h3>❌ Error Creating Payment Link</h3>
+                        <p><strong>Error:</strong> ${result.error || 'Unknown error'}</p>
+                        <p><strong>Response:</strong> ${JSON.stringify(result, null, 2)}</p>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <h3>❌ Network Error</h3>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                    <p><strong>Manual Setup Required:</strong> Go to Stripe Dashboard and create payment links manually.</p>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
