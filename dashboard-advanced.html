@@ -12,6 +12,9 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     
+    <!-- Dashboard Protection -->
+    <script src="dashboard-protection.js"></script>
+    
     <style>
         :root {
             --primary: #7c3aed;
@@ -983,6 +986,11 @@
                 window.location.href = 'cancel-subscription.html';
             }
         }
+
+        // Protect dashboard - only allow advanced users
+        setTimeout(() => {
+            protectDashboard('advanced');
+        }, 2000);
 
     </script>
 
