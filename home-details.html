@@ -1604,18 +1604,25 @@
         // Go back to correct dashboard based on user's account type
         async function goBackToDashboard() {
             try {
+                console.log('🔙 goBackToDashboard called');
+                
                 // Get current user
                 const user = firebase.auth().currentUser;
                 if (!user) {
+                    console.log('❌ No user found, redirecting to signin');
                     window.location.href = 'signin.html';
                     return;
                 }
+
+                console.log('👤 Current user:', user.email);
 
                 // Get user's account type from Firestore
                 const userDoc = await firebase.firestore().collection('userProfiles').doc(user.uid).get();
                 if (userDoc.exists) {
                     const userData = userDoc.data();
                     const accountType = userData.accountType || 'trial';
+                    
+                    console.log('📊 User account type:', accountType);
                     
                     const dashboardUrls = {
                         'trial': 'dashboard-trial.html',
@@ -1624,12 +1631,16 @@
                         'advanced': 'dashboard-advanced.html'
                     };
                     
-                    window.location.href = dashboardUrls[accountType] || 'dashboard-trial.html';
+                    const targetDashboard = dashboardUrls[accountType] || 'dashboard-trial.html';
+                    console.log('🎯 Redirecting to:', targetDashboard);
+                    
+                    window.location.href = targetDashboard;
                 } else {
+                    console.log('❌ User document not found, redirecting to trial dashboard');
                     window.location.href = 'dashboard-trial.html';
                 }
             } catch (error) {
-                console.error('Error getting user data:', error);
+                console.error('❌ Error getting user data:', error);
                 window.location.href = 'dashboard-trial.html';
             }
         }
