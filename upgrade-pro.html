@@ -340,6 +340,19 @@
                         <span>Send me product updates and tips via email</span>
                     </label>
                 </div>
+                
+                <div class="form-group" style="margin-top: 24px;">
+                    <label class="form-label">Card Information *</label>
+                    <div id="card-element">
+                        <!-- Stripe Elements will create form elements here -->
+                    </div>
+                    <div id="card-errors" role="alert"></div>
+                </div>
+                
+                <button type="submit" id="submit-button" class="btn btn-primary">
+                    <i class="fas fa-credit-card"></i>
+                    Complete Payment - $10/month
+                </button>
             </form>
         </div>
 
@@ -467,47 +480,42 @@
             }
         });
 
-        // Process payment with server
+        // Process payment with server using Stripe Checkout
         async function processPaymentWithServer(paymentMethodId, planType, amount) {
             try {
-                console.log('Creating payment intent...', { planType, amount });
+                console.log('Creating checkout session...', { planType, amount });
                 
-                const response = await fetch('/.netlify/functions/create-payment-intent', {
+                const response = await fetch('/.netlify/functions/create-checkout-session', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        amount: amount,
-                        currency: 'usd',
                         planType: planType,
-                        userId: 'demo-user'
+                        amount: amount,
+                        currency: 'usd'
                     }),
                 });
 
-                console.log('Payment intent response:', response.status);
-
                 if (!response.ok) {
                     const errorText = await response.text();
-                    console.error('Payment intent failed:', errorText);
-                    throw new Error('Failed to create payment intent');
+                    console.error('Checkout session failed:', errorText);
+                    throw new Error('Failed to create checkout session');
                 }
 
-                const result = await response.json();
-                console.log('Payment intent result:', result);
+                const { sessionId } = await response.json();
+                console.log('Checkout session created:', sessionId);
 
-                // Confirm the payment with Stripe
-                const { error: confirmError } = await stripe.confirmCardPayment(result.clientSecret, {
-                    payment_method: paymentMethodId
+                // Redirect to Stripe Checkout
+                const { error } = await stripe.redirectToCheckout({
+                    sessionId: sessionId
                 });
 
-                if (confirmError) {
-                    console.error('Payment confirmation failed:', confirmError);
-                    throw new Error(confirmError.message || 'Payment failed');
+                if (error) {
+                    throw new Error(error.message);
                 }
 
-                console.log('Payment successful!');
-                return { success: true, paymentIntentId: result.paymentIntentId };
+                return { success: true, redirecting: true };
                 
             } catch (error) {
                 console.error('Payment processing error:', error);
