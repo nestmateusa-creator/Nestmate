@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Stripe Payment Links - NEW</title>
+    <title>Create Stripe Payment Links - NEW v2.0</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -151,8 +151,9 @@
     </div>
 
     <script>
-        // NEW APPROACH - Direct Stripe API call with correct keys
+        // VERSION 2.0 - FRESH KEY - Direct Stripe API call with correct keys
         const STRIPE_SECRET_KEY = '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';
+        console.log('VERSION 2.0 - Using FRESH API Key:', STRIPE_SECRET_KEY.substring(0, 20) + '...' + STRIPE_SECRET_KEY.substring(STRIPE_SECRET_KEY.length - 10));
         const STRIPE_PUBLISHABLE_KEY = 'pk_live_51S4C0RPHhV91OxuKxSQuOHmbpH1BRYAC0l9ljv9WfFhL2IoLcaiwEljhORx8nZH4e8ifoWy7S7fJaGy1wPYgdmkd00zT9Z8PVx';
 
         async function createPaymentLink(planType, amount) {
