@@ -61,7 +61,7 @@ In your Stripe Dashboard:
 
 4. Edit `.env` file with your Stripe keys:
    ```
-   STRIPE_SECRET_KEY=YOUR_STRIPE_SECRET_KEY_HERE
+   STRIPE_SECRET_KEY=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
    STRIPE_PUBLISHABLE_KEY=pk_test_51S4C0sAmpksixclYeG19nYyKaIrbc41a2Twtw8uNCPTEFO9BLQl6BRN6V9HxLNyCZZrMdPIy9wzk5xOGfd943BNM00Z3gp2GuY
    PORT=3001
    ```
