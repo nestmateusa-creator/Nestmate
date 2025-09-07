@@ -500,7 +500,7 @@
 
         function goToDashboard() {
             // Redirect to appropriate dashboard based on user's account type
-            window.location.href = 'dashboard-trial.html'; // Will redirect to correct dashboard
+            redirectToUserDashboard();
         }
 
         async function signOutAndShowForms() {
@@ -752,12 +752,12 @@
                         
                         showSuccess('Account created successfully! Redirecting to dashboard...');
                         
-                        // Redirect to trial dashboard for new users
+                        // Redirect to appropriate dashboard for new users
                         try {
-                            window.location.href = 'dashboard-trial.html';
+                            await redirectToUserDashboard();
                         } catch (error) {
                             console.error('Redirect failed:', error);
-                            // Fallback redirect
+                            // Fallback redirect to trial dashboard
                 setTimeout(() => {
                                 window.location.replace('dashboard-trial.html');
                             }, 1500);
