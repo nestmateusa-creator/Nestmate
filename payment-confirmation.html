@@ -270,9 +270,20 @@
         // Update user account type
         async function updateUserAccount(planType) {
             try {
+                // Wait for auth state to be ready
+                await new Promise((resolve) => {
+                    const unsubscribe = auth.onAuthStateChanged((user) => {
+                        unsubscribe();
+                        resolve(user);
+                    });
+                });
+
                 const user = auth.currentUser;
                 if (!user) {
-                    throw new Error('User not authenticated');
+                    // If user is not authenticated, redirect to sign in
+                    console.log('User not authenticated, redirecting to sign in...');
+                    window.location.href = 'signin.html?redirect=payment-confirmation.html?payment=success&plan=' + planType;
+                    return false;
                 }
 
                 console.log('Updating user account to:', planType);
@@ -353,10 +364,13 @@
                     const planType = params.plan;
                     
                     // Update user account
-                    await updateUserAccount(planType);
+                    const updateSuccess = await updateUserAccount(planType);
                     
-                    // Show success
-                    showSuccess(planType);
+                    if (updateSuccess !== false) {
+                        // Show success
+                        showSuccess(planType);
+                    }
+                    // If updateSuccess is false, user was redirected to sign in
                 } else {
                     // Not a successful payment, redirect to trial dashboard
                     window.location.href = 'dashboard-trial.html';

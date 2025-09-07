@@ -401,6 +401,16 @@
         // Function to redirect user to appropriate dashboard based on their plan
         async function redirectToUserDashboard() {
             try {
+                // Check for redirect parameter first
+                const urlParams = new URLSearchParams(window.location.search);
+                const redirectUrl = urlParams.get('redirect');
+                
+                if (redirectUrl) {
+                    console.log('Redirecting to:', redirectUrl);
+                    window.location.href = redirectUrl;
+                    return;
+                }
+
                 const user = auth.currentUser;
                 if (!user) {
                     console.log('No user found, redirecting to trial dashboard');
