@@ -564,7 +564,7 @@
                 
                 // Redirect after a short delay
                 setTimeout(() => {
-                    window.location.href = 'dashboard-basic.html';
+                    redirectToCorrectDashboard('basic');
                 }, 2000);
 
             } catch (error) {
@@ -754,6 +754,18 @@
 
         // Check for cancelled payment when page loads
         document.addEventListener('DOMContentLoaded', checkForCancelledPayment);
+
+        // Redirect to correct dashboard based on account type
+        function redirectToCorrectDashboard(accountType) {
+            const dashboardUrls = {
+                'trial': 'dashboard-trial.html',
+                'basic': 'dashboard-basic.html',
+                'pro': 'dashboard-pro.html',
+                'advanced': 'dashboard-advanced.html'
+            };
+            
+            window.location.href = dashboardUrls[accountType] || 'dashboard-trial.html';
+        }
     </script>
 </body>
 </html>

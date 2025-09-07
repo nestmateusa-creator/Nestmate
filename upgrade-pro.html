@@ -377,7 +377,7 @@
 
         <!-- Back Button -->
         <div style="text-align: center; margin-top: 24px;">
-            <a href="dashboard-basic.html" class="btn btn-outline">
+            <a href="#" onclick="goBackToDashboard()" class="btn btn-outline">
                 <i class="fas fa-arrow-left"></i>
                 Back to Dashboard
             </a>
@@ -473,7 +473,7 @@
                 
                 // Redirect after a short delay
                 setTimeout(() => {
-                    window.location.href = 'dashboard-pro.html';
+                    redirectToCorrectDashboard('pro');
                 }, 2000);
 
             } catch (error) {
@@ -578,6 +578,51 @@
 
         // Check for cancelled payment when page loads
         document.addEventListener('DOMContentLoaded', checkForCancelledPayment);
+
+        // Go back to correct dashboard based on user's account type
+        async function goBackToDashboard() {
+            try {
+                // Get current user
+                const user = firebase.auth().currentUser;
+                if (!user) {
+                    window.location.href = 'signin.html';
+                    return;
+                }
+
+                // Get user's account type from Firestore
+                const userDoc = await firebase.firestore().collection('userProfiles').doc(user.uid).get();
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    const accountType = userData.accountType || 'trial';
+                    
+                    const dashboardUrls = {
+                        'trial': 'dashboard-trial.html',
+                        'basic': 'dashboard-basic.html',
+                        'pro': 'dashboard-pro.html',
+                        'advanced': 'dashboard-advanced.html'
+                    };
+                    
+                    window.location.href = dashboardUrls[accountType] || 'dashboard-trial.html';
+                } else {
+                    window.location.href = 'dashboard-trial.html';
+                }
+            } catch (error) {
+                console.error('Error getting user data:', error);
+                window.location.href = 'dashboard-trial.html';
+            }
+        }
+
+        // Redirect to correct dashboard based on account type
+        function redirectToCorrectDashboard(accountType) {
+            const dashboardUrls = {
+                'trial': 'dashboard-trial.html',
+                'basic': 'dashboard-basic.html',
+                'pro': 'dashboard-pro.html',
+                'advanced': 'dashboard-advanced.html'
+            };
+            
+            window.location.href = dashboardUrls[accountType] || 'dashboard-trial.html';
+        }
     </script>
 </body>
 </html>
