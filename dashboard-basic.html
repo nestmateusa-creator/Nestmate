@@ -671,13 +671,13 @@
                     <div style="font-weight: 600; color: var(--dark);" id="userName">Loading...</div>
                     <div style="color: var(--secondary); font-size: 14px;" id="userEmail">Loading...</div>
                 </div>
+                <button class="btn btn-primary" onclick="openProfile()" style="margin-right: 10px;">
+                    <i class="fas fa-user-cog"></i>
+                    Profile
+                </button>
                 <button class="btn btn-outline" onclick="signOut()">
                     <i class="fas fa-sign-out-alt"></i>
                     Sign Out
-                </button>
-                <button class="btn btn-danger" onclick="cancelSubscription()" style="margin-left: 10px;">
-                    <i class="fas fa-times"></i>
-                    Cancel Subscription
                 </button>
             </div>
         </div>
@@ -958,6 +958,10 @@
 
         function viewRecommendations() {
             window.location.href = 'product-recommendations.html';
+        }
+
+        function openProfile() {
+            window.location.href = 'profile.html';
         }
 
         async function signOut() {

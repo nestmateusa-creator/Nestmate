@@ -1,174 +1,645 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Edit Profile | NestMate</title>
-  <link rel="stylesheet" href="styles/main.css">
-  <script type="module" defer src="./profile-firebase-delete.js"></script>
-  <style>
-    body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: linear-gradient(120deg, #e0e7ff 0%, #f8fafc 100%);
-      color: #1e293b;
-      margin: 0;
-      min-height: 100vh;
-    }
-    .profile-container {
-      max-width: 420px;
-      margin: 48px auto;
-      background: #fff;
-      border-radius: 18px;
-      box-shadow: 0 4px 32px rgba(37,99,235,0.10);
-      padding: 36px 28px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .profile-photo {
-      width: 110px;
-      height: 110px;
-      border-radius: 50%;
-      object-fit: cover;
-      box-shadow: 0 2px 12px #2563eb22;
-      margin-bottom: 18px;
-      background: #f1f5f9;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-    .profile-photo input {
-      display: none;
-    }
-    .edit-photo-btn {
-      background: #2563eb;
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      padding: 8px 18px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      margin-bottom: 18px;
-      box-shadow: 0 2px 8px #2563eb22;
-      transition: background 0.18s;
-    }
-    .edit-photo-btn:hover {
-      background: #1d4ed8;
-    }
-    .profile-form {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-    .profile-form label {
-      font-weight: 600;
-      color: #2563eb;
-      margin-bottom: 4px;
-    }
-    .profile-form input {
-      padding: 10px 12px;
-      border-radius: 8px;
-      border: 1.5px solid #e5e7eb;
-      font-size: 1.08rem;
-      outline: none;
-    }
-  </style>
-  </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Management | NestMate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Firebase CDN -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    
+    <style>
+        :root {
+            --primary: #7c3aed;
+            --primary-dark: #6d28d9;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #06b6d4;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+            --transition: all 0.3s ease;
+        }
 
-  <body>
-    <div style="display:flex;gap:18px;margin:32px auto 0 auto;justify-content:center;flex-wrap:nowrap;width:100%;max-width:900px;align-items:center;">
-      <a href="dashboard.html" style="background:#2563eb;color:#fff;border:none;border-radius:12px;padding:12px 32px;font-size:1.1rem;font-weight:700;text-decoration:none;box-shadow:0 2px 12px #2563eb22;display:inline-flex;align-items:center;gap:8px;transition:background 0.18s;">🏡 My Home</a>
-      <a href="shop-for-my-home.html" style="background:linear-gradient(90deg,#2563eb 60%,#facc15 100%);color:#fff;border:none;border-radius:12px;padding:12px 32px;font-size:1.1rem;font-weight:700;text-decoration:none;box-shadow:0 2px 12px #2563eb22;display:inline-flex;align-items:center;gap:8px;transition:background 0.18s;">🛒 Shop for my home</a>
-  <a href="compare-contractor-bids.html" style="background:#2563eb;color:#fff;border:none;border-radius:12px;padding:12px 32px;font-size:1.1rem;font-weight:700;text-decoration:none;box-shadow:0 2px 12px #2563eb22;display:inline-flex;align-items:center;gap:8px;transition:background 0.18s;">Compare Contractor Bids</a>
-  <a href="pricing.html" style="background:linear-gradient(90deg,#facc15 60%,#2563eb 100%);color:#fff;border:none;border-radius:12px;padding:12px 28px;font-size:1.08rem;font-weight:700;text-decoration:none;box-shadow:0 2px 12px #facc1522;display:inline-flex;align-items:center;gap:8px;transition:background 0.18s;">⬆️ Upgrade Account</a>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: var(--primary);
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .back-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .card h2 {
+            color: var(--primary);
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            color: var(--dark);
+            margin-bottom: 6px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .subscription-info {
+            background: var(--light);
+            padding: 16px;
+            border-radius: var(--radius);
+            margin-bottom: 16px;
+        }
+
+        .subscription-plan {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .subscription-status {
+            color: var(--success);
+            font-weight: 500;
+        }
+
+        .upgrade-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .upgrade-option {
+            background: var(--light);
+            padding: 16px;
+            border-radius: var(--radius);
+            text-align: center;
+            border: 2px solid transparent;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .upgrade-option:hover {
+            border-color: var(--primary);
+        }
+
+        .upgrade-option.current {
+            border-color: var(--success);
+            background: #f0fdf4;
+        }
+
+        .upgrade-option h4 {
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .upgrade-option .price {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--success);
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: var(--radius);
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #f0fdf4;
+            color: var(--success);
+            border: 1px solid #bbf7d0;
+        }
+
+        .alert-danger {
+            background: #fef2f2;
+            color: var(--danger);
+            border: 1px solid #fecaca;
+        }
+
+        .alert-info {
+            background: #eff6ff;
+            color: var(--info);
+            border: 1px solid #bfdbfe;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 3px solid var(--border);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .upgrade-options {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1><i class="fas fa-user-cog"></i> Profile Management</h1>
+            <a href="#" class="back-btn" onclick="goBack()">
+                <i class="fas fa-arrow-left"></i>
+                Back to Dashboard
+            </a>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Loading profile...</p>
+        </div>
+
+        <!-- Profile Content -->
+        <div id="profileContent" style="display: none;">
+            <div class="profile-grid">
+                <!-- Personal Information -->
+                <div class="card">
+                    <h2><i class="fas fa-user"></i> Personal Information</h2>
+                    <form id="personalForm">
+                        <div class="form-group">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" id="fullName" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" id="email" class="form-input" required readonly>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Phone Number</label>
+                            <input type="tel" id="phone" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Address</label>
+                            <input type="text" id="address" class="form-input">
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            Save Changes
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Subscription Management -->
+                <div class="card">
+                    <h2><i class="fas fa-credit-card"></i> Subscription Management</h2>
+                    
+                    <div class="subscription-info">
+                        <div class="subscription-plan" id="currentPlan">Loading...</div>
+                        <div class="subscription-status" id="subscriptionStatus">Loading...</div>
+                    </div>
+
+                    <div id="subscriptionActions">
+                        <!-- Actions will be populated based on current plan -->
+                    </div>
+
+                    <div class="upgrade-options" id="upgradeOptions">
+                        <!-- Upgrade options will be populated -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Methods -->
+            <div class="card" style="margin-top: 24px;">
+                <h2><i class="fas fa-credit-card"></i> Payment Methods</h2>
+                <div id="paymentMethods">
+                    <p>Loading payment methods...</p>
+                </div>
+                <button class="btn btn-outline" onclick="managePaymentMethods()">
+                    <i class="fas fa-plus"></i>
+                    Manage Payment Methods
+                </button>
+            </div>
+        </div>
+
+        <!-- Alerts -->
+        <div id="alerts"></div>
     </div>
-    <div class="profile-container">
-      <h2>Edit Profile</h2>
-      <div class="profile-photo">
-        <img id="profilePhoto" src="https://ui-avatars.com/api/?name=User" alt="Profile Photo" style="width:100%;height:100%;object-fit:cover;" />
-      </div>
-      <label class="edit-photo-btn" for="profilePhotoInput">Change Photo</label>
-      <input type="file" id="profilePhotoInput" accept="image/*" style="display:none;" />
-      <form id="profileForm" class="profile-form">
-        <label for="profileName">Name</label>
-        <input type="text" id="profileName" required />
-        <label for="profileEmail">Email</label>
-        <input type="email" id="profileEmail" required />
-        <label for="profilePhone">Phone</label>
-        <input type="tel" id="profilePhone" />
-        <label for="profileAddress">Address</label>
-        <input type="text" id="profileAddress" />
-        <button type="submit">Save Profile</button>
-        <div id="profileSuccess" style="color:green;"></div>
-        <div id="profileError" style="color:red;"></div>
-      </form>
-      <button id="logoutBtn" style="margin-top:18px;background:#f87171;color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;">Logout</button>
-      <hr style="margin:32px 0;width:100%;border:0;border-top:1.5px solid #e5e7eb;" />
-      <h3>Delete Account</h3>
-      <form id="deleteAccountForm" style="display:flex;flex-direction:column;gap:10px;">
-        <input type="password" id="deletePassword" placeholder="Enter password to confirm" required />
-        <button type="submit" style="background:#ef4444;color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;">Delete Account</button>
-        <div id="deleteAccountError" style="color:red;"></div>
-        <div id="deleteAccountSuccess" style="color:green;"></div>
-      </form>
-    </div>
-  </body>
-  <script type="module" src="./profile-firebase-delete.js" onerror="document.getElementById('deleteAccountError').textContent = 'Failed to load account deletion module.';"></script>
-  <script>
-    // Top nav Logout button logic
-    const navLogoutBtn = document.getElementById('navLogoutBtn');
-    if (navLogoutBtn) {
-      navLogoutBtn.addEventListener('click', function() {
-        window.location.href = 'index.html';
-      });
-    }
-    // Logout button logic
-    document.getElementById('logoutBtn').addEventListener('click', function() {
-      window.location.href = 'index.html';
-    });
-    // Profile photo preview
-    document.getElementById('profilePhotoInput').addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(ev) {
-          document.getElementById('profilePhoto').src = ev.target.result;
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
+            authDomain: "nestmate-167ed.firebaseapp.com",
+            projectId: "nestmate-167ed",
+            storageBucket: "nestmate-167ed.firebasestorage.app",
+            messagingSenderId: "865171535257",
+            appId: "1:865171535257:web:9944a48a952e99f55f0f08",
+            measurementId: "G-1DYR2RGY4G"
         };
-        reader.readAsDataURL(file);
-      }
-    });
-    // Profile form logic (localStorage demo)
-    const profileForm = document.getElementById('profileForm');
-    const profileSuccess = document.getElementById('profileSuccess');
-    const profileError = document.getElementById('profileError');
-    // Load profile from localStorage
-    window.addEventListener('DOMContentLoaded', () => {
-      const profile = JSON.parse(localStorage.getItem('userProfile') || '{}');
-      if (profile.name) document.getElementById('profileName').value = profile.name;
-      if (profile.email) document.getElementById('profileEmail').value = profile.email;
-      if (profile.phone) document.getElementById('profilePhone').value = profile.phone;
-      if (profile.address) document.getElementById('profileAddress').value = profile.address;
-      if (profile.photo) document.getElementById('profilePhoto').src = profile.photo;
-    });
-    profileForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      const name = document.getElementById('profileName').value.trim();
-      const email = document.getElementById('profileEmail').value.trim();
-      const phone = document.getElementById('profilePhone').value.trim();
-      const address = document.getElementById('profileAddress').value.trim();
-      const photo = document.getElementById('profilePhoto').src;
-      if (!name || !email) {
-        profileError.textContent = 'Name and email are required.';
-        profileSuccess.textContent = '';
-        return;
-      }
-      const profile = { name, email, phone, address, photo };
-      localStorage.setItem('userProfile', JSON.stringify(profile));
-      profileSuccess.textContent = 'Profile updated!';
-      profileError.textContent = '';
-    });
-  </script>
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        let currentUser = null;
+        let userData = null;
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            auth.onAuthStateChanged(async (user) => {
+                if (user) {
+                    currentUser = user;
+                    await loadUserProfile();
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('profileContent').style.display = 'block';
+                } else {
+                    window.location.href = 'signin.html';
+                }
+            });
+        });
+
+        // Load user profile data
+        async function loadUserProfile() {
+            try {
+                // Load user data from Firestore
+                const userDoc = await db.collection('userProfiles').doc(currentUser.uid).get();
+                if (userDoc.exists) {
+                    userData = userDoc.data();
+                    
+                    // Populate personal information
+                    document.getElementById('fullName').value = userData.displayName || '';
+                    document.getElementById('email').value = currentUser.email;
+                    document.getElementById('phone').value = userData.phone || '';
+                    document.getElementById('address').value = userData.address || '';
+                    
+                    // Update subscription info
+                    updateSubscriptionInfo();
+                } else {
+                    showAlert('User profile not found. Please contact support.', 'danger');
+                }
+            } catch (error) {
+                console.error('Error loading user profile:', error);
+                showAlert('Error loading profile. Please try again.', 'danger');
+            }
+        }
+
+        // Update subscription information
+        function updateSubscriptionInfo() {
+            const accountType = userData.accountType || 'trial';
+            const planNames = {
+                'trial': 'Trial Plan',
+                'basic': 'Basic Plan',
+                'pro': 'Pro Plan',
+                'advanced': 'Advanced Plan'
+            };
+            
+            const planPrices = {
+                'trial': 'Free',
+                'basic': '$5/month',
+                'pro': '$10/month',
+                'advanced': '$16/month'
+            };
+
+            document.getElementById('currentPlan').textContent = planNames[accountType];
+            document.getElementById('subscriptionStatus').textContent = `Active - ${planPrices[accountType]}`;
+            
+            // Update subscription actions
+            updateSubscriptionActions(accountType);
+            
+            // Update upgrade options
+            updateUpgradeOptions(accountType);
+        }
+
+        // Update subscription actions based on current plan
+        function updateSubscriptionActions(accountType) {
+            const actionsDiv = document.getElementById('subscriptionActions');
+            let actionsHTML = '';
+
+            if (accountType === 'trial') {
+                actionsHTML = `
+                    <button class="btn btn-primary" onclick="upgradeToBasic()">
+                        <i class="fas fa-arrow-up"></i>
+                        Upgrade to Basic Plan
+                    </button>
+                `;
+            } else {
+                actionsHTML = `
+                    <button class="btn btn-danger" onclick="cancelSubscription()">
+                        <i class="fas fa-times"></i>
+                        Cancel Subscription
+                    </button>
+                `;
+            }
+
+            actionsDiv.innerHTML = actionsHTML;
+        }
+
+        // Update upgrade options
+        function updateUpgradeOptions(currentAccountType) {
+            const upgradeDiv = document.getElementById('upgradeOptions');
+            const plans = [
+                { id: 'trial', name: 'Trial', price: 'Free', features: ['Basic features'] },
+                { id: 'basic', name: 'Basic', price: '$5/month', features: ['All trial features', 'Priority support'] },
+                { id: 'pro', name: 'Pro', price: '$10/month', features: ['All basic features', 'Advanced tools', 'Family management'] },
+                { id: 'advanced', name: 'Advanced', price: '$16/month', features: ['All pro features', 'Premium support', 'Custom integrations'] }
+            ];
+
+            let optionsHTML = '';
+            plans.forEach(plan => {
+                const isCurrent = plan.id === currentAccountType;
+                const canUpgrade = !isCurrent && (
+                    (currentAccountType === 'trial' && plan.id === 'basic') ||
+                    (currentAccountType === 'basic' && plan.id === 'pro') ||
+                    (currentAccountType === 'pro' && plan.id === 'advanced')
+                );
+
+                optionsHTML += `
+                    <div class="upgrade-option ${isCurrent ? 'current' : ''}" 
+                         ${canUpgrade ? `onclick="upgradeToPlan('${plan.id}')"` : ''}>
+                        <h4>${plan.name}</h4>
+                        <div class="price">${plan.price}</div>
+                        ${isCurrent ? '<small>Current Plan</small>' : ''}
+                        ${canUpgrade ? '<small>Click to upgrade</small>' : ''}
+                    </div>
+                `;
+            });
+
+            upgradeDiv.innerHTML = optionsHTML;
+        }
+
+        // Save personal information
+        document.getElementById('personalForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            try {
+                const updates = {
+                    displayName: document.getElementById('fullName').value,
+                    phone: document.getElementById('phone').value,
+                    address: document.getElementById('address').value,
+                    updatedAt: new Date().toISOString()
+                };
+
+                await db.collection('userProfiles').doc(currentUser.uid).update(updates);
+                
+                // Update Firebase Auth display name
+                await currentUser.updateProfile({
+                    displayName: updates.displayName
+                });
+
+                userData = { ...userData, ...updates };
+                showAlert('Profile updated successfully!', 'success');
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                showAlert('Error updating profile. Please try again.', 'danger');
+            }
+        });
+
+        // Upgrade to specific plan
+        async function upgradeToPlan(planId) {
+            if (confirm(`Are you sure you want to upgrade to the ${planId} plan?`)) {
+                try {
+                    // Redirect to upgrade page
+                    window.location.href = `upgrade-${planId}.html`;
+                } catch (error) {
+                    console.error('Error upgrading plan:', error);
+                    showAlert('Error upgrading plan. Please try again.', 'danger');
+                }
+            }
+        }
+
+        // Upgrade to basic plan
+        function upgradeToBasic() {
+            upgradeToPlan('basic');
+        }
+
+        // Cancel subscription
+        async function cancelSubscription() {
+            if (confirm('Are you sure you want to cancel your subscription? This will downgrade your account to Trial.')) {
+                try {
+                    // Call Netlify function to cancel Stripe subscription
+                    const response = await fetch('/.netlify/functions/cancel-subscription', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            userId: currentUser.uid,
+                            email: currentUser.email
+                        })
+                    });
+
+                    if (response.ok) {
+                        // Update user account type to trial
+                        await db.collection('userProfiles').doc(currentUser.uid).update({
+                            accountType: 'trial',
+                            plan: 'trial',
+                            subscriptionStatus: 'cancelled',
+                            cancelledAt: new Date().toISOString(),
+                            updatedAt: new Date().toISOString()
+                        });
+
+                        userData.accountType = 'trial';
+                        updateSubscriptionInfo();
+                        showAlert('Subscription cancelled successfully. Your account has been downgraded to Trial.', 'success');
+                    } else {
+                        throw new Error('Failed to cancel subscription');
+                    }
+                } catch (error) {
+                    console.error('Error cancelling subscription:', error);
+                    showAlert('Error cancelling subscription. Please contact support.', 'danger');
+                }
+            }
+        }
+
+        // Manage payment methods
+        function managePaymentMethods() {
+            showAlert('Payment method management will be available soon.', 'info');
+        }
+
+        // Go back to dashboard
+        function goBack() {
+            const accountType = userData?.accountType || 'trial';
+            const dashboardUrls = {
+                'trial': 'dashboard-trial.html',
+                'basic': 'dashboard-basic.html',
+                'pro': 'dashboard-pro.html',
+                'advanced': 'dashboard-advanced.html'
+            };
+            
+            window.location.href = dashboardUrls[accountType] || 'dashboard-trial.html';
+        }
+
+        // Show alert message
+        function showAlert(message, type) {
+            const alertsDiv = document.getElementById('alerts');
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            
+            alertsDiv.appendChild(alertDiv);
+            
+            // Remove alert after 5 seconds
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+    </script>
+</body>
 </html>
