@@ -528,29 +528,48 @@
         // Process payment with server
         async function processPaymentWithServer(paymentMethodId, planType, amount) {
             try {
+                console.log('Creating payment intent...', { planType, amount });
+                
                 const response = await fetch('/.netlify/functions/create-payment-intent', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        paymentMethodId: paymentMethodId,
-                        planType: planType,
                         amount: amount,
-                        currency: 'usd'
+                        currency: 'usd',
+                        planType: planType,
+                        userId: 'demo-user'
                     }),
                 });
 
-                const result = await response.json();
+                console.log('Payment intent response:', response.status);
 
                 if (!response.ok) {
-                    throw new Error(result.error || 'Payment failed');
+                    const errorText = await response.text();
+                    console.error('Payment intent failed:', errorText);
+                    throw new Error('Failed to create payment intent');
                 }
 
-                return result;
+                const result = await response.json();
+                console.log('Payment intent result:', result);
+
+                // Confirm the payment with Stripe
+                const { error: confirmError } = await stripe.confirmCardPayment(result.clientSecret, {
+                    payment_method: paymentMethodId
+                });
+
+                if (confirmError) {
+                    console.error('Payment confirmation failed:', confirmError);
+                    throw new Error(confirmError.message || 'Payment failed');
+                }
+
+                console.log('Payment successful!');
+                return { success: true, paymentIntentId: result.paymentIntentId };
+                
             } catch (error) {
                 console.error('Payment processing error:', error);
-                throw new Error('Payment processing failed. Please try again.');
+                throw new Error(error.message || 'Payment processing failed. Please try again.');
             }
         }
 
