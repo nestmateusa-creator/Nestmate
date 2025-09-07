@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Payment Test</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; }
+        .payment-section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+        .success { color: green; background: #f0f8f0; padding: 10px; border-radius: 4px; }
+        .error { color: red; background: #fff0f0; padding: 10px; border-radius: 4px; }
+        button { padding: 12px 24px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #0056b3; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        .plan { margin: 10px 0; padding: 15px; border: 1px solid #eee; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>NestMate Payment Test</h1>
+    <p>This is a simple payment test using Stripe's hosted checkout.</p>
+    
+    <div class="payment-section">
+        <h2>Choose a Plan</h2>
+        
+        <div class="plan">
+            <h3>Basic Plan - $5/month</h3>
+            <button onclick="createCheckoutSession('basic', 500)">Subscribe to Basic</button>
+        </div>
+        
+        <div class="plan">
+            <h3>Pro Plan - $10/month</h3>
+            <button onclick="createCheckoutSession('pro', 1000)">Subscribe to Pro</button>
+        </div>
+        
+        <div class="plan">
+            <h3>Advanced Plan - $16/month</h3>
+            <button onclick="createCheckoutSession('advanced', 1600)">Subscribe to Advanced</button>
+        </div>
+    </div>
+
+    <div id="result"></div>
+
+    <script>
+        const stripe = Stripe('pk_live_51S4C0RPHhV91OxuKxSQuOHmbpH1BRYAC0l9ljv9WfFhL2IoLcaiwEljhORx8nZH4e8ifoWy7S7fJaGy1wPYgdmkd00zT9Z8PVx');
+
+        async function createCheckoutSession(planType, amount) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<div class="info">Creating checkout session...</div>';
+            
+            try {
+                // Create a simple checkout session
+                const response = await fetch('/.netlify/functions/create-checkout-session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        planType: planType,
+                        amount: amount,
+                        currency: 'usd'
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to create checkout session');
+                }
+
+                const { sessionId } = await response.json();
+                
+                // Redirect to Stripe Checkout
+                const { error } = await stripe.redirectToCheckout({
+                    sessionId: sessionId
+                });
+
+                if (error) {
+                    resultDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+                }
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>

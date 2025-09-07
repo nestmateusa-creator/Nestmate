@@ -1,0 +1,88 @@
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY || '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');
+
+exports.handler = async (event, context) => {
+  // Handle CORS preflight requests
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      },
+      body: '',
+    };
+  }
+
+  // Only allow POST requests
+  if (event.httpMethod !== 'POST') {
+    return {
+      statusCode: 405,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+      },
+      body: JSON.stringify({ error: 'Method not allowed' }),
+    };
+  }
+
+  try {
+    const { planType, amount, currency = 'usd' } = JSON.parse(event.body);
+    
+    console.log('Creating checkout session for:', { planType, amount, currency });
+    
+    // Create a checkout session
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price_data: {
+            currency: currency,
+            product_data: {
+              name: `NestMate ${planType.charAt(0).toUpperCase() + planType.slice(1)} Plan`,
+              description: `Monthly subscription to NestMate ${planType} plan`,
+            },
+            unit_amount: amount, // Amount in cents
+            recurring: {
+              interval: 'month',
+            },
+          },
+          quantity: 1,
+        },
+      ],
+      mode: 'subscription',
+      success_url: `${event.headers.origin || 'https://nestmateusa.com'}/dashboard-${planType}.html?payment=success`,
+      cancel_url: `${event.headers.origin || 'https://nestmateusa.com'}/upgrade-${planType}.html?payment=cancelled`,
+      metadata: {
+        planType: planType,
+        userId: 'demo-user'
+      }
+    });
+
+    console.log('Checkout session created:', session.id);
+
+    return {
+      statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        sessionId: session.id
+      }),
+    };
+  } catch (err) {
+    console.error('Error creating checkout session:', err);
+    
+    return {
+      statusCode: 500,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ 
+        error: err.message,
+        type: err.type || 'unknown_error'
+      }),
+    };
+  }
+};
