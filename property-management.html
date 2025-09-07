@@ -682,13 +682,16 @@
                         'advanced': 'dashboard-advanced.html'
                     };
                     
-                    window.location.href = dashboardUrls[accountType] || 'dashboard-trial.html';
+                    const targetUrl = dashboardUrls[accountType] || 'dashboard-trial.html';
+                    
+                    // Use replace instead of href to prevent back button issues
+                    window.location.replace(targetUrl);
                 } else {
-                    window.location.href = 'dashboard-trial.html';
+                    window.location.replace('dashboard-trial.html');
                 }
             } catch (error) {
                 console.error('Error getting user data:', error);
-                window.location.href = 'dashboard-trial.html';
+                window.location.replace('dashboard-trial.html');
             }
         }
     </script>

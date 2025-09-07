@@ -573,6 +573,13 @@
                         const userData = userDoc.data();
                         console.log('User data loaded:', userData);
                         
+                        // Check if user's account type matches this dashboard
+                        if (userData.accountType !== 'pro') {
+                            console.log('User account type:', userData.accountType, 'does not match pro dashboard, redirecting...');
+                            redirectToCorrectDashboard(userData.accountType);
+                            return;
+                        }
+                        
                         // Update stats if available
                         if (userData.homeCount) {
                             document.getElementById('homeCount').textContent = userData.homeCount;
@@ -596,6 +603,20 @@
         // Open profile function
         function openProfile() {
             window.location.href = 'profile.html';
+        }
+
+        function redirectToCorrectDashboard(accountType) {
+            const dashboardUrls = {
+                'trial': 'dashboard-trial.html',
+                'basic': 'dashboard-basic.html',
+                'pro': 'dashboard-pro.html',
+                'advanced': 'dashboard-advanced.html'
+            };
+            
+            const correctUrl = dashboardUrls[accountType] || 'dashboard-trial.html';
+            if (window.location.pathname !== correctUrl) {
+                window.location.href = correctUrl;
+            }
         }
 
         // Sign out function

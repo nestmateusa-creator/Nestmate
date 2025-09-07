@@ -570,6 +570,13 @@
                                             if (userData.displayName) {
                                                 document.getElementById('userName').textContent = userData.displayName;
                                             }
+                                            
+                                            // Check if user's account type matches this dashboard
+                                            if (userData.accountType !== 'advanced') {
+                                                console.log('User account type:', userData.accountType, 'does not match advanced dashboard, redirecting...');
+                                                redirectToCorrectDashboard(userData.accountType);
+                                                return;
+                                            }
                                         }
                                     } catch (error) {
                                         console.error('Error loading user data:', error);
@@ -965,6 +972,20 @@
 
         function openProfile() {
             window.location.href = 'profile.html';
+        }
+
+        function redirectToCorrectDashboard(accountType) {
+            const dashboardUrls = {
+                'trial': 'dashboard-trial.html',
+                'basic': 'dashboard-basic.html',
+                'pro': 'dashboard-pro.html',
+                'advanced': 'dashboard-advanced.html'
+            };
+            
+            const correctUrl = dashboardUrls[accountType] || 'dashboard-trial.html';
+            if (window.location.pathname !== correctUrl) {
+                window.location.href = correctUrl;
+            }
         }
 
         async function signOut() {
