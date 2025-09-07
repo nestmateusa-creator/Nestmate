@@ -400,24 +400,42 @@
                 const userDoc = await db.collection('userProfiles').doc(user.uid).get();
                 if (userDoc.exists) {
                     const userData = userDoc.data();
-                    const accountType = userData.accountType || 'trial';
-                    console.log('User account type:', accountType);
+                    let accountType = userData.accountType || 'trial';
+                    
+                    // Normalize account type (handle different possible values)
+                    if (accountType.toLowerCase().includes('advanced')) {
+                        accountType = 'advanced';
+                    } else if (accountType.toLowerCase().includes('pro')) {
+                        accountType = 'pro';
+                    } else if (accountType.toLowerCase().includes('basic')) {
+                        accountType = 'basic';
+                    }
+                    
+                    console.log('🔍 DEBUGGING - Original account type:', userData.accountType);
+                    console.log('🔍 DEBUGGING - Normalized account type:', accountType);
+                    console.log('🔍 DEBUGGING - Full user data:', userData);
+                    console.log('🔍 DEBUGGING - User email:', user.email);
                     
                     // Redirect based on account type
                     switch (accountType) {
                         case 'trial':
+                            console.log('🎯 Redirecting to trial dashboard');
                             window.location.href = 'dashboard-trial.html';
                             break;
                         case 'basic':
+                            console.log('🎯 Redirecting to basic dashboard');
                             window.location.href = 'dashboard-basic.html';
                             break;
                         case 'pro':
+                            console.log('🎯 Redirecting to pro dashboard');
                             window.location.href = 'dashboard-pro.html';
                             break;
                         case 'advanced':
+                            console.log('🎯 Redirecting to advanced dashboard');
                             window.location.href = 'dashboard-advanced.html';
                             break;
                         default:
+                            console.log('🎯 Unknown account type, redirecting to trial dashboard');
                             window.location.href = 'dashboard-trial.html';
                     }
                 } else {
