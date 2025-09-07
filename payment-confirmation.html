@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Confirmation - NestMate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            min-height: 100vh;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 40px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .success-icon {
+            font-size: 64px;
+            color: var(--success);
+            margin-bottom: 20px;
+        }
+
+        .loading-icon {
+            font-size: 64px;
+            color: var(--primary);
+            margin-bottom: 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        .error-icon {
+            font-size: 64px;
+            color: var(--danger);
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--dark);
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: var(--secondary);
+            margin-bottom: 30px;
+        }
+
+        .plan-info {
+            background: var(--light);
+            padding: 20px;
+            border-radius: var(--radius);
+            margin: 20px 0;
+        }
+
+        .plan-name {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .plan-price {
+            font-size: 20px;
+            color: var(--secondary);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 16px;
+            margin: 10px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .status-message {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: var(--radius);
+            font-weight: 500;
+        }
+
+        .status-success {
+            background: #e8f5e8;
+            color: #2e7d32;
+            border: 1px solid #4caf50;
+        }
+
+        .status-error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #f44336;
+        }
+
+        .status-loading {
+            background: #e3f2fd;
+            color: #1565c0;
+            border: 1px solid #2196f3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div id="loadingState">
+                <div class="loading-icon">
+                    <i class="fas fa-spinner"></i>
+                </div>
+                <h1>Processing Payment...</h1>
+                <p class="subtitle">Please wait while we confirm your subscription</p>
+                <div class="status-message status-loading">
+                    Updating your account...
+                </div>
+            </div>
+
+            <div id="successState" style="display: none;">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h1>Payment Successful!</h1>
+                <p class="subtitle">Welcome to your new NestMate plan</p>
+                
+                <div class="plan-info">
+                    <div class="plan-name" id="planName">Basic Plan</div>
+                    <div class="plan-price" id="planPrice">$5/month</div>
+                </div>
+
+                <div class="status-message status-success">
+                    Your account has been upgraded successfully!
+                </div>
+
+                <a href="#" id="dashboardLink" class="btn btn-primary">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Go to Dashboard
+                </a>
+            </div>
+
+            <div id="errorState" style="display: none;">
+                <div class="error-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h1>Payment Confirmation Failed</h1>
+                <p class="subtitle">There was an issue confirming your payment</p>
+                
+                <div class="status-message status-error" id="errorMessage">
+                    Unable to update your account. Please contact support.
+                </div>
+
+                <a href="dashboard-trial.html" class="btn btn-primary">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
+            authDomain: "nestmate-167ed.firebaseapp.com",
+            projectId: "nestmate-167ed",
+            storageBucket: "nestmate-167ed.firebasestorage.app",
+            messagingSenderId: "865171535257",
+            appId: "1:865171535257:web:9944a48a952e99f55f0f08",
+            measurementId: "G-1DYR2RGY4G"
+        };
+
+        let auth, db;
+        let isFirebaseReady = false;
+
+        // Initialize Firebase
+        async function initFirebase() {
+            try {
+                console.log('🔄 Initializing Firebase...');
+                
+                while (typeof firebase === 'undefined') {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+                
+                firebase.initializeApp(firebaseConfig);
+                auth = firebase.auth();
+                db = firebase.firestore();
+                
+                console.log('✅ Firebase initialized successfully');
+                isFirebaseReady = true;
+                return true;
+            } catch (error) {
+                console.error('❌ Firebase initialization failed:', error);
+                return false;
+            }
+        }
+
+        // Get URL parameters
+        function getUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return {
+                payment: urlParams.get('payment'),
+                plan: urlParams.get('plan'),
+                session_id: urlParams.get('session_id'),
+                success: urlParams.get('success')
+            };
+        }
+
+        // Update user account type
+        async function updateUserAccount(planType) {
+            try {
+                const user = auth.currentUser;
+                if (!user) {
+                    throw new Error('User not authenticated');
+                }
+
+                console.log('Updating user account to:', planType);
+
+                // Update user profile
+                await db.collection('userProfiles').doc(user.uid).update({
+                    accountType: planType,
+                    plan: planType,
+                    subscriptionStatus: 'active',
+                    subscriptionDate: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                });
+
+                // Update account document
+                await db.collection('accounts').doc(user.uid).update({
+                    accountType: planType,
+                    plan: planType,
+                    subscriptionStatus: 'active',
+                    subscriptionDate: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                });
+
+                console.log('✅ User account updated successfully');
+                return true;
+            } catch (error) {
+                console.error('❌ Failed to update user account:', error);
+                throw error;
+            }
+        }
+
+        // Show success state
+        function showSuccess(planType) {
+            const planNames = {
+                'basic': 'Basic Plan',
+                'pro': 'Pro Plan',
+                'advanced': 'Advanced Plan'
+            };
+
+            const planPrices = {
+                'basic': '$5/month',
+                'pro': '$10/month',
+                'advanced': '$16/month'
+            };
+
+            const dashboardUrls = {
+                'basic': 'dashboard-basic.html',
+                'pro': 'dashboard-pro.html',
+                'advanced': 'dashboard-advanced.html'
+            };
+
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('successState').style.display = 'block';
+            
+            document.getElementById('planName').textContent = planNames[planType] || 'Plan';
+            document.getElementById('planPrice').textContent = planPrices[planType] || '';
+            document.getElementById('dashboardLink').href = dashboardUrls[planType] || 'dashboard-trial.html';
+        }
+
+        // Show error state
+        function showError(message) {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('errorState').style.display = 'block';
+            document.getElementById('errorMessage').textContent = message;
+        }
+
+        // Main function
+        async function processPaymentConfirmation() {
+            try {
+                // Initialize Firebase
+                await initFirebase();
+                
+                // Get URL parameters
+                const params = getUrlParams();
+                console.log('URL parameters:', params);
+
+                // Check if this is a successful payment
+                if (params.payment === 'success' && params.plan) {
+                    const planType = params.plan;
+                    
+                    // Update user account
+                    await updateUserAccount(planType);
+                    
+                    // Show success
+                    showSuccess(planType);
+                } else {
+                    // Not a successful payment, redirect to trial dashboard
+                    window.location.href = 'dashboard-trial.html';
+                }
+            } catch (error) {
+                console.error('Payment confirmation error:', error);
+                showError(error.message || 'An unexpected error occurred');
+            }
+        }
+
+        // Start processing when page loads
+        document.addEventListener('DOMContentLoaded', processPaymentConfirmation);
+    </script>
+</body>
+</html>
