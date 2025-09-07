@@ -968,32 +968,42 @@
                 try {
                     console.log('🔓 Signing out user...');
                     
-                    // Sign out from Firebase
+                    // Sign out from Firebase multiple times to ensure it's cleared
                     await auth.signOut();
                     console.log('✅ Firebase signOut completed');
+                    
+                    // Wait a moment and sign out again
+                    setTimeout(async () => {
+                        await auth.signOut();
+                        console.log('✅ Second Firebase signOut completed');
+                    }, 100);
                     
                     // Clear ALL cached data
                     localStorage.clear();
                     sessionStorage.clear();
                     
+                    // Clear any cookies
+                    document.cookie.split(";").forEach(function(c) { 
+                        document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+                    });
+                    
                     // Clear any Firebase persistence
                     if (auth.currentUser) {
                         console.log('⚠️ User still exists after signOut, forcing clear...');
-                        // Force clear the current user
                         await auth.signOut();
                     }
                     
                     console.log('🧹 All data cleared, redirecting...');
                     
-                    // Force redirect to home page with cache busting
-                    window.location.replace('index.html?t=' + Date.now());
+                    // Force redirect to signin page with cache busting and force signout parameter
+                    window.location.replace('signin.html?signout=true&t=' + Date.now());
                     
                 } catch (error) {
                     console.error('❌ Error signing out:', error);
                     // Still redirect even if signOut fails
                     localStorage.clear();
                     sessionStorage.clear();
-                    window.location.replace('index.html?t=' + Date.now());
+                    window.location.replace('signin.html?signout=true&t=' + Date.now());
                 }
             }
         }

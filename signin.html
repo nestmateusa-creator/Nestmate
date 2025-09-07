@@ -786,10 +786,26 @@
 
             // Check if user is already signed in
             auth.onAuthStateChanged(function(user) {
-                if (user) {
+                // Check if this is a forced signout
+                const urlParams = new URLSearchParams(window.location.search);
+                const isForcedSignout = urlParams.get('signout') === 'true';
+                
+                if (user && !isForcedSignout) {
                     console.log('User is signed in:', user.email);
                     // Don't automatically redirect, show a message instead
                     showAlreadySignedInMessage(user);
+                } else if (user && isForcedSignout) {
+                    console.log('Forced signout detected, signing out user:', user.email);
+                    // Force sign out the user
+                    auth.signOut().then(() => {
+                        console.log('User signed out successfully');
+                        // Clear URL parameters and show auth forms
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                        showAuthForms();
+                    }).catch((error) => {
+                        console.error('Error signing out:', error);
+                        showAuthForms();
+                    });
                 } else {
                     console.log('No user signed in, showing auth forms');
                     showAuthForms();
