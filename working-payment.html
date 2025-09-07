@@ -3,182 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Working Payment Test</title>
+    <title>Working Payment - NestMate</title>
     <script src="https://js.stripe.com/v3/"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: 50px auto;
-            padding: 20px;
-            background-color: #f5f5f5;
+        body { 
+            font-family: Arial, sans-serif; 
+            padding: 20px; 
+            max-width: 500px; 
+            margin: 0 auto; 
+            background: #f5f5f5;
         }
-        .payment-form {
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
+        .payment-card { 
+            background: white; 
+            padding: 30px; 
+            border-radius: 10px; 
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-        .form-group {
-            margin-bottom: 20px;
+        .success { 
+            color: green; 
+            background: #d4edda; 
+            padding: 15px; 
+            border-radius: 5px; 
+            margin: 10px 0;
         }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
+        .error { 
+            color: red; 
+            background: #f8d7da; 
+            padding: 15px; 
+            border-radius: 5px; 
+            margin: 10px 0;
         }
-        input, select {
+        button { 
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
+            padding: 15px; 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            margin: 10px 0;
         }
-        .StripeElement {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .pay-button {
-            width: 100%;
-            background: #28a745;
-            color: white;
-            border: none;
+        button:hover { background: #0056b3; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        .plan-info {
+            background: #e9ecef;
             padding: 15px;
-            border-radius: 4px;
-            font-size: 18px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-        .pay-button:hover {
-            background: #218838;
-        }
-        .pay-button:disabled {
-            background: #6c757d;
-            cursor: not-allowed;
-        }
-        .error {
-            color: #dc3545;
-            margin-top: 10px;
-        }
-        .success {
-            color: #28a745;
-            margin-top: 10px;
+            border-radius: 5px;
+            margin: 15px 0;
         }
     </style>
 </head>
 <body>
-    <div class="payment-form">
-        <h1>Test Payment - Basic Plan ($5/month)</h1>
+    <div class="payment-card">
+        <h1>🎉 NestMate Basic Plan</h1>
+        <div class="plan-info">
+            <h3>$5/month</h3>
+            <p>✅ Smart home management<br>
+            ✅ Basic automation<br>
+            ✅ 24/7 support</p>
+        </div>
         
-        <form id="payment-form">
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" value="test@example.com" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="card-element">Card Information</label>
-                <div id="card-element"></div>
-                <div id="card-errors" class="error"></div>
-            </div>
-            
-            <button type="submit" class="pay-button" id="submit-button">
-                Pay $5.00
-            </button>
-            
-            <div id="payment-status"></div>
-        </form>
+        <button onclick="processPayment()" id="payButton">
+            💳 Pay $5/month - Start Now
+        </button>
+        
+        <div id="result"></div>
+        
+        <p style="font-size: 12px; color: #666; text-align: center; margin-top: 20px;">
+            🔒 Secured by Stripe • Cancel anytime
+        </p>
     </div>
 
     <script>
-        const stripe = Stripe('pk_test_51S4C0sAmpksixclYeG19nYyKaIrbc41a2Twtw8uNCPTEFO9BLQl6BRN6V9HxLNyCZZrMdPIy9wzk5xOGfd943BNM00Z3gp2GuY');
-        const elements = stripe.elements();
-        
-        const cardElement = elements.create('card');
-        cardElement.mount('#card-element');
-        
-        cardElement.on('change', function(event) {
-            const displayError = document.getElementById('card-errors');
-            if (event.error) {
-                displayError.textContent = event.error.message;
-            } else {
-                displayError.textContent = '';
-            }
-        });
-        
-        const form = document.getElementById('payment-form');
-        form.addEventListener('submit', async function(event) {
-            event.preventDefault();
+        const stripe = Stripe('pk_live_51S4C0RPHhV91OxuKxSQuOHmbpH1BRYAC0l9ljv9WfFhL2IoLcaiwEljhORx8nZH4e8ifoWy7S7fJaGy1wPYgdmkd00zT9Z8PVx');
+
+        async function processPayment() {
+            const button = document.getElementById('payButton');
+            const resultDiv = document.getElementById('result');
             
-            const submitButton = document.getElementById('submit-button');
-            const paymentStatus = document.getElementById('payment-status');
-            
-            submitButton.disabled = true;
-            submitButton.textContent = 'Processing...';
-            paymentStatus.innerHTML = '';
+            button.disabled = true;
+            button.textContent = 'Processing...';
+            resultDiv.innerHTML = '';
             
             try {
-                // Create payment method
-                const {error, paymentMethod} = await stripe.createPaymentMethod({
-                    type: 'card',
-                    card: cardElement,
-                    billing_details: {
-                        email: document.getElementById('email').value,
-                    },
+                // Create a simple one-time payment
+                const { error } = await stripe.redirectToCheckout({
+                    lineItems: [{
+                        price: 'price_1S4C0sAmpksixclY', // You'll need to create this price in Stripe
+                        quantity: 1,
+                    }],
+                    mode: 'subscription',
+                    successUrl: 'https://nestmateusa.com/dashboard-basic.html?payment=success',
+                    cancelUrl: 'https://nestmateusa.com/working-payment.html?payment=cancelled',
                 });
-                
+
                 if (error) {
-                    throw error;
-                }
-                
-                console.log('Payment method created:', paymentMethod.id);
-                
-                // Create payment intent
-                const response = await fetch('http://localhost:3001/create-payment-intent', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        amount: 500, // $5.00 in cents
-                        currency: 'usd',
-                        planType: 'basic'
-                    })
-                });
-                
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || 'Server error');
-                }
-                
-                const {clientSecret} = await response.json();
-                console.log('Payment intent created:', clientSecret);
-                
-                // Confirm payment
-                const {error: confirmError, paymentIntent} = await stripe.confirmCardPayment(clientSecret, {
-                    payment_method: paymentMethod.id
-                });
-                
-                if (confirmError) {
-                    throw confirmError;
-                }
-                
-                if (paymentIntent.status === 'succeeded') {
-                    paymentStatus.innerHTML = '<div class="success">✅ Payment successful! Your Basic plan is now active.</div>';
-                    submitButton.textContent = 'Payment Successful!';
-                } else {
-                    throw new Error('Payment was not successful');
+                    throw new Error(error.message);
                 }
                 
             } catch (error) {
                 console.error('Payment error:', error);
-                paymentStatus.innerHTML = `<div class="error">❌ Payment failed: ${error.message}</div>`;
-                submitButton.disabled = false;
-                submitButton.textContent = 'Pay $5.00';
+                resultDiv.innerHTML = `<div class="error">❌ Payment failed: ${error.message}</div>`;
+                button.disabled = false;
+                button.textContent = '💳 Pay $5/month - Start Now';
             }
-        });
+        }
     </script>
 </body>
 </html>
-

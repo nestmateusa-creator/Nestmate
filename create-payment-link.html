@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Payment Link</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .result { background: #f0f0f0; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        button { padding: 10px 20px; margin: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Create Stripe Payment Link</h1>
+    <p>This will create a payment link for your Basic plan.</p>
+    
+    <button onclick="createPaymentLink()">Create Payment Link</button>
+    
+    <div id="result"></div>
+
+    <script>
+        async function createPaymentLink() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Creating payment link...';
+            
+            try {
+                const response = await fetch('/.netlify/functions/create-payment-link', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        planType: 'basic',
+                        amount: 500,
+                        currency: 'usd'
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to create payment link');
+                }
+
+                const { paymentLink } = await response.json();
+                resultDiv.innerHTML = `
+                    <div class="result">
+                        <h3>Payment Link Created!</h3>
+                        <p><strong>Link:</strong> <a href="${paymentLink}" target="_blank">${paymentLink}</a></p>
+                        <p>Copy this link and use it in your direct-payment.html file.</p>
+                    </div>
+                `;
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result" style="color: red;">Error: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>
