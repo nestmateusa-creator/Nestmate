@@ -883,13 +883,20 @@
         async function signOut() {
             if (confirm('Are you sure you want to sign out?')) {
                 try {
+                    console.log('Signing out user...');
                     await auth.signOut();
                     console.log('User signed out successfully');
-                    window.location.href = 'index.html';
+                    
+                    // Clear any cached data
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    
+                    // Force redirect to home page
+                    window.location.replace('index.html');
                 } catch (error) {
                     console.error('Error signing out:', error);
                     // Still redirect even if signOut fails
-                    window.location.href = 'index.html';
+                    window.location.replace('index.html');
                 }
             }
         }
@@ -975,61 +982,55 @@
             }
         }
 
-        // Wait for page to load, then initialize Firebase
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('Page loaded, initializing Firebase...');
-            
-            try {
-                firebase.initializeApp(firebaseConfig);
-                auth = firebase.auth();
-                db = firebase.firestore();
-                console.log('Firebase initialized successfully');
+        // Initialize Firebase immediately when script loads
+        try {
+            firebase.initializeApp(firebaseConfig);
+            auth = firebase.auth();
+            db = firebase.firestore();
+            console.log('Firebase initialized');
 
-                // Set up auth state listener
-                auth.onAuthStateChanged(async (user) => {
-                    console.log('Auth state changed:', user ? user.email : 'No user');
-                    
-                    if (user) {
-                        console.log('User authenticated:', user.email);
-                        console.log('Updating display elements...');
-                        
-                        const nameElement = document.getElementById('userName');
-                        const emailElement = document.getElementById('userEmail');
-                        
-                        if (nameElement) {
-                            nameElement.textContent = user.displayName || 'Advanced User';
-                            console.log('Name updated to:', nameElement.textContent);
-                        }
-                        
-                        if (emailElement) {
-                            emailElement.textContent = user.email;
-                            console.log('Email updated to:', emailElement.textContent);
-                        }
-                        
-                        // Check account type and redirect if needed
-                        try {
-                            const userDoc = await db.collection('userProfiles').doc(user.uid).get();
-                            if (userDoc.exists) {
-                                const userData = userDoc.data();
-                                if (userData.accountType !== 'advanced') {
-                                    redirectToCorrectDashboard(userData.accountType);
-                                }
-                            }
-                        } catch (error) {
-                            console.error('Error checking account type:', error);
-                        }
-                    } else {
-                        console.log('No user authenticated, redirecting to signin');
-                        window.location.href = 'signin.html';
-                    }
-                });
+            // Set up auth state listener
+            auth.onAuthStateChanged(async (user) => {
+                console.log('Auth state changed:', user ? user.email : 'No user');
                 
-            } catch (error) {
-                console.error('Firebase initialization error:', error);
-                document.getElementById('userName').textContent = 'Error';
-                document.getElementById('userEmail').textContent = 'Firebase Error';
-            }
-        });
+                if (user) {
+                    console.log('User authenticated:', user.email);
+                    
+                    // Update display immediately
+                    const nameElement = document.getElementById('userName');
+                    const emailElement = document.getElementById('userEmail');
+                    
+                    if (nameElement) {
+                        nameElement.textContent = user.displayName || 'Advanced User';
+                        console.log('Name updated to:', nameElement.textContent);
+                    }
+                    
+                    if (emailElement) {
+                        emailElement.textContent = user.email;
+                        console.log('Email updated to:', emailElement.textContent);
+                    }
+                    
+                    // Check account type and redirect if needed
+                    try {
+                        const userDoc = await db.collection('userProfiles').doc(user.uid).get();
+                        if (userDoc.exists) {
+                            const userData = userDoc.data();
+                            if (userData.accountType !== 'advanced') {
+                                redirectToCorrectDashboard(userData.accountType);
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error checking account type:', error);
+                    }
+                } else {
+                    console.log('No user authenticated, redirecting to signin');
+                    window.location.href = 'signin.html';
+                }
+            });
+            
+        } catch (error) {
+            console.error('Firebase initialization error:', error);
+        }
     </script>
 </body>
 </html>
