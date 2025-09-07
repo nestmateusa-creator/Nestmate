@@ -1,4 +1,4 @@
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY || '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');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY || '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');
 
 exports.handler = async (event, context) => {
   // Handle CORS preflight requests
