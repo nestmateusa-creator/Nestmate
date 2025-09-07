@@ -35,7 +35,7 @@ npm start
 **Symptoms:** "Invalid API key" errors
 **Solution:** ✅ **Keys are correctly configured**
 - Publishable Key: `pk_test_51S4C0sAmpksixclYeG19nYyKaIrbc41a2Twtw8uNCPTEFO9BLQl6BRN6V9HxLNyCZZrMdPIy9wzk5xOGfd943BNM00Z3gp2GuY`
-- Secret Key: `sk_test_51S4C0sAmpksixclY7VHwdV1oc86f76nRfWMPBA8CptvUtSmFUPzjnJswAYIbZRBMCgQcB8f6d4xCMePOmnani6FV007JlAA3SH`
+- Secret Key: `YOUR_STRIPE_SECRET_KEY_HERE`
 
 ---
 

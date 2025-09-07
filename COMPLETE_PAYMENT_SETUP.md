@@ -10,7 +10,7 @@ pk_test_51S4C0sAmpksixclYeG19nYyKaIrbc41a2Twtw8uNCPTEFO9BLQl6BRN6V9HxLNyCZZrMdPI
 
 ### **Secret Key (Backend)**
 ```
-sk_test_51S4C0sAmpksixclY7VHwdV1oc86f76nRfWMPBA8CptvUtSmFUPzjnJswAYIbZRBMCgQcB8f6d4xCMePOmnani6FV007JlAA3SH
+YOUR_STRIPE_SECRET_KEY_HERE
 ```
 ✅ **Already configured in server files**
 
@@ -27,7 +27,7 @@ cd server
 npm install
 
 # Create .env file with your keys
-echo "STRIPE_SECRET_KEY=sk_test_51S4C0sAmpksixclY7VHwdV1oc86f76nRfWMPBA8CptvUtSmFUPzjnJswAYIbZRBMCgQcB8f6d4xCMePOmnani6FV007JlAA3SH" > .env
+echo "STRIPE_SECRET_KEY=YOUR_STRIPE_SECRET_KEY_HERE" > .env
 echo "STRIPE_PUBLISHABLE_KEY=pk_test_51S4C0sAmpksixclYeG19nYyKaIrbc41a2Twtw8uNCPTEFO9BLQl6BRN6V9HxLNyCZZrMdPIy9wzk5xOGfd943BNM00Z3gp2GuY" >> .env
 echo "PORT=3001" >> .env
 
