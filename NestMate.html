@@ -4379,7 +4379,7 @@
                 // Reset home selector to first option
                 homeSelect.value = '';
                 
-                // If no homes left, show message
+                // If no homes left, show message and ensure hasInitializedHomes flag remains true
                 if (Object.keys(homes).length === 0) {
                     const homeDetailsContent = document.getElementById('homeDetailsContent');
                     homeDetailsContent.innerHTML = `
@@ -4390,6 +4390,18 @@
                             </div>
                         </div>
                     `;
+                    
+                    // Ensure hasInitializedHomes flag remains true to prevent sample homes from being recreated
+                    try {
+                        const userProfileRef = window.firebaseServices.doc(window.firebaseDB, 'userProfiles', currentUserId);
+                        await window.firebaseServices.setDoc(userProfileRef, {
+                            hasInitializedHomes: true,
+                            lastUpdated: new Date().toISOString()
+                        }, { merge: true });
+                        console.log('Updated hasInitializedHomes flag to prevent sample home recreation');
+                    } catch (error) {
+                        console.error('Error updating hasInitializedHomes flag:', error);
+                    }
                 }
             } else {
                 alert('Error deleting home. Please try again.');
@@ -7252,8 +7264,12 @@
                         }
                         
                         console.log('About to initialize sample homes...');
-                        // Initialize sample homes if none exist
-                        await initializeSampleHomes();
+                        // Initialize sample homes if none exist (only for truly new users)
+                        try {
+                            await initializeSampleHomes();
+                        } catch (error) {
+                            console.error('Error initializing sample homes:', error);
+                        }
                         
                         console.log('About to load tasks from Firebase...');
                         // Load user's tasks from Firebase

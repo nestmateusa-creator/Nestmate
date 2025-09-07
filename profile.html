@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile Management | NestMate</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -12,7 +12,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     
-    <style>
+  <style>
         :root {
             --primary: #7c3aed;
             --primary-dark: #6d28d9;
@@ -36,10 +36,10 @@
             box-sizing: border-box;
         }
 
-        body {
+    body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
-            min-height: 100vh;
+      min-height: 100vh;
             color: var(--dark);
         }
 
@@ -55,10 +55,10 @@
             padding: 24px;
             margin-bottom: 24px;
             box-shadow: var(--shadow);
-            display: flex;
+      display: flex;
             justify-content: space-between;
-            align-items: center;
-        }
+      align-items: center;
+    }
 
         .header h1 {
             color: var(--primary);
@@ -103,8 +103,8 @@
             font-size: 20px;
             font-weight: 600;
             margin-bottom: 20px;
-            display: flex;
-            align-items: center;
+      display: flex;
+      align-items: center;
             gap: 8px;
         }
 
@@ -135,10 +135,10 @@
 
         .btn {
             padding: 12px 24px;
-            border: none;
+      border: none;
             border-radius: var(--radius);
-            font-weight: 600;
-            cursor: pointer;
+      font-weight: 600;
+      cursor: pointer;
             transition: var(--transition);
             text-decoration: none;
             display: inline-flex;
@@ -237,7 +237,7 @@
 
         .upgrade-option .price {
             font-size: 18px;
-            font-weight: 600;
+      font-weight: 600;
             color: var(--success);
         }
 
@@ -295,8 +295,8 @@
             .upgrade-options {
                 grid-template-columns: 1fr;
             }
-        }
-    </style>
+    }
+  </style>
 </head>
 <body>
     <div class="container">
@@ -341,16 +341,16 @@
                         <div class="form-group">
                             <label class="form-label">Billing Address</label>
                             <textarea id="billingAddress" class="form-input" rows="3" placeholder="Street address, city, state, zip code"></textarea>
-                        </div>
+    </div>
                         <div class="form-group">
                             <label class="form-label">Mailing Address</label>
                             <textarea id="mailingAddress" class="form-input" rows="3" placeholder="Street address, city, state, zip code"></textarea>
-                        </div>
+      </div>
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-save"></i>
                             Save Changes
                         </button>
-                    </form>
+      </form>
                 </div>
 
                 <!-- Password Change -->
@@ -373,7 +373,7 @@
                             <i class="fas fa-key"></i>
                             Change Password
                         </button>
-                    </form>
+      </form>
                 </div>
 
                 <!-- Subscription Management -->
@@ -412,7 +412,7 @@
         <div id="alerts"></div>
     </div>
 
-    <script>
+  <script>
         // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
@@ -428,6 +428,16 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
+        
+        // Enable Firebase persistence for better data reliability
+        try {
+            await firebase.firestore().enablePersistence({
+                synchronizeTabs: true
+            });
+            console.log('✅ Firebase persistence enabled');
+        } catch (error) {
+            console.log('⚠️ Firebase persistence not available:', error.message);
+        }
 
         let currentUser = null;
         let userData = null;
@@ -617,7 +627,7 @@
 
         // Password change form
         document.getElementById('passwordForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
+      e.preventDefault();
             
             const currentPassword = document.getElementById('currentPassword').value;
             const newPassword = document.getElementById('newPassword').value;
@@ -630,8 +640,8 @@
             
             if (newPassword.length < 6) {
                 showAlert('New password must be at least 6 characters long.', 'danger');
-                return;
-            }
+        return;
+      }
             
             try {
                 // Re-authenticate user with current password
@@ -750,6 +760,6 @@
                 alertDiv.remove();
             }, 5000);
         }
-    </script>
+  </script>
 </body>
 </html>

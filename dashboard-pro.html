@@ -606,6 +606,16 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
+        
+        // Enable Firebase persistence for better data reliability
+        try {
+            await firebase.firestore().enablePersistence({
+                synchronizeTabs: true
+            });
+            console.log('✅ Firebase persistence enabled');
+        } catch (error) {
+            console.log('⚠️ Firebase persistence not available:', error.message);
+        }
 
         // Check authentication and load user data
         auth.onAuthStateChanged(async (user) => {
