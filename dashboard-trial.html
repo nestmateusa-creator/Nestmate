@@ -1419,5 +1419,75 @@
             </form>
         </div>
     </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
+            authDomain: "nestmate-167ed.firebaseapp.com",
+            projectId: "nestmate-167ed",
+            storageBucket: "nestmate-167ed.firebasestorage.app",
+            messagingSenderId: "865171535257",
+            appId: "1:865171535257:web:9944a48a952e99f55f0f08",
+            measurementId: "G-1DYR2RGY4G"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Check authentication and load user data
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                console.log('User authenticated:', user.email);
+                
+                // Update user info display
+                document.getElementById('userName').textContent = user.displayName || 'Trial User';
+                document.getElementById('userEmail').textContent = user.email;
+                
+                // Load user data from Firestore
+                try {
+                    const userDoc = await db.collection('userProfiles').doc(user.uid).get();
+                    if (userDoc.exists) {
+                        const userData = userDoc.data();
+                        if (userData.displayName) {
+                            document.getElementById('userName').textContent = userData.displayName;
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading user data:', error);
+                }
+            } else {
+                console.log('No user authenticated, redirecting to signin');
+                window.location.href = 'signin.html';
+            }
+        });
+
+        // Sign out function
+        async function signOut() {
+            try {
+                await auth.signOut();
+                console.log('User signed out');
+                window.location.href = 'signin.html';
+            } catch (error) {
+                console.error('Error signing out:', error);
+            }
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('NestMate Trial Dashboard loaded');
+            loadUserData();
+            loadTasks();
+            loadReminders();
+            updateCalendar();
+        });
+    </script>
 </body>
 </html>
