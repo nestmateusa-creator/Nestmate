@@ -1601,13 +1601,29 @@
             console.log('Home Details page loaded');
         });
 
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
+            authDomain: "nestmate-167ed.firebaseapp.com",
+            projectId: "nestmate-167ed",
+            storageBucket: "nestmate-167ed.firebasestorage.app",
+            messagingSenderId: "865171535257",
+            appId: "1:865171535257:web:9944a48a952e99f55f0f08",
+            measurementId: "G-1DYR2RGY4G"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
         // Go back to correct dashboard based on user's account type
         async function goBackToDashboard() {
             try {
                 console.log('🔙 goBackToDashboard called');
                 
                 // Get current user
-                const user = firebase.auth().currentUser;
+                const user = auth.currentUser;
                 if (!user) {
                     console.log('❌ No user found, redirecting to signin');
                     window.location.href = 'signin.html';
@@ -1617,7 +1633,7 @@
                 console.log('👤 Current user:', user.email);
 
                 // Get user's account type from Firestore
-                const userDoc = await firebase.firestore().collection('userProfiles').doc(user.uid).get();
+                const userDoc = await db.collection('userProfiles').doc(user.uid).get();
                 if (userDoc.exists) {
                     const userData = userDoc.data();
                     const accountType = userData.accountType || 'trial';
