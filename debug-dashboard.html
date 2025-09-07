@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Dashboard - NestMate</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .debug-info { background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .error { background: #ffebee; color: #c62828; }
+        .success { background: #e8f5e8; color: #2e7d32; }
+        .warning { background: #fff3e0; color: #ef6c00; }
+    </style>
+</head>
+<body>
+    <h1>Dashboard Debug Page</h1>
+    
+    <div id="debug-info" class="debug-info">
+        <h3>Debug Information:</h3>
+        <div id="firebase-status">Checking Firebase...</div>
+        <div id="auth-status">Checking Auth...</div>
+        <div id="user-info">Checking User...</div>
+    </div>
+
+    <div id="user-display" style="display: none;">
+        <h3>User Information:</h3>
+        <div>Name: <span id="userName">Loading...</span></div>
+        <div>Email: <span id="userEmail">Loading...</span></div>
+        <div>UID: <span id="userUid">Loading...</span></div>
+    </div>
+
+    <button onclick="testSignOut()">Test Sign Out</button>
+    <button onclick="location.reload()">Refresh Page</button>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
+            authDomain: "nestmate-167ed.firebaseapp.com",
+            projectId: "nestmate-167ed",
+            storageBucket: "nestmate-167ed.firebasestorage.app",
+            messagingSenderId: "865171535257",
+            appId: "1:865171535257:web:9944a48a952e99f55f0f08",
+            measurementId: "G-1DYR2RGY4G"
+        };
+
+        let auth, db;
+
+        function updateStatus(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `debug-info ${type}`;
+        }
+
+        async function initFirebase() {
+            try {
+                updateStatus('firebase-status', '🔄 Starting Firebase initialization...', 'warning');
+                
+                // Wait for Firebase SDK
+                let attempts = 0;
+                while (typeof firebase === 'undefined' && attempts < 50) {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    attempts++;
+                }
+                
+                if (typeof firebase === 'undefined') {
+                    throw new Error('Firebase SDK failed to load after 5 seconds');
+                }
+                
+                updateStatus('firebase-status', '📦 Firebase SDK loaded', 'success');
+                
+                // Initialize Firebase
+                if (!firebase.apps.length) {
+                    firebase.initializeApp(firebaseConfig);
+                    updateStatus('firebase-status', '✅ Firebase app initialized', 'success');
+                } else {
+                    updateStatus('firebase-status', '✅ Firebase app already initialized', 'success');
+                }
+                
+                auth = firebase.auth();
+                db = firebase.firestore();
+                
+                updateStatus('firebase-status', '✅ Firebase services ready', 'success');
+                
+                // Set up auth listener
+                auth.onAuthStateChanged(async (user) => {
+                    console.log('🔐 Auth state changed:', user ? user.email : 'No user');
+                    
+                    if (user) {
+                        updateStatus('auth-status', `✅ User authenticated: ${user.email}`, 'success');
+                        updateStatus('user-info', `✅ User loaded: ${user.displayName || 'No name'}`, 'success');
+                        
+                        // Update user display
+                        document.getElementById('userName').textContent = user.displayName || 'No Name';
+                        document.getElementById('userEmail').textContent = user.email;
+                        document.getElementById('userUid').textContent = user.uid;
+                        document.getElementById('user-display').style.display = 'block';
+                        
+                        // Test Firestore
+                        try {
+                            const userDoc = await db.collection('userProfiles').doc(user.uid).get();
+                            if (userDoc.exists) {
+                                const userData = userDoc.data();
+                                updateStatus('user-info', `✅ Firestore data loaded: ${userData.accountType || 'No account type'}`, 'success');
+                            } else {
+                                updateStatus('user-info', '⚠️ No Firestore document found', 'warning');
+                            }
+                        } catch (error) {
+                            updateStatus('user-info', `❌ Firestore error: ${error.message}`, 'error');
+                        }
+                        
+                    } else {
+                        updateStatus('auth-status', '❌ No user authenticated', 'error');
+                        updateStatus('user-info', '❌ No user data', 'error');
+                        document.getElementById('user-display').style.display = 'none';
+                    }
+                });
+                
+            } catch (error) {
+                console.error('❌ Firebase initialization failed:', error);
+                updateStatus('firebase-status', `❌ Firebase error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testSignOut() {
+            if (auth) {
+                try {
+                    await auth.signOut();
+                    updateStatus('auth-status', '✅ Sign out successful', 'success');
+                } catch (error) {
+                    updateStatus('auth-status', `❌ Sign out error: ${error.message}`, 'error');
+                }
+            } else {
+                updateStatus('auth-status', '❌ Auth not initialized', 'error');
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initFirebase);
+    </script>
+</body>
+</html>

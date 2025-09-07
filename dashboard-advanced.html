@@ -897,27 +897,40 @@
         // Load user data
         async function loadUserData(user) {
             try {
+                console.log('🔄 Loading user data for:', user ? user.email : 'No user');
+                
                 if (user) {
+                    console.log('📝 Setting user display name and email...');
                     document.getElementById('userName').textContent = user.displayName || 'Advanced User';
                     document.getElementById('userEmail').textContent = user.email;
+                    console.log('✅ User display updated');
                     
                     // Load user profile data from Firestore
+                    console.log('📊 Loading Firestore data...');
                     const userDoc = await db.collection('userProfiles').doc(user.uid).get();
                     if (userDoc.exists) {
                         const userData = userDoc.data();
+                        console.log('📋 User data from Firestore:', userData);
+                        
                         if (userData.accountType !== 'advanced') {
+                            console.log('🔄 Account type mismatch, redirecting to:', userData.accountType);
                             // User's account type doesn't match this dashboard, redirect appropriately
                             redirectToCorrectDashboard(userData.accountType);
+                            return; // Don't continue if redirecting
                         }
+                        console.log('✅ Account type matches dashboard');
+                    } else {
+                        console.log('⚠️ No Firestore document found for user');
                     }
                 } else {
+                    console.log('❌ No user provided to loadUserData');
                     // User not authenticated, redirect to sign in
                     window.location.href = 'signin.html';
                 }
             } catch (error) {
-                console.error('Error loading user data:', error);
-                document.getElementById('userName').textContent = 'User';
-                document.getElementById('userEmail').textContent = 'Loading...';
+                console.error('❌ Error loading user data:', error);
+                document.getElementById('userName').textContent = 'Error Loading User';
+                document.getElementById('userEmail').textContent = 'Please refresh the page';
             }
         }
 
