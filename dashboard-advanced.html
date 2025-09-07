@@ -501,8 +501,8 @@
             <div class="user-info">
                 <div class="plan-badge">Advanced Pro</div>
                 <div>
-                    <div style="font-weight: 600; color: var(--dark);" id="userName">Loading...</div>
-                    <div style="color: var(--secondary); font-size: 14px;" id="userEmail">Loading...</div>
+                    <div style="font-weight: 600; color: var(--dark);" id="userName">User</div>
+                    <div style="color: var(--secondary); font-size: 14px;" id="userEmail">user@example.com</div>
                 </div>
                 <button class="btn btn-outline" onclick="signOut()">
                     <i class="fas fa-sign-out-alt"></i>
@@ -975,56 +975,33 @@
             }
         }
 
-        // Initialize Firebase and set up auth listener
-        async function initFirebase() {
-            try {
-                console.log('🔄 Starting Firebase initialization...');
-                
-                while (typeof firebase === 'undefined') {
-                    console.log('⏳ Waiting for Firebase SDK to load...');
-                    await new Promise(resolve => setTimeout(resolve, 100));
-                }
-                
-                console.log('📦 Firebase SDK loaded, initializing app...');
-                
-                // Check if Firebase is already initialized
-                if (!firebase.apps.length) {
-                    firebase.initializeApp(firebaseConfig);
-                    console.log('✅ Firebase app initialized');
-                } else {
-                    console.log('✅ Firebase app already initialized');
-                }
-                
-                auth = firebase.auth();
-                db = firebase.firestore();
-                
-                console.log('✅ Firebase services ready');
-                
-                // Set up auth state listener
-                auth.onAuthStateChanged(async (user) => {
-                    console.log('🔐 Auth state changed:', user ? user.email : 'No user');
-                    if (user) {
-                        console.log('User authenticated:', user.email);
-                        await loadUserData(user);
-                    } else {
-                        console.log('No user authenticated, redirecting to signin');
-                        // Add a small delay to prevent redirect loops
-                        setTimeout(() => {
-                            window.location.href = 'signin.html';
-                        }, 100);
-                    }
-                });
-                
-            } catch (error) {
-                console.error('❌ Firebase initialization failed:', error);
-                document.getElementById('userName').textContent = 'Error Loading User';
-                document.getElementById('userEmail').textContent = 'Please refresh the page';
-            }
-        }
+        // Initialize Firebase immediately
+        firebase.initializeApp(firebaseConfig);
+        auth = firebase.auth();
+        db = firebase.firestore();
 
-        // Initialize the dashboard
-        window.addEventListener('load', function() {
-            initFirebase();
+        // Set up auth state listener
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                // Update user display immediately
+                document.getElementById('userName').textContent = user.displayName || 'Advanced User';
+                document.getElementById('userEmail').textContent = user.email;
+                
+                // Check account type and redirect if needed
+                try {
+                    const userDoc = await db.collection('userProfiles').doc(user.uid).get();
+                    if (userDoc.exists) {
+                        const userData = userDoc.data();
+                        if (userData.accountType !== 'advanced') {
+                            redirectToCorrectDashboard(userData.accountType);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error checking account type:', error);
+                }
+            } else {
+                window.location.href = 'signin.html';
+            }
         });
     </script>
 </body>
