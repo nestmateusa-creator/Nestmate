@@ -1063,5 +1063,32 @@
             }
         });
     </script>
+
+    <!-- Emergency script to force update elements -->
+    <script>
+        console.log('Emergency script running...');
+        
+        // Wait for page to load completely
+        window.addEventListener('load', function() {
+            console.log('Page fully loaded, attempting to update elements...');
+            
+            setTimeout(function() {
+                const nameElement = document.getElementById('userName');
+                const emailElement = document.getElementById('userEmail');
+                
+                console.log('Emergency check - Name element:', !!nameElement);
+                console.log('Emergency check - Email element:', !!emailElement);
+                
+                if (nameElement) {
+                    nameElement.textContent = 'EMERGENCY TEST NAME';
+                    console.log('Emergency updated name element');
+                }
+                if (emailElement) {
+                    emailElement.textContent = 'EMERGENCY TEST EMAIL';
+                    console.log('Emergency updated email element');
+                }
+            }, 2000);
+        });
+    </script>
 </body>
 </html>
