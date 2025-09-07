@@ -501,8 +501,8 @@
             <div class="user-info">
                 <div class="plan-badge">Advanced Pro</div>
                 <div>
-                    <div style="font-weight: 600; color: var(--dark);" id="userName">User</div>
-                    <div style="color: var(--secondary); font-size: 14px;" id="userEmail">user@example.com</div>
+                    <div style="font-weight: 600; color: var(--dark);" id="userName">Loading...</div>
+                    <div style="color: var(--secondary); font-size: 14px;" id="userEmail">Loading...</div>
                 </div>
                 <button class="btn btn-outline" onclick="signOut()">
                     <i class="fas fa-sign-out-alt"></i>
@@ -982,55 +982,47 @@
             }
         }
 
-        // Initialize Firebase immediately when script loads
-        try {
-            firebase.initializeApp(firebaseConfig);
-            auth = firebase.auth();
-            db = firebase.firestore();
-            console.log('Firebase initialized');
+        // Simple Firebase initialization
+        firebase.initializeApp(firebaseConfig);
+        auth = firebase.auth();
+        db = firebase.firestore();
 
-            // Set up auth state listener
-            auth.onAuthStateChanged(async (user) => {
-                console.log('Auth state changed:', user ? user.email : 'No user');
-                
-                if (user) {
-                    console.log('User authenticated:', user.email);
-                    
-                    // Update display immediately
-                    const nameElement = document.getElementById('userName');
-                    const emailElement = document.getElementById('userEmail');
-                    
-                    if (nameElement) {
-                        nameElement.textContent = user.displayName || 'Advanced User';
-                        console.log('Name updated to:', nameElement.textContent);
-                    }
-                    
-                    if (emailElement) {
-                        emailElement.textContent = user.email;
-                        console.log('Email updated to:', emailElement.textContent);
-                    }
-                    
-                    // Check account type and redirect if needed
-                    try {
-                        const userDoc = await db.collection('userProfiles').doc(user.uid).get();
-                        if (userDoc.exists) {
-                            const userData = userDoc.data();
-                            if (userData.accountType !== 'advanced') {
-                                redirectToCorrectDashboard(userData.accountType);
-                            }
-                        }
-                    } catch (error) {
-                        console.error('Error checking account type:', error);
-                    }
-                } else {
-                    console.log('No user authenticated, redirecting to signin');
-                    window.location.href = 'signin.html';
-                }
-            });
-            
-        } catch (error) {
-            console.error('Firebase initialization error:', error);
+        // Update user display function
+        function updateUserDisplay(user) {
+            if (user) {
+                document.getElementById('userName').textContent = user.displayName || 'Advanced User';
+                document.getElementById('userEmail').textContent = user.email;
+            } else {
+                document.getElementById('userName').textContent = 'Not Signed In';
+                document.getElementById('userEmail').textContent = 'Please sign in';
+            }
         }
+
+        // Check current user immediately
+        const currentUser = auth.currentUser;
+        updateUserDisplay(currentUser);
+
+        // Set up auth state listener
+        auth.onAuthStateChanged(async (user) => {
+            updateUserDisplay(user);
+            
+            if (user) {
+                // Check account type and redirect if needed
+                try {
+                    const userDoc = await db.collection('userProfiles').doc(user.uid).get();
+                    if (userDoc.exists) {
+                        const userData = userDoc.data();
+                        if (userData.accountType !== 'advanced') {
+                            redirectToCorrectDashboard(userData.accountType);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error checking account type:', error);
+                }
+            } else {
+                window.location.href = 'signin.html';
+            }
+        });
     </script>
 </body>
 </html>

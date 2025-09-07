@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Dashboard - NestMate</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-box { background: #f0f0f0; padding: 20px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #e8f5e8; color: #2e7d32; }
+        .error { background: #ffebee; color: #c62828; }
+        .warning { background: #fff3e0; color: #ef6c00; }
+    </style>
+</head>
+<body>
+    <h1>Test Dashboard</h1>
+    
+    <div class="test-box">
+        <h3>User Information:</h3>
+        <div>Name: <span id="userName">Loading...</span></div>
+        <div>Email: <span id="userEmail">Loading...</span></div>
+        <div>UID: <span id="userUid">Loading...</span></div>
+    </div>
+
+    <div class="test-box">
+        <h3>Test Results:</h3>
+        <div id="testResults">Running tests...</div>
+    </div>
+
+    <button onclick="testSignOut()">Test Sign Out</button>
+    <button onclick="location.reload()">Refresh Page</button>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
+            authDomain: "nestmate-167ed.firebaseapp.com",
+            projectId: "nestmate-167ed",
+            storageBucket: "nestmate-167ed.firebasestorage.app",
+            messagingSenderId: "865171535257",
+            appId: "1:865171535257:web:9944a48a952e99f55f0f08",
+            measurementId: "G-1DYR2RGY4G"
+        };
+
+        let auth, db;
+        let testResults = [];
+
+        function addTestResult(message, type = 'info') {
+            testResults.push(`<div class="${type}">${message}</div>`);
+            document.getElementById('testResults').innerHTML = testResults.join('');
+        }
+
+        function updateUserDisplay(user) {
+            if (user) {
+                document.getElementById('userName').textContent = user.displayName || 'No Name';
+                document.getElementById('userEmail').textContent = user.email;
+                document.getElementById('userUid').textContent = user.uid;
+                addTestResult(`✅ User data loaded: ${user.email}`, 'success');
+            } else {
+                document.getElementById('userName').textContent = 'No User';
+                document.getElementById('userEmail').textContent = 'No Email';
+                document.getElementById('userUid').textContent = 'No UID';
+                addTestResult('❌ No user authenticated', 'error');
+            }
+        }
+
+        // Initialize Firebase
+        try {
+            addTestResult('🔄 Initializing Firebase...', 'warning');
+            
+            firebase.initializeApp(firebaseConfig);
+            auth = firebase.auth();
+            db = firebase.firestore();
+            
+            addTestResult('✅ Firebase initialized successfully', 'success');
+
+            // Check current user immediately
+            const currentUser = auth.currentUser;
+            addTestResult(`🔍 Current user check: ${currentUser ? currentUser.email : 'No user'}`, 'info');
+            
+            if (currentUser) {
+                updateUserDisplay(currentUser);
+            }
+
+            // Set up auth state listener
+            auth.onAuthStateChanged((user) => {
+                addTestResult(`🔐 Auth state changed: ${user ? user.email : 'No user'}`, 'info');
+                updateUserDisplay(user);
+                
+                if (!user) {
+                    addTestResult('🔄 Redirecting to signin...', 'warning');
+                    setTimeout(() => {
+                        window.location.href = 'signin.html';
+                    }, 2000);
+                }
+            });
+
+        } catch (error) {
+            addTestResult(`❌ Firebase error: ${error.message}`, 'error');
+        }
+
+        async function testSignOut() {
+            if (auth) {
+                try {
+                    addTestResult('🔄 Testing sign out...', 'warning');
+                    await auth.signOut();
+                    addTestResult('✅ Sign out successful', 'success');
+                    
+                    // Clear cache
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    
+                    // Redirect
+                    window.location.replace('index.html');
+                } catch (error) {
+                    addTestResult(`❌ Sign out error: ${error.message}`, 'error');
+                }
+            } else {
+                addTestResult('❌ Auth not initialized', 'error');
+            }
+        }
+    </script>
+</body>
+</html>
