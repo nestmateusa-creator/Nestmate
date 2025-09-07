@@ -982,44 +982,37 @@
             }
         }
 
-        // Simple Firebase initialization
+        // Initialize Firebase (same as working debug page)
         firebase.initializeApp(firebaseConfig);
         auth = firebase.auth();
         db = firebase.firestore();
 
-        // Update user display function
-        function updateUserDisplay(user) {
+        // Set up auth state listener (same as working debug page)
+        auth.onAuthStateChanged(async (user) => {
             if (user) {
+                console.log('User authenticated:', user.email);
+                
+                // Update user display immediately
                 document.getElementById('userName').textContent = user.displayName || 'Advanced User';
                 document.getElementById('userEmail').textContent = user.email;
-            } else {
-                document.getElementById('userName').textContent = 'Not Signed In';
-                document.getElementById('userEmail').textContent = 'Please sign in';
-            }
-        }
-
-        // Check current user immediately
-        const currentUser = auth.currentUser;
-        updateUserDisplay(currentUser);
-
-        // Set up auth state listener
-        auth.onAuthStateChanged(async (user) => {
-            updateUserDisplay(user);
-            
-            if (user) {
-                // Check account type and redirect if needed
+                
+                // Load user stats
                 try {
                     const userDoc = await db.collection('userProfiles').doc(user.uid).get();
                     if (userDoc.exists) {
                         const userData = userDoc.data();
+                        console.log('User data loaded:', userData);
+                        
+                        // Check account type and redirect if needed
                         if (userData.accountType !== 'advanced') {
                             redirectToCorrectDashboard(userData.accountType);
                         }
                     }
                 } catch (error) {
-                    console.error('Error checking account type:', error);
+                    console.error('Error loading user data:', error);
                 }
             } else {
+                console.log('No user authenticated, redirecting to signin');
                 window.location.href = 'signin.html';
             }
         });
