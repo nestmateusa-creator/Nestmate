@@ -1453,21 +1453,54 @@
                 
                 // Load user data from Firestore
                 try {
+                    console.log('🔍 Loading user data for:', user.email, 'UID:', user.uid);
                     const userDoc = await db.collection('userProfiles').doc(user.uid).get();
+                    
                     if (userDoc.exists) {
                         const userData = userDoc.data();
+                        console.log('📄 User data from Firestore:', userData);
+                        
                         if (userData.displayName) {
                             document.getElementById('userName').textContent = userData.displayName;
                         }
+                        
+                        // Check account type and redirect to correct dashboard
+                        if (userData.accountType && userData.accountType !== 'trial') {
+                            console.log('✅ User has paid account:', userData.accountType, 'redirecting...');
+                            redirectToCorrectDashboard(userData.accountType);
+                        } else {
+                            console.log('ℹ️ User has trial account or no accountType set:', userData.accountType);
+                        }
+                    } else {
+                        console.log('❌ User document does not exist in Firestore');
                     }
                 } catch (error) {
-                    console.error('Error loading user data:', error);
+                    console.error('❌ Error loading user data:', error);
                 }
             } else {
                 console.log('No user authenticated, redirecting to signin');
                 window.location.href = 'signin.html';
             }
         });
+
+        // Redirect to correct dashboard based on account type
+        function redirectToCorrectDashboard(accountType) {
+            console.log('Redirecting to dashboard for account type:', accountType);
+            switch (accountType) {
+                case 'basic':
+                    window.location.href = 'dashboard-basic.html';
+                    break;
+                case 'pro':
+                    window.location.href = 'dashboard-pro.html';
+                    break;
+                case 'advanced':
+                    window.location.href = 'dashboard-advanced.html';
+                    break;
+                default:
+                    console.log('Unknown account type:', accountType);
+                    break;
+            }
+        }
 
         // Sign out function
         async function signOut() {
