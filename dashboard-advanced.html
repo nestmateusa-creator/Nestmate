@@ -1078,8 +1078,10 @@
         });
     </script>
 
-    <!-- Simple working Firebase authentication script (copied from trial dashboard) -->
+    <!-- BULLETPROOF Firebase script - runs immediately -->
     <script>
+        console.log('🚀 BULLETPROOF script starting...');
+        
         // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
@@ -1091,43 +1093,69 @@
             measurementId: "G-1DYR2RGY4G"
         };
 
-        // Initialize Firebase
+        // Initialize Firebase immediately
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
+        
+        console.log('✅ Firebase initialized');
 
-        // Check authentication and load user data (same as trial dashboard)
+        // Function to update user display
+        function updateUserDisplay(user) {
+            console.log('📝 Updating display for:', user.email);
+            
+            const nameEl = document.getElementById('userName');
+            const emailEl = document.getElementById('userEmail');
+            
+            if (nameEl) {
+                nameEl.textContent = user.displayName || 'Advanced User';
+                console.log('✅ Name updated to:', nameEl.textContent);
+            } else {
+                console.error('❌ userName element not found!');
+            }
+            
+            if (emailEl) {
+                emailEl.textContent = user.email;
+                console.log('✅ Email updated to:', emailEl.textContent);
+            } else {
+                console.error('❌ userEmail element not found!');
+            }
+        }
+
+        // Set up auth listener
         auth.onAuthStateChanged(async (user) => {
+            console.log('🔄 Auth changed:', user ? user.email : 'No user');
+            
             if (user) {
-                console.log('User authenticated:', user.email);
+                // Update display immediately
+                updateUserDisplay(user);
                 
-                // Update user info display immediately
-                document.getElementById('userName').textContent = user.displayName || 'Advanced User';
-                document.getElementById('userEmail').textContent = user.email;
-                
-                // Load user data from Firestore
+                // Load additional user data
                 try {
-                    console.log('🔍 Loading user data for:', user.email, 'UID:', user.uid);
                     const userDoc = await db.collection('userProfiles').doc(user.uid).get();
-                    
                     if (userDoc.exists) {
                         const userData = userDoc.data();
-                        console.log('📄 User data from Firestore:', userData);
-                        
                         if (userData.displayName) {
                             document.getElementById('userName').textContent = userData.displayName;
                         }
-                    } else {
-                        console.log('❌ User document does not exist in Firestore');
                     }
                 } catch (error) {
-                    console.error('❌ Error loading user data:', error);
+                    console.error('Error loading user data:', error);
                 }
             } else {
-                console.log('No user authenticated, redirecting to signin');
+                console.log('No user, redirecting to signin');
                 window.location.href = 'signin.html';
             }
         });
+
+        // Force update after 1 second as backup
+        setTimeout(() => {
+            const currentUser = auth.currentUser;
+            if (currentUser) {
+                console.log('🔄 Backup update for:', currentUser.email);
+                updateUserDisplay(currentUser);
+            }
+        }, 1000);
     </script>
 </body>
 </html>
