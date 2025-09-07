@@ -544,8 +544,15 @@
 
                 if (!response.ok) {
                     const errorText = await response.text();
-                    console.error('Checkout session failed:', errorText);
-                    throw new Error('Failed to create checkout session');
+                    console.error('Checkout session failed:', response.status, errorText);
+                    let errorMessage = 'Failed to create checkout session';
+                    try {
+                        const errorData = JSON.parse(errorText);
+                        errorMessage = errorData.error || errorMessage;
+                    } catch (e) {
+                        // Use default error message
+                    }
+                    throw new Error(errorMessage);
                 }
 
                 const result = await response.json();

@@ -26,9 +26,17 @@ exports.handler = async (event, context) => {
   }
 
   try {
+    console.log('Event body:', event.body);
+    console.log('Event headers:', event.headers);
+    
     const { planType, amount, currency = 'usd' } = JSON.parse(event.body);
     
     console.log('Creating checkout session for:', { planType, amount, currency });
+    
+    // Validate required fields
+    if (!planType || !amount) {
+      throw new Error('Missing required fields: planType and amount are required');
+    }
     
     // Create a checkout session
     const session = await stripe.checkout.sessions.create({
