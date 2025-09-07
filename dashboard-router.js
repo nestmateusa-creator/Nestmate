@@ -10,7 +10,7 @@ window.goBackToDashboard = function() {
         const user = firebase.auth().currentUser;
         if (user && user.email === 'jillmullins09@gmail.com') {
             console.log('✅ jillmullins09@gmail.com detected - going to advanced dashboard');
-            window.location.href = 'dashboard-advanced.html';
+            window.location.href = 'https://nestmateus.com/dashboard-advanced.html';
             return;
         }
     }
@@ -29,7 +29,7 @@ window.redirectToUserDashboard = function() {
         const user = firebase.auth().currentUser;
         if (user && user.email === 'jillmullins09@gmail.com') {
             console.log('✅ jillmullins09@gmail.com detected - going to advanced dashboard');
-            window.location.href = 'dashboard-advanced.html';
+            window.location.href = 'https://nestmateus.com/dashboard-advanced.html';
             return;
         }
     }

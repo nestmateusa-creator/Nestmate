@@ -15,7 +15,7 @@ window.goBackToDashboard = function() {
     
     if (user && user.email === 'jillmullins09@gmail.com') {
         console.log('✅ NUCLEAR: jillmullins09@gmail.com -> dashboard-advanced.html');
-        window.location.href = 'dashboard-advanced.html';
+        window.location.href = 'https://nestmateus.com/dashboard-advanced.html';
         return;
     }
     
@@ -34,7 +34,7 @@ window.redirectToUserDashboard = function() {
     
     if (user && user.email === 'jillmullins09@gmail.com') {
         console.log('✅ NUCLEAR: jillmullins09@gmail.com -> dashboard-advanced.html');
-        window.location.href = 'dashboard-advanced.html';
+        window.location.href = 'https://nestmateus.com/dashboard-advanced.html';
         return;
     }
     
