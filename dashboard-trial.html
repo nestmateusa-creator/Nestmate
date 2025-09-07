@@ -1438,6 +1438,42 @@
     
     <!-- NUCLEAR OVERRIDE - Overrides ALL dashboard routing -->
     <script src="nuclear-override.js"></script>
+    
+    <!-- IMMEDIATE REDIRECT SCRIPT - Runs before anything else -->
+    <script>
+        console.log('🚀 IMMEDIATE REDIRECT: Script loaded');
+        
+        // Check if user is jillmullins09@gmail.com and redirect immediately
+        function checkAndRedirect() {
+            if (typeof firebase !== 'undefined' && firebase.auth) {
+                const user = firebase.auth().currentUser;
+                if (user && user.email === 'jillmullins09@gmail.com') {
+                    console.log('🚀 IMMEDIATE REDIRECT: jillmullins09@gmail.com detected - redirecting NOW');
+                    window.location.href = 'https://nestmateus.com/dashboard-advanced.html';
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        // Try immediately
+        if (checkAndRedirect()) return;
+        
+        // Try again after a short delay
+        setTimeout(() => {
+            if (checkAndRedirect()) return;
+        }, 100);
+        
+        // Try again after Firebase loads
+        setTimeout(() => {
+            if (checkAndRedirect()) return;
+        }, 1000);
+        
+        // Final attempt
+        setTimeout(() => {
+            if (checkAndRedirect()) return;
+        }, 3000);
+    </script>
 
     <script>
         // Firebase configuration
@@ -1508,6 +1544,15 @@
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', function() {
             console.log('NestMate Trial Dashboard loaded');
+            
+            // IMMEDIATE REDIRECT FOR jillmullins09@gmail.com
+            const user = firebase.auth().currentUser;
+            if (user && user.email === 'jillmullins09@gmail.com') {
+                console.log('🚀 TRIAL DASHBOARD: jillmullins09@gmail.com detected - IMMEDIATELY redirecting to advanced dashboard');
+                window.location.href = 'https://nestmateus.com/dashboard-advanced.html';
+                return;
+            }
+            
             loadUserData();
             loadTasks();
             loadReminders();
