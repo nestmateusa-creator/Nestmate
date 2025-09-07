@@ -30,15 +30,18 @@
     <h1>🎯 Direct Stripe Payment Links</h1>
     
     <div class="instructions">
-        <h3>📋 Instructions:</h3>
+        <h3>📋 Instructions for NEW Payment Links:</h3>
         <ol>
-            <li><strong>Click the "Create Payment Link" buttons below</strong> to generate Stripe payment links</li>
-            <li><strong>Copy the generated payment links</strong> and use them in your upgrade pages</li>
-            <li><strong>Success URLs are set to:</strong> payment-confirmation.html (which updates user account and redirects to correct dashboard)</li>
-            <li><strong>Cancel URLs are set to:</strong> the respective upgrade pages</li>
-            <li><strong>Payment flow:</strong> User pays → payment-confirmation.html → account updated → correct dashboard</li>
+            <li><strong>Go to Stripe Dashboard</strong> → Products → Create new products</li>
+            <li><strong>Create 3 NEW products:</strong> Basic Plan, Pro Plan, Advanced Plan</li>
+            <li><strong>Set up recurring pricing:</strong> $5/month, $10/month, $16/month</li>
+            <li><strong>Create NEW payment links</strong> for each product</li>
+            <li><strong>IMPORTANT:</strong> Do NOT pre-fill any email address - let users enter their own</li>
+            <li><strong>Set success URLs to:</strong> payment-confirmation.html?payment=success&plan=[plan_type]</li>
+            <li><strong>Set cancel URLs to:</strong> upgrade-[plan_type].html?payment=cancelled</li>
         </ol>
-        <p><strong>✅ System Fixed:</strong> Users will now stay on their paid plan dashboard after signout!</p>
+        <p><strong>⚠️ Current Issue:</strong> Existing payment links have nestmateusa@gmail.com pre-filled</p>
+        <p><strong>✅ Solution:</strong> Create NEW payment links without any pre-filled email</p>
     </div>
 
     <div class="plan">
