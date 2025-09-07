@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NestMate Basic - Home Management Dashboard</title>
+    <title>NestMate Basic - Smart Home Management</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <style>
         :root {
-            --primary: #10b981;
-            --primary-dark: #059669;
+            --primary: #06b6d4;
+            --primary-dark: #0891b2;
             --secondary: #64748b;
             --success: #10b981;
             --warning: #f59e0b;
@@ -33,7 +33,7 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
             min-height: 100vh;
             color: var(--dark);
         }
@@ -118,8 +118,8 @@
             color: white;
         }
 
-        .btn-warning {
-            background: var(--warning);
+        .btn-success {
+            background: var(--success);
             color: white;
         }
 
@@ -220,7 +220,7 @@
             line-height: 1.5;
         }
 
-        .upgrade-banner {
+        .trial-banner {
             background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
             border: 2px solid var(--warning);
             border-radius: var(--radius);
@@ -229,14 +229,41 @@
             text-align: center;
         }
 
-        .upgrade-banner h3 {
+        .trial-banner h3 {
             color: var(--dark);
             margin-bottom: 8px;
         }
 
-        .upgrade-banner p {
+        .trial-banner p {
             color: var(--secondary);
             margin-bottom: 16px;
+        }
+
+        .trial-countdown {
+            background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+            border: 2px solid var(--primary);
+            border-radius: var(--radius);
+            padding: 24px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .countdown-number {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .countdown-label {
+            font-size: 18px;
+            color: var(--dark);
+            margin-bottom: 16px;
+        }
+
+        .countdown-description {
+            color: var(--secondary);
+            font-size: 14px;
         }
 
         .task-list {
@@ -270,6 +297,288 @@
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+
+        /* Calendar Styles */
+        .calendar-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .calendar-nav-btn {
+            background: var(--light);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .calendar-nav-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .current-month {
+            font-weight: 600;
+            color: var(--dark);
+            min-width: 120px;
+            text-align: center;
+        }
+
+        .calendar-container {
+            margin-top: 16px;
+        }
+
+        .calendar-day-headers {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            margin-bottom: 8px;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            font-weight: 600;
+            color: var(--secondary);
+            font-size: 12px;
+            padding: 8px 0;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            background: var(--light);
+            border-radius: 8px;
+            padding: 8px;
+        }
+
+        .calendar-day {
+            background: white;
+            border-radius: 6px;
+            text-align: center;
+            padding: 8px 0;
+            font-size: 14px;
+            color: var(--dark);
+            cursor: pointer;
+            transition: var(--transition);
+            min-height: 32px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .calendar-day:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .calendar-day.today {
+            background: var(--primary);
+            color: white;
+            font-weight: 700;
+        }
+
+        .calendar-day.has-reminder {
+            background: var(--warning);
+            color: white;
+        }
+
+        .calendar-day.all-completed {
+            background: var(--success);
+            color: white;
+        }
+
+        .calendar-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .calendar-action-btn {
+            background: var(--light);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .calendar-action-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Task Management Styles */
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .task-item:last-child {
+            border-bottom: none;
+        }
+
+        .task-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--primary);
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .task-checkbox.checked {
+            background: var(--primary);
+            color: white;
+        }
+
+        .task-content {
+            flex: 1;
+        }
+
+        .task-title {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 4px;
+        }
+
+        .task-title.completed {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+
+        .task-due {
+            font-size: 12px;
+            color: var(--secondary);
+        }
+
+        .task-due.overdue {
+            color: var(--danger);
+            font-weight: 600;
+        }
+
+        .task-priority {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .priority-high {
+            background: var(--danger);
+            color: white;
+        }
+
+        .priority-medium {
+            background: var(--warning);
+            color: white;
+        }
+
+        .priority-low {
+            background: var(--success);
+            color: white;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--secondary);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 20px;
         }
 
         .task-content {
@@ -320,7 +629,7 @@
         }
 
         .limited-feature::after {
-            content: "Pro Feature";
+            content: "Paid Feature";
             position: absolute;
             top: 10px;
             right: 10px;
@@ -352,7 +661,7 @@
         <!-- Header -->
         <div class="header">
             <div class="logo">
-                <i class="fas fa-home"></i>
+                <i class="fas fa-gift"></i>
                 NestMate Basic
             </div>
             <div class="user-info">
@@ -368,13 +677,20 @@
             </div>
         </div>
 
-        <!-- Upgrade Banner -->
-        <div class="upgrade-banner">
-            <h3>🚀 Unlock More Features with Pro!</h3>
-            <p>Get unlimited home profiles, Home Health Score, and VIP support for just $5 more per month.</p>
-            <button class="btn btn-warning" onclick="upgradeToPro()">
+        <!-- Basic Plan Info -->
+        <div class="trial-countdown">
+            <div class="countdown-number" id="daysLeft">25</div>
+            <div class="countdown-label">Basic Plan Active</div>
+            <div class="countdown-description">You're enjoying NestMate Basic features. Upgrade to Pro or Advanced for even more capabilities.</div>
+        </div>
+
+        <!-- Basic Plan Banner -->
+        <div class="trial-banner">
+            <h3>🎉 Welcome to NestMate Basic!</h3>
+            <p>You're now on the Basic plan! Enjoy smart home management features. Upgrade to Pro or Advanced for more capabilities.</p>
+            <button class="btn btn-success" onclick="upgradeToPro()">
                 <i class="fas fa-arrow-up"></i>
-                Upgrade to Pro
+                Upgrade to Pro ($10/month)
             </button>
         </div>
 
@@ -545,55 +861,74 @@
             </div>
         </div>
 
-        <!-- Pro Features Preview -->
+        <!-- Upgrade Options -->
         <div class="card">
             <div class="card-header">
                 <div class="card-icon warning">
                     <i class="fas fa-star"></i>
                 </div>
                 <div>
-                    <div class="card-title">Pro Features Preview</div>
-                    <div class="card-subtitle">See what you're missing with Pro</div>
+                    <div class="card-title">Upgrade Options</div>
+                    <div class="card-subtitle">Choose the plan that's right for you</div>
                 </div>
             </div>
             <div class="feature-grid">
-                <div class="feature-card limited-feature">
+                <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-chart-line"></i>
+                        <i class="fas fa-home"></i>
                     </div>
-                    <div class="feature-title">Home Health Score</div>
-                    <div class="feature-description">Get your personalized Home Health Score to track your home's condition.</div>
+                    <div class="feature-title">Basic Plan</div>
+                    <div class="feature-description">$5/month - Keep all your trial features plus get priority support.</div>
+                    <button class="btn btn-primary" style="margin-top: 16px;" onclick="upgradeToBasic()">
+                        <i class="fas fa-arrow-up"></i>
+                        Upgrade to Basic
+                    </button>
                 </div>
 
-                <div class="feature-card limited-feature">
-                    <div class="feature-icon">
-                        <i class="fas fa-infinity"></i>
-                    </div>
-                    <div class="feature-title">Unlimited Tasks</div>
-                    <div class="feature-description">Never miss a beat with unlimited tasks & reminders for every aspect of your home.</div>
-                </div>
-
-                <div class="feature-card limited-feature">
+                <div class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-crown"></i>
                     </div>
-                    <div class="feature-title">VIP Support</div>
-                    <div class="feature-description">Get help fast with VIP priority support from our home experts.</div>
+                    <div class="feature-title">Pro Plan</div>
+                    <div class="feature-description">$10/month - Unlimited tasks, Home Health Score, and VIP support.</div>
+                    <button class="btn btn-primary" style="margin-top: 16px;" onclick="upgradeToPro()">
+                        <i class="fas fa-arrow-up"></i>
+                        Upgrade to Pro
+                    </button>
                 </div>
 
-                <div class="feature-card limited-feature">
+                <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-shopping-cart"></i>
+                        <i class="fas fa-users"></i>
                     </div>
-                    <div class="feature-title">Direct Ordering</div>
-                    <div class="feature-description">Order your favorite products directly for your home with one click.</div>
+                    <div class="feature-title">Advanced Pro</div>
+                    <div class="feature-description">$16/month - All Pro features plus family collaboration for up to 5 members.</div>
+                    <button class="btn btn-primary" style="margin-top: 16px;" onclick="upgradeToAdvanced()">
+                        <i class="fas fa-arrow-up"></i>
+                        Upgrade to Advanced
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Basic functionality for the Basic plan dashboard
+        // Check for payment success
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const paymentStatus = urlParams.get('payment');
+            const plan = urlParams.get('plan');
+            
+            if (paymentStatus === 'success' && plan === 'basic') {
+                // Show success message
+                alert('🎉 Payment successful! Welcome to NestMate Basic!');
+                
+                // Clean up URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        });
+
+        // Basic plan functionality for the Basic plan dashboard
         function toggleTask(checkbox) {
             if (checkbox.classList.contains('checked')) {
                 checkbox.classList.remove('checked');
@@ -604,8 +939,16 @@
             }
         }
 
+        function upgradeToBasic() {
+            window.location.href = 'upgrade-basic.html';
+        }
+
         function upgradeToPro() {
             window.location.href = 'upgrade-pro.html';
+        }
+
+        function upgradeToAdvanced() {
+            window.location.href = 'upgrade-advanced.html';
         }
 
         function viewRecommendations() {
@@ -619,6 +962,17 @@
             }
         }
 
+        // Global data structures
+        let tasks = {};
+        let reminders = {};
+        let calendarSettings = {
+            defaultReminderTime: '09:00',
+            reminderAdvanceDays: 1,
+            showCompletedTasks: true,
+            autoCreateFromTasks: true
+        };
+        let currentDate = new Date();
+
         // Load user data
         function loadUserData() {
             // This would load the user's data from Firebase
@@ -626,10 +980,459 @@
             document.getElementById('userEmail').textContent = 'user@example.com';
         }
 
+        // Task Management Functions
+        function openAddTaskModal() {
+            document.getElementById('addTaskModal').classList.add('show');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+            if (modalId === 'addTaskModal') {
+                document.getElementById('addTaskForm').reset();
+            } else if (modalId === 'addReminderModal') {
+                document.getElementById('addReminderForm').reset();
+            }
+        }
+
+        function loadTasks() {
+            // Sample tasks for demonstration
+            const sampleTasks = [
+                {
+                    id: '1',
+                    title: 'Change HVAC Filter',
+                    description: 'Replace the air filter in the main HVAC unit',
+                    dueDate: '2024-12-20',
+                    priority: 'high',
+                    category: 'hvac',
+                    completed: false
+                },
+                {
+                    id: '2',
+                    title: 'Test Smoke Detectors',
+                    description: 'Test all smoke detectors in the house',
+                    dueDate: '2024-12-25',
+                    priority: 'medium',
+                    category: 'electrical',
+                    completed: false
+                },
+                {
+                    id: '3',
+                    title: 'Clean Gutters',
+                    description: 'Remove debris from gutters and downspouts',
+                    dueDate: '2024-12-30',
+                    priority: 'low',
+                    category: 'cleaning',
+                    completed: false
+                }
+            ];
+
+            // Store tasks
+            sampleTasks.forEach(task => {
+                tasks[task.id] = task;
+            });
+
+            updateTaskList();
+        }
+
+        function updateTaskList() {
+            const taskList = document.getElementById('taskList');
+            taskList.innerHTML = '';
+
+            Object.values(tasks).forEach(task => {
+                const taskElement = createTaskElement(task);
+                taskList.appendChild(taskElement);
+            });
+        }
+
+        function createTaskElement(task) {
+            const taskDiv = document.createElement('div');
+            taskDiv.className = 'task-item';
+            taskDiv.setAttribute('data-task-id', task.id);
+
+            const dueDate = new Date(task.dueDate);
+            const isOverdue = dueDate < new Date() && !task.completed;
+            const isCompleted = task.completed;
+
+            taskDiv.innerHTML = `
+                <div class="task-checkbox ${isCompleted ? 'checked' : ''}" onclick="toggleTask('${task.id}')">
+                    ${isCompleted ? '✓' : ''}
+                </div>
+                <div class="task-content">
+                    <div class="task-title ${isCompleted ? 'completed' : ''}">${task.title}</div>
+                    <div class="task-due ${isOverdue ? 'overdue' : ''}">Due: ${dueDate.toLocaleDateString()}</div>
+                    ${task.description ? `<div class="task-description" style="font-size: 12px; color: var(--secondary); margin-top: 4px;">${task.description}</div>` : ''}
+                </div>
+                <span class="task-priority priority-${task.priority}">${task.priority}</span>
+                <button class="btn btn-secondary" onclick="deleteTask('${task.id}')" style="padding: 4px 8px;">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+
+            if (isCompleted) {
+                taskDiv.style.opacity = '0.6';
+            }
+
+            return taskDiv;
+        }
+
+        function toggleTask(taskId) {
+            if (tasks[taskId]) {
+                tasks[taskId].completed = !tasks[taskId].completed;
+                updateTaskList();
+                renderCalendar(); // Update calendar to reflect task changes
+            }
+        }
+
+        function deleteTask(taskId) {
+            if (confirm('Are you sure you want to delete this task?')) {
+                delete tasks[taskId];
+                updateTaskList();
+                renderCalendar();
+            }
+        }
+
+        // Calendar Functions
+        function renderCalendar() {
+            const calendarGrid = document.getElementById('calendarGrid');
+            const currentMonth = document.getElementById('currentMonth');
+            
+            // Update month display
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+            currentMonth.textContent = `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+
+            // Clear calendar
+            calendarGrid.innerHTML = '';
+
+            // Get first day of month and number of days
+            const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+            const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+            const startDate = new Date(firstDay);
+            startDate.setDate(startDate.getDate() - firstDay.getDay());
+
+            // Generate calendar days
+            for (let i = 0; i < 42; i++) {
+                const date = new Date(startDate);
+                date.setDate(startDate.getDate() + i);
+
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                
+                if (date.getMonth() !== currentDate.getMonth()) {
+                    dayElement.classList.add('other-month');
+                }
+
+                const today = new Date();
+                if (date.toDateString() === today.toDateString()) {
+                    dayElement.classList.add('today');
+                }
+
+                // Check if day has reminders or tasks
+                const dateString = date.toISOString().split('T')[0];
+                const dayTasks = Object.values(tasks).filter(task => task.dueDate === dateString);
+                const dayReminders = reminders[dateString] || [];
+
+                if (dayTasks.length > 0 || dayReminders.length > 0) {
+                    dayElement.classList.add('has-reminder');
+                    
+                    // Check if all tasks are completed
+                    const allCompleted = dayTasks.every(task => task.completed) && dayReminders.every(reminder => reminder.completed);
+                    if (allCompleted) {
+                        dayElement.classList.add('all-completed');
+                    }
+                }
+
+                dayElement.innerHTML = `
+                    <div class="day-number">${date.getDate()}</div>
+                    ${(dayTasks.length > 0 || dayReminders.length > 0) ? 
+                        `<div class="reminder-indicator ${(dayTasks.every(task => task.completed) && dayReminders.every(reminder => reminder.completed)) ? 'completed' : ''}">${dayTasks.length + dayReminders.length}</div>` : ''}
+                `;
+
+                dayElement.onclick = () => openDayDetails(date);
+                calendarGrid.appendChild(dayElement);
+            }
+        }
+
+        function previousMonth() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderCalendar();
+        }
+
+        function nextMonth() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderCalendar();
+        }
+
+        function openDayDetails(date) {
+            const dateString = date.toISOString().split('T')[0];
+            const dayTasks = Object.values(tasks).filter(task => task.dueDate === dateString);
+            const dayReminders = reminders[dateString] || [];
+            
+            const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const formattedDate = date.toLocaleDateString('en-US', dateOptions);
+            
+            let message = `${formattedDate}\n\n`;
+            
+            if (dayTasks.length > 0) {
+                message += `Tasks:\n`;
+                dayTasks.forEach(task => {
+                    message += `• ${task.title} (${task.priority})\n`;
+                });
+                message += '\n';
+            }
+            
+            if (dayReminders.length > 0) {
+                message += `Reminders:\n`;
+                dayReminders.forEach(reminder => {
+                    message += `• ${reminder.title}\n`;
+                });
+            }
+            
+            if (dayTasks.length === 0 && dayReminders.length === 0) {
+                message += 'No tasks or reminders for this day.';
+            }
+            
+            alert(message);
+        }
+
+        function openAddReminderModal() {
+            document.getElementById('addReminderModal').classList.add('show');
+        }
+
+        function openCalendarSettings() {
+            document.getElementById('calendarSettingsModal').classList.add('show');
+        }
+
+        // Form Event Listeners
+        document.getElementById('addTaskForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const taskData = {
+                id: Date.now().toString(),
+                title: document.getElementById('taskTitle').value.trim(),
+                description: document.getElementById('taskDescription').value.trim(),
+                dueDate: document.getElementById('taskDueDate').value,
+                priority: document.getElementById('taskPriority').value,
+                category: document.getElementById('taskCategory').value,
+                completed: false
+            };
+            
+            if (!taskData.title || !taskData.dueDate) {
+                alert('Please fill in the task title and due date.');
+                return;
+            }
+            
+            tasks[taskData.id] = taskData;
+            updateTaskList();
+            renderCalendar();
+            
+            closeModal('addTaskModal');
+            alert('Task added successfully!');
+        });
+
+        document.getElementById('addReminderForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const reminderData = {
+                id: Date.now().toString(),
+                title: document.getElementById('reminderTitle').value.trim(),
+                description: document.getElementById('reminderDescription').value.trim(),
+                date: document.getElementById('reminderDate').value,
+                time: document.getElementById('reminderTime').value,
+                category: document.getElementById('reminderCategory').value,
+                priority: document.getElementById('reminderPriority').value,
+                completed: false
+            };
+            
+            if (!reminderData.title || !reminderData.date) {
+                alert('Please fill in the reminder title and date.');
+                return;
+            }
+            
+            if (!reminders[reminderData.date]) {
+                reminders[reminderData.date] = [];
+            }
+            reminders[reminderData.date].push(reminderData);
+            
+            renderCalendar();
+            closeModal('addReminderModal');
+            alert('Reminder added successfully!');
+        });
+
+        document.getElementById('calendarSettingsForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            calendarSettings.defaultReminderTime = document.getElementById('defaultReminderTime').value;
+            calendarSettings.reminderAdvanceDays = parseInt(document.getElementById('reminderAdvanceDays').value);
+            calendarSettings.showCompletedTasks = document.getElementById('showCompletedTasks').checked;
+            calendarSettings.autoCreateFromTasks = document.getElementById('autoCreateFromTasks').checked;
+            
+            closeModal('calendarSettingsModal');
+            alert('Calendar settings saved!');
+        });
+
+        // Close modals when clicking outside
+        window.addEventListener('click', function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.classList.remove('show');
+                }
+            });
+        });
+
         // Initialize the dashboard
         window.addEventListener('load', function() {
             loadUserData();
+            renderCalendar();
+            loadTasks();
         });
     </script>
+
+    <!-- Add Task Modal -->
+    <div id="addTaskModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Maintenance Task</h3>
+                <button class="close-btn" onclick="closeModal('addTaskModal')">&times;</button>
+            </div>
+            <form id="addTaskForm">
+                <div class="form-group">
+                    <label class="form-label">Task Title</label>
+                    <input type="text" class="form-input" id="taskTitle" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-input" id="taskDescription" rows="3"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Due Date</label>
+                        <input type="date" class="form-input" id="taskDueDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Priority</label>
+                        <select class="form-input" id="taskPriority">
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select class="form-input" id="taskCategory">
+                        <option value="air-filter">Air Filter Replacement</option>
+                        <option value="hvac">HVAC Maintenance</option>
+                        <option value="plumbing">Plumbing</option>
+                        <option value="electrical">Electrical</option>
+                        <option value="roofing">Roofing</option>
+                        <option value="landscaping">Landscaping</option>
+                        <option value="cleaning">Cleaning</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('addTaskModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Reminder Modal -->
+    <div id="addReminderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Calendar Reminder</h3>
+                <button class="close-btn" onclick="closeModal('addReminderModal')">&times;</button>
+            </div>
+            <form id="addReminderForm">
+                <div class="form-group">
+                    <label class="form-label">Reminder Title</label>
+                    <input type="text" class="form-input" id="reminderTitle" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-input" id="reminderDescription" rows="3"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Date</label>
+                        <input type="date" class="form-input" id="reminderDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Time</label>
+                        <input type="time" class="form-input" id="reminderTime" value="09:00">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select class="form-input" id="reminderCategory">
+                            <option value="maintenance">Maintenance</option>
+                            <option value="inspection">Inspection</option>
+                            <option value="cleaning">Cleaning</option>
+                            <option value="repair">Repair</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Priority</label>
+                        <select class="form-input" id="reminderPriority">
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('addReminderModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Reminder</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Calendar Settings Modal -->
+    <div id="calendarSettingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Calendar Settings</h3>
+                <button class="close-btn" onclick="closeModal('calendarSettingsModal')">&times;</button>
+            </div>
+            <form id="calendarSettingsForm">
+                <div class="form-group">
+                    <label class="form-label">Default Reminder Time</label>
+                    <input type="time" class="form-input" id="defaultReminderTime" value="09:00">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Remind Days in Advance</label>
+                    <select class="form-input" id="reminderAdvanceDays">
+                        <option value="0">Same day</option>
+                        <option value="1" selected>1 day before</option>
+                        <option value="3">3 days before</option>
+                        <option value="7">1 week before</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="showCompletedTasks" checked>
+                        Show completed tasks on calendar
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="autoCreateFromTasks" checked>
+                        Automatically create reminders from maintenance tasks
+                    </label>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('calendarSettingsModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Settings</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </body>
 </html>
