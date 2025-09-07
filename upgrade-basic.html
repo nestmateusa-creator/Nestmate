@@ -457,8 +457,23 @@
                 window.location.href = 'signin.html';
             } else {
                 console.log('User authenticated:', user.email);
+                // Test Netlify function availability
+                testNetlifyFunction();
             }
         });
+
+        // Test if Netlify function is accessible
+        async function testNetlifyFunction() {
+            try {
+                console.log('Testing Netlify function availability...');
+                const response = await fetch('/.netlify/functions/create-checkout-session', {
+                    method: 'OPTIONS'
+                });
+                console.log('Netlify function test response:', response.status);
+            } catch (error) {
+                console.error('Netlify function test failed:', error);
+            }
+        }
 
         // Stripe configuration
         const stripe = Stripe('pk_live_51S4C0RPHhV91OxuKxSQuOHmbpH1BRYAC0l9ljv9WfFhL2IoLcaiwEljhORx8nZH4e8ifoWy7S7fJaGy1wPYgdmkd00zT9Z8PVx');
@@ -710,12 +725,18 @@
 
             } catch (error) {
                 console.error('Error creating checkout session:', error);
-                alert('Error creating checkout session. Please try again.');
                 
                 // Reset button state
                 const button = event.target;
                 button.innerHTML = '<i class="fas fa-credit-card"></i> Complete Payment - $5/month';
                 button.disabled = false;
+                
+                // Fallback to static Stripe link
+                console.log('Falling back to static Stripe payment link...');
+                const fallbackUrl = 'https://buy.stripe.com/fZu7sN8Ui087bLT84J1sQ06';
+                if (confirm('There was an issue with the dynamic checkout. Would you like to use the standard payment link instead?')) {
+                    window.open(fallbackUrl, '_blank');
+                }
             }
         }
     </script>
