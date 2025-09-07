@@ -1,7 +1,5 @@
-// VERSION 3.0 - COMPLETELY NEW APPROACH
-const API_KEY = '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';
-console.log('VERSION 3.0 - CHECKOUT SESSION - Using LIVE API Key:', API_KEY.substring(0, 20) + '...' + API_KEY.substring(API_KEY.length - 10));
-const stripe = require('stripe')(API_KEY);
+// VERSION 4.0 - USE ENVIRONMENT VARIABLE ONLY
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 exports.handler = async (event, context) => {
   // Handle CORS preflight requests

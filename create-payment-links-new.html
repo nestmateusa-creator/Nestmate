@@ -151,11 +151,7 @@
     </div>
 
     <script>
-        // VERSION 2.0 - FRESH KEY - Direct Stripe API call with correct keys
-        const STRIPE_SECRET_KEY = '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';
-        console.log('VERSION 2.0 - Using FRESH API Key:', STRIPE_SECRET_KEY.substring(0, 20) + '...' + STRIPE_SECRET_KEY.substring(STRIPE_SECRET_KEY.length - 10));
-        const STRIPE_PUBLISHABLE_KEY = 'pk_live_51S4C0RPHhV91OxuKxSQuOHmbpH1BRYAC0l9ljv9WfFhL2IoLcaiwEljhORx8nZH4e8ifoWy7S7fJaGy1wPYgdmkd00zT9Z8PVx';
-
+        // VERSION 4.0 - Use Netlify function to avoid exposing API key
         async function createPaymentLink(planType, amount) {
             const resultDiv = document.getElementById('result');
             resultDiv.className = 'result loading';
@@ -164,32 +160,26 @@
 
             try {
                 console.log('Creating payment link for:', planType, amount);
-                console.log('Using API Key:', STRIPE_SECRET_KEY.substring(0, 20) + '...' + STRIPE_SECRET_KEY.substring(STRIPE_SECRET_KEY.length - 10));
 
-                // Create payment link directly with Stripe API
-                const response = await fetch('https://api.stripe.com/v1/payment_links', {
+                // Call our Netlify function instead of direct Stripe API
+                const response = await fetch('/.netlify/functions/create-payment-link', {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${STRIPE_SECRET_KEY}`,
-                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Content-Type': 'application/json',
                     },
-                    body: new URLSearchParams({
-                        'line_items[0][price_data][currency]': 'usd',
-                        'line_items[0][price_data][product_data][name]': `${planType.charAt(0).toUpperCase() + planType.slice(1)} Plan`,
-                        'line_items[0][price_data][unit_amount]': amount * 100, // Convert to cents
-                        'line_items[0][price_data][recurring][interval]': 'month',
-                        'line_items[0][quantity]': '1',
-                        'success_url': `https://www.nestmateus.com/payment-confirmation.html?payment=success&plan=${planType}`,
-                        'cancel_url': `https://www.nestmateus.com/upgrade-${planType}.html?payment=cancelled`,
-                        'allow_promotion_codes': 'true'
+                    body: JSON.stringify({
+                        planType: planType,
+                        amount: amount,
+                        successUrl: `https://www.nestmateus.com/payment-confirmation.html?payment=success&plan=${planType}`,
+                        cancelUrl: `https://www.nestmateus.com/upgrade-${planType}.html?payment=cancelled`
                     })
                 });
 
                 const data = await response.json();
-                console.log('Stripe API Response:', data);
+                console.log('Netlify Function Response:', data);
 
                 if (data.error) {
-                    throw new Error(data.error.message);
+                    throw new Error(data.error);
                 }
 
                 if (data.url) {
