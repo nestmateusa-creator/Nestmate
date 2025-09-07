@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Debug - NestMate</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .debug-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+        button { padding: 10px 20px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Firebase Debug Page</h1>
+    
+    <div class="debug-section">
+        <h2>Firebase Connection Test</h2>
+        <div id="firebaseStatus">Testing...</div>
+        <button onclick="testFirebaseConnection()">Test Connection</button>
+    </div>
+    
+    <div class="debug-section">
+        <h2>Authentication Test</h2>
+        <div id="authStatus">Not tested</div>
+        <button onclick="testAuth()">Test Auth</button>
+    </div>
+    
+    <div class="debug-section">
+        <h2>User Data Test</h2>
+        <div id="userDataStatus">Not tested</div>
+        <button onclick="testUserData()">Test User Data</button>
+    </div>
+    
+    <div class="debug-section">
+        <h2>Console Logs</h2>
+        <div id="consoleLogs" style="background: #f5f5f5; padding: 10px; height: 200px; overflow-y: auto;"></div>
+    </div>
+
+    <!-- Firebase CDN -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <script>
+        // Override console.log to show in page
+        const originalLog = console.log;
+        const originalError = console.error;
+        const logDiv = document.getElementById('consoleLogs');
+        
+        function addLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.innerHTML = `<span style="color: #666;">[${timestamp}]</span> <span class="${type}">${message}</span>`;
+            logDiv.appendChild(logEntry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addLog(args.join(' '), 'info');
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addLog(args.join(' '), 'error');
+        };
+
+        // Firebase configuration - CORRECTED PROJECT ID
+        const firebaseConfig = {
+            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
+            authDomain: "data-41fa8.firebaseapp.com",
+            projectId: "data-41fa8",
+            storageBucket: "data-41fa8.firebasestorage.app",
+            messagingSenderId: "865171535257",
+            appId: "1:865171535257:web:9944a48a952e99f55f0f08",
+            measurementId: "G-1DYR2RGY4G"
+        };
+
+        let auth, db;
+
+        function testFirebaseConnection() {
+            console.log('🔥 Testing Firebase connection...');
+            document.getElementById('firebaseStatus').innerHTML = 'Testing...';
+            
+            try {
+                // Initialize Firebase
+                firebase.initializeApp(firebaseConfig);
+                auth = firebase.auth();
+                db = firebase.firestore();
+                
+                console.log('✅ Firebase initialized successfully');
+                console.log('📊 Project ID:', firebaseConfig.projectId);
+                console.log('🔗 Auth Domain:', firebaseConfig.authDomain);
+                
+                document.getElementById('firebaseStatus').innerHTML = '<span class="success">✅ Firebase connected successfully</span>';
+            } catch (error) {
+                console.error('❌ Firebase connection failed:', error);
+                document.getElementById('firebaseStatus').innerHTML = `<span class="error">❌ Firebase connection failed: ${error.message}</span>`;
+            }
+        }
+
+        function testAuth() {
+            console.log('🔐 Testing authentication...');
+            document.getElementById('authStatus').innerHTML = 'Testing...';
+            
+            if (!auth) {
+                console.error('❌ Firebase not initialized');
+                document.getElementById('authStatus').innerHTML = '<span class="error">❌ Firebase not initialized</span>';
+                return;
+            }
+            
+            const user = auth.currentUser;
+            if (user) {
+                console.log('✅ User is authenticated:', user.email);
+                console.log('🆔 User UID:', user.uid);
+                document.getElementById('authStatus').innerHTML = `<span class="success">✅ User authenticated: ${user.email}</span>`;
+            } else {
+                console.log('❌ No user authenticated');
+                document.getElementById('authStatus').innerHTML = '<span class="error">❌ No user authenticated</span>';
+            }
+        }
+
+        async function testUserData() {
+            console.log('👤 Testing user data...');
+            document.getElementById('userDataStatus').innerHTML = 'Testing...';
+            
+            if (!auth || !db) {
+                console.error('❌ Firebase not initialized');
+                document.getElementById('userDataStatus').innerHTML = '<span class="error">❌ Firebase not initialized</span>';
+                return;
+            }
+            
+            const user = auth.currentUser;
+            if (!user) {
+                console.error('❌ No user authenticated');
+                document.getElementById('userDataStatus').innerHTML = '<span class="error">❌ No user authenticated</span>';
+                return;
+            }
+            
+            try {
+                console.log('🔍 Fetching user profile...');
+                const userDoc = await db.collection('userProfiles').doc(user.uid).get();
+                
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    console.log('✅ User profile found:', userData);
+                    console.log('📊 Account type:', userData.accountType);
+                    console.log('📧 Email:', userData.email);
+                    console.log('👤 Display name:', userData.displayName);
+                    
+                    document.getElementById('userDataStatus').innerHTML = `
+                        <span class="success">✅ User data found</span><br>
+                        <strong>Account Type:</strong> ${userData.accountType || 'Not set'}<br>
+                        <strong>Email:</strong> ${userData.email || 'Not set'}<br>
+                        <strong>Display Name:</strong> ${userData.displayName || 'Not set'}
+                    `;
+                } else {
+                    console.log('❌ User profile not found');
+                    document.getElementById('userDataStatus').innerHTML = '<span class="error">❌ User profile not found in Firestore</span>';
+                }
+            } catch (error) {
+                console.error('❌ Error fetching user data:', error);
+                document.getElementById('userDataStatus').innerHTML = `<span class="error">❌ Error: ${error.message}</span>`;
+            }
+        }
+
+        // Auto-test on page load
+        window.addEventListener('load', function() {
+            console.log('🚀 Debug page loaded');
+            testFirebaseConnection();
+        });
+    </script>
+</body>
+</html>
