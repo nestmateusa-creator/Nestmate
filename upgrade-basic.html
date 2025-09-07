@@ -548,15 +548,26 @@
                     throw new Error('Failed to create checkout session');
                 }
 
-                const { sessionId } = await response.json();
-                console.log('Checkout session created:', sessionId);
+                const result = await response.json();
+                console.log('Checkout session response:', result);
+                
+                if (!result.sessionId) {
+                    throw new Error('No session ID returned from server');
+                }
 
                 // Redirect to Stripe Checkout
                 const { error } = await stripe.redirectToCheckout({
-                    sessionId: sessionId
+                    sessionId: result.sessionId
                 });
 
                 if (error) {
+                    console.error('Stripe redirect error:', error);
+                    // Fallback: redirect directly to the session URL
+                    if (result.url) {
+                        console.log('Using fallback redirect to:', result.url);
+                        window.location.href = result.url;
+                        return { success: true, redirecting: true };
+                    }
                     throw new Error(error.message);
                 }
 

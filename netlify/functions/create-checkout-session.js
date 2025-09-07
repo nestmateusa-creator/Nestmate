@@ -59,6 +59,7 @@ exports.handler = async (event, context) => {
     });
 
     console.log('Checkout session created:', session.id);
+    console.log('Session URL:', session.url);
 
     return {
       statusCode: 200,
@@ -67,7 +68,8 @@ exports.handler = async (event, context) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        sessionId: session.id
+        sessionId: session.id,
+        url: session.url
       }),
     };
   } catch (err) {
