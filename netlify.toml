@@ -9,15 +9,3 @@
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
-
-# Redirect root to index.html
-[[redirects]]
-  from = "/"
-  to = "/index.html"
-  status = 200
-
-# Only redirect 404s to index.html (for SPA fallback)
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 404
