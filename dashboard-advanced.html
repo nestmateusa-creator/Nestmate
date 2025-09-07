@@ -507,7 +507,7 @@
             <div class="user-info">
                 <div class="plan-badge">Advanced Pro</div>
                 <div>
-                    <div style="font-weight: 600; color: var(--dark);" id="userName">Loading...</div>
+                    <div style="font-weight: 600; color: var(--dark);" id="userName">Advanced User</div>
                     <div style="color: var(--secondary); font-size: 14px;" id="userEmail">Loading...</div>
                 </div>
                 
@@ -1003,8 +1003,17 @@
             };
             
             const correctUrl = dashboardUrls[accountType] || 'dashboard-trial.html';
-            if (window.location.pathname !== correctUrl) {
-                window.location.href = correctUrl;
+            const currentPath = window.location.pathname.split('/').pop();
+            
+            // Only redirect if we're actually on the wrong dashboard
+            if (currentPath !== correctUrl) {
+                console.log('Redirecting from', currentPath, 'to', correctUrl, 'for account type:', accountType);
+                // Add a small delay to prevent flash
+                setTimeout(() => {
+                    window.location.href = correctUrl;
+                }, 100);
+            } else {
+                console.log('User is already on correct dashboard:', correctUrl);
             }
         }
 

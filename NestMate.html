@@ -4613,8 +4613,16 @@
 
         // Save home details section to Firebase
         async function saveHomeDetailsSection(sectionId, sectionData) {
+            console.log('🔍 saveHomeDetailsSection called with:', sectionId, sectionData);
+            console.log('🔍 currentUserId:', currentUserId);
+            console.log('🔍 firebaseDB:', window.firebaseDB);
+            console.log('🔍 firebaseServices:', window.firebaseServices);
+            
             if (!currentUserId || !window.firebaseDB || !window.firebaseServices) {
-                console.error('User not authenticated or Firebase not ready');
+                console.error('❌ User not authenticated or Firebase not ready');
+                console.error('❌ currentUserId:', currentUserId);
+                console.error('❌ firebaseDB:', window.firebaseDB);
+                console.error('❌ firebaseServices:', window.firebaseServices);
                 return false;
             }
 
@@ -4663,8 +4671,13 @@
 
         // Save section to Firebase (collects all details from section)
         async function saveSectionToFirebase(sectionId) {
+            console.log('🔍 saveSectionToFirebase called with sectionId:', sectionId);
             const sectionDetails = document.querySelector(`#${sectionId}-content .section-details`);
-            if (!sectionDetails) return;
+            if (!sectionDetails) {
+                console.error('❌ Section details not found for:', sectionId);
+                return;
+            }
+            console.log('✅ Section details found:', sectionDetails);
             
             // Collect all detail rows (excluding add button)
             const detailRows = sectionDetails.querySelectorAll('.detail-row');
