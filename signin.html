@@ -472,6 +472,49 @@
             document.querySelector('.auth-tabs').style.display = 'none';
         }
 
+        function showAlreadySignedInMessage(user) {
+            // Hide auth forms
+            document.getElementById('signinForm').style.display = 'none';
+            document.getElementById('signupForm').style.display = 'none';
+            document.querySelector('.auth-tabs').style.display = 'none';
+            
+            // Show message
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'auth-message';
+            messageDiv.innerHTML = `
+                <div class="message-content">
+                    <h3>Already Signed In</h3>
+                    <p>You are already signed in as: <strong>${user.email}</strong></p>
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="goToDashboard()">Go to Dashboard</button>
+                        <button class="btn btn-secondary" onclick="signOutAndShowForms()">Sign Out</button>
+                    </div>
+                </div>
+            `;
+            
+            // Replace the auth container content
+            const authContainer = document.querySelector('.auth-container');
+            authContainer.innerHTML = '';
+            authContainer.appendChild(messageDiv);
+        }
+
+        function goToDashboard() {
+            // Redirect to appropriate dashboard based on user's account type
+            window.location.href = 'dashboard-trial.html'; // Will redirect to correct dashboard
+        }
+
+        async function signOutAndShowForms() {
+            try {
+                await auth.signOut();
+                localStorage.clear();
+                sessionStorage.clear();
+                showAuthForms();
+            } catch (error) {
+                console.error('Error signing out:', error);
+                showAuthForms();
+            }
+        }
+
         function showAuthForms() {
             document.getElementById('dashboardAccess').style.display = 'none';
             document.getElementById('signinForm').style.display = 'block';
@@ -745,7 +788,8 @@
             auth.onAuthStateChanged(function(user) {
                 if (user) {
                     console.log('User is signed in:', user.email);
-                    showDashboardAccess();
+                    // Don't automatically redirect, show a message instead
+                    showAlreadySignedInMessage(user);
                 } else {
                     console.log('No user signed in, showing auth forms');
                     showAuthForms();

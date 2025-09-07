@@ -883,20 +883,34 @@
         async function signOut() {
             if (confirm('Are you sure you want to sign out?')) {
                 try {
-                    console.log('Signing out user...');
-                    await auth.signOut();
-                    console.log('User signed out successfully');
+                    console.log('🔓 Signing out user...');
                     
-                    // Clear any cached data
+                    // Sign out from Firebase
+                    await auth.signOut();
+                    console.log('✅ Firebase signOut completed');
+                    
+                    // Clear ALL cached data
                     localStorage.clear();
                     sessionStorage.clear();
                     
-                    // Force redirect to home page
-                    window.location.replace('index.html');
+                    // Clear any Firebase persistence
+                    if (auth.currentUser) {
+                        console.log('⚠️ User still exists after signOut, forcing clear...');
+                        // Force clear the current user
+                        await auth.signOut();
+                    }
+                    
+                    console.log('🧹 All data cleared, redirecting...');
+                    
+                    // Force redirect to home page with cache busting
+                    window.location.replace('index.html?t=' + Date.now());
+                    
                 } catch (error) {
-                    console.error('Error signing out:', error);
+                    console.error('❌ Error signing out:', error);
                     // Still redirect even if signOut fails
-                    window.location.replace('index.html');
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    window.location.replace('index.html?t=' + Date.now());
                 }
             }
         }
@@ -1064,13 +1078,13 @@
         });
     </script>
 
-    <!-- Working Firebase authentication script -->
+    <!-- Debug Firebase authentication script -->
     <script>
-        console.log('Working Firebase script starting...');
+        console.log('🔍 Debug Firebase script starting...');
         
         // Wait for page to load completely
         window.addEventListener('load', function() {
-            console.log('Page fully loaded, initializing Firebase...');
+            console.log('📄 Page fully loaded, initializing Firebase...');
             
             // Firebase configuration
             const firebaseConfig = {
@@ -1089,48 +1103,62 @@
                 const auth = firebase.auth();
                 const db = firebase.firestore();
                 
-                console.log('Firebase initialized successfully');
+                console.log('✅ Firebase initialized successfully');
                 
                 // Check current user immediately
                 const currentUser = auth.currentUser;
-                console.log('Current user:', currentUser ? currentUser.email : 'No current user');
+                console.log('👤 Current user:', currentUser ? currentUser.email : 'No current user');
                 
                 if (currentUser) {
-                    console.log('User already authenticated:', currentUser.email);
+                    console.log('✅ User already authenticated:', currentUser.email);
                     updateUserDisplay(currentUser);
+                } else {
+                    console.log('❌ No current user found');
                 }
                 
                 // Set up auth state listener
                 auth.onAuthStateChanged(async (user) => {
-                    console.log('Auth state changed:', user ? user.email : 'No user');
+                    console.log('🔄 Auth state changed:', user ? user.email : 'No user');
                     
                     if (user) {
+                        console.log('✅ User authenticated, updating display');
                         updateUserDisplay(user);
                     } else {
-                        console.log('No user, redirecting to signin');
-                        window.location.href = 'signin.html';
+                        console.log('❌ No user, should redirect to signin');
+                        // Don't redirect immediately, let's see what happens
+                        setTimeout(() => {
+                            console.log('🔄 Redirecting to signin in 3 seconds...');
+                            window.location.href = 'signin.html';
+                        }, 3000);
                     }
                 });
                 
                 function updateUserDisplay(user) {
-                    console.log('Updating user display for:', user.email);
+                    console.log('📝 Updating user display for:', user.email);
                     
                     const nameElement = document.getElementById('userName');
                     const emailElement = document.getElementById('userEmail');
                     
+                    console.log('🔍 Name element found:', !!nameElement);
+                    console.log('🔍 Email element found:', !!emailElement);
+                    
                     if (nameElement) {
                         nameElement.textContent = user.displayName || 'Advanced User';
-                        console.log('Updated name to:', nameElement.textContent);
+                        console.log('✅ Updated name to:', nameElement.textContent);
+                    } else {
+                        console.error('❌ userName element not found!');
                     }
                     
                     if (emailElement) {
                         emailElement.textContent = user.email;
-                        console.log('Updated email to:', emailElement.textContent);
+                        console.log('✅ Updated email to:', emailElement.textContent);
+                    } else {
+                        console.error('❌ userEmail element not found!');
                     }
                 }
                 
             } catch (error) {
-                console.error('Firebase initialization error:', error);
+                console.error('❌ Firebase initialization error:', error);
             }
         });
     </script>
