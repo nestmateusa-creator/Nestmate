@@ -43,43 +43,6 @@
             color: var(--dark);
         }
 
-        .loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            color: white;
-        }
-
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top: 4px solid white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .main-content {
-            display: none;
-        }
-
-        .main-content.loaded {
-            display: block;
-        }
 
         .container {
             max-width: 1400px;
@@ -534,16 +497,7 @@
     </style>
 </head>
 <body>
-    <!-- Loading Screen -->
-    <div id="loadingScreen" class="loading-screen">
-        <div class="loading-spinner"></div>
-        <h2>Loading Dashboard...</h2>
-        <p>Verifying your account access</p>
-    </div>
-
-    <!-- Main Content -->
-    <div id="mainContent" class="main-content">
-        <div class="container">
+    <div class="container">
         <!-- Header -->
         <div class="header">
             <div class="logo">
@@ -635,8 +589,8 @@
                                                 return;
                                             }
                                             
-                                            // User belongs on this dashboard, show content
-                                            showDashboard();
+                                            // User belongs on this dashboard
+                                            console.log('✅ User belongs on advanced dashboard');
                                         } else {
                                             // No user profile, redirect to trial
                                             window.location.href = 'dashboard-trial.html';
@@ -645,7 +599,6 @@
                                         console.error('Error loading user data:', error);
                                         // On error, show dashboard anyway (don't redirect)
                                         console.log('⚠️ Error loading user data, showing dashboard anyway');
-                                        showDashboard();
                                     }
                                 } else {
                                     console.log('❌ No user, redirecting to signin');
@@ -1040,20 +993,6 @@
             window.location.href = 'profile.html';
         }
 
-        function showDashboard() {
-            // Hide loading screen and show main content
-            document.getElementById('loadingScreen').style.display = 'none';
-            document.getElementById('mainContent').classList.add('loaded');
-        }
-
-        // Add timeout to prevent infinite loading
-        setTimeout(() => {
-            const loadingScreen = document.getElementById('loadingScreen');
-            if (loadingScreen && loadingScreen.style.display !== 'none') {
-                console.log('⚠️ Loading timeout - showing dashboard anyway');
-                showDashboard();
-            }
-        }, 10000); // 10 second timeout
 
         function redirectToCorrectDashboard(accountType) {
             const dashboardUrls = {
@@ -1121,9 +1060,6 @@
                 window.location.href = 'cancel-subscription.html';
             }
         }
-
-        </div>
-    </div>
 
     </script>
 
