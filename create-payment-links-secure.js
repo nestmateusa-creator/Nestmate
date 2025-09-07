@@ -8,7 +8,7 @@ async function createPaymentLinks() {
     console.log('   (This will be used locally and not exposed to the internet)');
     
     // You'll need to replace this with your fresh key
-    const API_KEY = 'YOUR_FRESH_STRIPE_SECRET_KEY_HERE';
+    const API_KEY = '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';
     
     if (API_KEY === 'YOUR_FRESH_STRIPE_SECRET_KEY_HERE') {
         console.log('❌ Please replace YOUR_FRESH_STRIPE_SECRET_KEY_HERE with your actual key');
@@ -43,6 +43,8 @@ async function createPaymentLinks() {
                     url: 'https://www.nestmateus.com/payment-confirmation.html?payment=success&plan=basic'
                 }
             },
+            payment_method_types: ['card'],
+            billing_address_collection: 'auto',
             allow_promotion_codes: true
         });
         
@@ -72,6 +74,8 @@ async function createPaymentLinks() {
                     url: 'https://www.nestmateus.com/payment-confirmation.html?payment=success&plan=pro'
                 }
             },
+            payment_method_types: ['card'],
+            billing_address_collection: 'auto',
             allow_promotion_codes: true
         });
         
@@ -101,6 +105,8 @@ async function createPaymentLinks() {
                     url: 'https://www.nestmateus.com/payment-confirmation.html?payment=success&plan=advanced'
                 }
             },
+            payment_method_types: ['card'],
+            billing_address_collection: 'auto',
             allow_promotion_codes: true
         });
         
