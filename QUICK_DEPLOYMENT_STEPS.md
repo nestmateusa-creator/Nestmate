@@ -1,4 +1,4 @@
-# Quick Deployment Steps for www.nestmateusa.com
+# Quick Deployment Steps for www.nestmateus.com
 
 ## 🚀 Fastest Path to Deployment (Netlify - Recommended)
 
@@ -38,13 +38,13 @@ STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
 
 ### Step 4: Custom Domain Setup (5 minutes)
 1. **In Netlify dashboard → Domain settings**
-2. **Add custom domain:** `www.nestmateusa.com`
+2. **Add custom domain:** `www.nestmateus.com`
 3. **Follow DNS instructions** to point your domain to Netlify
 4. **Enable SSL** (automatic with Netlify)
 
 ### Step 5: Update Firebase Auth (5 minutes)
 1. **Go to Firebase Console → Authentication → Settings**
-2. **Add authorized domain:** `www.nestmateusa.com`
+2. **Add authorized domain:** `www.nestmateus.com`
 3. **Also add:** `your-site-name.netlify.app` (for testing)
 
 ## 🔧 Alternative: Traditional Web Hosting
@@ -71,7 +71,7 @@ If you prefer traditional hosting (cPanel, shared hosting, etc.):
 ## ⚡ Quick Test Checklist
 
 After deployment, test these:
-- [ ] Homepage loads: `https://www.nestmateusa.com`
+- [ ] Homepage loads: `https://www.nestmateus.com`
 - [ ] User can sign up/sign in
 - [ ] Dashboard loads and functions
 - [ ] Payment processing works

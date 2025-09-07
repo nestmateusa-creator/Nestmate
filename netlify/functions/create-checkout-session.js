@@ -50,8 +50,8 @@ exports.handler = async (event, context) => {
         },
       ],
       mode: 'subscription',
-      success_url: `${event.headers.origin || 'https://nestmateusa.com'}/dashboard-${planType}.html?payment=success`,
-      cancel_url: `${event.headers.origin || 'https://nestmateusa.com'}/upgrade-${planType}.html?payment=cancelled`,
+      success_url: `${event.headers.origin || 'https://www.nestmateus.com'}/dashboard-${planType}.html?payment=success`,
+      cancel_url: `${event.headers.origin || 'https://www.nestmateus.com'}/upgrade-${planType}.html?payment=cancelled`,
       metadata: {
         planType: planType,
         userId: 'demo-user'

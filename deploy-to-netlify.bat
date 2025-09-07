@@ -23,7 +23,7 @@ echo ========================================
 echo.
 echo Next steps:
 echo 1. Go to your Netlify dashboard
-echo 2. Add custom domain: www.nestmateusa.com
+echo 2. Add custom domain: www.nestmateus.com
 echo 3. Set environment variables
 echo 4. Test your site
 echo.

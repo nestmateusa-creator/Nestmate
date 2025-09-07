@@ -1,4 +1,4 @@
-// Firebase configuration for Production - www.nestmateusa.com
+// Firebase configuration for Production - www.nestmateus.com
 // IMPORTANT: Replace these placeholder values with your actual Firebase project configuration
 
 const firebaseConfig = {

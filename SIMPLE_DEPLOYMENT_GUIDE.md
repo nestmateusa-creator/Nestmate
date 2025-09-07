@@ -28,7 +28,7 @@
 
 1. **Go to your Netlify dashboard**
 2. **Click "Domain settings"**
-3. **Add custom domain:** `www.nestmateusa.com`
+3. **Add custom domain:** `www.nestmateus.com`
 4. **Follow DNS instructions** to point your domain
 
 ## Environment Variables to Set:
@@ -47,7 +47,7 @@ STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
 
 ## That's It! 
 
-Your NextMate app will be live at www.nestmateusa.com
+Your NextMate app will be live at www.nestmateus.com
 
 **Which option would you like to try first?**
 

@@ -1,4 +1,4 @@
-# 🚀 Netlify Deployment Steps for www.nestmateusa.com
+# 🚀 Netlify Deployment Steps for www.nestmateus.com
 
 ## Step 1: Get Your Firebase Project Details (5 minutes)
 
@@ -85,7 +85,7 @@ STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
 ## Step 5: Configure Custom Domain (5 minutes)
 
 1. **In Netlify dashboard** → Domain settings
-2. **Add custom domain:** `www.nestmateusa.com`
+2. **Add custom domain:** `www.nestmateus.com`
 3. **Follow DNS instructions** to point your domain to Netlify
 4. **Enable SSL** (automatic with Netlify)
 
@@ -93,13 +93,13 @@ STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
 
 1. **Go to Firebase Console** → Authentication → Settings
 2. **Add authorized domains:**
-   - `www.nestmateusa.com`
+   - `www.nestmateus.com`
    - `your-site-name.netlify.app` (for testing)
 
 ## Step 7: Test Your Deployment (5 minutes)
 
 Test these features:
-- [ ] Homepage loads: `https://www.nestmateusa.com`
+- [ ] Homepage loads: `https://www.nestmateus.com`
 - [ ] User can sign up/sign in with Google
 - [ ] Dashboard loads and functions properly
 - [ ] Payment processing works
@@ -108,7 +108,7 @@ Test these features:
 
 ## 🎉 You're Live!
 
-Your NextMate app should now be accessible at **www.nestmateusa.com**
+Your NextMate app should now be accessible at **www.nestmateus.com**
 
 ## 🔧 Troubleshooting
 

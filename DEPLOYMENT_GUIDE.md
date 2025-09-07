@@ -1,10 +1,10 @@
-# NextMate App Deployment Guide for www.nestmateusa.com
+# NextMate App Deployment Guide for www.nestmateus.com
 
 ## Overview
-This guide covers multiple deployment options for your NextMate app to www.nestmateusa.com.
+This guide covers multiple deployment options for your NextMate app to www.nestmateus.com.
 
 ## Prerequisites
-- Domain: www.nestmateusa.com
+- Domain: www.nestmateus.com
 - Firebase project configured
 - Stripe account for payments
 - Git repository (recommended)
@@ -65,7 +65,7 @@ This guide covers multiple deployment options for your NextMate app to www.nestm
 
 4. **Custom Domain Setup:**
    - Go to Domain settings
-   - Add www.nestmateusa.com
+   - Add www.nestmateus.com
    - Configure DNS as instructed by Netlify
 
 ### Step 3: Move Server Functions to Netlify Functions
@@ -127,7 +127,7 @@ exports.handler = async (event, context) => {
 
 ### Step 3: Domain Configuration
 1. **DNS Settings:**
-   - Point www.nestmateusa.com to your hosting provider
+   - Point www.nestmateus.com to your hosting provider
    - Set up SSL certificate (Let's Encrypt recommended)
 
 2. **Server Configuration:**

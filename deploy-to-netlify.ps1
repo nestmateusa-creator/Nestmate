@@ -23,7 +23,7 @@ Write-Host "========================================" -ForegroundColor Green
 Write-Host ""
 Write-Host "Next steps:" -ForegroundColor Cyan
 Write-Host "1. Go to your Netlify dashboard" -ForegroundColor White
-Write-Host "2. Add custom domain: www.nestmateusa.com" -ForegroundColor White
+Write-Host "2. Add custom domain: www.nestmateus.com" -ForegroundColor White
 Write-Host "3. Set environment variables" -ForegroundColor White
 Write-Host "4. Test your site" -ForegroundColor White
 Write-Host ""

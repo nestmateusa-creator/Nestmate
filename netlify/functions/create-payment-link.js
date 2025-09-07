@@ -51,7 +51,7 @@ exports.handler = async (event, context) => {
       after_completion: {
         type: 'redirect',
         redirect: {
-          url: `${event.headers.origin || 'https://nestmateusa.com'}/dashboard-${planType}.html?payment=success`,
+          url: `${event.headers.origin || 'https://www.nestmateus.com'}/dashboard-${planType}.html?payment=success`,
         },
       },
     });
