@@ -26,6 +26,10 @@ exports.handler = async (event, context) => {
   }
 
   try {
+    console.log('Environment variables check:');
+    console.log('STRIPE_SECRET_KEY exists:', !!process.env.STRIPE_SECRET_KEY);
+    console.log('STRIPE_SECRET_KEY length:', process.env.STRIPE_SECRET_KEY ? process.env.STRIPE_SECRET_KEY.length : 0);
+    
     const { planType, successUrl, cancelUrl, currency = 'usd' } = JSON.parse(event.body);
     
     // Set amount based on plan type
