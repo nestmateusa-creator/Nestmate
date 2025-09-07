@@ -988,7 +988,10 @@
                         await loadUserData(user);
                     } else {
                         console.log('No user authenticated, redirecting to signin');
-                        window.location.href = 'signin.html';
+                        // Add a small delay to prevent redirect loops
+                        setTimeout(() => {
+                            window.location.href = 'signin.html';
+                        }, 100);
                     }
                 });
                 
