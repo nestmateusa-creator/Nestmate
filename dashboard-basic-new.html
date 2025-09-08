@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic Dashboard | NestMate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Firebase CDN -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    
+    <style>
+        :root {
+            --primary: #7c3aed;
+            --primary-dark: #6d28d9;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #06b6d4;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: var(--primary);
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-details h3 {
+            color: var(--primary);
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .user-details p {
+            color: var(--secondary);
+            font-size: 14px;
+        }
+
+        .plan-badge {
+            background: var(--success);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card h2 {
+            color: var(--primary);
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card p {
+            color: var(--secondary);
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
+
+        .features-list {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .features-list li {
+            padding: 8px 0;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .features-list li i {
+            color: var(--success);
+            width: 16px;
+        }
+
+        .upgrade-section {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border: 2px solid var(--success);
+            border-radius: var(--radius);
+            padding: 24px;
+            text-align: center;
+            margin-top: 24px;
+        }
+
+        .upgrade-section h3 {
+            color: var(--success);
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .upgrade-section p {
+            color: var(--secondary);
+            margin-bottom: 20px;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1><i class="fas fa-home"></i> Basic Dashboard</h1>
+            <div class="user-info">
+                <div class="user-details">
+                    <h3 id="userName">Basic User</h3>
+                    <p id="userEmail">Loading...</p>
+                </div>
+                <span class="plan-badge">Basic Plan</span>
+                <button class="btn btn-outline" onclick="window.location.href='profile.html'">
+                    <i class="fas fa-user-cog"></i>
+                    Profile
+                </button>
+                <button class="btn btn-danger" onclick="signOut()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Sign Out
+                </button>
+            </div>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div class="dashboard-grid">
+            <!-- Home Management -->
+            <div class="card">
+                <h2><i class="fas fa-home"></i> Home Management</h2>
+                <p>Manage your home details and property information.</p>
+                <ul class="features-list">
+                    <li><i class="fas fa-check"></i> Home details tracking</li>
+                    <li><i class="fas fa-check"></i> Property information</li>
+                    <li><i class="fas fa-check"></i> Basic maintenance logs</li>
+                </ul>
+                <button class="btn btn-primary" onclick="window.location.href='NestMate.html'">
+                    <i class="fas fa-arrow-right"></i>
+                    Manage Homes
+                </button>
+            </div>
+
+            <!-- Property Management -->
+            <div class="card">
+                <h2><i class="fas fa-building"></i> Property Management</h2>
+                <p>Track and manage your property-related tasks and information.</p>
+                <ul class="features-list">
+                    <li><i class="fas fa-check"></i> Property tracking</li>
+                    <li><i class="fas fa-check"></i> Basic task management</li>
+                    <li><i class="fas fa-check"></i> Property documents</li>
+                </ul>
+                <button class="btn btn-primary" onclick="window.location.href='property-management.html'">
+                    <i class="fas fa-arrow-right"></i>
+                    Manage Property
+                </button>
+            </div>
+
+            <!-- Emergency Services -->
+            <div class="card">
+                <h2><i class="fas fa-phone"></i> Emergency Services</h2>
+                <p>Quick access to emergency contacts and services.</p>
+                <ul class="features-list">
+                    <li><i class="fas fa-check"></i> Emergency contacts</li>
+                    <li><i class="fas fa-check"></i> Service provider directory</li>
+                    <li><i class="fas fa-check"></i> Quick call buttons</li>
+                </ul>
+                <button class="btn btn-primary" onclick="window.location.href='emergency-services.html'">
+                    <i class="fas fa-arrow-right"></i>
+                    Emergency Services
+                </button>
+            </div>
+
+            <!-- Product Recommendations -->
+            <div class="card">
+                <h2><i class="fas fa-shopping-cart"></i> Product Recommendations</h2>
+                <p>Get personalized product recommendations for your home.</p>
+                <ul class="features-list">
+                    <li><i class="fas fa-check"></i> Basic recommendations</li>
+                    <li><i class="fas fa-check"></i> Product reviews</li>
+                    <li><i class="fas fa-check"></i> Shopping lists</li>
+                </ul>
+                <button class="btn btn-primary" onclick="window.location.href='product-recommendations.html'">
+                    <i class="fas fa-arrow-right"></i>
+                    View Products
+                </button>
+            </div>
+        </div>
+
+        <!-- Upgrade Section -->
+        <div class="upgrade-section">
+            <h3><i class="fas fa-arrow-up"></i> Upgrade to Pro Plan</h3>
+            <p>Unlock advanced features like family management, warranty tracking, and premium support.</p>
+            <button class="btn btn-success" onclick="window.location.href='upgrade-pro.html'">
+                <i class="fas fa-crown"></i>
+                Upgrade to Pro - $10/month
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
+            authDomain: "data-41fa8.firebaseapp.com",
+            projectId: "data-41fa8",
+            storageBucket: "data-41fa8.firebasestorage.app",
+            messagingSenderId: "865171535257",
+            appId: "1:865171535257:web:9944a48a952e99f55f0f08",
+            measurementId: "G-1DYR2RGY4G"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Load user data
+        function loadUserData() {
+            const user = auth.currentUser;
+            if (user) {
+                document.getElementById('userName').textContent = user.displayName || 'Basic User';
+                document.getElementById('userEmail').textContent = user.email;
+            } else {
+                // Wait a bit for auth state to be ready
+                setTimeout(() => {
+                    const user = auth.currentUser;
+                    if (!user) {
+                        console.log('No user found, redirecting to signin');
+                        window.location.href = 'signin.html';
+                    }
+                }, 1000);
+            }
+        }
+
+        // Listen for auth state changes
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                loadUserData();
+            } else {
+                // Only redirect if we're not already on signin page
+                if (!window.location.href.includes('signin')) {
+                    console.log('Auth state changed - no user, redirecting to signin');
+                    window.location.href = 'signin.html';
+                }
+            }
+        });
+
+        // Sign out function
+        function signOut() {
+            auth.signOut().then(() => {
+                window.location.href = 'signin.html';
+            }).catch((error) => {
+                console.error('Error signing out:', error);
+            });
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserData();
+        });
+    </script>
+</body>
+</html>

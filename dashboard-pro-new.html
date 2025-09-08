@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro Dashboard | NestMate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Firebase CDN -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    
+    <style>
+        :root {
+            --primary: #7c3aed;
+            --primary-dark: #6d28d9;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #06b6d4;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: var(--primary);
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-details h3 {
+            color: var(--primary);
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .user-details p {
+            color: var(--secondary);
+            font-size: 14px;
+        }
+
+        .plan-badge {
+            background: var(--info);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card h2 {
+            color: var(--primary);
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card p {
+            color: var(--secondary);
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
+
+        .features-list {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .features-list li {
+            padding: 8px 0;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .features-list li i {
+            color: var(--success);
+            width: 16px;
+        }
+
+        .upgrade-section {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 2px solid var(--warning);
+            border-radius: var(--radius);
+            padding: 24px;
+            text-align: center;
+            margin-top: 24px;
+        }
+
+        .upgrade-section h3 {
+            color: var(--warning);
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .upgrade-section p {
+            color: var(--secondary);
+            margin-bottom: 20px;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1><i class="fas fa-crown"></i> Pro Dashboard</h1>
+            <div class="user-info">
+                <div class="user-details">
+                    <h3 id="userName">Pro User</h3>
+                    <p id="userEmail">Loading...</p>
+                </div>
+                <span class="plan-badge">Pro Plan</span>
+                <button class="btn btn-outline" onclick="window.location.href='profile.html'">
+                    <i class="fas fa-user-cog"></i>
+                    Profile
+                </button>
+                <button class="btn btn-danger" onclick="signOut()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Sign Out
+                </button>
+            </div>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div class="dashboard-grid">
+            <!-- Home Management -->
+            <div class="card">
+                <h2><i class="fas fa-home"></i> Home Management</h2>
+                <p>Advanced home management with detailed tracking and maintenance logs.</p>
+                <ul class="features-list">
+                    <li><i class="fas fa-check"></i> Multiple home tracking</li>
+                    <li><i class="fas fa-check"></i> Detailed maintenance logs</li>
+                    <li><i class="fas fa-check"></i> Property value tracking</li>
+                    <li><i class="fas fa-check"></i> Document management</li>
+                </ul>
+                <button class="btn btn-primary" onclick="window.location.href='NestMate.html'">
+                    <i class="fas fa-arrow-right"></i>
+                    Manage Homes
+                </button>
+            </div>
+
+            <!-- Family Management -->
+            <div class="card">
+                <h2><i class="fas fa-users"></i> Family Management</h2>
+                <p>Manage family members and their access to your home systems.</p>
+                <ul class="features-list">
+                    <li><i class="fas fa-check"></i> Family member profiles</li>
+                    <li><i class="fas fa-check"></i> Access permissions</li>
+                    <li><i class="fas fa-check"></i> Emergency contacts</li>
+                    <li><i class="fas fa-check"></i> Shared calendars</li>
+                </ul>
+                <button class="btn btn-primary" onclick="window.location.href='family-management.html'">
+                    <i class="fas fa-arrow-right"></i>
+                    Manage Family
+                </button>
+            </div>
+
+            <!-- Warranty Tracker -->
+            <div class="card">
+                <h2><i class="fas fa-shield-alt"></i> Warranty Tracker</h2>
+                <p>Track warranties and service contracts for all your home items.</p>
+                <ul class="features-list">
+                    <li><i class="fas fa-check"></i> Warranty tracking</li>
+                    <li><i class="fas fa-check"></i> Service reminders</li>
+                    <li><i class="fas fa-check"></i> Document storage</li>
+                    <li><i class="fas fa-check"></i> Expiration alerts</li>
+                </ul>
+                <button class="btn btn-primary" onclick="window.location.href='warranty-tracker.html'">
+                    <i class="fas fa-arrow-right"></i>
+                    Track Warranties
+                </button>
+            </div>
+
+            <!-- Property Management -->
+            <div class="card">
+                <h2><i class="fas fa-building"></i> Property Management</h2>
+                <p>Advanced property management with contractor coordination.</p>
+                <ul class="features-list">
+                    <li><i class="fas fa-check"></i> Contractor management</li>
+                    <li><i class="fas fa-check"></i> Project tracking</li>
+                    <li><i class="fas fa-check"></i> Bid comparison</li>
+                    <li><i class="fas fa-check"></i> Service scheduling</li>
+                </ul>
+                <button class="btn btn-primary" onclick="window.location.href='property-management.html'">
+                    <i class="fas fa-arrow-right"></i>
+                    Manage Property
+                </button>
+            </div>
+
+            <!-- Emergency Services -->
+            <div class="card">
+                <h2><i class="fas fa-phone"></i> Emergency Services</h2>
+                <p>Comprehensive emergency services and contact management.</p>
+                <ul class="features-list">
+                    <li><i class="fas fa-check"></i> Emergency contacts</li>
+                    <li><i class="fas fa-check"></i> Service provider directory</li>
+                    <li><i class="fas fa-check"></i> Quick call buttons</li>
+                    <li><i class="fas fa-check"></i> Location-based services</li>
+                </ul>
+                <button class="btn btn-primary" onclick="window.location.href='emergency-services.html'">
+                    <i class="fas fa-arrow-right"></i>
+                    Emergency Services
+                </button>
+            </div>
+
+            <!-- Product Recommendations -->
+            <div class="card">
+                <h2><i class="fas fa-shopping-cart"></i> Product Recommendations</h2>
+                <p>Advanced product recommendations with AI-powered suggestions.</p>
+                <ul class="features-list">
+                    <li><i class="fas fa-check"></i> AI recommendations</li>
+                    <li><i class="fas fa-check"></i> Price tracking</li>
+                    <li><i class="fas fa-check"></i> Review aggregation</li>
+                    <li><i class="fas fa-check"></i> Shopping lists</li>
+                </ul>
+                <button class="btn btn-primary" onclick="window.location.href='product-recommendations.html'">
+                    <i class="fas fa-arrow-right"></i>
+                    View Products
+                </button>
+            </div>
+        </div>
+
+        <!-- Upgrade Section -->
+        <div class="upgrade-section">
+            <h3><i class="fas fa-arrow-up"></i> Upgrade to Advanced Plan</h3>
+            <p>Unlock premium features like custom integrations, priority support, and advanced analytics.</p>
+            <button class="btn btn-warning" onclick="window.location.href='upgrade-advanced.html'">
+                <i class="fas fa-star"></i>
+                Upgrade to Advanced - $16/month
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
+            authDomain: "data-41fa8.firebaseapp.com",
+            projectId: "data-41fa8",
+            storageBucket: "data-41fa8.firebasestorage.app",
+            messagingSenderId: "865171535257",
+            appId: "1:865171535257:web:9944a48a952e99f55f0f08",
+            measurementId: "G-1DYR2RGY4G"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Load user data
+        function loadUserData() {
+            const user = auth.currentUser;
+            if (user) {
+                document.getElementById('userName').textContent = user.displayName || 'Pro User';
+                document.getElementById('userEmail').textContent = user.email;
+            } else {
+                // Wait a bit for auth state to be ready
+                setTimeout(() => {
+                    const user = auth.currentUser;
+                    if (!user) {
+                        console.log('No user found, redirecting to signin');
+                        window.location.href = 'signin.html';
+                    }
+                }, 1000);
+            }
+        }
+
+        // Listen for auth state changes
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                loadUserData();
+            } else {
+                // Only redirect if we're not already on signin page
+                if (!window.location.href.includes('signin')) {
+                    console.log('Auth state changed - no user, redirecting to signin');
+                    window.location.href = 'signin.html';
+                }
+            }
+        });
+
+        // Sign out function
+        function signOut() {
+            auth.signOut().then(() => {
+                window.location.href = 'signin.html';
+            }).catch((error) => {
+                console.error('Error signing out:', error);
+            });
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserData();
+        });
+    </script>
+</body>
+</html>
