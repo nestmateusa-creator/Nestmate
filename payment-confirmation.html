@@ -206,7 +206,7 @@
                     Unable to update your account. Please contact support.
                 </div>
 
-                <a href="dashboard-trial.html" class="btn btn-primary">
+                <a href="dashboard-trial-new.html" class="btn btn-primary">
                     <i class="fas fa-arrow-left"></i>
                     Back to Dashboard
                 </a>
@@ -291,23 +291,26 @@
 
                 console.log('Updating user account to:', planType);
 
-                // Update user profile
-                await db.collection('userProfiles').doc(user.uid).update({
+                const updateData = {
                     accountType: planType,
                     plan: planType,
                     subscriptionStatus: 'active',
                     subscriptionDate: new Date().toISOString(),
                     updatedAt: new Date().toISOString()
-                });
+                };
 
-                // Update account document
-                await db.collection('accounts').doc(user.uid).update({
-                    accountType: planType,
-                    plan: planType,
-                    subscriptionStatus: 'active',
-                    subscriptionDate: new Date().toISOString(),
-                    updatedAt: new Date().toISOString()
-                });
+                // Update user profile (use set with merge to create if doesn't exist)
+                await db.collection('userProfiles').doc(user.uid).set(updateData, { merge: true });
+                console.log('✅ User profile updated');
+
+                // Try to update accounts collection (optional - don't fail if it doesn't exist)
+                try {
+                    await db.collection('accounts').doc(user.uid).set(updateData, { merge: true });
+                    console.log('✅ Account document updated');
+                } catch (accountError) {
+                    console.log('⚠️ Account document update failed (not critical):', accountError);
+                    // Continue anyway - userProfiles is the main one
+                }
 
                 console.log('✅ User account updated successfully');
                 return true;
@@ -332,9 +335,9 @@
             };
 
             const dashboardUrls = {
-                'basic': 'force-redirect.html',
-                'pro': 'force-redirect.html',
-                'advanced': 'force-redirect.html'
+                'basic': 'dashboard-basic-new.html',
+                'pro': 'dashboard-pro-new.html',
+                'advanced': 'dashboard-advanced-new.html'
             };
 
             document.getElementById('loadingState').style.display = 'none';
@@ -379,7 +382,7 @@
                     window.location.href = 'payment-cancelled.html';
                 } else {
                     // Not a successful payment, redirect to trial dashboard
-                    window.location.href = 'dashboard-trial.html';
+                    window.location.href = 'dashboard-trial-new.html';
                 }
             } catch (error) {
                 console.error('Payment confirmation error:', error);
