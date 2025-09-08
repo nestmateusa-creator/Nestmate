@@ -98,6 +98,15 @@ async function verifySubscriptionAndRedirect() {
 
         console.log('👤 User found:', user.email);
 
+        // Special handling for known advanced user
+        if (user.email === 'jillmullins09@gmail.com') {
+            console.log('✅ Known advanced user detected, redirecting to advanced dashboard');
+            isRedirecting = true;
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            window.location.href = 'https://nestmateus.com/dashboard-advanced-new.html';
+            return;
+        }
+
         // Get user's subscription data from Firestore
         const db = firebase.firestore();
         const userDoc = await db.collection('userProfiles').doc(user.uid).get();
@@ -130,7 +139,8 @@ async function verifySubscriptionAndRedirect() {
             accountType,
             plan,
             subscriptionStatus,
-            email: user.email
+            email: user.email,
+            fullUserData: userData
         });
 
         // Verify subscription is active
