@@ -487,13 +487,23 @@
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚨 DOMContentLoaded event fired');
+            alert('🚨 DOMContentLoaded event fired - Setting up auth listener');
+            
             auth.onAuthStateChanged(async (user) => {
+                console.log('🚨 onAuthStateChanged fired, user:', user);
+                alert('🚨 onAuthStateChanged fired - User: ' + (user ? user.email : 'No user'));
+                
                 if (user) {
                     currentUser = user;
+                    console.log('🚨 User is logged in, calling loadUserProfile');
+                    alert('🚨 User is logged in, calling loadUserProfile');
                     await loadUserProfile();
                     document.getElementById('loading').style.display = 'none';
                     document.getElementById('profileContent').style.display = 'block';
                 } else {
+                    console.log('🚨 No user logged in, redirecting to signin');
+                    alert('🚨 No user logged in, redirecting to signin');
                     window.location.href = 'signin.html';
                 }
             });
