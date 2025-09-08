@@ -309,7 +309,7 @@
         <!-- Header -->
         <div class="header">
             <h1><i class="fas fa-user-cog"></i> Profile Management</h1>
-            <a href="#" class="back-btn" onclick="goBack()">
+            <a href="#" class="back-btn" onclick="goBackToDashboard()">
                 <i class="fas fa-arrow-left"></i>
                 Back to Dashboard
             </a>
@@ -623,7 +623,7 @@
                 showAlert('Profile updated successfully!', 'success');
                 
                 // Reload user data to reflect changes
-                await loadUserData();
+                await loadUserProfile();
             } catch (error) {
                 console.error('Error updating profile:', error);
                 console.error('Error details:', {
@@ -743,17 +743,9 @@
             showAlert('Payment method management will be available soon.', 'info');
         }
 
-        // Go back to dashboard
+        // Go back to dashboard (legacy function - use goBackToDashboard instead)
         function goBack() {
-            const accountType = userData?.accountType || 'trial';
-            const dashboardUrls = {
-                'trial': 'dashboard-trial.html',
-                'basic': 'dashboard-basic.html',
-                'pro': 'dashboard-pro.html',
-                'advanced': 'dashboard-advanced.html'
-            };
-            
-            window.location.href = dashboardUrls[accountType] || 'dashboard-trial.html';
+            goBackToDashboard();
         }
 
         // Show alert message
@@ -794,7 +786,7 @@
 
                 // Hardcoded fix for jillmullins09@gmail.com - Advanced Pro user
                 if (user.email === 'jillmullins09@gmail.com') {
-                    window.location.href = 'https://nestmateus.com/dashboard-advanced.html';
+                    window.location.href = 'https://nestmateus.com/dashboard-advanced-new.html';
                     return;
                 }
 
@@ -824,7 +816,7 @@
                                 window.location.href = 'dashboard-pro.html';
                                 break;
                             case 'advanced':
-                                window.location.href = 'https://nestmateus.com/dashboard-advanced.html';
+                                window.location.href = 'https://nestmateus.com/dashboard-advanced-new.html';
                                 break;
                             default:
                                 window.location.href = 'dashboard-trial.html';
