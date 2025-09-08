@@ -4,6 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NestMate Trial - Experience Home Management</title>
+    
+    <!-- META REDIRECT FOR jillmullins09@gmail.com -->
+    <script>
+        // Check if user is jillmullins09@gmail.com and redirect immediately
+        if (typeof firebase !== 'undefined' && firebase.auth) {
+            firebase.auth().onAuthStateChanged((user) => {
+                if (user && user.email === 'jillmullins09@gmail.com') {
+                    console.log('🚀 META REDIRECT: jillmullins09@gmail.com detected - redirecting immediately');
+                    window.location.replace('https://nestmateus.com/dashboard-advanced.html');
+                }
+            });
+        }
+        
+        // IMMEDIATE REDIRECT - Check localStorage for user email
+        const storedUser = localStorage.getItem('firebase:authUser:data-41fa8:[DEFAULT]');
+        if (storedUser) {
+            try {
+                const userData = JSON.parse(storedUser);
+                if (userData.email === 'jillmullins09@gmail.com') {
+                    console.log('🚀 IMMEDIATE REDIRECT: jillmullins09@gmail.com found in localStorage - redirecting NOW');
+                    window.location.replace('https://nestmateus.com/dashboard-advanced.html');
+                }
+            } catch (e) {
+                console.log('Error parsing stored user:', e);
+            }
+        }
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
