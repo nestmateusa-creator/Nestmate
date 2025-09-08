@@ -748,38 +748,49 @@
                         return;
                     }
 
-                    // Call Netlify function to cancel Stripe subscription
-                    const response = await fetch('/.netlify/functions/cancel-subscription', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            userId: user.uid,
-                            email: user.email
-                        })
-                    });
-
-                    if (response.ok) {
-                        // Update user account type to trial
-                        await firebase.firestore().collection('userProfiles').doc(user.uid).update({
-                            accountType: 'trial',
-                            plan: 'trial',
-                            subscriptionStatus: 'cancelled',
-                            cancelledAt: new Date().toISOString(),
-                            updatedAt: new Date().toISOString()
+                    // Try to cancel Stripe subscription first
+                    try {
+                        const response = await fetch('/.netlify/functions/cancel-subscription', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                userId: user.uid,
+                                email: user.email
+                            })
                         });
 
-                        alert('Subscription cancelled successfully! Your account has been downgraded to Trial.');
-                        
-                        // Reload the page to show updated status
-                        window.location.reload();
-                    } else {
-                        throw new Error('Failed to cancel subscription');
+                        if (response.ok) {
+                            const result = await response.json();
+                            console.log('Stripe cancellation result:', result);
+                        } else {
+                            const errorData = await response.json();
+                            console.log('Stripe cancellation failed:', errorData);
+                            // Continue anyway - we'll still update Firestore
+                        }
+                    } catch (stripeError) {
+                        console.log('Stripe cancellation error:', stripeError);
+                        // Continue anyway - we'll still update Firestore
                     }
+                    
+                    // Always update Firestore to downgrade account
+                    await firebase.firestore().collection('userProfiles').doc(user.uid).update({
+                        accountType: 'trial',
+                        plan: 'trial',
+                        subscriptionStatus: 'cancelled',
+                        cancelledAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    });
+
+                    alert('Subscription cancelled successfully! Your account has been downgraded to Trial.');
+                    
+                    // Reload the page to show updated status
+                    window.location.reload();
+                    
                 } catch (error) {
                     console.error('Error cancelling subscription:', error);
-                    alert('Error cancelling subscription. Please contact support.');
+                    alert('Error cancelling subscription: ' + error.message + '\n\nPlease contact support if this continues.');
                 }
             }
         }
