@@ -539,6 +539,11 @@
                 'advanced': '$16/month'
             };
 
+            // Debug logging
+            console.log('🔍 Profile Debug - Account Type:', accountType);
+            console.log('🔍 Profile Debug - User Data:', userData);
+            console.log('🔍 Profile Debug - Current User Email:', currentUser?.email);
+
             document.getElementById('currentPlan').textContent = planNames[accountType];
             document.getElementById('subscriptionStatus').textContent = `Active - ${planPrices[accountType]}`;
             
@@ -554,6 +559,20 @@
             const actionsDiv = document.getElementById('subscriptionActions');
             let actionsHTML = '';
 
+            // Debug logging
+            console.log('🔍 Subscription Actions Debug - Account Type:', accountType);
+            console.log('🔍 Subscription Actions Debug - Actions Div:', actionsDiv);
+
+            // TEMPORARY: Always show cancel button for testing
+            actionsHTML = `
+                <button class="btn btn-danger" onclick="cancelSubscription()">
+                    <i class="fas fa-times"></i>
+                    Cancel Subscription
+                </button>
+            `;
+            
+            // Original logic (commented out for testing)
+            /*
             if (accountType === 'trial') {
                 actionsHTML = `
                     <button class="btn btn-primary" onclick="upgradeToBasic()">
@@ -569,6 +588,7 @@
                     </button>
                 `;
             }
+            */
 
             actionsDiv.innerHTML = actionsHTML;
         }

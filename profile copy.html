@@ -175,15 +175,27 @@
           
           // Show/hide cancel button based on plan
           const cancelBtn = document.getElementById('cancelSubscriptionBtn');
+          
+          // Debug logging
+          console.log('🔍 Profile Copy Debug - Account Type:', accountType);
+          console.log('🔍 Profile Copy Debug - Cancel Button:', cancelBtn);
+          
+          // TEMPORARY: Always show cancel button for testing
+          cancelBtn.style.display = 'block';
+          
+          // Original logic (commented out for testing)
+          /*
           if (accountType === 'trial') {
             cancelBtn.style.display = 'none';
           } else {
             cancelBtn.style.display = 'block';
           }
+          */
         } else {
           document.getElementById('currentPlan').textContent = 'Trial Plan';
           document.getElementById('subscriptionStatus').textContent = 'Active';
-          document.getElementById('cancelSubscriptionBtn').style.display = 'none';
+          // TEMPORARY: Always show cancel button for testing
+          document.getElementById('cancelSubscriptionBtn').style.display = 'block';
         }
       } catch (error) {
         console.error('Error loading subscription info:', error);
