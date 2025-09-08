@@ -430,6 +430,22 @@
         console.log('🚨 PROFILE PAGE LOADED - JavaScript is running!');
         alert('🚨 PROFILE PAGE LOADED - JavaScript is running!');
         
+        // Test if we can access DOM elements
+        try {
+            console.log('🚨 Testing DOM access...');
+            const testElement = document.getElementById('currentPlan');
+            console.log('🚨 currentPlan element found:', testElement);
+            if (testElement) {
+                testElement.innerHTML = '🚨 DOM ACCESS WORKING - JavaScript is functional!';
+                testElement.style.color = 'red';
+                testElement.style.fontSize = '20px';
+                testElement.style.fontWeight = 'bold';
+            }
+        } catch (error) {
+            console.error('🚨 DOM access error:', error);
+            alert('🚨 DOM access error: ' + error.message);
+        }
+        
         // Firebase configuration - CORRECTED PROJECT ID
         const firebaseConfig = {
             apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
@@ -442,18 +458,28 @@
         };
 
         // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+        try {
+            console.log('🚨 Initializing Firebase...');
+            firebase.initializeApp(firebaseConfig);
+            const auth = firebase.auth();
+            const db = firebase.firestore();
+            console.log('🚨 Firebase initialized successfully');
+        } catch (error) {
+            console.error('🚨 Firebase initialization error:', error);
+            alert('🚨 Firebase initialization error: ' + error.message);
+        }
         
         // Enable Firebase persistence for better data reliability
         try {
-            await firebase.firestore().enablePersistence({
+            firebase.firestore().enablePersistence({
                 synchronizeTabs: true
+            }).then(() => {
+                console.log('🚨 Firebase persistence enabled');
+            }).catch((error) => {
+                console.log('🚨 Firebase persistence not available:', error);
             });
-            console.log('✅ Firebase persistence enabled');
         } catch (error) {
-            console.log('⚠️ Firebase persistence not available:', error.message);
+            console.log('🚨 Firebase persistence error:', error);
         }
 
         let currentUser = null;
