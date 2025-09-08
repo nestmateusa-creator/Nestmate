@@ -316,13 +316,13 @@
         </div>
 
         <!-- Loading State -->
-        <div id="loading" class="loading">
+        <div id="loading" class="loading" style="display: none;">
             <div class="spinner"></div>
             <p>Loading profile...</p>
         </div>
 
         <!-- Profile Content -->
-        <div id="profileContent" style="display: none;">
+        <div id="profileContent" style="display: block;">
             <div class="profile-grid">
                 <!-- Personal Information -->
                 <div class="card">
@@ -465,13 +465,19 @@
         // Load user profile data
         async function loadUserProfile() {
             try {
+                console.log('Loading user profile for:', currentUser.email);
+                console.log('User UID:', currentUser.uid);
+                
                 // Load user data from Firestore
                 const userDoc = await db.collection('userProfiles').doc(currentUser.uid).get();
+                console.log('User document exists:', userDoc.exists);
+                
                 if (userDoc.exists) {
                     userData = userDoc.data();
+                    console.log('User data loaded:', userData);
                     
                     // Populate personal information
-                    document.getElementById('fullName').value = userData.displayName || '';
+                    document.getElementById('fullName').value = userData.displayName || currentUser.displayName || '';
                     document.getElementById('email').value = currentUser.email;
                     document.getElementById('phone').value = userData.phone || '';
                     document.getElementById('spouseName').value = userData.spouseName || '';
@@ -481,11 +487,38 @@
                     // Update subscription info
                     updateSubscriptionInfo();
                 } else {
-                    showAlert('User profile not found. Please contact support.', 'danger');
+                    console.log('User profile not found, creating default profile');
+                    // Create a default profile if none exists
+                    userData = {
+                        displayName: currentUser.displayName || '',
+                        email: currentUser.email,
+                        phone: '',
+                        spouseName: '',
+                        billingAddress: '',
+                        mailingAddress: '',
+                        accountType: 'trial'
+                    };
+                    
+                    // Populate with default data
+                    document.getElementById('fullName').value = userData.displayName;
+                    document.getElementById('email').value = currentUser.email;
+                    document.getElementById('phone').value = '';
+                    document.getElementById('spouseName').value = '';
+                    document.getElementById('billingAddress').value = '';
+                    document.getElementById('mailingAddress').value = '';
+                    
+                    // Update subscription info
+                    updateSubscriptionInfo();
+                    
+                    showAlert('Welcome! Please fill in your profile information.', 'info');
                 }
             } catch (error) {
                 console.error('Error loading user profile:', error);
                 showAlert('Error loading profile. Please try again.', 'danger');
+                
+                // Show default form even if there's an error
+                document.getElementById('fullName').value = currentUser.displayName || '';
+                document.getElementById('email').value = currentUser.email;
             }
         }
 
