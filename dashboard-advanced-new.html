@@ -370,12 +370,8 @@
         }
 
         // Initialize when page loads
-        document.addEventListener('DOMContentLoaded', async function() {
-            // Verify user has access to advanced dashboard
-            const hasAccess = await verifyDashboardAccess('advanced');
-            if (hasAccess) {
-                loadUserData();
-            }
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserData();
         });
 
         // Listen for auth state changes

@@ -3,9 +3,18 @@
 
 console.log('🔐 Subscription Verification System loaded');
 
+// Prevent multiple redirects
+let isRedirecting = false;
+
 // Subscription verification and routing
 async function verifySubscriptionAndRedirect() {
     try {
+        // Prevent multiple redirects
+        if (isRedirecting) {
+            console.log('⏳ Already redirecting, skipping...');
+            return;
+        }
+        
         console.log('🔍 Verifying subscription...');
         
         // Wait for Firebase to be available
@@ -14,6 +23,7 @@ async function verifySubscriptionAndRedirect() {
             await new Promise(resolve => setTimeout(resolve, 1000));
             if (typeof firebase === 'undefined') {
                 console.log('❌ Firebase not available, redirecting to trial');
+                isRedirecting = true;
                 window.location.href = 'https://nestmateus.com/dashboard-trial-new.html';
                 return;
             }
@@ -22,6 +32,7 @@ async function verifySubscriptionAndRedirect() {
         const user = firebase.auth().currentUser;
         if (!user) {
             console.log('❌ No user logged in, redirecting to signin');
+            isRedirecting = true;
             window.location.href = 'signin.html';
             return;
         }
@@ -45,6 +56,7 @@ async function verifySubscriptionAndRedirect() {
                 updatedAt: new Date().toISOString()
             });
             console.log('✅ Trial account created, redirecting to trial dashboard');
+            isRedirecting = true;
             window.location.href = 'https://nestmateus.com/dashboard-trial-new.html';
             return;
         }
@@ -64,6 +76,7 @@ async function verifySubscriptionAndRedirect() {
         // Verify subscription is active
         if (subscriptionStatus !== 'active' && subscriptionStatus !== 'trialing') {
             console.log('❌ Subscription not active, redirecting to trial');
+            isRedirecting = true;
             window.location.href = 'https://nestmateus.com/dashboard-trial-new.html';
             return;
         }
@@ -81,6 +94,7 @@ async function verifySubscriptionAndRedirect() {
         console.log('🎯 Normalized account type:', normalizedType);
 
         // Redirect based on verified subscription
+        isRedirecting = true;
         switch (normalizedType) {
             case 'basic':
                 console.log('✅ Basic subscription verified, redirecting to basic dashboard');
@@ -102,6 +116,7 @@ async function verifySubscriptionAndRedirect() {
     } catch (error) {
         console.error('❌ Error verifying subscription:', error);
         console.log('🔄 Fallback: redirecting to trial dashboard');
+        isRedirecting = true;
         window.location.href = 'https://nestmateus.com/dashboard-trial-new.html';
     }
 }
@@ -109,6 +124,12 @@ async function verifySubscriptionAndRedirect() {
 // Check if user should be on current dashboard
 async function verifyDashboardAccess(expectedAccountType) {
     try {
+        // Prevent multiple redirects
+        if (isRedirecting) {
+            console.log('⏳ Already redirecting, allowing access');
+            return true;
+        }
+        
         console.log('🛡️ Verifying dashboard access for:', expectedAccountType);
         
         // Wait for Firebase to be available
