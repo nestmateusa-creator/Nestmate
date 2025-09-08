@@ -309,14 +309,18 @@
         <!-- Header -->
         <div class="header">
             <h1><i class="fas fa-user-cog"></i> Profile Management</h1>
-            <a href="#" class="back-btn" onclick="goBackToDashboard(); return false;">
+            <button class="back-btn" onclick="goBackToDashboard()">
                 <i class="fas fa-arrow-left"></i>
                 Back to Dashboard
-            </a>
-            <a href="https://nestmateus.com/dashboard-advanced-new.html" class="back-btn" style="margin-left: 10px; background: #10b981;">
+            </button>
+            <button class="back-btn" style="margin-left: 10px; background: #10b981;" onclick="window.location.href='https://nestmateus.com/dashboard-advanced-new.html'">
                 <i class="fas fa-home"></i>
                 Direct to Advanced Dashboard
-            </a>
+            </button>
+            <button class="back-btn" style="margin-left: 10px; background: #f59e0b;" onclick="testButton()">
+                <i class="fas fa-bug"></i>
+                Test JavaScript
+            </button>
         </div>
 
         <!-- Loading State -->
@@ -812,9 +816,15 @@
             }
         }
 
+        // Simple test function
+        function testButton() {
+            alert('Button clicked! JavaScript is working.');
+        }
+
         // Go back to correct dashboard based on user's account type
         async function goBackToDashboard() {
             console.log('goBackToDashboard called');
+            alert('goBackToDashboard function called!');
             try {
                 const user = auth.currentUser;
                 console.log('Current user:', user);
