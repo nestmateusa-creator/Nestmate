@@ -15,12 +15,12 @@ window.goBackToDashboard = function() {
     
     if (user && user.email === 'jillmullins09@gmail.com') {
         console.log('✅ NUCLEAR: jillmullins09@gmail.com -> dashboard-advanced.html');
-        window.location.href = 'https://nestmateus.com/dashboard-advanced.html';
+        window.location.href = 'https://nestmateus.com/dashboard-advanced-new.html';
         return;
     }
     
     console.log('📊 NUCLEAR: Other user -> dashboard-trial.html');
-    window.location.href = 'dashboard-trial.html';
+        window.location.href = 'https://nestmateus.com/dashboard-trial-new.html';
 };
 
 window.redirectToUserDashboard = function() {
@@ -34,12 +34,12 @@ window.redirectToUserDashboard = function() {
     
     if (user && user.email === 'jillmullins09@gmail.com') {
         console.log('✅ NUCLEAR: jillmullins09@gmail.com -> dashboard-advanced.html');
-        window.location.href = 'https://nestmateus.com/dashboard-advanced.html';
+        window.location.href = 'https://nestmateus.com/dashboard-advanced-new.html';
         return;
     }
     
     console.log('📊 NUCLEAR: Other user -> dashboard-trial.html');
-    window.location.href = 'dashboard-trial.html';
+        window.location.href = 'https://nestmateus.com/dashboard-trial-new.html';
 };
 
 // Override ALL dashboard links
