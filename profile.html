@@ -543,6 +543,9 @@
             console.log('🔍 Profile Debug - Account Type:', accountType);
             console.log('🔍 Profile Debug - User Data:', userData);
             console.log('🔍 Profile Debug - Current User Email:', currentUser?.email);
+            
+            // TEMPORARY: Alert to confirm function is running
+            alert('🔍 updateSubscriptionInfo() is running! Account Type: ' + accountType);
 
             document.getElementById('currentPlan').textContent = planNames[accountType];
             document.getElementById('subscriptionStatus').textContent = `Active - ${planPrices[accountType]}`;
@@ -565,10 +568,13 @@
 
             // TEMPORARY: Always show cancel button for testing
             actionsHTML = `
-                <button class="btn btn-danger" onclick="cancelSubscription()">
+                <button class="btn btn-danger" onclick="cancelSubscription()" style="background-color: red !important; color: white !important; padding: 15px !important; font-size: 18px !important; border: 3px solid black !important;">
                     <i class="fas fa-times"></i>
-                    Cancel Subscription
+                    CANCEL SUBSCRIPTION - TEST BUTTON
                 </button>
+                <div style="background: yellow; padding: 10px; margin: 10px 0; border: 2px solid red;">
+                    <strong>DEBUG: Cancel button should be visible above</strong>
+                </div>
             `;
             
             // Original logic (commented out for testing)
@@ -591,6 +597,10 @@
             */
 
             actionsDiv.innerHTML = actionsHTML;
+            
+            // Additional debug - check if content was actually set
+            console.log('🔍 Actions HTML set:', actionsHTML);
+            console.log('🔍 Actions Div innerHTML after setting:', actionsDiv.innerHTML);
         }
 
         // Update upgrade options
