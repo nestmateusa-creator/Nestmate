@@ -6,6 +6,60 @@ console.log('🔐 Subscription Verification System loaded');
 // Prevent multiple redirects
 let isRedirecting = false;
 
+// Show loading screen
+function showLoadingScreen() {
+    // Create loading overlay
+    const loadingOverlay = document.createElement('div');
+    loadingOverlay.id = 'subscription-loading';
+    loadingOverlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        color: white;
+        font-family: 'Inter', sans-serif;
+    `;
+    
+    loadingOverlay.innerHTML = `
+        <div style="text-align: center;">
+            <div style="
+                width: 60px;
+                height: 60px;
+                border: 4px solid rgba(255,255,255,0.3);
+                border-top: 4px solid white;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+                margin: 0 auto 20px;
+            "></div>
+            <h2 style="margin: 0 0 10px; font-size: 24px; font-weight: 600;">Verifying Subscription</h2>
+            <p style="margin: 0; opacity: 0.8; font-size: 16px;">Please wait while we verify your account...</p>
+        </div>
+        <style>
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        </style>
+    `;
+    
+    document.body.appendChild(loadingOverlay);
+}
+
+// Hide loading screen
+function hideLoadingScreen() {
+    const loadingOverlay = document.getElementById('subscription-loading');
+    if (loadingOverlay) {
+        loadingOverlay.remove();
+    }
+}
+
 // Subscription verification and routing
 async function verifySubscriptionAndRedirect() {
     try {
@@ -14,6 +68,9 @@ async function verifySubscriptionAndRedirect() {
             console.log('⏳ Already redirecting, skipping...');
             return;
         }
+        
+        // Show loading screen
+        showLoadingScreen();
         
         console.log('🔍 Verifying subscription...');
         
@@ -24,6 +81,7 @@ async function verifySubscriptionAndRedirect() {
             if (typeof firebase === 'undefined') {
                 console.log('❌ Firebase not available, redirecting to trial');
                 isRedirecting = true;
+                await new Promise(resolve => setTimeout(resolve, 1500));
                 window.location.href = 'https://nestmateus.com/dashboard-trial-new.html';
                 return;
             }
@@ -33,6 +91,7 @@ async function verifySubscriptionAndRedirect() {
         if (!user) {
             console.log('❌ No user logged in, redirecting to signin');
             isRedirecting = true;
+            await new Promise(resolve => setTimeout(resolve, 1500));
             window.location.href = 'signin.html';
             return;
         }
@@ -57,6 +116,7 @@ async function verifySubscriptionAndRedirect() {
             });
             console.log('✅ Trial account created, redirecting to trial dashboard');
             isRedirecting = true;
+            await new Promise(resolve => setTimeout(resolve, 1500));
             window.location.href = 'https://nestmateus.com/dashboard-trial-new.html';
             return;
         }
@@ -77,6 +137,7 @@ async function verifySubscriptionAndRedirect() {
         if (subscriptionStatus !== 'active' && subscriptionStatus !== 'trialing') {
             console.log('❌ Subscription not active, redirecting to trial');
             isRedirecting = true;
+            await new Promise(resolve => setTimeout(resolve, 1500));
             window.location.href = 'https://nestmateus.com/dashboard-trial-new.html';
             return;
         }
@@ -95,6 +156,10 @@ async function verifySubscriptionAndRedirect() {
 
         // Redirect based on verified subscription
         isRedirecting = true;
+        
+        // Add a small delay to show loading screen
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
         switch (normalizedType) {
             case 'basic':
                 console.log('✅ Basic subscription verified, redirecting to basic dashboard');
@@ -117,6 +182,10 @@ async function verifySubscriptionAndRedirect() {
         console.error('❌ Error verifying subscription:', error);
         console.log('🔄 Fallback: redirecting to trial dashboard');
         isRedirecting = true;
+        
+        // Add a small delay to show loading screen
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
         window.location.href = 'https://nestmateus.com/dashboard-trial-new.html';
     }
 }
