@@ -383,15 +383,8 @@
                 </div>
 
                 <!-- Subscription Management -->
-                <div class="card" style="background: yellow !important; border: 5px solid red !important;">
-                    <h2 style="color: red !important; font-size: 30px !important;"><i class="fas fa-credit-card"></i> SUBSCRIPTION MANAGEMENT - TEST SECTION</h2>
-                    
-                    <div style="background: orange !important; padding: 20px !important; margin: 10px 0 !important;">
-                        <h3 style="color: black !important;">STATIC TEST BUTTON (Should always be visible):</h3>
-                        <button onclick="alert('Static test button clicked!')" style="background: red !important; color: white !important; padding: 20px !important; font-size: 20px !important; border: 3px solid black !important;">
-                            STATIC CANCEL SUBSCRIPTION TEST
-                        </button>
-                    </div>
+                <div class="card">
+                    <h2><i class="fas fa-credit-card"></i> Subscription Management</h2>
                     
                     <div class="subscription-info">
                         <div class="subscription-plan" id="currentPlan">Loading...</div>
@@ -399,7 +392,11 @@
                     </div>
 
                     <div id="subscriptionActions">
-                        <!-- Actions will be populated based on current plan -->
+                        <!-- Cancel Subscription Button -->
+                        <button onclick="cancelSubscriptionNow()" style="background: #dc3545; color: white; padding: 15px 30px; font-size: 16px; border: none; border-radius: 8px; cursor: pointer; margin: 10px 0;">
+                            <i class="fas fa-times"></i>
+                            Cancel Subscription
+                        </button>
                     </div>
 
                     <div class="upgrade-options" id="upgradeOptions">
@@ -425,26 +422,8 @@
         <div id="alerts"></div>
     </div>
 
-    <script>
-        // IMMEDIATE TEST - This should run as soon as the page loads
-        console.log('🚨 PROFILE PAGE LOADED - JavaScript is running!');
-        alert('🚨 PROFILE PAGE LOADED - JavaScript is running!');
-        
-        // Test if we can access DOM elements
-        try {
-            console.log('🚨 Testing DOM access...');
-            const testElement = document.getElementById('currentPlan');
-            console.log('🚨 currentPlan element found:', testElement);
-            if (testElement) {
-                testElement.innerHTML = '🚨 DOM ACCESS WORKING - JavaScript is functional!';
-                testElement.style.color = 'red';
-                testElement.style.fontSize = '20px';
-                testElement.style.fontWeight = 'bold';
-            }
-        } catch (error) {
-            console.error('🚨 DOM access error:', error);
-            alert('🚨 DOM access error: ' + error.message);
-        }
+  <script>
+        // Initialize page
         
         // Firebase configuration - CORRECTED PROJECT ID
         const firebaseConfig = {
@@ -458,16 +437,9 @@
         };
 
         // Initialize Firebase
-        try {
-            console.log('🚨 Initializing Firebase...');
-            firebase.initializeApp(firebaseConfig);
-            const auth = firebase.auth();
-            const db = firebase.firestore();
-            console.log('🚨 Firebase initialized successfully');
-        } catch (error) {
-            console.error('🚨 Firebase initialization error:', error);
-            alert('🚨 Firebase initialization error: ' + error.message);
-        }
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
         
         // Enable Firebase persistence for better data reliability
         try {
@@ -487,23 +459,13 @@
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚨 DOMContentLoaded event fired');
-            alert('🚨 DOMContentLoaded event fired - Setting up auth listener');
-            
             auth.onAuthStateChanged(async (user) => {
-                console.log('🚨 onAuthStateChanged fired, user:', user);
-                alert('🚨 onAuthStateChanged fired - User: ' + (user ? user.email : 'No user'));
-                
                 if (user) {
                     currentUser = user;
-                    console.log('🚨 User is logged in, calling loadUserProfile');
-                    alert('🚨 User is logged in, calling loadUserProfile');
                     await loadUserProfile();
                     document.getElementById('loading').style.display = 'none';
                     document.getElementById('profileContent').style.display = 'block';
                 } else {
-                    console.log('🚨 No user logged in, redirecting to signin');
-                    alert('🚨 No user logged in, redirecting to signin');
                     window.location.href = 'signin.html';
                 }
             });
@@ -512,8 +474,6 @@
         // Load user profile data
         async function loadUserProfile() {
             try {
-                console.log('🚨 loadUserProfile() function is running!');
-                alert('🚨 loadUserProfile() function is running!');
                 
                 console.log('Loading user profile for:', currentUser.email);
                 console.log('User UID:', currentUser.uid);
@@ -589,13 +549,7 @@
                 'advanced': '$16/month'
             };
 
-            // Debug logging
-            console.log('🔍 Profile Debug - Account Type:', accountType);
-            console.log('🔍 Profile Debug - User Data:', userData);
-            console.log('🔍 Profile Debug - Current User Email:', currentUser?.email);
-            
-            // TEMPORARY: Alert to confirm function is running
-            alert('🔍 updateSubscriptionInfo() is running! Account Type: ' + accountType);
+            // Update subscription info
 
             document.getElementById('currentPlan').textContent = planNames[accountType];
             document.getElementById('subscriptionStatus').textContent = `Active - ${planPrices[accountType]}`;
@@ -612,45 +566,15 @@
             const actionsDiv = document.getElementById('subscriptionActions');
             let actionsHTML = '';
 
-            // Debug logging
-            console.log('🔍 Subscription Actions Debug - Account Type:', accountType);
-            console.log('🔍 Subscription Actions Debug - Actions Div:', actionsDiv);
-
-            // TEMPORARY: Always show cancel button for testing
+            // Show cancel button for all users (simplified)
             actionsHTML = `
-                <button class="btn btn-danger" onclick="cancelSubscription()" style="background-color: red !important; color: white !important; padding: 15px !important; font-size: 18px !important; border: 3px solid black !important;">
+                <button class="btn btn-danger" onclick="cancelSubscriptionNow()">
                     <i class="fas fa-times"></i>
-                    CANCEL SUBSCRIPTION - TEST BUTTON
+                    Cancel Subscription
                 </button>
-                <div style="background: yellow; padding: 10px; margin: 10px 0; border: 2px solid red;">
-                    <strong>DEBUG: Cancel button should be visible above</strong>
-                </div>
             `;
-            
-            // Original logic (commented out for testing)
-            /*
-            if (accountType === 'trial') {
-                actionsHTML = `
-                    <button class="btn btn-primary" onclick="upgradeToBasic()">
-                        <i class="fas fa-arrow-up"></i>
-                        Upgrade to Basic Plan
-                    </button>
-                `;
-            } else {
-                actionsHTML = `
-                    <button class="btn btn-danger" onclick="cancelSubscription()">
-                        <i class="fas fa-times"></i>
-                        Cancel Subscription
-                    </button>
-                `;
-            }
-            */
 
             actionsDiv.innerHTML = actionsHTML;
-            
-            // Additional debug - check if content was actually set
-            console.log('🔍 Actions HTML set:', actionsHTML);
-            console.log('🔍 Actions Div innerHTML after setting:', actionsDiv.innerHTML);
         }
 
         // Update upgrade options
@@ -810,6 +734,54 @@
         // Upgrade to basic plan
         function upgradeToBasic() {
             upgradeToPlan('basic');
+        }
+
+        // SIMPLE WORKING CANCEL SUBSCRIPTION FUNCTION
+        async function cancelSubscriptionNow() {
+            if (confirm('Are you sure you want to cancel your subscription? This will downgrade your account to Trial.')) {
+                try {
+                    // Get current user
+                    const user = firebase.auth().currentUser;
+                    if (!user) {
+                        alert('Please sign in to cancel your subscription.');
+                        window.location.href = 'signin.html';
+                        return;
+                    }
+
+                    // Call Netlify function to cancel Stripe subscription
+                    const response = await fetch('/.netlify/functions/cancel-subscription', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            userId: user.uid,
+                            email: user.email
+                        })
+                    });
+
+                    if (response.ok) {
+                        // Update user account type to trial
+                        await firebase.firestore().collection('userProfiles').doc(user.uid).update({
+                            accountType: 'trial',
+                            plan: 'trial',
+                            subscriptionStatus: 'cancelled',
+                            cancelledAt: new Date().toISOString(),
+                            updatedAt: new Date().toISOString()
+                        });
+
+                        alert('Subscription cancelled successfully! Your account has been downgraded to Trial.');
+                        
+                        // Reload the page to show updated status
+                        window.location.reload();
+                    } else {
+                        throw new Error('Failed to cancel subscription');
+                    }
+                } catch (error) {
+                    console.error('Error cancelling subscription:', error);
+                    alert('Error cancelling subscription. Please contact support.');
+                }
+            }
         }
 
         // Cancel subscription
