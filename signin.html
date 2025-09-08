@@ -313,7 +313,8 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     
     <!-- NUCLEAR OVERRIDE - Overrides ALL dashboard routing -->
-    <script src="nuclear-override.js"></script>
+    <!-- Subscription Verification System -->
+    <script src="subscription-verification.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-analytics.js"></script>
 
     <script>
@@ -395,23 +396,12 @@
             await redirectToUserDashboard();
         }
 
-        // Simple redirect function - hardcoded fix for known users
+        // Redirect function using subscription verification
         async function redirectToUserDashboard() {
-            console.log('🚀 SIGNIN: Redirecting to NEW dashboards');
+            console.log('🚀 SIGNIN: Redirecting using subscription verification');
             
-            // Get current user immediately
-            const user = auth.currentUser;
-            console.log('🚀 SIGNIN: Current user:', user);
-            
-            if (user && user.email === 'jillmullins09@gmail.com') {
-                console.log('✅ SIGNIN: jillmullins09@gmail.com detected - going to NEW advanced dashboard');
-                window.location.href = 'https://nestmateus.com/dashboard-advanced-new.html';
-                return;
-            }
-            
-            // For other users, go to NEW trial dashboard
-            console.log('📊 SIGNIN: Other user - going to NEW trial dashboard');
-            window.location.href = 'https://nestmateus.com/dashboard-trial-new.html';
+            // Use the subscription verification system
+            await verifySubscriptionAndRedirect();
         }
 
         function forgotPassword() {

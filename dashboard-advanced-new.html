@@ -12,6 +12,9 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     
+    <!-- Subscription Verification System -->
+    <script src="subscription-verification.js"></script>
+    
     <style>
         :root {
             --primary: #7c3aed;
@@ -367,8 +370,12 @@
         }
 
         // Initialize when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            loadUserData();
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Verify user has access to advanced dashboard
+            const hasAccess = await verifyDashboardAccess('advanced');
+            if (hasAccess) {
+                loadUserData();
+            }
         });
 
         // Listen for auth state changes

@@ -1,0 +1,200 @@
+// Universal Subscription Verification System
+// This file provides proper subscription verification and routing
+
+console.log('🔐 Subscription Verification System loaded');
+
+// Subscription verification and routing
+async function verifySubscriptionAndRedirect() {
+    try {
+        console.log('🔍 Verifying subscription...');
+        
+        // Wait for Firebase to be available
+        if (typeof firebase === 'undefined') {
+            console.log('⏳ Waiting for Firebase...');
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            if (typeof firebase === 'undefined') {
+                console.log('❌ Firebase not available, redirecting to trial');
+                window.location.href = 'https://nestmateus.com/dashboard-trial-new.html';
+                return;
+            }
+        }
+
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            console.log('❌ No user logged in, redirecting to signin');
+            window.location.href = 'signin.html';
+            return;
+        }
+
+        console.log('👤 User found:', user.email);
+
+        // Get user's subscription data from Firestore
+        const db = firebase.firestore();
+        const userDoc = await db.collection('userProfiles').doc(user.uid).get();
+        
+        if (!userDoc.exists) {
+            console.log('❌ User document not found, creating trial account');
+            // Create a default trial account
+            await db.collection('userProfiles').doc(user.uid).set({
+                email: user.email,
+                displayName: user.displayName || '',
+                accountType: 'trial',
+                plan: 'trial',
+                subscriptionStatus: 'active',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            });
+            console.log('✅ Trial account created, redirecting to trial dashboard');
+            window.location.href = 'https://nestmateus.com/dashboard-trial-new.html';
+            return;
+        }
+
+        const userData = userDoc.data();
+        const accountType = userData.accountType || 'trial';
+        const plan = userData.plan || 'trial';
+        const subscriptionStatus = userData.subscriptionStatus || 'active';
+        
+        console.log('📊 User data:', {
+            accountType,
+            plan,
+            subscriptionStatus,
+            email: user.email
+        });
+
+        // Verify subscription is active
+        if (subscriptionStatus !== 'active' && subscriptionStatus !== 'trialing') {
+            console.log('❌ Subscription not active, redirecting to trial');
+            window.location.href = 'https://nestmateus.com/dashboard-trial-new.html';
+            return;
+        }
+
+        // Normalize account type
+        let normalizedType = 'trial';
+        if (accountType && accountType.toLowerCase().includes('advanced')) {
+            normalizedType = 'advanced';
+        } else if (accountType && accountType.toLowerCase().includes('pro')) {
+            normalizedType = 'pro';
+        } else if (accountType && accountType.toLowerCase().includes('basic')) {
+            normalizedType = 'basic';
+        }
+
+        console.log('🎯 Normalized account type:', normalizedType);
+
+        // Redirect based on verified subscription
+        switch (normalizedType) {
+            case 'basic':
+                console.log('✅ Basic subscription verified, redirecting to basic dashboard');
+                window.location.href = 'https://nestmateus.com/dashboard-basic-new.html';
+                break;
+            case 'pro':
+                console.log('✅ Pro subscription verified, redirecting to pro dashboard');
+                window.location.href = 'https://nestmateus.com/dashboard-pro-new.html';
+                break;
+            case 'advanced':
+                console.log('✅ Advanced subscription verified, redirecting to advanced dashboard');
+                window.location.href = 'https://nestmateus.com/dashboard-advanced-new.html';
+                break;
+            default:
+                console.log('✅ Trial account, redirecting to trial dashboard');
+                window.location.href = 'https://nestmateus.com/dashboard-trial-new.html';
+        }
+
+    } catch (error) {
+        console.error('❌ Error verifying subscription:', error);
+        console.log('🔄 Fallback: redirecting to trial dashboard');
+        window.location.href = 'https://nestmateus.com/dashboard-trial-new.html';
+    }
+}
+
+// Check if user should be on current dashboard
+async function verifyDashboardAccess(expectedAccountType) {
+    try {
+        console.log('🛡️ Verifying dashboard access for:', expectedAccountType);
+        
+        // Wait for Firebase to be available
+        if (typeof firebase === 'undefined') {
+            console.log('⏳ Waiting for Firebase...');
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            if (typeof firebase === 'undefined') {
+                console.log('❌ Firebase not available, allowing access');
+                return true;
+            }
+        }
+
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            console.log('❌ No user logged in, redirecting to signin');
+            window.location.href = 'signin.html';
+            return false;
+        }
+
+        // Get user's subscription data from Firestore
+        const db = firebase.firestore();
+        const userDoc = await db.collection('userProfiles').doc(user.uid).get();
+        
+        if (!userDoc.exists) {
+            console.log('❌ User document not found, redirecting to trial dashboard');
+            window.location.href = 'https://nestmateus.com/dashboard-trial-new.html';
+            return false;
+        }
+
+        const userData = userDoc.data();
+        const accountType = userData.accountType || 'trial';
+        const subscriptionStatus = userData.subscriptionStatus || 'active';
+        
+        // Check if subscription is active
+        if (subscriptionStatus !== 'active' && subscriptionStatus !== 'trialing') {
+            console.log('❌ Subscription not active, redirecting to trial dashboard');
+            window.location.href = 'https://nestmateus.com/dashboard-trial-new.html';
+            return false;
+        }
+
+        // Normalize account type
+        let normalizedType = 'trial';
+        if (accountType && accountType.toLowerCase().includes('advanced')) {
+            normalizedType = 'advanced';
+        } else if (accountType && accountType.toLowerCase().includes('pro')) {
+            normalizedType = 'pro';
+        } else if (accountType && accountType.toLowerCase().includes('basic')) {
+            normalizedType = 'basic';
+        }
+
+        console.log('📊 User has:', normalizedType, 'Expected:', expectedAccountType);
+
+        // Check if user has access to this dashboard
+        if (normalizedType !== expectedAccountType) {
+            console.log('❌ Access denied, redirecting to correct dashboard');
+            await verifySubscriptionAndRedirect();
+            return false;
+        }
+
+        console.log('✅ Access granted to', expectedAccountType, 'dashboard');
+        return true;
+
+    } catch (error) {
+        console.error('❌ Error verifying dashboard access:', error);
+        console.log('🔄 Fallback: redirecting to trial dashboard');
+        window.location.href = 'https://nestmateus.com/dashboard-trial-new.html';
+        return false;
+    }
+}
+
+// Universal go back to dashboard function
+async function goBackToDashboard() {
+    console.log('🏠 Going back to dashboard...');
+    await verifySubscriptionAndRedirect();
+}
+
+// Universal redirect to user dashboard function
+async function redirectToUserDashboard() {
+    console.log('🚀 Redirecting to user dashboard...');
+    await verifySubscriptionAndRedirect();
+}
+
+// Make functions globally available
+window.verifySubscriptionAndRedirect = verifySubscriptionAndRedirect;
+window.verifyDashboardAccess = verifyDashboardAccess;
+window.goBackToDashboard = goBackToDashboard;
+window.redirectToUserDashboard = redirectToUserDashboard;
+
+console.log('✅ Subscription Verification System ready');

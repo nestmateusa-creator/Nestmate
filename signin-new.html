@@ -12,6 +12,9 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     
+    <!-- Subscription Verification System -->
+    <script src="subscription-verification.js"></script>
+    
     <style>
         :root {
             --primary: #2563eb;
@@ -270,17 +273,12 @@
             }, 3000);
         }
 
-        // Redirect to correct dashboard
-        function redirectToDashboard(user) {
+        // Redirect to correct dashboard using subscription verification
+        async function redirectToDashboard(user) {
             console.log('🚀 SIGNIN: Redirecting user:', user.email);
             
-            if (user.email === 'jillmullins09@gmail.com') {
-                console.log('✅ SIGNIN: jillmullins09@gmail.com detected - going to advanced dashboard');
-                window.location.href = 'https://nestmateus.com/dashboard-advanced-new.html';
-            } else {
-                console.log('📊 SIGNIN: Other user - going to trial dashboard');
-                window.location.href = 'https://nestmateus.com/dashboard-trial-new.html';
-            }
+            // Use the subscription verification system
+            await verifySubscriptionAndRedirect();
         }
 
         // Handle form submission
