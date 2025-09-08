@@ -392,8 +392,14 @@
                     window.location.href = 'https://nestmateus.com/dashboard-advanced-new.html';
                 }
             } else {
-                // Redirect to sign in if no user
-                window.location.href = 'signin.html';
+                // Wait a bit for auth state to be ready
+                setTimeout(() => {
+                    const user = auth.currentUser;
+                    if (!user) {
+                        console.log('No user found, redirecting to signin');
+                        window.location.href = 'signin.html';
+                    }
+                }, 1000);
             }
         }
 
@@ -416,7 +422,11 @@
             if (user) {
                 loadUserData();
             } else {
-                window.location.href = 'signin.html';
+                // Only redirect if we're not already on signin page
+                if (!window.location.href.includes('signin')) {
+                    console.log('Auth state changed - no user, redirecting to signin');
+                    window.location.href = 'signin.html';
+                }
             }
         });
     </script>
