@@ -6,6 +6,11 @@
   <title>Edit Profile | NestMate</title>
   <link rel="stylesheet" href="styles/main.css">
   <script type="module" defer src="./profile-firebase-delete.js"></script>
+  
+  <!-- Firebase CDN -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
   <style>
     body {
       font-family: 'Segoe UI', Arial, sans-serif;
@@ -107,6 +112,18 @@
       </form>
       <button id="logoutBtn" style="margin-top:18px;background:#f87171;color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;">Logout</button>
       <hr style="margin:32px 0;width:100%;border:0;border-top:1.5px solid #e5e7eb;" />
+      
+      <!-- Subscription Management -->
+      <h3>Subscription Management</h3>
+      <div id="subscriptionInfo" style="background:#f8fafc;padding:16px;border-radius:8px;margin-bottom:16px;">
+        <p><strong>Current Plan:</strong> <span id="currentPlan">Loading...</span></p>
+        <p><strong>Status:</strong> <span id="subscriptionStatus">Loading...</span></p>
+      </div>
+      <button id="cancelSubscriptionBtn" style="background:#ef4444;color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;margin-bottom:16px;">Cancel Subscription</button>
+      <div id="subscriptionMessage" style="color:green;margin-bottom:16px;"></div>
+      <div id="subscriptionError" style="color:red;margin-bottom:16px;"></div>
+      
+      <hr style="margin:32px 0;width:100%;border:0;border-top:1.5px solid #e5e7eb;" />
       <h3>Delete Account</h3>
       <form id="deleteAccountForm" style="display:flex;flex-direction:column;gap:10px;">
         <input type="password" id="deletePassword" placeholder="Enter password to confirm" required />
@@ -117,6 +134,131 @@
     </div>
   </body>
   <script type="module" src="./profile-firebase-delete.js" onerror="document.getElementById('deleteAccountError').textContent = 'Failed to load account deletion module.';"></script>
+  <script>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
+      authDomain: "data-41fa8.firebaseapp.com",
+      projectId: "data-41fa8",
+      storageBucket: "data-41fa8.firebasestorage.app",
+      messagingSenderId: "865171535257",
+      appId: "1:865171535257:web:9944a48a952e99f55f0f08",
+      measurementId: "G-1DYR2RGY4G"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    let currentUser = null;
+    let userData = null;
+
+    // Load subscription information
+    async function loadSubscriptionInfo() {
+      try {
+        const user = auth.currentUser;
+        if (!user) {
+          document.getElementById('currentPlan').textContent = 'Not logged in';
+          document.getElementById('subscriptionStatus').textContent = 'Not logged in';
+          return;
+        }
+
+        const userDoc = await db.collection('userProfiles').doc(user.uid).get();
+        if (userDoc.exists) {
+          userData = userDoc.data();
+          const accountType = userData.accountType || 'trial';
+          const subscriptionStatus = userData.subscriptionStatus || 'active';
+          
+          document.getElementById('currentPlan').textContent = accountType.charAt(0).toUpperCase() + accountType.slice(1) + ' Plan';
+          document.getElementById('subscriptionStatus').textContent = subscriptionStatus.charAt(0).toUpperCase() + subscriptionStatus.slice(1);
+          
+          // Show/hide cancel button based on plan
+          const cancelBtn = document.getElementById('cancelSubscriptionBtn');
+          if (accountType === 'trial') {
+            cancelBtn.style.display = 'none';
+          } else {
+            cancelBtn.style.display = 'block';
+          }
+        } else {
+          document.getElementById('currentPlan').textContent = 'Trial Plan';
+          document.getElementById('subscriptionStatus').textContent = 'Active';
+          document.getElementById('cancelSubscriptionBtn').style.display = 'none';
+        }
+      } catch (error) {
+        console.error('Error loading subscription info:', error);
+        document.getElementById('subscriptionError').textContent = 'Error loading subscription information';
+      }
+    }
+
+    // Cancel subscription function
+    async function cancelSubscription() {
+      if (confirm('Are you sure you want to cancel your subscription? This will downgrade your account to Trial.')) {
+        try {
+          const user = auth.currentUser;
+          if (!user) {
+            document.getElementById('subscriptionError').textContent = 'Not logged in';
+            return;
+          }
+
+          // Call Netlify function to cancel Stripe subscription
+          const response = await fetch('/.netlify/functions/cancel-subscription', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              userId: user.uid,
+              email: user.email
+            })
+          });
+
+          if (response.ok) {
+            // Update user account type to trial
+            await db.collection('userProfiles').doc(user.uid).update({
+              accountType: 'trial',
+              plan: 'trial',
+              subscriptionStatus: 'cancelled',
+              cancelledAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString()
+            });
+
+            userData.accountType = 'trial';
+            document.getElementById('subscriptionMessage').textContent = 'Subscription cancelled successfully. Your account has been downgraded to Trial.';
+            document.getElementById('subscriptionError').textContent = '';
+            
+            // Reload subscription info
+            await loadSubscriptionInfo();
+          } else {
+            throw new Error('Failed to cancel subscription');
+          }
+        } catch (error) {
+          console.error('Error cancelling subscription:', error);
+          document.getElementById('subscriptionError').textContent = 'Error cancelling subscription. Please contact support.';
+        }
+      }
+    }
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function() {
+      auth.onAuthStateChanged(async (user) => {
+        if (user) {
+          currentUser = user;
+          await loadSubscriptionInfo();
+        } else {
+          window.location.href = 'signin.html';
+        }
+      });
+    });
+
+    // Add event listener for cancel button
+    document.addEventListener('DOMContentLoaded', function() {
+      const cancelBtn = document.getElementById('cancelSubscriptionBtn');
+      if (cancelBtn) {
+        cancelBtn.addEventListener('click', cancelSubscription);
+      }
+    });
+  </script>
   <script>
     // Top nav Logout button logic
     const navLogoutBtn = document.getElementById('navLogoutBtn');
