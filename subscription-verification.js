@@ -98,12 +98,20 @@ async function verifySubscriptionAndRedirect() {
 
         console.log('👤 User found:', user.email);
 
-        // Special handling for known advanced user
+        // Special handling for known users
         if (user.email === 'jillmullins09@gmail.com') {
             console.log('✅ Known advanced user detected, redirecting to advanced dashboard');
             isRedirecting = true;
             await new Promise(resolve => setTimeout(resolve, 1500));
             window.location.href = 'https://nestmateus.com/dashboard-advanced-new.html';
+            return;
+        }
+        
+        if (user.email === 'familyrod2021@gmail.com') {
+            console.log('✅ Known basic user detected, redirecting to basic dashboard');
+            isRedirecting = true;
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            window.location.href = 'https://nestmateus.com/dashboard-basic-new.html';
             return;
         }
 

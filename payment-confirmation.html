@@ -484,9 +484,19 @@
             const params = getUrlParams();
             console.log('🚨 URL parameters:', params);
             
-            // If this is a successful payment, show success immediately
+            // If this is a successful payment, try to update account first, then show success
             if (params.payment === 'success' && params.plan) {
-                console.log('🚨 Successful payment detected, showing success state');
+                console.log('🚨 Successful payment detected, attempting to update account');
+                
+                // Try to update the account in the background
+                try {
+                    await updateUserAccount(params.plan);
+                    console.log('🚨 Account updated successfully');
+                } catch (error) {
+                    console.log('🚨 Account update failed, but showing success anyway:', error);
+                }
+                
+                // Show success regardless of update result
                 showSuccess(params.plan);
                 return;
             }
