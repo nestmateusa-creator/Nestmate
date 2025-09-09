@@ -7,12 +7,15 @@
     
     <!-- META REDIRECT FOR jillmullins09@gmail.com -->
     <script>
-        // Check if user is jillmullins09@gmail.com and redirect immediately
+        // Check if user is jillmullins09@gmail.com or familyrod2021@gmail.com and redirect immediately
         if (typeof firebase !== 'undefined' && firebase.auth) {
             firebase.auth().onAuthStateChanged((user) => {
                 if (user && user.email === 'jillmullins09@gmail.com') {
                     console.log('🚀 META REDIRECT: jillmullins09@gmail.com detected - redirecting immediately');
-                    window.location.replace('https://nestmateus.com/dashboard-advanced.html');
+                    window.location.replace('https://nestmateus.com/dashboard-advanced-new.html');
+                } else if (user && user.email === 'familyrod2021@gmail.com') {
+                    console.log('🚀 META REDIRECT: familyrod2021@gmail.com detected - redirecting to basic dashboard');
+                    window.location.replace('https://nestmateus.com/dashboard-basic-new.html');
                 }
             });
         }
@@ -24,7 +27,10 @@
                 const userData = JSON.parse(storedUser);
                 if (userData.email === 'jillmullins09@gmail.com') {
                     console.log('🚀 IMMEDIATE REDIRECT: jillmullins09@gmail.com found in localStorage - redirecting NOW');
-                    window.location.replace('https://nestmateus.com/dashboard-advanced.html');
+                    window.location.replace('https://nestmateus.com/dashboard-advanced-new.html');
+                } else if (userData.email === 'familyrod2021@gmail.com') {
+                    console.log('🚀 IMMEDIATE REDIRECT: familyrod2021@gmail.com found in localStorage - redirecting to basic NOW');
+                    window.location.replace('https://nestmateus.com/dashboard-basic-new.html');
                 }
             } catch (e) {
                 console.log('Error parsing stored user:', e);
