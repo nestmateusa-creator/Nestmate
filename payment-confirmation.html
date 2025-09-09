@@ -273,6 +273,8 @@
         // Update user account type
         async function updateUserAccount(planType) {
             try {
+                console.log('🚨 updateUserAccount called with plan:', planType);
+                
                 // Wait for auth state to be ready
                 await new Promise((resolve) => {
                     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -282,14 +284,16 @@
                 });
 
                 const user = auth.currentUser;
+                console.log('🚨 Current user:', user ? user.email : 'No user');
+                
                 if (!user) {
                     // If user is not authenticated, redirect to sign in
-                    console.log('User not authenticated, redirecting to sign in...');
+                    console.log('🚨 User not authenticated, redirecting to sign in...');
                     window.location.href = 'signin.html?redirect=payment-confirmation.html?payment=success&plan=' + planType;
                     return false;
                 }
 
-                console.log('Updating user account to:', planType);
+                console.log('🚨 Updating user account to:', planType);
 
                 const updateData = {
                     accountType: planType,
@@ -299,12 +303,16 @@
                     updatedAt: new Date().toISOString()
                 };
 
+                console.log('🚨 Update data:', updateData);
+
                 // Update user profile (use set with merge to create if doesn't exist)
+                console.log('🚨 Updating userProfiles collection...');
                 await db.collection('userProfiles').doc(user.uid).set(updateData, { merge: true });
                 console.log('✅ User profile updated');
 
                 // Try to update accounts collection (optional - don't fail if it doesn't exist)
                 try {
+                    console.log('🚨 Updating accounts collection...');
                     await db.collection('accounts').doc(user.uid).set(updateData, { merge: true });
                     console.log('✅ Account document updated');
                 } catch (accountError) {
@@ -358,34 +366,42 @@
         // Main function
         async function processPaymentConfirmation() {
             try {
+                console.log('🚨 Starting payment confirmation process...');
+                
                 // Initialize Firebase
                 await initFirebase();
+                console.log('🚨 Firebase initialized');
                 
                 // Get URL parameters
                 const params = getUrlParams();
-                console.log('URL parameters:', params);
+                console.log('🚨 URL parameters:', params);
 
                 // Check if this is a successful payment
                 if (params.payment === 'success' && params.plan) {
                     const planType = params.plan;
+                    console.log('🚨 Processing successful payment for plan:', planType);
                     
                     // Update user account
                     const updateSuccess = await updateUserAccount(planType);
+                    console.log('🚨 Update result:', updateSuccess);
                     
                     if (updateSuccess !== false) {
                         // Show success
+                        console.log('🚨 Showing success state');
                         showSuccess(planType);
                     }
                     // If updateSuccess is false, user was redirected to sign in
                 } else if (params.payment === 'cancelled') {
                     // Payment was cancelled, redirect to cancelled page
+                    console.log('🚨 Payment was cancelled');
                     window.location.href = 'payment-cancelled.html';
                 } else {
                     // Not a successful payment, redirect to trial dashboard
+                    console.log('🚨 Not a successful payment, redirecting to trial dashboard');
                     window.location.href = 'dashboard-trial-new.html';
                 }
             } catch (error) {
-                console.error('Payment confirmation error:', error);
+                console.error('🚨 Payment confirmation error:', error);
                 showError(error.message || 'An unexpected error occurred');
             }
         }
