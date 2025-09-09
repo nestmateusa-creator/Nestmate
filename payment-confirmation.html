@@ -480,6 +480,17 @@
 
         // Start processing when page loads
         document.addEventListener('DOMContentLoaded', async () => {
+            // Get URL parameters first
+            const params = getUrlParams();
+            console.log('🚨 URL parameters:', params);
+            
+            // If this is a successful payment, show success immediately
+            if (params.payment === 'success' && params.plan) {
+                console.log('🚨 Successful payment detected, showing success state');
+                showSuccess(params.plan);
+                return;
+            }
+            
             // First run the test
             const testResult = await testFirebaseConnection();
             console.log('🧪 Firebase test result:', testResult);
