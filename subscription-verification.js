@@ -98,22 +98,8 @@ async function verifySubscriptionAndRedirect() {
 
         console.log('👤 User found:', user.email);
 
-        // Special handling for known users
-        if (user.email === 'jillmullins09@gmail.com') {
-            console.log('✅ Known advanced user detected, redirecting to advanced dashboard');
-            isRedirecting = true;
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            window.location.href = 'https://nestmateus.com/dashboard-advanced-new.html';
-            return;
-        }
-        
-        if (user.email === 'familyrod2021@gmail.com') {
-            console.log('✅ Known basic user detected, redirecting to basic dashboard');
-            isRedirecting = true;
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            window.location.href = 'https://nestmateus.com/dashboard-basic-new.html';
-            return;
-        }
+        // All users will be handled dynamically based on their Firestore data
+        console.log('✅ Processing user subscription verification for:', user.email);
 
         // Get user's subscription data from Firestore
         const db = firebase.firestore();
@@ -160,17 +146,23 @@ async function verifySubscriptionAndRedirect() {
             return;
         }
 
-        // Normalize account type
+        // Normalize account type - handle all possible variations
         let normalizedType = 'trial';
-        if (accountType && accountType.toLowerCase().includes('advanced')) {
+        const accountTypeLower = accountType ? accountType.toLowerCase() : '';
+        
+        if (accountTypeLower.includes('advanced')) {
             normalizedType = 'advanced';
-        } else if (accountType && accountType.toLowerCase().includes('pro')) {
+        } else if (accountTypeLower.includes('pro')) {
             normalizedType = 'pro';
-        } else if (accountType && accountType.toLowerCase().includes('basic')) {
+        } else if (accountTypeLower.includes('basic')) {
             normalizedType = 'basic';
         }
 
-        console.log('🎯 Normalized account type:', normalizedType);
+        console.log('🎯 Account type normalization:', {
+            original: accountType,
+            normalized: normalizedType,
+            subscriptionStatus: subscriptionStatus
+        });
 
         // Redirect based on verified subscription
         isRedirecting = true;

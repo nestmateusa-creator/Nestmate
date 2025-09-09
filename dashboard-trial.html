@@ -7,31 +7,53 @@
     
     <!-- META REDIRECT FOR jillmullins09@gmail.com -->
     <script>
-        // Check if user is jillmullins09@gmail.com or familyrod2021@gmail.com and redirect immediately
+        // Check if user has a paid subscription and redirect to appropriate dashboard
         if (typeof firebase !== 'undefined' && firebase.auth) {
-            firebase.auth().onAuthStateChanged((user) => {
-                if (user && user.email === 'jillmullins09@gmail.com') {
-                    console.log('🚀 META REDIRECT: jillmullins09@gmail.com detected - redirecting immediately');
-                    window.location.replace('https://nestmateus.com/dashboard-advanced-new.html');
-                } else if (user && user.email === 'familyrod2021@gmail.com') {
-                    console.log('🚀 META REDIRECT: familyrod2021@gmail.com detected - redirecting to basic dashboard');
-                    window.location.replace('https://nestmateus.com/dashboard-basic-new.html');
+            firebase.auth().onAuthStateChanged(async (user) => {
+                if (user) {
+                    console.log('🚀 META REDIRECT: User detected, checking subscription status');
+                    
+                    // Get user's subscription data from Firestore
+                    const db = firebase.firestore();
+                    try {
+                        const userDoc = await db.collection('userProfiles').doc(user.uid).get();
+                        if (userDoc.exists) {
+                            const userData = userDoc.data();
+                            const accountType = userData.accountType || 'trial';
+                            const subscriptionStatus = userData.subscriptionStatus || 'active';
+                            
+                            // If user has active paid subscription, redirect to appropriate dashboard
+                            if (subscriptionStatus === 'active' && accountType !== 'trial') {
+                                console.log('🚀 META REDIRECT: Paid user detected, redirecting to', accountType, 'dashboard');
+                                
+                                let dashboardUrl = 'dashboard-trial-new.html';
+                                if (accountType.toLowerCase().includes('basic')) {
+                                    dashboardUrl = 'dashboard-basic-new.html';
+                                } else if (accountType.toLowerCase().includes('pro')) {
+                                    dashboardUrl = 'dashboard-pro-new.html';
+                                } else if (accountType.toLowerCase().includes('advanced')) {
+                                    dashboardUrl = 'dashboard-advanced-new.html';
+                                }
+                                
+                                window.location.replace(`https://nestmateus.com/${dashboardUrl}`);
+                            }
+                        }
+                    } catch (error) {
+                        console.log('Error checking subscription status:', error);
+                    }
                 }
             });
         }
         
-        // IMMEDIATE REDIRECT - Check localStorage for user email
+        // IMMEDIATE REDIRECT - Check localStorage for user email and redirect paid users
         const storedUser = localStorage.getItem('firebase:authUser:data-41fa8:[DEFAULT]');
         if (storedUser) {
             try {
                 const userData = JSON.parse(storedUser);
-                if (userData.email === 'jillmullins09@gmail.com') {
-                    console.log('🚀 IMMEDIATE REDIRECT: jillmullins09@gmail.com found in localStorage - redirecting NOW');
-                    window.location.replace('https://nestmateus.com/dashboard-advanced-new.html');
-                } else if (userData.email === 'familyrod2021@gmail.com') {
-                    console.log('🚀 IMMEDIATE REDIRECT: familyrod2021@gmail.com found in localStorage - redirecting to basic NOW');
-                    window.location.replace('https://nestmateus.com/dashboard-basic-new.html');
-                }
+                console.log('🚀 IMMEDIATE REDIRECT: User found in localStorage, checking subscription');
+                
+                // For immediate redirect, we'll let the Firebase auth state change handle the proper routing
+                // This prevents any flash of trial dashboard for paid users
             } catch (e) {
                 console.log('Error parsing stored user:', e);
             }
