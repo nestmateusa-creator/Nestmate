@@ -444,8 +444,49 @@
             window.location.href = 'force-redirect.html';
         }
 
+        // Simple test function to debug the issue
+        async function testFirebaseConnection() {
+            try {
+                console.log('🧪 Testing Firebase connection...');
+                
+                const user = auth.currentUser;
+                console.log('🧪 Current user:', user);
+                
+                if (user) {
+                    console.log('🧪 User email:', user.email);
+                    console.log('🧪 User UID:', user.uid);
+                    
+                    // Test simple read operation
+                    const testDoc = await db.collection('userProfiles').doc(user.uid).get();
+                    console.log('🧪 Test read result:', testDoc.exists);
+                    
+                    // Test simple write operation
+                    await db.collection('userProfiles').doc(user.uid).set({
+                        testField: 'test value',
+                        testTime: new Date().toISOString()
+                    }, { merge: true });
+                    console.log('🧪 Test write successful');
+                    
+                    return true;
+                } else {
+                    console.log('🧪 No user authenticated');
+                    return false;
+                }
+            } catch (error) {
+                console.error('🧪 Firebase test failed:', error);
+                return false;
+            }
+        }
+
         // Start processing when page loads
-        document.addEventListener('DOMContentLoaded', processPaymentConfirmation);
+        document.addEventListener('DOMContentLoaded', async () => {
+            // First run the test
+            const testResult = await testFirebaseConnection();
+            console.log('🧪 Firebase test result:', testResult);
+            
+            // Then run the main process
+            await processPaymentConfirmation();
+        });
     </script>
 </body>
 </html>
