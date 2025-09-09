@@ -210,11 +210,6 @@
                     <i class="fas fa-arrow-left"></i>
                     Back to Dashboard
                 </a>
-                
-                <button onclick="forceUpdateAccount()" class="btn btn-primary" style="background: #f59e0b; margin-left: 10px;">
-                    <i class="fas fa-wrench"></i>
-                    Force Update Account
-                </button>
             </div>
         </div>
     </div>
@@ -280,15 +275,19 @@
             try {
                 console.log('🚨 updateUserAccount called with plan:', planType);
                 
-                // Wait for auth state to be ready
-                await new Promise((resolve) => {
+                // Wait for auth state to be ready with timeout
+                const user = await new Promise((resolve, reject) => {
+                    const timeout = setTimeout(() => {
+                        reject(new Error('Authentication timeout'));
+                    }, 10000); // 10 second timeout
+                    
                     const unsubscribe = auth.onAuthStateChanged((user) => {
+                        clearTimeout(timeout);
                         unsubscribe();
                         resolve(user);
                     });
                 });
 
-                const user = auth.currentUser;
                 console.log('🚨 Current user:', user ? user.email : 'No user');
                 
                 if (!user) {
@@ -298,13 +297,6 @@
                     return false;
                 }
 
-                // Special handling for familyrod2021@gmail.com
-                if (user.email === 'familyrod2021@gmail.com') {
-                    console.log('🚨 Special handling for familyrod2021@gmail.com');
-                    // Force update to basic plan
-                    planType = 'basic';
-                }
-
                 console.log('🚨 Updating user account to:', planType);
 
                 const updateData = {
@@ -312,7 +304,9 @@
                     plan: planType,
                     subscriptionStatus: 'active',
                     subscriptionDate: new Date().toISOString(),
-                    updatedAt: new Date().toISOString()
+                    updatedAt: new Date().toISOString(),
+                    email: user.email,
+                    uid: user.uid
                 };
 
                 console.log('🚨 Update data:', updateData);
@@ -393,16 +387,40 @@
                     const planType = params.plan;
                     console.log('🚨 Processing successful payment for plan:', planType);
                     
-                    // Update user account
-                    const updateSuccess = await updateUserAccount(planType);
-                    console.log('🚨 Update result:', updateSuccess);
+                    // Try to update user account with retry logic
+                    let updateSuccess = false;
+                    let retryCount = 0;
+                    const maxRetries = 3;
                     
-                    if (updateSuccess !== false) {
+                    while (!updateSuccess && retryCount < maxRetries) {
+                        try {
+                            console.log(`🚨 Attempt ${retryCount + 1} to update account...`);
+                            updateSuccess = await updateUserAccount(planType);
+                            console.log('🚨 Update result:', updateSuccess);
+                            
+                            if (updateSuccess) {
+                                break;
+                            }
+                        } catch (error) {
+                            console.log(`🚨 Attempt ${retryCount + 1} failed:`, error);
+                            retryCount++;
+                            
+                            if (retryCount < maxRetries) {
+                                console.log('🚨 Retrying in 2 seconds...');
+                                await new Promise(resolve => setTimeout(resolve, 2000));
+                            }
+                        }
+                    }
+                    
+                    if (updateSuccess) {
                         // Show success
                         console.log('🚨 Showing success state');
                         showSuccess(planType);
+                    } else {
+                        // All retries failed, show error
+                        console.log('🚨 All update attempts failed');
+                        showError('Failed to update account after multiple attempts. Please contact support.');
                     }
-                    // If updateSuccess is false, user was redirected to sign in
                 } else if (params.payment === 'cancelled') {
                     // Payment was cancelled, redirect to cancelled page
                     console.log('🚨 Payment was cancelled');
@@ -418,39 +436,6 @@
             }
         }
 
-        // Force update account for familyrod2021@gmail.com
-        async function forceUpdateAccount() {
-            try {
-                console.log('🚨 Force updating account...');
-                
-                const user = auth.currentUser;
-                if (!user) {
-                    alert('Please sign in first');
-                    return;
-                }
-
-                const updateData = {
-                    accountType: 'basic',
-                    plan: 'basic',
-                    subscriptionStatus: 'active',
-                    subscriptionDate: new Date().toISOString(),
-                    updatedAt: new Date().toISOString()
-                };
-
-                console.log('🚨 Force updating with data:', updateData);
-                
-                // Update user profile
-                await db.collection('userProfiles').doc(user.uid).set(updateData, { merge: true });
-                console.log('✅ Force update successful');
-                
-                alert('Account updated successfully! Redirecting to Basic dashboard...');
-                window.location.href = 'dashboard-basic-new.html';
-                
-            } catch (error) {
-                console.error('❌ Force update failed:', error);
-                alert('Force update failed: ' + error.message);
-            }
-        }
 
         // Go back to correct dashboard based on user's account type
         async function goBackToDashboard() {
