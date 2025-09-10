@@ -490,20 +490,35 @@
             const params = getUrlParams();
             console.log('🚨 URL parameters:', params);
             
-            // If this is a successful payment, show success immediately and redirect to correct dashboard
+            // If this is a successful payment, update account first, then show success
             if (params.payment === 'success' && params.plan) {
-                console.log('🚨 Successful payment detected, showing success and redirecting directly');
+                console.log('🚨 Successful payment detected, updating account first...');
                 console.log('🚨 params.payment:', params.payment);
                 console.log('🚨 params.plan:', params.plan);
                 console.log('🚨 Full params object:', params);
                 
-                // Show success page immediately
-                showSuccess(params.plan);
+                // Show loading state
+                document.getElementById('loadingState').style.display = 'block';
+                document.getElementById('successState').style.display = 'none';
+                document.getElementById('errorState').style.display = 'none';
                 
-                // Try to update account in background (non-blocking)
-                updateUserAccount(params.plan).catch(error => {
-                    console.log('Background account update failed:', error);
-                });
+                // Update account first, then show success
+                try {
+                    console.log('🚨 Updating user account before showing success...');
+                    const updateSuccess = await updateUserAccount(params.plan);
+                    console.log('🚨 Account update result:', updateSuccess);
+                    
+                    if (updateSuccess) {
+                        console.log('🚨 Account updated successfully, showing success page');
+                        showSuccess(params.plan);
+                    } else {
+                        console.log('🚨 Account update failed, showing error');
+                        showError('Failed to update your account. Please contact support.');
+                    }
+                } catch (error) {
+                    console.log('🚨 Account update error:', error);
+                    showError('Failed to update your account. Please contact support.');
+                }
                 
                 return;
             }
