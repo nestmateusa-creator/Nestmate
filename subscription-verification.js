@@ -237,29 +237,23 @@ async function verifySubscriptionAndRedirect() {
             return;
         }
 
-        // TEMPORARILY DISABLED - Let users stay on whatever dashboard they're on
-        console.log('🚫 Subscription verification redirects temporarily disabled');
-        console.log('✅ User can stay on current dashboard:', window.location.pathname);
+        // Redirect user to correct dashboard based on their subscription
+        console.log('🎯 Redirecting user to correct dashboard:', normalizedType);
+        isRedirecting = true;
+        await new Promise(resolve => setTimeout(resolve, 1500));
         
-        // Only redirect if user is on trial dashboard but has paid subscription
-        if (window.location.pathname.includes('dashboard-trial') && normalizedType !== 'trial') {
-            console.log('🚨 User on trial dashboard but has paid subscription, redirecting...');
-            isRedirecting = true;
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            
-            switch (normalizedType) {
-                case 'basic':
-                    window.location.href = 'https://nestmateus.com/dashboard-basic-new.html';
-                    break;
-                case 'pro':
-                    window.location.href = 'https://nestmateus.com/dashboard-pro-new.html';
-                    break;
-                case 'advanced':
-                    window.location.href = 'https://nestmateus.com/dashboard-advanced-new.html';
-                    break;
-            }
-        } else {
-            console.log('✅ User is on appropriate dashboard, no redirect needed');
+        switch (normalizedType) {
+            case 'basic':
+                window.location.href = 'https://nestmateus.com/dashboard-basic-new.html';
+                break;
+            case 'pro':
+                window.location.href = 'https://nestmateus.com/dashboard-pro-new.html';
+                break;
+            case 'advanced':
+                window.location.href = 'https://nestmateus.com/dashboard-advanced-new.html';
+                break;
+            default:
+                window.location.href = 'https://nestmateus.com/dashboard-trial-new.html';
         }
 
     } catch (error) {
