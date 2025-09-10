@@ -100,23 +100,71 @@ async function verifySubscriptionAndRedirect() {
 
         // All users will be handled dynamically based on their Firestore data
         console.log('✅ Processing user subscription verification for:', user.email);
-        
-        // Temporary fix for familyrod2021@gmail.com - ensure they get basic dashboard
-        if (user.email === 'familyrod2021@gmail.com') {
-            console.log('✅ Known basic user detected, redirecting to basic dashboard');
-            isRedirecting = true;
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            window.location.href = 'https://nestmateus.com/dashboard-basic-new.html';
-            return;
-        }
 
         // Get user's subscription data from Firestore
         const db = firebase.firestore();
         const userDoc = await db.collection('userProfiles').doc(user.uid).get();
         
         if (!userDoc.exists) {
-            console.log('❌ User document not found, creating trial account');
-            // Create a default trial account
+            console.log('❌ User document not found, checking if this is a new paid user...');
+            
+            // Check if user just came from payment confirmation
+            const urlParams = new URLSearchParams(window.location.search);
+            const fromPayment = urlParams.get('from') === 'payment';
+            
+            if (fromPayment) {
+                console.log('✅ User came from payment, waiting for account update...');
+                // Wait a bit for payment confirmation to update the account
+                await new Promise(resolve => setTimeout(resolve, 3000));
+                
+                // Try to get the user document again
+                const retryDoc = await db.collection('userProfiles').doc(user.uid).get();
+                if (retryDoc.exists) {
+                    console.log('✅ User document found after payment, processing...');
+                    const retryData = retryDoc.data();
+                    const accountType = retryData.accountType || 'trial';
+                    const plan = retryData.plan || 'trial';
+                    const subscriptionStatus = retryData.subscriptionStatus || 'active';
+                    
+                    console.log('📊 Retry user data:', { accountType, plan, subscriptionStatus });
+                    
+                    // Process the retry data
+                    if (subscriptionStatus === 'active' && accountType !== 'trial') {
+                        let normalizedType = 'trial';
+                        const accountTypeLower = accountType ? accountType.toLowerCase() : '';
+                        
+                        if (accountTypeLower.includes('advanced')) {
+                            normalizedType = 'advanced';
+                        } else if (accountTypeLower.includes('pro')) {
+                            normalizedType = 'pro';
+                        } else if (accountTypeLower.includes('basic')) {
+                            normalizedType = 'basic';
+                        }
+                        
+                        console.log('✅ Paid user detected after retry, redirecting to', normalizedType, 'dashboard');
+                        isRedirecting = true;
+                        await new Promise(resolve => setTimeout(resolve, 1500));
+                        
+                        switch (normalizedType) {
+                            case 'basic':
+                                window.location.href = 'https://nestmateus.com/dashboard-basic-new.html';
+                                break;
+                            case 'pro':
+                                window.location.href = 'https://nestmateus.com/dashboard-pro-new.html';
+                                break;
+                            case 'advanced':
+                                window.location.href = 'https://nestmateus.com/dashboard-advanced-new.html';
+                                break;
+                            default:
+                                window.location.href = 'https://nestmateus.com/dashboard-trial-new.html';
+                        }
+                        return;
+                    }
+                }
+            }
+            
+            // If no payment detected or still no document, create trial account
+            console.log('❌ Creating trial account for new user');
             await db.collection('userProfiles').doc(user.uid).set({
                 email: user.email,
                 displayName: user.displayName || '',

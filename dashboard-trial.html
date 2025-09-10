@@ -22,12 +22,6 @@
                             const accountType = userData.accountType || 'trial';
                             const subscriptionStatus = userData.subscriptionStatus || 'active';
                             
-                            // Special handling for familyrod2021@gmail.com - Basic user
-                            if (user.email === 'familyrod2021@gmail.com') {
-                                console.log('🚀 META REDIRECT: familyrod2021@gmail.com detected - redirecting to basic dashboard');
-                                window.location.replace('https://nestmateus.com/dashboard-basic-new.html');
-                                return;
-                            }
                             
                             // If user has active paid subscription, redirect to appropriate dashboard
                             if (subscriptionStatus === 'active' && accountType !== 'trial') {
@@ -59,12 +53,6 @@
                 const userData = JSON.parse(storedUser);
                 console.log('🚀 IMMEDIATE REDIRECT: User found in localStorage, checking subscription');
                 
-                // Special handling for familyrod2021@gmail.com
-                if (userData.email === 'familyrod2021@gmail.com') {
-                    console.log('🚀 IMMEDIATE REDIRECT: familyrod2021@gmail.com found in localStorage - redirecting to basic NOW');
-                    window.location.replace('https://nestmateus.com/dashboard-basic-new.html');
-                    return;
-                }
                 
                 // For immediate redirect, we'll let the Firebase auth state change handle the proper routing
                 // This prevents any flash of trial dashboard for paid users
