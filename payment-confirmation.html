@@ -336,6 +336,8 @@
 
         // Show success state
         function showSuccess(planType) {
+            console.log('🚨 showSuccess called with planType:', planType);
+            
             const planNames = {
                 'basic': 'Basic Plan',
                 'pro': 'Pro Plan',
@@ -354,12 +356,16 @@
                 'advanced': 'dashboard-advanced-new.html'
             };
 
+            console.log('🚨 Dashboard URL for planType:', planType, '=', dashboardUrls[planType]);
+
             document.getElementById('loadingState').style.display = 'none';
             document.getElementById('successState').style.display = 'block';
             
             document.getElementById('planName').textContent = planNames[planType] || 'Plan';
             document.getElementById('planPrice').textContent = planPrices[planType] || '';
-            document.getElementById('dashboardLink').href = dashboardUrls[planType] || 'dashboard-trial.html';
+            document.getElementById('dashboardLink').href = dashboardUrls[planType] || 'dashboard-trial-new.html';
+            
+            console.log('🚨 Final dashboard link href:', document.getElementById('dashboardLink').href);
         }
 
         // Show error state
@@ -487,6 +493,9 @@
             // If this is a successful payment, show success immediately and redirect to correct dashboard
             if (params.payment === 'success' && params.plan) {
                 console.log('🚨 Successful payment detected, showing success and redirecting directly');
+                console.log('🚨 params.payment:', params.payment);
+                console.log('🚨 params.plan:', params.plan);
+                console.log('🚨 Full params object:', params);
                 
                 // Show success page immediately
                 showSuccess(params.plan);
