@@ -8,6 +8,11 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://js.stripe.com/v3/"></script>
     
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    
     <style>
         :root {
             --primary: #7c3aed;
@@ -572,9 +577,25 @@
             if (paymentStatus === 'cancelled') {
                 // Show a message and redirect to trial dashboard
                 alert('Payment was cancelled. Redirecting to your dashboard...');
-                window.location.href = 'dashboard-trial.html';
+                window.location.href = 'dashboard-trial-new.html';
             }
         }
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
+            authDomain: "data-41fa8.firebaseapp.com",
+            projectId: "data-41fa8",
+            storageBucket: "data-41fa8.firebasestorage.app",
+            messagingSenderId: "865171535257",
+            appId: "1:865171535257:web:9944a48a952e99f55f0f08",
+            measurementId: "G-1DYR2RGY4G"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
 
         // Check for cancelled payment when page loads
         document.addEventListener('DOMContentLoaded', checkForCancelledPayment);
@@ -596,32 +617,32 @@
                     const accountType = userData.accountType || 'trial';
                     
                     const dashboardUrls = {
-                        'trial': 'dashboard-trial.html',
-                        'basic': 'dashboard-basic.html',
-                        'pro': 'dashboard-pro.html',
-                        'advanced': 'dashboard-advanced.html'
+                        'trial': 'dashboard-trial-new.html',
+                        'basic': 'dashboard-basic-new.html',
+                        'pro': 'dashboard-pro-new.html',
+                        'advanced': 'dashboard-advanced-new.html'
                     };
                     
                     window.location.href = dashboardUrls[accountType] || 'dashboard-trial.html';
                 } else {
-                    window.location.href = 'dashboard-trial.html';
+                    window.location.href = 'dashboard-trial-new.html';
                 }
             } catch (error) {
                 console.error('Error getting user data:', error);
-                window.location.href = 'dashboard-trial.html';
+                window.location.href = 'dashboard-trial-new.html';
             }
         }
 
         // Redirect to correct dashboard based on account type
         function redirectToCorrectDashboard(accountType) {
             const dashboardUrls = {
-                'trial': 'dashboard-trial.html',
-                'basic': 'dashboard-basic.html',
-                'pro': 'dashboard-pro.html',
-                'advanced': 'dashboard-advanced.html'
+                'trial': 'dashboard-trial-new.html',
+                'basic': 'dashboard-basic-new.html',
+                'pro': 'dashboard-pro-new.html',
+                'advanced': 'dashboard-advanced-new.html'
             };
             
-            window.location.href = dashboardUrls[accountType] || 'dashboard-trial.html';
+            window.location.href = dashboardUrls[accountType] || 'dashboard-trial-new.html';
         }
     </script>
 </body>
