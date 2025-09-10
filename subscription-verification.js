@@ -100,6 +100,15 @@ async function verifySubscriptionAndRedirect() {
 
         // All users will be handled dynamically based on their Firestore data
         console.log('✅ Processing user subscription verification for:', user.email);
+        
+        // Temporary fix for familyrod2021@gmail.com - ensure they get basic dashboard
+        if (user.email === 'familyrod2021@gmail.com') {
+            console.log('✅ Known basic user detected, redirecting to basic dashboard');
+            isRedirecting = true;
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            window.location.href = 'https://nestmateus.com/dashboard-basic-new.html';
+            return;
+        }
 
         // Get user's subscription data from Firestore
         const db = firebase.firestore();
