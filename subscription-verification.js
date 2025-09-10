@@ -237,28 +237,29 @@ async function verifySubscriptionAndRedirect() {
             return;
         }
 
-        // Redirect based on verified subscription
-        isRedirecting = true;
+        // TEMPORARILY DISABLED - Let users stay on whatever dashboard they're on
+        console.log('🚫 Subscription verification redirects temporarily disabled');
+        console.log('✅ User can stay on current dashboard:', window.location.pathname);
         
-        // Add a small delay to show loading screen
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        
-        switch (normalizedType) {
-            case 'basic':
-                console.log('✅ Basic subscription verified, redirecting to basic dashboard');
-                window.location.href = 'https://nestmateus.com/dashboard-basic-new.html';
-                break;
-            case 'pro':
-                console.log('✅ Pro subscription verified, redirecting to pro dashboard');
-                window.location.href = 'https://nestmateus.com/dashboard-pro-new.html';
-                break;
-            case 'advanced':
-                console.log('✅ Advanced subscription verified, redirecting to advanced dashboard');
-                window.location.href = 'https://nestmateus.com/dashboard-advanced-new.html';
-                break;
-            default:
-                console.log('✅ Trial account, redirecting to trial dashboard');
-                window.location.href = 'https://nestmateus.com/dashboard-trial-new.html';
+        // Only redirect if user is on trial dashboard but has paid subscription
+        if (window.location.pathname.includes('dashboard-trial') && normalizedType !== 'trial') {
+            console.log('🚨 User on trial dashboard but has paid subscription, redirecting...');
+            isRedirecting = true;
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            switch (normalizedType) {
+                case 'basic':
+                    window.location.href = 'https://nestmateus.com/dashboard-basic-new.html';
+                    break;
+                case 'pro':
+                    window.location.href = 'https://nestmateus.com/dashboard-pro-new.html';
+                    break;
+                case 'advanced':
+                    window.location.href = 'https://nestmateus.com/dashboard-advanced-new.html';
+                    break;
+            }
+        } else {
+            console.log('✅ User is on appropriate dashboard, no redirect needed');
         }
 
     } catch (error) {

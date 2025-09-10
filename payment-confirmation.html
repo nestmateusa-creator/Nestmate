@@ -349,9 +349,9 @@
             };
 
             const dashboardUrls = {
-                'basic': 'dashboard-basic-new.html?from=payment',
-                'pro': 'dashboard-pro-new.html?from=payment',
-                'advanced': 'dashboard-advanced-new.html?from=payment'
+                'basic': 'dashboard-basic-new.html',
+                'pro': 'dashboard-pro-new.html',
+                'advanced': 'dashboard-advanced-new.html'
             };
 
             document.getElementById('loadingState').style.display = 'none';
@@ -484,49 +484,18 @@
             const params = getUrlParams();
             console.log('🚨 URL parameters:', params);
             
-            // If this is a successful payment, update account and wait for completion
+            // If this is a successful payment, show success immediately and redirect to correct dashboard
             if (params.payment === 'success' && params.plan) {
-                console.log('🚨 Successful payment detected, updating account...');
+                console.log('🚨 Successful payment detected, showing success and redirecting directly');
                 
-                // Show loading state while updating
-                document.getElementById('loadingState').style.display = 'block';
-                document.getElementById('successState').style.display = 'none';
-                document.getElementById('errorState').style.display = 'none';
+                // Show success page immediately
+                showSuccess(params.plan);
                 
-                // Update the account and wait for completion
-                let updateSuccess = false;
-                let retryCount = 0;
-                const maxRetries = 5;
+                // Try to update account in background (non-blocking)
+                updateUserAccount(params.plan).catch(error => {
+                    console.log('Background account update failed:', error);
+                });
                 
-                while (!updateSuccess && retryCount < maxRetries) {
-                    try {
-                        console.log(`🚨 Attempt ${retryCount + 1} to update account...`);
-                        updateSuccess = await updateUserAccount(params.plan);
-                        console.log('🚨 Update result:', updateSuccess);
-                        
-                        if (updateSuccess) {
-                            console.log('✅ Account updated successfully, showing success page');
-                            break;
-                        }
-                    } catch (error) {
-                        console.log(`🚨 Attempt ${retryCount + 1} failed:`, error);
-                    }
-                    
-                    retryCount++;
-                    if (retryCount < maxRetries) {
-                        console.log('🚨 Retrying in 2 seconds...');
-                        await new Promise(resolve => setTimeout(resolve, 2000));
-                    }
-                }
-                
-                if (updateSuccess) {
-                    // Show success page
-                    showSuccess(params.plan);
-                } else {
-                    // Show error but still allow user to proceed
-                    console.log('⚠️ Account update failed after all retries, but showing success anyway');
-                    showSuccess(params.plan);
-                }
                 return;
             }
             
