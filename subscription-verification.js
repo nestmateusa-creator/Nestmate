@@ -121,12 +121,37 @@ async function verifySubscriptionAndRedirect() {
         console.log('🔍 Checking collection:', collectionName, 'for current page:', currentPage);
         
         // Get user's subscription data from the correct collection
-        const userDoc = await db.collection(collectionName).doc(user.uid).get();
+        let userDoc = await db.collection(collectionName).doc(user.uid).get();
         
         if (!userDoc.exists) {
             console.log('❌ User not found in', collectionName, 'collection');
+            console.log('🔄 Checking userProfiles collection as fallback...');
             
-            // If user is not in the expected collection, redirect to trial dashboard
+            // Fallback: check userProfiles collection
+            const fallbackDoc = await db.collection('userProfiles').doc(user.uid).get();
+            if (fallbackDoc.exists) {
+                const fallbackData = fallbackDoc.data();
+                const accountType = fallbackData.accountType || 'trial';
+                const plan = fallbackData.plan || 'trial';
+                
+                console.log('📊 Found user in userProfiles:', { accountType, plan });
+                
+                // Check if the account type matches the current dashboard
+                const currentPage = window.location.pathname;
+                const isCorrectDashboard = (currentPage.includes('dashboard-basic-new.html') && accountType === 'basic') ||
+                                         (currentPage.includes('dashboard-pro-new.html') && accountType === 'pro') ||
+                                         (currentPage.includes('dashboard-advanced-new.html') && accountType === 'advanced') ||
+                                         (currentPage.includes('dashboard-trial-new.html') && accountType === 'trial');
+                
+                if (isCorrectDashboard) {
+                    console.log('✅ User authorized via fallback userProfiles check');
+                    return;
+                } else {
+                    console.log('❌ User account type does not match current dashboard');
+                }
+            }
+            
+            // If user is not in the expected collection or fallback, redirect to trial dashboard
             console.log('🔄 User not authorized for this dashboard, redirecting to trial');
             isRedirecting = true;
             await new Promise(resolve => setTimeout(resolve, 1500));

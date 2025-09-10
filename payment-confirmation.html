@@ -328,15 +328,38 @@
                 }
                 
                 console.log('🚨 Writing user to collection:', collectionName);
+                console.log('🚨 User UID:', user.uid);
+                console.log('🚨 Update data:', updateData);
                 
                 // Write user to the correct subscription collection
-                await db.collection(collectionName).doc(user.uid).set(updateData, { merge: true });
-                console.log('✅ User added to', collectionName, 'collection');
+                try {
+                    await db.collection(collectionName).doc(user.uid).set(updateData, { merge: true });
+                    console.log('✅ User added to', collectionName, 'collection');
+                } catch (collectionError) {
+                    console.error('❌ Failed to write to', collectionName, 'collection:', collectionError);
+                    console.log('🔄 Falling back to userProfiles collection...');
+                    
+                    // Fallback: write to userProfiles with the correct accountType
+                    const fallbackData = {
+                        ...updateData,
+                        accountType: planType,
+                        plan: planType,
+                        subscriptionStatus: 'active'
+                    };
+                    
+                    await db.collection('userProfiles').doc(user.uid).set(fallbackData, { merge: true });
+                    console.log('✅ Fallback: User added to userProfiles collection with', planType, 'account type');
+                }
                 
                 // Also keep userProfiles for backward compatibility
                 console.log('🚨 Updating userProfiles collection for compatibility...');
-                await db.collection('userProfiles').doc(user.uid).set(updateData, { merge: true });
-                console.log('✅ User profile updated for compatibility');
+                try {
+                    await db.collection('userProfiles').doc(user.uid).set(updateData, { merge: true });
+                    console.log('✅ User profile updated for compatibility');
+                } catch (userProfilesError) {
+                    console.error('❌ Failed to update userProfiles collection:', userProfilesError);
+                    // Continue anyway - the main collection update succeeded
+                }
 
                 console.log('✅ User account updated successfully');
                 return true;
