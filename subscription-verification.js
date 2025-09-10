@@ -100,6 +100,8 @@ async function verifySubscriptionAndRedirect() {
 
         // All users will be handled dynamically based on their Firestore data
         console.log('✅ Processing user subscription verification for:', user.email);
+        console.log('🔍 Current URL:', window.location.href);
+        console.log('🔍 URL parameters:', new URLSearchParams(window.location.search).toString());
 
         // Get user's subscription data from Firestore
         const db = firebase.firestore();
@@ -186,12 +188,14 @@ async function verifySubscriptionAndRedirect() {
         const plan = userData.plan || 'trial';
         const subscriptionStatus = userData.subscriptionStatus || 'active';
         
-        console.log('📊 User data:', {
+        console.log('📊 User data from Firestore:', {
             accountType,
             plan,
             subscriptionStatus,
             email: user.email,
-            fullUserData: userData
+            fullUserData: userData,
+            documentExists: userDoc.exists,
+            documentId: userDoc.id
         });
 
         // Verify subscription is active

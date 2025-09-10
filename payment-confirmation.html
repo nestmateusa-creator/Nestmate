@@ -484,20 +484,49 @@
             const params = getUrlParams();
             console.log('🚨 URL parameters:', params);
             
-            // If this is a successful payment, try to update account first, then show success
+            // If this is a successful payment, update account and wait for completion
             if (params.payment === 'success' && params.plan) {
-                console.log('🚨 Successful payment detected, attempting to update account');
+                console.log('🚨 Successful payment detected, updating account...');
                 
-                // Try to update the account in the background
-                try {
-                    await updateUserAccount(params.plan);
-                    console.log('🚨 Account updated successfully');
-                } catch (error) {
-                    console.log('🚨 Account update failed, but showing success anyway:', error);
+                // Show loading state while updating
+                document.getElementById('loadingState').style.display = 'block';
+                document.getElementById('successState').style.display = 'none';
+                document.getElementById('errorState').style.display = 'none';
+                
+                // Update the account and wait for completion
+                let updateSuccess = false;
+                let retryCount = 0;
+                const maxRetries = 5;
+                
+                while (!updateSuccess && retryCount < maxRetries) {
+                    try {
+                        console.log(`🚨 Attempt ${retryCount + 1} to update account...`);
+                        updateSuccess = await updateUserAccount(params.plan);
+                        console.log('🚨 Update result:', updateSuccess);
+                        
+                        if (updateSuccess) {
+                            console.log('✅ Account updated successfully, showing success page');
+                            break;
+                        }
+                    } catch (error) {
+                        console.log(`🚨 Attempt ${retryCount + 1} failed:`, error);
+                    }
+                    
+                    retryCount++;
+                    if (retryCount < maxRetries) {
+                        console.log('🚨 Retrying in 2 seconds...');
+                        await new Promise(resolve => setTimeout(resolve, 2000));
+                    }
                 }
                 
-                // Show success regardless of update result
-                showSuccess(params.plan);
+                if (updateSuccess) {
+                    // Show success page
+                    showSuccess(params.plan);
+                } else {
+                    // Show error but still allow user to proceed
+                    console.log('⚠️ Account update failed after all retries, but showing success anyway');
+                    showSuccess(params.plan);
+                }
                 return;
             }
             
