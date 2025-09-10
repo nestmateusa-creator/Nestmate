@@ -221,6 +221,18 @@ async function verifySubscriptionAndRedirect() {
             subscriptionStatus: subscriptionStatus
         });
 
+        // Check if user is already on the correct dashboard
+        const currentPage = window.location.pathname;
+        const isOnCorrectDashboard = (currentPage.includes('dashboard-basic-new.html') && normalizedType === 'basic') ||
+                                   (currentPage.includes('dashboard-pro-new.html') && normalizedType === 'pro') ||
+                                   (currentPage.includes('dashboard-advanced-new.html') && normalizedType === 'advanced') ||
+                                   (currentPage.includes('dashboard-trial-new.html') && normalizedType === 'trial');
+
+        if (isOnCorrectDashboard) {
+            console.log('✅ User is already on correct dashboard, no redirect needed');
+            return;
+        }
+
         // Redirect based on verified subscription
         isRedirecting = true;
         
