@@ -311,20 +311,32 @@
 
                 console.log('🚨 Update data:', updateData);
 
-                // Update user profile (use set with merge to create if doesn't exist)
-                console.log('🚨 Updating userProfiles collection...');
-                await db.collection('userProfiles').doc(user.uid).set(updateData, { merge: true });
-                console.log('✅ User profile updated');
-
-                // Try to update accounts collection (optional - don't fail if it doesn't exist)
-                try {
-                    console.log('🚨 Updating accounts collection...');
-                    await db.collection('accounts').doc(user.uid).set(updateData, { merge: true });
-                    console.log('✅ Account document updated');
-                } catch (accountError) {
-                    console.log('⚠️ Account document update failed (not critical):', accountError);
-                    // Continue anyway - userProfiles is the main one
+                // Determine the correct collection based on plan type
+                let collectionName = 'trialUsers'; // default
+                switch (planType.toLowerCase()) {
+                    case 'basic':
+                        collectionName = 'basicUsers';
+                        break;
+                    case 'pro':
+                        collectionName = 'proUsers';
+                        break;
+                    case 'advanced':
+                        collectionName = 'advancedUsers';
+                        break;
+                    default:
+                        collectionName = 'trialUsers';
                 }
+                
+                console.log('🚨 Writing user to collection:', collectionName);
+                
+                // Write user to the correct subscription collection
+                await db.collection(collectionName).doc(user.uid).set(updateData, { merge: true });
+                console.log('✅ User added to', collectionName, 'collection');
+                
+                // Also keep userProfiles for backward compatibility
+                console.log('🚨 Updating userProfiles collection for compatibility...');
+                await db.collection('userProfiles').doc(user.uid).set(updateData, { merge: true });
+                console.log('✅ User profile updated for compatibility');
 
                 console.log('✅ User account updated successfully');
                 return true;

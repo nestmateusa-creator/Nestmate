@@ -103,80 +103,31 @@ async function verifySubscriptionAndRedirect() {
         console.log('🔍 Current URL:', window.location.href);
         console.log('🔍 URL parameters:', new URLSearchParams(window.location.search).toString());
 
-        // Get user's subscription data from Firestore
+        // Determine which collection to check based on current dashboard
         const db = firebase.firestore();
-        const userDoc = await db.collection('userProfiles').doc(user.uid).get();
+        const currentPage = window.location.pathname;
+        let collectionName = 'trialUsers'; // default
+        
+        if (currentPage.includes('dashboard-basic-new.html')) {
+            collectionName = 'basicUsers';
+        } else if (currentPage.includes('dashboard-pro-new.html')) {
+            collectionName = 'proUsers';
+        } else if (currentPage.includes('dashboard-advanced-new.html')) {
+            collectionName = 'advancedUsers';
+        } else if (currentPage.includes('dashboard-trial-new.html')) {
+            collectionName = 'trialUsers';
+        }
+        
+        console.log('🔍 Checking collection:', collectionName, 'for current page:', currentPage);
+        
+        // Get user's subscription data from the correct collection
+        const userDoc = await db.collection(collectionName).doc(user.uid).get();
         
         if (!userDoc.exists) {
-            console.log('❌ User document not found, checking if this is a new paid user...');
+            console.log('❌ User not found in', collectionName, 'collection');
             
-            // Check if user just came from payment confirmation
-            const urlParams = new URLSearchParams(window.location.search);
-            const fromPayment = urlParams.get('from') === 'payment';
-            
-            if (fromPayment) {
-                console.log('✅ User came from payment, waiting for account update...');
-                // Wait a bit for payment confirmation to update the account
-                await new Promise(resolve => setTimeout(resolve, 3000));
-                
-                // Try to get the user document again
-                const retryDoc = await db.collection('userProfiles').doc(user.uid).get();
-                if (retryDoc.exists) {
-                    console.log('✅ User document found after payment, processing...');
-                    const retryData = retryDoc.data();
-                    const accountType = retryData.accountType || 'trial';
-                    const plan = retryData.plan || 'trial';
-                    const subscriptionStatus = retryData.subscriptionStatus || 'active';
-                    
-                    console.log('📊 Retry user data:', { accountType, plan, subscriptionStatus });
-                    
-                    // Process the retry data
-                    if (subscriptionStatus === 'active' && accountType !== 'trial') {
-                        let normalizedType = 'trial';
-                        const accountTypeLower = accountType ? accountType.toLowerCase() : '';
-                        
-                        if (accountTypeLower.includes('advanced')) {
-                            normalizedType = 'advanced';
-                        } else if (accountTypeLower.includes('pro')) {
-                            normalizedType = 'pro';
-                        } else if (accountTypeLower.includes('basic')) {
-                            normalizedType = 'basic';
-                        }
-                        
-                        console.log('✅ Paid user detected after retry, redirecting to', normalizedType, 'dashboard');
-                        isRedirecting = true;
-                        await new Promise(resolve => setTimeout(resolve, 1500));
-                        
-                        switch (normalizedType) {
-                            case 'basic':
-                                window.location.href = 'https://nestmateus.com/dashboard-basic-new.html';
-                                break;
-                            case 'pro':
-                                window.location.href = 'https://nestmateus.com/dashboard-pro-new.html';
-                                break;
-                            case 'advanced':
-                                window.location.href = 'https://nestmateus.com/dashboard-advanced-new.html';
-                                break;
-                            default:
-                                window.location.href = 'https://nestmateus.com/dashboard-trial-new.html';
-                        }
-                        return;
-                    }
-                }
-            }
-            
-            // If no payment detected or still no document, create trial account
-            console.log('❌ Creating trial account for new user');
-            await db.collection('userProfiles').doc(user.uid).set({
-                email: user.email,
-                displayName: user.displayName || '',
-                accountType: 'trial',
-                plan: 'trial',
-                subscriptionStatus: 'active',
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString()
-            });
-            console.log('✅ Trial account created, redirecting to trial dashboard');
+            // If user is not in the expected collection, redirect to trial dashboard
+            console.log('🔄 User not authorized for this dashboard, redirecting to trial');
             isRedirecting = true;
             await new Promise(resolve => setTimeout(resolve, 1500));
             window.location.href = 'https://nestmateus.com/dashboard-trial-new.html';
@@ -184,77 +135,17 @@ async function verifySubscriptionAndRedirect() {
         }
 
         const userData = userDoc.data();
-        const accountType = userData.accountType || 'trial';
-        const plan = userData.plan || 'trial';
-        const subscriptionStatus = userData.subscriptionStatus || 'active';
         
-        console.log('📊 User data from Firestore:', {
-            accountType,
-            plan,
-            subscriptionStatus,
+        console.log('📊 User found in', collectionName, 'collection:', {
             email: user.email,
-            fullUserData: userData,
+            userData: userData,
             documentExists: userDoc.exists,
             documentId: userDoc.id
         });
 
-        // Verify subscription is active
-        if (subscriptionStatus !== 'active' && subscriptionStatus !== 'trialing') {
-            console.log('❌ Subscription not active, redirecting to trial');
-            isRedirecting = true;
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            window.location.href = 'https://nestmateus.com/dashboard-trial-new.html';
-            return;
-        }
-
-        // Normalize account type - handle all possible variations
-        let normalizedType = 'trial';
-        const accountTypeLower = accountType ? accountType.toLowerCase() : '';
-        
-        if (accountTypeLower.includes('advanced')) {
-            normalizedType = 'advanced';
-        } else if (accountTypeLower.includes('pro')) {
-            normalizedType = 'pro';
-        } else if (accountTypeLower.includes('basic')) {
-            normalizedType = 'basic';
-        }
-
-        console.log('🎯 Account type normalization:', {
-            original: accountType,
-            normalized: normalizedType,
-            subscriptionStatus: subscriptionStatus
-        });
-
-        // Check if user is already on the correct dashboard
-        const currentPage = window.location.pathname;
-        const isOnCorrectDashboard = (currentPage.includes('dashboard-basic-new.html') && normalizedType === 'basic') ||
-                                   (currentPage.includes('dashboard-pro-new.html') && normalizedType === 'pro') ||
-                                   (currentPage.includes('dashboard-advanced-new.html') && normalizedType === 'advanced') ||
-                                   (currentPage.includes('dashboard-trial-new.html') && normalizedType === 'trial');
-
-        if (isOnCorrectDashboard) {
-            console.log('✅ User is already on correct dashboard, no redirect needed');
-            return;
-        }
-
-        // Redirect user to correct dashboard based on their subscription
-        console.log('🎯 Redirecting user to correct dashboard:', normalizedType);
-        isRedirecting = true;
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        
-        switch (normalizedType) {
-            case 'basic':
-                window.location.href = 'https://nestmateus.com/dashboard-basic-new.html';
-                break;
-            case 'pro':
-                window.location.href = 'https://nestmateus.com/dashboard-pro-new.html';
-                break;
-            case 'advanced':
-                window.location.href = 'https://nestmateus.com/dashboard-advanced-new.html';
-                break;
-            default:
-                window.location.href = 'https://nestmateus.com/dashboard-trial-new.html';
-        }
+        // If user is in the correct collection, they have access to this dashboard
+        console.log('✅ User authorized for', collectionName, 'dashboard');
+        console.log('✅ No redirect needed - user is in correct collection');
 
     } catch (error) {
         console.error('❌ Error verifying subscription:', error);
@@ -296,46 +187,33 @@ async function verifyDashboardAccess(expectedAccountType) {
             return false;
         }
 
-        // Get user's subscription data from Firestore
+        // Determine which collection to check based on expected account type
         const db = firebase.firestore();
-        const userDoc = await db.collection('userProfiles').doc(user.uid).get();
+        let collectionName = 'trialUsers'; // default
+        
+        if (expectedAccountType === 'basic') {
+            collectionName = 'basicUsers';
+        } else if (expectedAccountType === 'pro') {
+            collectionName = 'proUsers';
+        } else if (expectedAccountType === 'advanced') {
+            collectionName = 'advancedUsers';
+        } else if (expectedAccountType === 'trial') {
+            collectionName = 'trialUsers';
+        }
+        
+        console.log('🔍 Checking', collectionName, 'for', expectedAccountType, 'access');
+        
+        // Get user's subscription data from the correct collection
+        const userDoc = await db.collection(collectionName).doc(user.uid).get();
         
         if (!userDoc.exists) {
-            console.log('❌ User document not found, redirecting to trial dashboard');
+            console.log('❌ User not found in', collectionName, 'collection');
+            console.log('❌ Access denied, redirecting to trial dashboard');
             window.location.href = 'https://nestmateus.com/dashboard-trial-new.html';
             return false;
         }
 
-        const userData = userDoc.data();
-        const accountType = userData.accountType || 'trial';
-        const subscriptionStatus = userData.subscriptionStatus || 'active';
-        
-        // Check if subscription is active
-        if (subscriptionStatus !== 'active' && subscriptionStatus !== 'trialing') {
-            console.log('❌ Subscription not active, redirecting to trial dashboard');
-            window.location.href = 'https://nestmateus.com/dashboard-trial-new.html';
-            return false;
-        }
-
-        // Normalize account type
-        let normalizedType = 'trial';
-        if (accountType && accountType.toLowerCase().includes('advanced')) {
-            normalizedType = 'advanced';
-        } else if (accountType && accountType.toLowerCase().includes('pro')) {
-            normalizedType = 'pro';
-        } else if (accountType && accountType.toLowerCase().includes('basic')) {
-            normalizedType = 'basic';
-        }
-
-        console.log('📊 User has:', normalizedType, 'Expected:', expectedAccountType);
-
-        // Check if user has access to this dashboard
-        if (normalizedType !== expectedAccountType) {
-            console.log('❌ Access denied, redirecting to correct dashboard');
-            await verifySubscriptionAndRedirect();
-            return false;
-        }
-
+        console.log('✅ User found in', collectionName, 'collection');
         console.log('✅ Access granted to', expectedAccountType, 'dashboard');
         return true;
 
