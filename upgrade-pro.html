@@ -577,7 +577,7 @@
             if (paymentStatus === 'cancelled') {
                 // Show a message and redirect to trial dashboard
                 alert('Payment was cancelled. Redirecting to your dashboard...');
-                window.location.href = 'dashboard-trial.html';
+                window.location.href = 'dashboard-trial-new.html';
             }
         }
 
@@ -623,13 +623,13 @@
                         'advanced': 'dashboard-advanced-new.html'
                     };
                     
-                    window.location.href = dashboardUrls[accountType] || 'dashboard-trial.html';
+                    window.location.href = dashboardUrls[accountType] || 'dashboard-trial-new.html';
                 } else {
-                    window.location.href = 'dashboard-trial.html';
+                    window.location.href = 'dashboard-trial-new.html';
                 }
             } catch (error) {
                 console.error('Error getting user data:', error);
-                window.location.href = 'dashboard-trial.html';
+                window.location.href = 'dashboard-trial-new.html';
             }
         }
 
