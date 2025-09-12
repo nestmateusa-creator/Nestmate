@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Payment Links</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #10b981;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .plan {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            background: #f8fafc;
+        }
+        .plan h3 {
+            color: #10b981;
+            margin-bottom: 10px;
+        }
+        .price {
+            font-size: 24px;
+            font-weight: bold;
+            color: #059669;
+            margin-bottom: 15px;
+        }
+        .features {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+        .features li {
+            margin: 8px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        .features li:before {
+            content: "✅";
+            position: absolute;
+            left: 0;
+        }
+        .urls {
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .create-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        .create-btn:hover {
+            background: #059669;
+        }
+        .result {
+            background: #d1fae5;
+            border: 1px solid #10b981;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            display: none;
+        }
+        .error {
+            background: #fee2e2;
+            border: 1px solid #ef4444;
+            color: #dc2626;
+        }
+        .success {
+            background: #d1fae5;
+            border: 1px solid #10b981;
+            color: #059669;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Create New Stripe Payment Links</h1>
+        
+        <div class="plan">
+            <h3>Basic Plan - $5/month</h3>
+            <div class="price">$5/month</div>
+            <ul class="features">
+                <li>Access to basic home management features</li>
+                <li>Property tracking and maintenance reminders</li>
+                <li>Basic product recommendations</li>
+                <li>Email support</li>
+            </ul>
+            <div class="urls">
+                <strong>Success URL:</strong> https://www.nestmateus.com/payment-confirmation-simple.html?payment=success&plan=basic<br>
+                <strong>Cancel URL:</strong> https://www.nestmateus.com/upgrade-basic.html?payment=cancelled
+            </div>
+            <button class="create-btn" onclick="createPaymentLink('basic', 500)">Create Basic Payment Link</button>
+            <div id="basic-result" class="result"></div>
+        </div>
+
+        <div class="plan">
+            <h3>Pro Plan - $10/month</h3>
+            <div class="price">$10/month</div>
+            <ul class="features">
+                <li>Everything in Basic</li>
+                <li>Advanced analytics and insights</li>
+                <li>Priority product recommendations</li>
+                <li>Next-level product recommendations tailored to you</li>
+                <li>Priority support</li>
+            </ul>
+            <div class="urls">
+                <strong>Success URL:</strong> https://www.nestmateus.com/payment-confirmation-simple.html?payment=success&plan=pro<br>
+                <strong>Cancel URL:</strong> https://www.nestmateus.com/upgrade-pro.html?payment=cancelled
+            </div>
+            <button class="create-btn" onclick="createPaymentLink('pro', 1000)">Create Pro Payment Link</button>
+            <div id="pro-result" class="result"></div>
+        </div>
+
+        <div class="plan">
+            <h3>Advanced Plan - $16/month</h3>
+            <div class="price">$16/month</div>
+            <ul class="features">
+                <li>Everything in Pro</li>
+                <li>Premium features and tools</li>
+                <li>Unlimited access to premium features</li>
+                <li>White-label options</li>
+                <li>24/7 premium support</li>
+            </ul>
+            <div class="urls">
+                <strong>Success URL:</strong> https://www.nestmateus.com/payment-confirmation-simple.html?payment=success&plan=advanced<br>
+                <strong>Cancel URL:</strong> https://www.nestmateus.com/upgrade-advanced.html?payment=cancelled
+            </div>
+            <button class="create-btn" onclick="createPaymentLink('advanced', 1600)">Create Advanced Payment Link</button>
+            <div id="advanced-result" class="result"></div>
+        </div>
+
+        <div style="margin-top: 30px; padding: 20px; background: #fef3c7; border-radius: 8px;">
+            <h3>📋 Instructions:</h3>
+            <ol>
+                <li>Click each "Create Payment Link" button above</li>
+                <li>Copy the generated payment link</li>
+                <li>Update all buttons in your app with the new links</li>
+                <li>Test the payment flow</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        async function createPaymentLink(planType, amount) {
+            const resultDiv = document.getElementById(`${planType}-result`);
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result';
+            resultDiv.innerHTML = 'Creating payment link...';
+            
+            try {
+                const response = await fetch('/.netlify/functions/create-payment-link', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        planType: planType,
+                        amount: amount,
+                        successUrl: `https://www.nestmateus.com/payment-confirmation-simple.html?payment=success&plan=${planType}`,
+                        cancelUrl: `https://www.nestmateus.com/upgrade-${planType}.html?payment=cancelled`
+                    }),
+                });
+
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                resultDiv.className = 'result success';
+                resultDiv.innerHTML = `
+                    <strong>✅ Payment Link Created Successfully!</strong><br><br>
+                    <strong>Plan:</strong> ${planType}<br>
+                    <strong>Amount:</strong> $${amount/100}/month<br>
+                    <strong>Payment Link:</strong><br>
+                    <input type="text" value="${data.url}" readonly style="width: 100%; padding: 8px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px;">
+                    <button onclick="copyToClipboard('${data.url}')" style="background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Copy Link</button>
+                `;
+                
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <strong>❌ Error creating payment link:</strong><br>
+                    ${error.message}
+                `;
+            }
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Payment link copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+    </script>
+</body>
+</html>
