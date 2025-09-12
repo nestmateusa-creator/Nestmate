@@ -171,6 +171,11 @@
                 <div class="status-message status-loading">
                     Updating your account...
                 </div>
+                <div id="debugInfo" style="margin-top: 20px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 5px; font-size: 12px; font-family: monospace; color: #666;">
+                    <div>Plan: <span id="debugPlan">Loading...</span></div>
+                    <div>User: <span id="debugUser">Loading...</span></div>
+                    <div>Status: <span id="debugStatus">Initializing...</span></div>
+                </div>
             </div>
 
             <div id="successState" style="display: none;">
@@ -275,23 +280,23 @@
             try {
                 console.log('🚨 updateUserAccount called with plan:', planType);
                 
-                // Wait for auth state to be ready with timeout
-                const user = await new Promise((resolve, reject) => {
-                    const timeout = setTimeout(() => {
-                        reject(new Error('Authentication timeout'));
-                    }, 10000); // 10 second timeout
-                    
-                    const unsubscribe = auth.onAuthStateChanged((user) => {
-                        clearTimeout(timeout);
-                        unsubscribe();
-                        resolve(user);
-                    });
-                });
-
+                // Get current user immediately
+                let user = auth.currentUser;
                 console.log('🚨 Current user:', user ? user.email : 'No user');
+                updateDebugInfo(planType, user ? user.email : 'No user', 'Checking auth...');
+                
+                // If no user, wait a moment and try again
+                if (!user) {
+                    console.log('🚨 No user found, waiting for auth state...');
+                    updateDebugInfo(planType, 'Waiting...', 'Checking auth...');
+                    await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
+                    user = auth.currentUser;
+                    console.log('🚨 User after wait:', user ? user.email : 'No user');
+                    updateDebugInfo(planType, user ? user.email : 'No user', 'Auth check complete');
+                }
                 
                 if (!user) {
-                    // If user is not authenticated, redirect to sign in
+                    // If still no user, redirect to sign in
                     console.log('🚨 User not authenticated, redirecting to sign in...');
                     window.location.href = 'signin.html?redirect=payment-confirmation.html?payment=success&plan=' + planType;
                     return false;
@@ -333,11 +338,14 @@
                 
                 // Write user to the correct subscription collection
                 try {
+                    updateDebugInfo(planType, user.email, `Writing to ${collectionName}...`);
                     await db.collection(collectionName).doc(user.uid).set(updateData, { merge: true });
                     console.log('✅ User added to', collectionName, 'collection');
+                    updateDebugInfo(planType, user.email, `Successfully added to ${collectionName}`);
                 } catch (collectionError) {
                     console.error('❌ Failed to write to', collectionName, 'collection:', collectionError);
                     console.log('🔄 Falling back to userProfiles collection...');
+                    updateDebugInfo(planType, user.email, `Failed to write to ${collectionName}, using fallback...`);
                     
                     // Fallback: write to userProfiles with the correct accountType
                     const fallbackData = {
@@ -410,12 +418,26 @@
             document.getElementById('errorMessage').textContent = message;
         }
 
+        // Update debug info
+        function updateDebugInfo(plan, user, status) {
+            const debugPlan = document.getElementById('debugPlan');
+            const debugUser = document.getElementById('debugUser');
+            const debugStatus = document.getElementById('debugStatus');
+            
+            if (debugPlan) debugPlan.textContent = plan || 'Unknown';
+            if (debugUser) debugUser.textContent = user || 'Not authenticated';
+            if (debugStatus) debugStatus.textContent = status || 'Unknown';
+        }
+
         // Main function
         async function processPaymentConfirmation() {
             try {
                 console.log('🚨 Starting payment confirmation process...');
                 console.log('🚨 Current URL:', window.location.href);
                 console.log('🚨 User agent:', navigator.userAgent);
+                
+                // Update debug info
+                updateDebugInfo('Loading...', 'Checking...', 'Starting...');
                 
                 // Initialize Firebase
                 await initFirebase();
@@ -424,11 +446,13 @@
                 // Get URL parameters
                 const params = getUrlParams();
                 console.log('🚨 URL parameters:', params);
+                updateDebugInfo(params.plan || 'Unknown', 'Checking...', 'Processing...');
 
                 // Check if this is a successful payment
                 if (params.payment === 'success' && params.plan) {
                     const planType = params.plan;
                     console.log('🚨 Processing successful payment for plan:', planType);
+                    updateDebugInfo(planType, 'Checking...', 'Updating account...');
                     
                     // Try to update user account with retry logic
                     let updateSuccess = false;
