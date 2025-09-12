@@ -103,8 +103,46 @@ async function verifySubscriptionAndRedirect() {
         console.log('🔍 Current URL:', window.location.href);
         console.log('🔍 URL parameters:', new URLSearchParams(window.location.search).toString());
 
-        // Determine which collection to check based on current dashboard
+        // First, check userProfiles collection for the most up-to-date info
+        console.log('🔍 Checking userProfiles collection first...');
         const db = firebase.firestore();
+        const userProfilesDoc = await db.collection('userProfiles').doc(user.uid).get();
+        
+        if (userProfilesDoc.exists) {
+            const userData = userProfilesDoc.data();
+            const accountType = userData.accountType || 'trial';
+            const plan = userData.plan || 'trial';
+            
+            console.log('📊 Found user in userProfiles:', { accountType, plan });
+            
+            // Check if we're already on the correct dashboard
+            const currentPage = window.location.pathname;
+            const isCorrectDashboard = (currentPage.includes('dashboard-basic-new.html') && (accountType === 'basic' || accountType === 'Basic')) ||
+                                     (currentPage.includes('dashboard-pro-new.html') && (accountType === 'pro' || accountType === 'Pro')) ||
+                                     (currentPage.includes('dashboard-advanced-new.html') && (accountType === 'advanced' || accountType === 'Advanced' || accountType === 'Advanced Pro')) ||
+                                     (currentPage.includes('dashboard-trial-new.html') && (accountType === 'trial' || accountType === 'Trial'));
+            
+            if (isCorrectDashboard) {
+                console.log('✅ User is on correct dashboard');
+                return;
+            } else {
+                console.log('🔄 Redirecting to correct dashboard based on account type...');
+                
+                // Redirect to the correct dashboard based on account type
+                if (accountType === 'basic' || accountType === 'Basic') {
+                    window.location.href = 'dashboard-basic-new.html';
+                } else if (accountType === 'pro' || accountType === 'Pro') {
+                    window.location.href = 'dashboard-pro-new.html';
+                } else if (accountType === 'advanced' || accountType === 'Advanced' || accountType === 'Advanced Pro') {
+                    window.location.href = 'dashboard-advanced-new.html';
+                } else {
+                    window.location.href = 'dashboard-trial-new.html';
+                }
+                return;
+            }
+        }
+        
+        // If not found in userProfiles, check specific collections based on current page
         const currentPage = window.location.pathname;
         let collectionName = 'Trial User Accounts'; // default
         
@@ -118,54 +156,11 @@ async function verifySubscriptionAndRedirect() {
             collectionName = 'Trial User Accounts';
         }
         
-        console.log('🔍 Checking collection:', collectionName, 'for current page:', currentPage);
-        
-        // Get user's subscription data from the correct collection
+        console.log('🔍 User not found in userProfiles, checking', collectionName, 'collection...');
         let userDoc = await db.collection(collectionName).doc(user.uid).get();
         
         if (!userDoc.exists) {
-            console.log('❌ User not found in', collectionName, 'collection');
-            console.log('🔄 Checking userProfiles collection as fallback...');
-            
-            // Fallback: check userProfiles collection
-            const fallbackDoc = await db.collection('userProfiles').doc(user.uid).get();
-            if (fallbackDoc.exists) {
-                const fallbackData = fallbackDoc.data();
-                const accountType = fallbackData.accountType || 'trial';
-                const plan = fallbackData.plan || 'trial';
-                
-                console.log('📊 Found user in userProfiles:', { accountType, plan });
-                
-                // Check if the account type matches the current dashboard
-                const currentPage = window.location.pathname;
-                const isCorrectDashboard = (currentPage.includes('dashboard-basic-new.html') && (accountType === 'basic' || accountType === 'Basic')) ||
-                                         (currentPage.includes('dashboard-pro-new.html') && (accountType === 'pro' || accountType === 'Pro')) ||
-                                         (currentPage.includes('dashboard-advanced-new.html') && (accountType === 'advanced' || accountType === 'Advanced' || accountType === 'Advanced Pro')) ||
-                                         (currentPage.includes('dashboard-trial-new.html') && (accountType === 'trial' || accountType === 'Trial'));
-                
-                if (isCorrectDashboard) {
-                    console.log('✅ User authorized via fallback userProfiles check');
-                    return;
-                } else {
-                    console.log('❌ User account type does not match current dashboard');
-                    console.log('🔄 Redirecting to correct dashboard based on account type...');
-                    
-                    // Redirect to the correct dashboard based on account type
-                    if (accountType === 'basic' || accountType === 'Basic') {
-                        window.location.href = 'dashboard-basic-new.html';
-                    } else if (accountType === 'pro' || accountType === 'Pro') {
-                        window.location.href = 'dashboard-pro-new.html';
-                    } else if (accountType === 'advanced' || accountType === 'Advanced' || accountType === 'Advanced Pro') {
-                        window.location.href = 'dashboard-advanced-new.html';
-                    } else {
-                        window.location.href = 'dashboard-trial-new.html';
-                    }
-                    return;
-                }
-            }
-            
-            // If user is not in the expected collection or fallback, redirect to trial dashboard
-            console.log('🔄 User not authorized for this dashboard, redirecting to trial');
+            console.log('❌ User not found in any collection, redirecting to trial dashboard');
             isRedirecting = true;
             await new Promise(resolve => setTimeout(resolve, 1500));
             window.location.href = 'https://nestmateus.com/dashboard-trial-new.html';
