@@ -27,7 +27,7 @@ async function checkDashboardAccess(expectedAccountType) {
         if (user.email === 'jillmullins09@gmail.com') {
             if (expectedAccountType !== 'advanced') {
                 console.log('🚀 jillmullins09@gmail.com detected - redirecting to advanced dashboard');
-                window.location.href = 'dashboard-advanced.html';
+                window.location.href = 'dashboard-advanced-new.html';
                 return false;
             }
             return true;
@@ -39,7 +39,7 @@ async function checkDashboardAccess(expectedAccountType) {
         
         if (!userDoc.exists) {
             console.log('❌ User document not found, redirecting to trial dashboard');
-            window.location.href = 'dashboard-trial.html';
+            window.location.href = 'dashboard-trial-new.html';
             return false;
         }
 
@@ -66,16 +66,16 @@ async function checkDashboardAccess(expectedAccountType) {
             // Redirect to correct dashboard
             switch (normalizedType) {
                 case 'basic':
-                    window.location.href = 'dashboard-basic.html';
+                    window.location.href = 'dashboard-basic-new.html';
                     break;
                 case 'pro':
-                    window.location.href = 'dashboard-pro.html';
+                    window.location.href = 'dashboard-pro-new.html';
                     break;
                 case 'advanced':
-                    window.location.href = 'dashboard-advanced.html';
+                    window.location.href = 'dashboard-advanced-new.html';
                     break;
                 default:
-                    window.location.href = 'dashboard-trial.html';
+                    window.location.href = 'dashboard-trial-new.html';
             }
             return false;
         }

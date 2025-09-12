@@ -214,16 +214,16 @@ async function verifyDashboardAccess(expectedAccountType) {
 
         // Determine which collection to check based on expected account type
         const db = firebase.firestore();
-        let collectionName = 'trialUsers'; // default
+        let collectionName = 'Trial User Accounts'; // default
         
         if (expectedAccountType === 'basic') {
-            collectionName = 'basicUsers';
+            collectionName = 'Basic User Accounts';
         } else if (expectedAccountType === 'pro') {
-            collectionName = 'proUsers';
+            collectionName = 'Pro User Accounts';
         } else if (expectedAccountType === 'advanced') {
-            collectionName = 'advancedUsers';
+            collectionName = 'Advanced Pro User Accounts';
         } else if (expectedAccountType === 'trial') {
-            collectionName = 'trialUsers';
+            collectionName = 'Trial User Accounts';
         }
         
         console.log('🔍 Checking', collectionName, 'for', expectedAccountType, 'access');

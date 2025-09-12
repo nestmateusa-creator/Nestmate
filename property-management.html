@@ -676,22 +676,22 @@
                     const accountType = userData.accountType || 'trial';
                     
                     const dashboardUrls = {
-                        'trial': 'dashboard-trial.html',
-                        'basic': 'dashboard-basic.html',
-                        'pro': 'dashboard-pro.html',
+                        'trial': 'dashboard-trial-new.html',
+                        'basic': 'dashboard-basic-new.html',
+                        'pro': 'dashboard-pro-new.html',
                         'advanced': 'https://nestmateus.com/dashboard-advanced-new.html'
                     };
                     
-                    const targetUrl = dashboardUrls[accountType] || 'dashboard-trial.html';
+                    const targetUrl = dashboardUrls[accountType] || 'dashboard-trial-new.html';
                     
                     // Use replace instead of href to prevent back button issues
                     window.location.replace(targetUrl);
                 } else {
-                    window.location.replace('dashboard-trial.html');
+                    window.location.replace('dashboard-trial-new.html');
                 }
             } catch (error) {
                 console.error('Error getting user data:', error);
-                window.location.replace('dashboard-trial.html');
+                window.location.replace('dashboard-trial-new.html');
             }
         }
     </script>
