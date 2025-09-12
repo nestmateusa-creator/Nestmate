@@ -40,7 +40,7 @@ async function createPaymentLinks() {
             after_completion: {
                 type: 'redirect',
                 redirect: {
-                    url: 'https://www.nestmateus.com/payment-confirmation.html?payment=success&plan=basic'
+                    url: 'https://www.nestmateus.com/payment-confirmation-simple.html?payment=success&plan=basic'
                 }
             },
             payment_method_types: ['card'],
@@ -71,7 +71,7 @@ async function createPaymentLinks() {
             after_completion: {
                 type: 'redirect',
                 redirect: {
-                    url: 'https://www.nestmateus.com/payment-confirmation.html?payment=success&plan=pro'
+                    url: 'https://www.nestmateus.com/payment-confirmation-simple.html?payment=success&plan=pro'
                 }
             },
             payment_method_types: ['card'],
@@ -102,7 +102,7 @@ async function createPaymentLinks() {
             after_completion: {
                 type: 'redirect',
                 redirect: {
-                    url: 'https://www.nestmateus.com/payment-confirmation.html?payment=success&plan=advanced'
+                    url: 'https://www.nestmateus.com/payment-confirmation-simple.html?payment=success&plan=advanced'
                 }
             },
             payment_method_types: ['card'],

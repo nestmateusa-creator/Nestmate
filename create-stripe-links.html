@@ -37,7 +37,7 @@
             <li><strong>Set up recurring pricing:</strong> $5/month, $10/month, $16/month</li>
             <li><strong>Create NEW payment links</strong> for each product</li>
             <li><strong>IMPORTANT:</strong> Do NOT pre-fill any email address - let users enter their own</li>
-            <li><strong>Set success URLs to:</strong> payment-confirmation.html?payment=success&plan=[plan_type]</li>
+            <li><strong>Set success URLs to:</strong> payment-confirmation-simple.html?payment=success&plan=[plan_type]</li>
             <li><strong>Set cancel URLs to:</strong> upgrade-[plan_type].html?payment=cancelled</li>
         </ol>
         <p><strong>⚠️ Current Issue:</strong> Existing payment links have nestmateusa@gmail.com pre-filled</p>
@@ -55,7 +55,7 @@
             <li>Save and revisit your favorite finds</li>
             <li>Discover smart product picks just for you</li>
         </ul>
-        <p><strong>Success URL:</strong> <code>https://www.nestmateus.com/payment-confirmation.html?payment=success&plan=basic</code></p>
+        <p><strong>Success URL:</strong> <code>https://www.nestmateus.com/payment-confirmation-simple.html?payment=success&plan=basic</code></p>
         <p><strong>Cancel URL:</strong> <code>https://www.nestmateus.com/upgrade-basic.html?payment=cancelled</code></p>
         <a href="#" class="payment-link" onclick="createPaymentLink('basic')">Create Basic Payment Link</a>
     </div>
@@ -74,7 +74,7 @@
             <li>Real-time price tracking & instant alerts</li>
             <li>Next-level product recommendations tailored to you</li>
         </ul>
-        <p><strong>Success URL:</strong> <code>https://www.nestmateus.com/payment-confirmation.html?payment=success&plan=pro</code></p>
+        <p><strong>Success URL:</strong> <code>https://www.nestmateus.com/payment-confirmation-simple.html?payment=success&plan=pro</code></p>
         <p><strong>Cancel URL:</strong> <code>https://www.nestmateus.com/upgrade-pro.html?payment=cancelled</code></p>
         <a href="#" class="payment-link" onclick="createPaymentLink('pro')">Create Pro Payment Link</a>
     </div>
@@ -92,7 +92,7 @@
             <li>Order products as a team—collaborate and save</li>
             <li>Unlimited access to premium features</li>
         </ul>
-        <p><strong>Success URL:</strong> <code>https://www.nestmateus.com/payment-confirmation.html?payment=success&plan=advanced</code></p>
+        <p><strong>Success URL:</strong> <code>https://www.nestmateus.com/payment-confirmation-simple.html?payment=success&plan=advanced</code></p>
         <p><strong>Cancel URL:</strong> <code>https://www.nestmateus.com/upgrade-advanced.html?payment=cancelled</code></p>
         <a href="#" class="payment-link" onclick="createPaymentLink('advanced')">Create Advanced Payment Link</a>
     </div>
@@ -113,7 +113,7 @@
                     },
                     body: JSON.stringify({
                         planType: planType,
-                        successUrl: `https://www.nestmateus.com/payment-confirmation.html?payment=success&plan=${planType}`,
+                        successUrl: `https://www.nestmateus.com/payment-confirmation-simple.html?payment=success&plan=${planType}`,
                         cancelUrl: `https://www.nestmateus.com/upgrade-${planType}.html?payment=cancelled`
                     }),
                 });

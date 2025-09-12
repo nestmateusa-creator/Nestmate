@@ -50,7 +50,7 @@ async function createPaymentLinks() {
                 },
                 quantity: 1
             }],
-            success_url: 'https://www.nestmateus.com/payment-confirmation.html?payment=success&plan=basic',
+            success_url: 'https://www.nestmateus.com/payment-confirmation-simple.html?payment=success&plan=basic',
             cancel_url: 'https://www.nestmateus.com/upgrade-basic.html?payment=cancelled',
             allow_promotion_codes: true
         });
@@ -75,7 +75,7 @@ async function createPaymentLinks() {
                 },
                 quantity: 1
             }],
-            success_url: 'https://www.nestmateus.com/payment-confirmation.html?payment=success&plan=pro',
+            success_url: 'https://www.nestmateus.com/payment-confirmation-simple.html?payment=success&plan=pro',
             cancel_url: 'https://www.nestmateus.com/upgrade-pro.html?payment=cancelled',
             allow_promotion_codes: true
         });
@@ -100,7 +100,7 @@ async function createPaymentLinks() {
                 },
                 quantity: 1
             }],
-            success_url: 'https://www.nestmateus.com/payment-confirmation.html?payment=success&plan=advanced',
+            success_url: 'https://www.nestmateus.com/payment-confirmation-simple.html?payment=success&plan=advanced',
             cancel_url: 'https://www.nestmateus.com/upgrade-advanced.html?payment=cancelled',
             allow_promotion_codes: true
         });

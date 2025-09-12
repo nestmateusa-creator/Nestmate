@@ -107,7 +107,7 @@
                 <li>Email support</li>
             </ul>
             <div class="urls">
-                <strong>Success URL:</strong> https://www.nestmateus.com/payment-confirmation.html?payment=success&plan=basic<br>
+                <strong>Success URL:</strong> https://www.nestmateus.com/payment-confirmation-simple.html?payment=success&plan=basic<br>
                 <strong>Cancel URL:</strong> https://www.nestmateus.com/upgrade-basic.html?payment=cancelled
             </div>
             <button class="create-btn" onclick="createPaymentLink('basic', 5)">Create Basic Payment Link</button>
@@ -123,7 +123,7 @@
                 <li>Product recommendations</li>
             </ul>
             <div class="urls">
-                <strong>Success URL:</strong> https://www.nestmateus.com/payment-confirmation.html?payment=success&plan=pro<br>
+                <strong>Success URL:</strong> https://www.nestmateus.com/payment-confirmation-simple.html?payment=success&plan=pro<br>
                 <strong>Cancel URL:</strong> https://www.nestmateus.com/upgrade-pro.html?payment=cancelled
             </div>
             <button class="create-btn" onclick="createPaymentLink('pro', 10)">Create Pro Payment Link</button>
@@ -141,7 +141,7 @@
                 <li>Unlimited access to premium features</li>
             </ul>
             <div class="urls">
-                <strong>Success URL:</strong> https://www.nestmateus.com/payment-confirmation.html?payment=success&plan=advanced<br>
+                <strong>Success URL:</strong> https://www.nestmateus.com/payment-confirmation-simple.html?payment=success&plan=advanced<br>
                 <strong>Cancel URL:</strong> https://www.nestmateus.com/upgrade-advanced.html?payment=cancelled
             </div>
             <button class="create-btn" onclick="createPaymentLink('advanced', 16)">Create Advanced Payment Link</button>
@@ -170,7 +170,7 @@
                     body: JSON.stringify({
                         planType: planType,
                         amount: amount,
-                        successUrl: `https://www.nestmateus.com/payment-confirmation.html?payment=success&plan=${planType}`,
+                        successUrl: `https://www.nestmateus.com/payment-confirmation-simple.html?payment=success&plan=${planType}`,
                         cancelUrl: `https://www.nestmateus.com/upgrade-${planType}.html?payment=cancelled`
                     })
                 });
