@@ -631,8 +631,8 @@
                     displayName: name,
                     email: email,
                     role: 'user',
-                            accountType: 'trial',
-                            plan: 'trial',
+                            accountType: 'Trial',
+                            plan: 'Trial',
                     createdAt: new Date().toISOString(),
                     updatedAt: new Date().toISOString()
                 };
@@ -643,8 +643,8 @@
                             displayName: name,
                             email: email,
                             role: 'user',
-                            accountType: 'trial',
-                            plan: 'trial',
+                            accountType: 'Trial',
+                            plan: 'Trial',
                             createdAt: new Date().toISOString(),
                             updatedAt: new Date().toISOString(),
                             status: 'active'
@@ -653,7 +653,8 @@
                         // Save to both collections
                         await Promise.all([
                             db.collection('userProfiles').doc(userCredential.user.uid).set(userProfileData),
-                            db.collection('accounts').doc(userCredential.user.uid).set(accountData)
+                            db.collection('accounts').doc(userCredential.user.uid).set(accountData),
+                            db.collection('Trial User Accounts').doc(userCredential.user.uid).set(accountData)
                         ]);
                         
                         console.log('User profile and account documents created in both collections');

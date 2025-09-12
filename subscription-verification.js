@@ -106,16 +106,16 @@ async function verifySubscriptionAndRedirect() {
         // Determine which collection to check based on current dashboard
         const db = firebase.firestore();
         const currentPage = window.location.pathname;
-        let collectionName = 'trialUsers'; // default
+        let collectionName = 'Trial User Accounts'; // default
         
         if (currentPage.includes('dashboard-basic-new.html')) {
-            collectionName = 'basicUsers';
+            collectionName = 'Basic User Accounts';
         } else if (currentPage.includes('dashboard-pro-new.html')) {
-            collectionName = 'proUsers';
+            collectionName = 'Pro User Accounts';
         } else if (currentPage.includes('dashboard-advanced-new.html')) {
-            collectionName = 'advancedUsers';
+            collectionName = 'Advanced Pro User Accounts';
         } else if (currentPage.includes('dashboard-trial-new.html')) {
-            collectionName = 'trialUsers';
+            collectionName = 'Trial User Accounts';
         }
         
         console.log('🔍 Checking collection:', collectionName, 'for current page:', currentPage);
@@ -138,10 +138,10 @@ async function verifySubscriptionAndRedirect() {
                 
                 // Check if the account type matches the current dashboard
                 const currentPage = window.location.pathname;
-                const isCorrectDashboard = (currentPage.includes('dashboard-basic-new.html') && accountType === 'basic') ||
-                                         (currentPage.includes('dashboard-pro-new.html') && accountType === 'pro') ||
-                                         (currentPage.includes('dashboard-advanced-new.html') && accountType === 'advanced') ||
-                                         (currentPage.includes('dashboard-trial-new.html') && accountType === 'trial');
+                const isCorrectDashboard = (currentPage.includes('dashboard-basic-new.html') && (accountType === 'basic' || accountType === 'Basic')) ||
+                                         (currentPage.includes('dashboard-pro-new.html') && (accountType === 'pro' || accountType === 'Pro')) ||
+                                         (currentPage.includes('dashboard-advanced-new.html') && (accountType === 'advanced' || accountType === 'Advanced' || accountType === 'Advanced Pro')) ||
+                                         (currentPage.includes('dashboard-trial-new.html') && (accountType === 'trial' || accountType === 'Trial'));
                 
                 if (isCorrectDashboard) {
                     console.log('✅ User authorized via fallback userProfiles check');
