@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Payment Flow</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .success { background: #d4edda; border-color: #c3e6cb; }
+        .error { background: #f8d7da; border-color: #f5c6cb; }
+        .info { background: #d1ecf1; border-color: #bee5eb; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 3px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Payment Flow Test</h1>
+        
+        <div class="test-section info">
+            <h3>Current URL Parameters:</h3>
+            <pre id="urlParams"></pre>
+        </div>
+        
+        <div class="test-section info">
+            <h3>Test Payment Confirmation URLs:</h3>
+            <button onclick="testUrl('basic')">Test Basic Payment</button>
+            <button onclick="testUrl('pro')">Test Pro Payment</button>
+            <button onclick="testUrl('advanced')">Test Advanced Payment</button>
+        </div>
+        
+        <div class="test-section info">
+            <h3>Firebase Collections Check:</h3>
+            <button onclick="checkCollections()">Check Collections</button>
+            <div id="collectionsResult"></div>
+        </div>
+        
+        <div class="test-section info">
+            <h3>Current User Check:</h3>
+            <button onclick="checkCurrentUser()">Check Current User</button>
+            <div id="userResult"></div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
+            authDomain: "data-41fa8.firebaseapp.com",
+            projectId: "data-41fa8",
+            storageBucket: "data-41fa8.firebasestorage.app",
+            messagingSenderId: "865171535257",
+            appId: "1:865171535257:web:9944a48a952e99f55f0f08",
+            measurementId: "G-1DYR2RGY4G"
+        };
+        
+        let auth, db;
+        
+        // Initialize Firebase
+        function initFirebase() {
+            try {
+                firebase.initializeApp(firebaseConfig);
+                auth = firebase.auth();
+                db = firebase.firestore();
+                console.log('✅ Firebase initialized');
+                return true;
+            } catch (error) {
+                console.error('❌ Firebase init error:', error);
+                return false;
+            }
+        }
+        
+        // Display URL parameters
+        function displayUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const params = {};
+            for (const [key, value] of urlParams) {
+                params[key] = value;
+            }
+            document.getElementById('urlParams').textContent = JSON.stringify(params, null, 2);
+        }
+        
+        // Test payment confirmation URLs
+        function testUrl(planType) {
+            const testUrl = `payment-confirmation.html?payment=success&plan=${planType}`;
+            window.open(testUrl, '_blank');
+        }
+        
+        // Check Firebase collections
+        async function checkCollections() {
+            const resultDiv = document.getElementById('collectionsResult');
+            resultDiv.innerHTML = '<p>Checking collections...</p>';
+            
+            try {
+                await initFirebase();
+                
+                const collections = [
+                    'Basic User Accounts',
+                    'Pro User Accounts', 
+                    'Advanced Pro User Accounts',
+                    'Trial User Accounts',
+                    'SELLER USER ACCOUNTS'
+                ];
+                
+                let result = '<h4>Collection Status:</h4>';
+                
+                for (const collectionName of collections) {
+                    try {
+                        const snapshot = await db.collection(collectionName).limit(1).get();
+                        result += `<p>✅ ${collectionName}: ${snapshot.size} documents</p>`;
+                    } catch (error) {
+                        result += `<p>❌ ${collectionName}: Error - ${error.message}</p>`;
+                    }
+                }
+                
+                resultDiv.innerHTML = result;
+            } catch (error) {
+                resultDiv.innerHTML = `<p>❌ Error: ${error.message}</p>`;
+            }
+        }
+        
+        // Check current user
+        async function checkCurrentUser() {
+            const resultDiv = document.getElementById('userResult');
+            resultDiv.innerHTML = '<p>Checking current user...</p>';
+            
+            try {
+                await initFirebase();
+                
+                const user = auth.currentUser;
+                if (user) {
+                    resultDiv.innerHTML = `
+                        <h4>Current User:</h4>
+                        <p>✅ Email: ${user.email}</p>
+                        <p>✅ UID: ${user.uid}</p>
+                        <p>✅ Display Name: ${user.displayName || 'None'}</p>
+                    `;
+                } else {
+                    resultDiv.innerHTML = '<p>❌ No user currently authenticated</p>';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<p>❌ Error: ${error.message}</p>`;
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            displayUrlParams();
+            initFirebase();
+        });
+    </script>
+</body>
+</html>
