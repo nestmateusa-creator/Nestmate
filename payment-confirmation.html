@@ -296,10 +296,19 @@
                 }
                 
                 if (!user) {
-                    // If still no user, redirect to sign in
-                    console.log('🚨 User not authenticated, redirecting to sign in...');
-                    window.location.href = 'signin.html?redirect=payment-confirmation.html?payment=success&plan=' + planType;
-                    return false;
+                    // If still no user, try one more time with a longer wait
+                    console.log('🚨 Still no user, trying one more time...');
+                    updateDebugInfo(planType, 'Final attempt...', 'Checking auth...');
+                    await new Promise(resolve => setTimeout(resolve, 3000)); // Wait 3 more seconds
+                    user = auth.currentUser;
+                    console.log('🚨 User after final wait:', user ? user.email : 'No user');
+                }
+                
+                if (!user) {
+                    // If still no user, show error but don't redirect
+                    console.log('🚨 User not authenticated after all attempts');
+                    updateDebugInfo(planType, 'Not authenticated', 'Auth failed');
+                    throw new Error('User not authenticated. Please sign in and try again.');
                 }
 
                 console.log('🚨 Updating user account to:', planType);
@@ -337,11 +346,13 @@
                 console.log('🚨 Update data:', updateData);
                 
                 // Write user to the correct subscription collection
+                let collectionWriteSuccess = false;
                 try {
                     updateDebugInfo(planType, user.email, `Writing to ${collectionName}...`);
                     await db.collection(collectionName).doc(user.uid).set(updateData, { merge: true });
                     console.log('✅ User added to', collectionName, 'collection');
                     updateDebugInfo(planType, user.email, `Successfully added to ${collectionName}`);
+                    collectionWriteSuccess = true;
                 } catch (collectionError) {
                     console.error('❌ Failed to write to', collectionName, 'collection:', collectionError);
                     console.log('🔄 Falling back to userProfiles collection...');
@@ -355,8 +366,14 @@
                         subscriptionStatus: 'active'
                     };
                     
-                    await db.collection('userProfiles').doc(user.uid).set(fallbackData, { merge: true });
-                    console.log('✅ Fallback: User added to userProfiles collection with', planType, 'account type');
+                    try {
+                        await db.collection('userProfiles').doc(user.uid).set(fallbackData, { merge: true });
+                        console.log('✅ Fallback: User added to userProfiles collection with', planType, 'account type');
+                        collectionWriteSuccess = true;
+                    } catch (fallbackError) {
+                        console.error('❌ Fallback also failed:', fallbackError);
+                        throw new Error('Failed to update user account in any collection');
+                    }
                 }
                 
                 // Also keep userProfiles for backward compatibility
@@ -369,8 +386,15 @@
                     // Continue anyway - the main collection update succeeded
                 }
 
-                console.log('✅ User account updated successfully');
-                return true;
+                if (collectionWriteSuccess) {
+                    console.log('✅ User account updated successfully');
+                    updateDebugInfo(planType, user.email, 'Account updated successfully!');
+                    return true;
+                } else {
+                    console.log('❌ Collection write failed');
+                    updateDebugInfo(planType, user.email, 'Collection write failed');
+                    throw new Error('Failed to write to any collection');
+                }
             } catch (error) {
                 console.error('❌ Failed to update user account:', error);
                 throw error;
@@ -457,24 +481,28 @@
                     // Try to update user account with retry logic
                     let updateSuccess = false;
                     let retryCount = 0;
-                    const maxRetries = 3;
+                    const maxRetries = 5; // Increased retries
                     
                     while (!updateSuccess && retryCount < maxRetries) {
                         try {
                             console.log(`🚨 Attempt ${retryCount + 1} to update account...`);
+                            updateDebugInfo(planType, 'Processing...', `Attempt ${retryCount + 1}/${maxRetries}`);
                             updateSuccess = await updateUserAccount(planType);
                             console.log('🚨 Update result:', updateSuccess);
                             
                             if (updateSuccess) {
+                                console.log('✅ Account update successful!');
                                 break;
                             }
                         } catch (error) {
                             console.log(`🚨 Attempt ${retryCount + 1} failed:`, error);
+                            updateDebugInfo(planType, 'Error occurred', `Attempt ${retryCount + 1} failed: ${error.message}`);
                             retryCount++;
                             
                             if (retryCount < maxRetries) {
-                                console.log('🚨 Retrying in 2 seconds...');
-                                await new Promise(resolve => setTimeout(resolve, 2000));
+                                console.log('🚨 Retrying in 3 seconds...');
+                                updateDebugInfo(planType, 'Retrying...', `Waiting 3 seconds before retry ${retryCount + 1}`);
+                                await new Promise(resolve => setTimeout(resolve, 3000)); // Increased wait time
                             }
                         }
                     }
@@ -484,9 +512,33 @@
                         console.log('🚨 Showing success state');
                         showSuccess(planType);
                     } else {
-                        // All retries failed, show error
-                        console.log('🚨 All update attempts failed');
-                        showError('Failed to update account after multiple attempts. Please contact support.');
+                        // All retries failed, but let's try one final fallback
+                        console.log('🚨 All update attempts failed, trying final fallback...');
+                        updateDebugInfo(planType, 'Final fallback...', 'Trying one more time...');
+                        
+                        try {
+                            // Final attempt: just update userProfiles with basic info
+                            const user = auth.currentUser;
+                            if (user) {
+                                const finalUpdateData = {
+                                    accountType: planType,
+                                    plan: planType,
+                                    subscriptionStatus: 'active',
+                                    subscriptionDate: new Date().toISOString(),
+                                    email: user.email,
+                                    uid: user.uid
+                                };
+                                
+                                await db.collection('userProfiles').doc(user.uid).set(finalUpdateData, { merge: true });
+                                console.log('✅ Final fallback succeeded - userProfiles updated');
+                                showSuccess(planType);
+                            } else {
+                                throw new Error('No user found for final fallback');
+                            }
+                        } catch (finalError) {
+                            console.log('🚨 Final fallback also failed:', finalError);
+                            showError('Failed to update account after multiple attempts. Please contact support.');
+                        }
                     }
                 } else if (params.payment === 'cancelled') {
                     // Payment was cancelled, redirect to cancelled page

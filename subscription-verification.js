@@ -148,6 +148,19 @@ async function verifySubscriptionAndRedirect() {
                     return;
                 } else {
                     console.log('❌ User account type does not match current dashboard');
+                    console.log('🔄 Redirecting to correct dashboard based on account type...');
+                    
+                    // Redirect to the correct dashboard based on account type
+                    if (accountType === 'basic' || accountType === 'Basic') {
+                        window.location.href = 'dashboard-basic-new.html';
+                    } else if (accountType === 'pro' || accountType === 'Pro') {
+                        window.location.href = 'dashboard-pro-new.html';
+                    } else if (accountType === 'advanced' || accountType === 'Advanced' || accountType === 'Advanced Pro') {
+                        window.location.href = 'dashboard-advanced-new.html';
+                    } else {
+                        window.location.href = 'dashboard-trial-new.html';
+                    }
+                    return;
                 }
             }
             
