@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Confirmation - NestMate</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+        .success-icon {
+            font-size: 60px;
+            color: #10b981;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #1e293b;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #64748b;
+            margin-bottom: 30px;
+        }
+        .plan-info {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .plan-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #10b981;
+            margin-bottom: 5px;
+        }
+        .plan-price {
+            font-size: 18px;
+            color: #64748b;
+        }
+        .btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: #059669;
+        }
+        .debug-info {
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 12px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="success-icon">✅</div>
+        <h1>Payment Successful!</h1>
+        <p class="subtitle">Your subscription has been activated</p>
+        
+        <div class="plan-info">
+            <div class="plan-name" id="planName">Loading...</div>
+            <div class="plan-price" id="planPrice">Loading...</div>
+        </div>
+        
+        <div class="debug-info" id="debugInfo">
+            <div>Status: <span id="status">Processing...</span></div>
+            <div>User: <span id="user">Checking...</span></div>
+            <div>Plan: <span id="plan">Loading...</span></div>
+        </div>
+        
+        <a href="#" class="btn" id="dashboardLink">Go to Dashboard</a>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
+            authDomain: "data-41fa8.firebaseapp.com",
+            projectId: "data-41fa8",
+            storageBucket: "data-41fa8.firebasestorage.app",
+            messagingSenderId: "865171535257",
+            appId: "1:865171535257:web:9944a48a952e99f55f0f08",
+            measurementId: "G-1DYR2RGY4G"
+        };
+        
+        let auth, db;
+        
+        // Initialize Firebase
+        function initFirebase() {
+            try {
+                firebase.initializeApp(firebaseConfig);
+                auth = firebase.auth();
+                db = firebase.firestore();
+                console.log('✅ Firebase initialized');
+                return true;
+            } catch (error) {
+                console.error('❌ Firebase init error:', error);
+                return false;
+            }
+        }
+        
+        // Update debug info
+        function updateDebug(status, user, plan) {
+            document.getElementById('status').textContent = status;
+            document.getElementById('user').textContent = user;
+            document.getElementById('plan').textContent = plan;
+        }
+        
+        // Get URL parameters
+        function getUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return {
+                payment: urlParams.get('payment'),
+                plan: urlParams.get('plan')
+            };
+        }
+        
+        // Simple account update
+        async function updateAccount(planType) {
+            try {
+                updateDebug('Getting user...', 'Checking...', planType);
+                
+                // Wait for user to be available
+                let user = auth.currentUser;
+                let attempts = 0;
+                
+                while (!user && attempts < 10) {
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    user = auth.currentUser;
+                    attempts++;
+                    updateDebug(`Waiting for user... (${attempts}/10)`, 'Checking...', planType);
+                }
+                
+                if (!user) {
+                    throw new Error('User not found after 10 seconds');
+                }
+                
+                updateDebug('User found!', user.email, planType);
+                
+                // Simple update data
+                const updateData = {
+                    accountType: planType,
+                    plan: planType,
+                    subscriptionStatus: 'active',
+                    subscriptionDate: new Date().toISOString(),
+                    email: user.email,
+                    uid: user.uid
+                };
+                
+                updateDebug('Updating account...', user.email, planType);
+                
+                // Try to update userProfiles (most reliable)
+                await db.collection('userProfiles').doc(user.uid).set(updateData, { merge: true });
+                console.log('✅ UserProfiles updated');
+                
+                // Try to update specific collection
+                const collectionName = planType === 'basic' ? 'Basic User Accounts' : 
+                                     planType === 'pro' ? 'Pro User Accounts' : 
+                                     planType === 'advanced' ? 'Advanced Pro User Accounts' : 
+                                     'Trial User Accounts';
+                
+                try {
+                    await db.collection(collectionName).doc(user.uid).set(updateData, { merge: true });
+                    console.log('✅ Specific collection updated');
+                } catch (error) {
+                    console.log('⚠️ Specific collection failed, but userProfiles succeeded');
+                }
+                
+                updateDebug('Account updated!', user.email, planType);
+                return true;
+                
+            } catch (error) {
+                console.error('❌ Update failed:', error);
+                updateDebug('Update failed', error.message, planType);
+                return false;
+            }
+        }
+        
+        // Main function
+        async function main() {
+            try {
+                updateDebug('Starting...', 'Loading...', 'Loading...');
+                
+                // Initialize Firebase
+                if (!initFirebase()) {
+                    throw new Error('Firebase initialization failed');
+                }
+                
+                updateDebug('Firebase ready', 'Loading...', 'Loading...');
+                
+                // Get URL parameters
+                const params = getUrlParams();
+                console.log('URL params:', params);
+                
+                if (params.payment === 'success' && params.plan) {
+                    const planType = params.plan;
+                    
+                    // Update plan display
+                    const planNames = {
+                        'basic': 'Basic Plan',
+                        'pro': 'Pro Plan',
+                        'advanced': 'Advanced Plan'
+                    };
+                    
+                    const planPrices = {
+                        'basic': '$5/month',
+                        'pro': '$10/month',
+                        'advanced': '$16/month'
+                    };
+                    
+                    const dashboardUrls = {
+                        'basic': 'dashboard-basic-new.html',
+                        'pro': 'dashboard-pro-new.html',
+                        'advanced': 'dashboard-advanced-new.html'
+                    };
+                    
+                    document.getElementById('planName').textContent = planNames[planType] || planType;
+                    document.getElementById('planPrice').textContent = planPrices[planType] || '';
+                    document.getElementById('dashboardLink').href = dashboardUrls[planType] || 'dashboard-trial-new.html';
+                    
+                    // Update account
+                    const success = await updateAccount(planType);
+                    
+                    if (success) {
+                        updateDebug('Success!', 'Account updated', planType);
+                    } else {
+                        updateDebug('Partial success', 'Check console', planType);
+                    }
+                    
+                } else {
+                    // Not a successful payment
+                    window.location.href = 'dashboard-trial-new.html';
+                }
+                
+            } catch (error) {
+                console.error('❌ Main error:', error);
+                updateDebug('Error occurred', error.message, 'Unknown');
+            }
+        }
+        
+        // Start when page loads
+        document.addEventListener('DOMContentLoaded', main);
+    </script>
+</body>
+</html>

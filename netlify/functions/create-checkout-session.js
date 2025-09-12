@@ -1,6 +1,5 @@
 // VERSION 4.0 - USE ENVIRONMENT VARIABLE ONLY
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); 
 exports.handler = async (event, context) => {
   // Handle CORS preflight requests
   if (event.httpMethod === 'OPTIONS') {
@@ -59,7 +58,7 @@ exports.handler = async (event, context) => {
         },
       ],
       mode: 'subscription',
-      success_url: `${event.headers.origin || 'https://www.nestmateus.com'}/payment-confirmation.html?payment=success&plan=${planType}`,
+      success_url: `${event.headers.origin || 'https://www.nestmateus.com'}/payment-confirmation-simple.html?payment=success&plan=${planType}`,
       cancel_url: `${event.headers.origin || 'https://www.nestmateus.com'}/upgrade-${planType}.html?payment=cancelled`,
       metadata: {
         planType: planType,
