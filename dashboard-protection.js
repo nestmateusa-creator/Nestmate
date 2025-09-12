@@ -23,15 +23,7 @@ async function checkDashboardAccess(expectedAccountType) {
             return false;
         }
 
-        // Hardcoded fix for jillmullins09@gmail.com
-        if (user.email === 'jillmullins09@gmail.com') {
-            if (expectedAccountType !== 'advanced') {
-                console.log('🚀 jillmullins09@gmail.com detected - redirecting to advanced dashboard');
-                window.location.href = 'dashboard-advanced-new.html';
-                return false;
-            }
-            return true;
-        }
+        // User will be handled by the subscription verification system
 
         // Get user's account type from Firestore
         const db = firebase.firestore();
