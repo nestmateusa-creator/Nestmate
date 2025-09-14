@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NestMate Basic - Simple Checkout</title>
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+    <h1>NestMate Basic Plan - $5/month</h1>
+    <button id="checkout-button">Subscribe Now</button>
+
+    <script>
+        const stripe = Stripe('pk_live_51S4C0RPHhV91OxuK...'); // Your publishable key
+        
+        document.getElementById('checkout-button').addEventListener('click', function() {
+            fetch('/.netlify/functions/create-checkout-session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    planType: 'basic',
+                    amount: 500,
+                    currency: 'usd'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.url) {
+                    window.location.href = data.url;
+                } else {
+                    console.error('Error:', data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
