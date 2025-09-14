@@ -211,7 +211,7 @@
                     Unable to update your account. Please contact support.
                 </div>
 
-                <a href="dashboard-trial-new.html" class="btn btn-primary">
+                <a href="dashboard-trial-fresh.html" class="btn btn-primary">
                     <i class="fas fa-arrow-left"></i>
                     Back to Dashboard
                 </a>
@@ -430,7 +430,7 @@
             
             document.getElementById('planName').textContent = planNames[planType] || 'Plan';
             document.getElementById('planPrice').textContent = planPrices[planType] || '';
-            document.getElementById('dashboardLink').href = dashboardUrls[planType] || 'dashboard-trial-new.html';
+            document.getElementById('dashboardLink').href = dashboardUrls[planType] || 'dashboard-trial-fresh.html';
             
             console.log('🚨 Final dashboard link href:', document.getElementById('dashboardLink').href);
         }
@@ -550,7 +550,7 @@
                 } else {
                     // Not a successful payment, redirect to trial dashboard
                     console.log('🚨 Not a successful payment, redirecting to trial dashboard');
-                    window.location.href = 'dashboard-trial-new.html';
+                    window.location.href = 'dashboard-trial-fresh.html';
                 }
             } catch (error) {
                 console.error('🚨 Payment confirmation error:', error);

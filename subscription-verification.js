@@ -163,7 +163,7 @@ async function verifySubscriptionAndRedirect() {
             console.log('❌ User not found in any collection, redirecting to trial dashboard');
             isRedirecting = true;
             await new Promise(resolve => setTimeout(resolve, 1500));
-            window.location.href = 'https://nestmateus.com/dashboard-trial-new.html';
+                window.location.href = 'https://nestmateus.com/dashboard-trial-fresh.html';
             return;
         }
 
@@ -188,7 +188,7 @@ async function verifySubscriptionAndRedirect() {
         // Add a small delay to show loading screen
         await new Promise(resolve => setTimeout(resolve, 1500));
         
-        window.location.href = 'https://nestmateus.com/dashboard-trial-new.html';
+                window.location.href = 'https://nestmateus.com/dashboard-trial-fresh.html';
     }
 }
 
@@ -242,7 +242,7 @@ async function verifyDashboardAccess(expectedAccountType) {
         if (!userDoc.exists) {
             console.log('❌ User not found in', collectionName, 'collection');
             console.log('❌ Access denied, redirecting to trial dashboard');
-            window.location.href = 'https://nestmateus.com/dashboard-trial-new.html';
+                window.location.href = 'https://nestmateus.com/dashboard-trial-fresh.html';
             return false;
         }
 
@@ -253,7 +253,7 @@ async function verifyDashboardAccess(expectedAccountType) {
     } catch (error) {
         console.error('❌ Error verifying dashboard access:', error);
         console.log('🔄 Fallback: redirecting to trial dashboard');
-        window.location.href = 'https://nestmateus.com/dashboard-trial-new.html';
+                window.location.href = 'https://nestmateus.com/dashboard-trial-fresh.html';
         return false;
     }
 }
