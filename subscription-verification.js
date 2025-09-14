@@ -82,7 +82,7 @@ async function verifySubscriptionAndRedirect() {
                 console.log('❌ Firebase not available, redirecting to trial');
                 isRedirecting = true;
                 await new Promise(resolve => setTimeout(resolve, 1500));
-                window.location.href = 'https://nestmateus.com/dashboard-trial-new.html';
+                window.location.href = 'https://nestmateus.com/dashboard-trial-fresh.html';
                 return;
             }
         }
@@ -120,7 +120,7 @@ async function verifySubscriptionAndRedirect() {
             const isCorrectDashboard = (currentPage.includes('dashboard-basic-new.html') && (accountType === 'basic' || accountType === 'Basic')) ||
                                      (currentPage.includes('dashboard-pro-new.html') && (accountType === 'pro' || accountType === 'Pro')) ||
                                      (currentPage.includes('dashboard-advanced-new.html') && (accountType === 'advanced' || accountType === 'Advanced' || accountType === 'Advanced Pro')) ||
-                                     (currentPage.includes('dashboard-trial-new.html') && (accountType === 'trial' || accountType === 'Trial'));
+                                     ((currentPage.includes('dashboard-trial-new.html') || currentPage.includes('dashboard-trial-fresh.html')) && (accountType === 'trial' || accountType === 'Trial'));
             
             if (isCorrectDashboard) {
                 console.log('✅ User is on correct dashboard');
@@ -136,7 +136,7 @@ async function verifySubscriptionAndRedirect() {
                 } else if (accountType === 'advanced' || accountType === 'Advanced' || accountType === 'Advanced Pro') {
                     window.location.href = 'dashboard-advanced-new.html';
                 } else {
-                    window.location.href = 'dashboard-trial-new.html';
+                    window.location.href = 'dashboard-trial-fresh.html';
                 }
                 return;
             }
@@ -152,7 +152,7 @@ async function verifySubscriptionAndRedirect() {
             collectionName = 'Pro User Accounts';
         } else if (currentPage.includes('dashboard-advanced-new.html')) {
             collectionName = 'Advanced Pro User Accounts';
-        } else if (currentPage.includes('dashboard-trial-new.html')) {
+        } else if (currentPage.includes('dashboard-trial-new.html') || currentPage.includes('dashboard-trial-fresh.html')) {
             collectionName = 'Trial User Accounts';
         }
         
