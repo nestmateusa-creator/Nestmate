@@ -251,7 +251,7 @@
                     
                     document.getElementById('planName').textContent = planNames[planType] || planType;
                     document.getElementById('planPrice').textContent = planPrices[planType] || '';
-                    document.getElementById('dashboardLink').href = dashboardUrls[planType] || 'dashboard-trial-new.html';
+                    document.getElementById('dashboardLink').href = dashboardUrls[planType] || 'dashboard-trial-fresh.html';
                     
                     // Update account
                     const success = await updateAccount(planType);
@@ -264,7 +264,7 @@
                     
                 } else {
                     // Not a successful payment
-                    window.location.href = 'dashboard-trial-new.html';
+                    window.location.href = 'dashboard-trial-fresh.html';
                 }
                 
             } catch (error) {
