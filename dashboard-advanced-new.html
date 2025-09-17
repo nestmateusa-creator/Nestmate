@@ -323,6 +323,46 @@
                 <p class="feature-description">Order products as a team—collaborate and save on family purchases.</p>
             </div>
         </div>
+
+        <!-- Subscription Management Section -->
+        <div class="welcome-card">
+            <h2 style="margin-bottom: 1rem; color: var(--dark);">Subscription Management</h2>
+            <p style="color: var(--secondary); margin-bottom: 2rem;">Manage your Advanced Pro subscription and billing</p>
+            
+            <div class="quick-actions">
+                <a href="https://buy.stripe.com/28E8wR2vU1cb4jr0Ch1sQ0t" class="action-btn" target="_blank">
+                    <div class="action-icon">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <div class="action-title">Manage Billing</div>
+                    <div class="action-description">Update payment method</div>
+                </a>
+                
+                <a href="upgrade-basic.html" class="action-btn">
+                    <div class="action-icon">
+                        <i class="fas fa-arrow-down"></i>
+                    </div>
+                    <div class="action-title">Downgrade to Basic</div>
+                    <div class="action-description">Switch to Basic plan</div>
+                </a>
+                
+                <a href="upgrade-pro.html" class="action-btn">
+                    <div class="action-icon">
+                        <i class="fas fa-arrow-down"></i>
+                    </div>
+                    <div class="action-title">Downgrade to Pro</div>
+                    <div class="action-description">Switch to Pro plan</div>
+                </a>
+                
+                <a href="#" class="action-btn" onclick="contactSupport()">
+                    <div class="action-icon">
+                        <i class="fas fa-question-circle"></i>
+                    </div>
+                    <div class="action-title">Support</div>
+                    <div class="action-description">Get help with billing</div>
+                </a>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -386,6 +426,24 @@
                 }
             }
         });
+
+        // Contact support function
+        function contactSupport() {
+            const user = auth.currentUser;
+            const email = user ? user.email : 'unknown@example.com';
+            const subject = 'NestMate Advanced Pro Support Request';
+            const body = `Hello NestMate Support Team,
+
+I need help with my Advanced Pro subscription.
+
+User Email: ${email}
+Issue Description: [Please describe your issue here]
+
+Thank you for your assistance!`;
+
+            const mailtoLink = `mailto:support@nestmateus.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.open(mailtoLink);
+        }
     </script>
 </body>
 </html>
