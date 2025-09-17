@@ -1,5 +1,5 @@
-// VERSION 4.0 - USE ENVIRONMENT VARIABLE ONLY
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); 
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
 exports.handler = async (event, context) => {
   // Handle CORS preflight requests
   if (event.httpMethod === 'OPTIONS') {
@@ -14,67 +14,39 @@ exports.handler = async (event, context) => {
     };
   }
 
-  // Only allow POST requests
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-      },
       body: JSON.stringify({ error: 'Method not allowed' }),
     };
   }
 
   try {
-    console.log('Event body:', event.body);
-    console.log('Event headers:', event.headers);
-    
-    const { planType, amount, currency = 'usd', customerEmail } = JSON.parse(event.body);
-    
-    console.log('Creating checkout session for:', { planType, amount, currency });
-    
-    // Validate required fields
-    if (!planType || !amount) {
-      throw new Error('Missing required fields: planType and amount are required');
+    const { priceId, plan } = JSON.parse(event.body);
+
+    if (!priceId) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: 'Price ID is required' }),
+      };
     }
-    
-    // Create a checkout session
-    const sessionConfig = {
+
+    // Create checkout session
+    const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
+      mode: 'subscription',
       line_items: [
         {
-          price_data: {
-            currency: currency,
-            product_data: {
-              name: `NestMate ${planType.charAt(0).toUpperCase() + planType.slice(1)} Plan`,
-              description: `Monthly subscription to NestMate ${planType} plan`,
-            },
-            unit_amount: amount, // Amount in cents
-            recurring: {
-              interval: 'month',
-            },
-          },
+          price: priceId,
           quantity: 1,
         },
       ],
-      mode: 'subscription',
-      success_url: `${event.headers.origin || 'https://www.nestmateus.com'}/payment-confirmation-simple.html?payment=success&plan=${planType}`,
-      cancel_url: `${event.headers.origin || 'https://www.nestmateus.com'}/upgrade-${planType}.html?payment=cancelled`,
+      success_url: `${event.headers.origin}/payment-success.html?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${event.headers.origin}/payment-cancel.html`,
       metadata: {
-        planType: planType,
-        customerEmail: customerEmail || 'unknown'
-      }
-    };
-
-    // Add customer email if provided
-    if (customerEmail) {
-      sessionConfig.customer_email = customerEmail;
-    }
-
-    const session = await stripe.checkout.sessions.create(sessionConfig);
-
-    console.log('Checkout session created:', session.id);
-    console.log('Session URL:', session.url);
+        plan: plan,
+      },
+    });
 
     return {
       statusCode: 200,
@@ -82,24 +54,17 @@ exports.handler = async (event, context) => {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        sessionId: session.id,
-        url: session.url
-      }),
+      body: JSON.stringify({ id: session.id }),
     };
-  } catch (err) {
-    console.error('Error creating checkout session:', err);
-    
+  } catch (error) {
+    console.error('Error creating checkout session:', error);
     return {
       statusCode: 500,
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ 
-        error: err.message,
-        type: err.type || 'unknown_error'
-      }),
+      body: JSON.stringify({ error: error.message }),
     };
   }
 };
