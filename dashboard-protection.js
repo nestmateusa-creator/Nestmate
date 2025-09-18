@@ -31,7 +31,7 @@ async function checkDashboardAccess(expectedAccountType) {
         
         if (!userDoc.exists) {
             console.log('❌ User document not found, redirecting to trial dashboard');
-            window.location.href = 'dashboard-trial-fresh.html';
+            window.location.href = 'dashboard-basic-new.html';
             return false;
         }
 
@@ -67,7 +67,7 @@ async function checkDashboardAccess(expectedAccountType) {
                     window.location.href = 'dashboard-advanced-new.html';
                     break;
                 default:
-                    window.location.href = 'dashboard-trial-fresh.html';
+                    window.location.href = 'dashboard-basic-new.html';
             }
             return false;
         }

@@ -577,7 +577,7 @@
             if (paymentStatus === 'cancelled') {
                 // Show a message and redirect to trial dashboard
                 alert('Payment was cancelled. Redirecting to your dashboard...');
-                window.location.href = 'dashboard-trial-fresh.html';
+                window.location.href = 'dashboard-basic-new.html';
             }
         }
 
@@ -617,32 +617,32 @@
                     const accountType = userData.accountType || 'trial';
                     
                     const dashboardUrls = {
-                        'trial': 'dashboard-trial-fresh.html',
+                        'basic': 'dashboard-basic-new.html',
                         'basic': 'dashboard-basic-new.html',
                         'pro': 'dashboard-pro-new.html',
                         'advanced': 'dashboard-advanced-new.html'
                     };
                     
-                    window.location.href = dashboardUrls[accountType] || 'dashboard-trial-fresh.html';
+                    window.location.href = dashboardUrls[accountType] || 'dashboard-basic-new.html';
                 } else {
-                    window.location.href = 'dashboard-trial-fresh.html';
+                    window.location.href = 'dashboard-basic-new.html';
                 }
             } catch (error) {
                 console.error('Error getting user data:', error);
-                window.location.href = 'dashboard-trial-fresh.html';
+                window.location.href = 'dashboard-basic-new.html';
             }
         }
 
         // Redirect to correct dashboard based on account type
         function redirectToCorrectDashboard(accountType) {
             const dashboardUrls = {
-                'trial': 'dashboard-trial-fresh.html',
+                'basic': 'dashboard-basic-new.html',
                 'basic': 'dashboard-basic-new.html',
                 'pro': 'dashboard-pro-new.html',
                 'advanced': 'dashboard-advanced-new.html'
             };
             
-            window.location.href = dashboardUrls[accountType] || 'dashboard-trial-fresh.html';
+            window.location.href = dashboardUrls[accountType] || 'dashboard-basic-new.html';
         }
     </script>
 </body>

@@ -82,7 +82,7 @@ async function verifySubscriptionAndRedirect() {
                 console.log('❌ Firebase not available, redirecting to trial');
                 isRedirecting = true;
                 await new Promise(resolve => setTimeout(resolve, 1500));
-                window.location.href = 'https://nestmateus.com/dashboard-trial-fresh.html';
+                window.location.href = 'https://nestmateus.com/dashboard-basic-new.html';
                 return;
             }
         }
@@ -152,7 +152,7 @@ async function verifySubscriptionAndRedirect() {
                 const isCorrectDashboard = (currentPage.includes('dashboard-basic-new.html') && (accountType === 'basic' || accountType === 'Basic')) ||
                                          (currentPage.includes('dashboard-pro-new.html') && (accountType === 'pro' || accountType === 'Pro')) ||
                                          (currentPage.includes('dashboard-advanced-new.html') && (accountType === 'advanced' || accountType === 'Advanced' || accountType === 'Advanced Pro')) ||
-                                         ((currentPage.includes('dashboard-trial-new.html') || currentPage.includes('dashboard-trial-fresh.html')) && (accountType === 'trial' || accountType === 'Trial'));
+                                         (currentPage.includes('dashboard-basic-new.html') && (accountType === 'basic' || accountType === 'Basic'));
                 
                 if (isCorrectDashboard) {
                     console.log('✅ User is on correct dashboard');
@@ -168,7 +168,7 @@ async function verifySubscriptionAndRedirect() {
                     } else if (accountType === 'advanced' || accountType === 'Advanced' || accountType === 'Advanced Pro') {
                         window.location.href = 'dashboard-advanced-new.html';
                     } else {
-                        window.location.href = 'dashboard-trial-fresh.html';
+                        window.location.href = 'dashboard-basic-new.html';
                     }
                     return;
                 }
@@ -195,7 +195,7 @@ async function verifySubscriptionAndRedirect() {
             const isCorrectDashboard = (currentPage.includes('dashboard-basic-new.html') && (accountType === 'basic' || accountType === 'Basic')) ||
                                      (currentPage.includes('dashboard-pro-new.html') && (accountType === 'pro' || accountType === 'Pro')) ||
                                      (currentPage.includes('dashboard-advanced-new.html') && (accountType === 'advanced' || accountType === 'Advanced' || accountType === 'Advanced Pro')) ||
-                                     ((currentPage.includes('dashboard-trial-new.html') || currentPage.includes('dashboard-trial-fresh.html')) && (accountType === 'trial' || accountType === 'Trial'));
+                                     (currentPage.includes('dashboard-basic-new.html') && (accountType === 'basic' || accountType === 'Basic'));
             
             if (isCorrectDashboard) {
                 console.log('✅ User is on correct dashboard');
@@ -211,7 +211,7 @@ async function verifySubscriptionAndRedirect() {
                 } else if (accountType === 'advanced' || accountType === 'Advanced' || accountType === 'Advanced Pro') {
                     window.location.href = 'dashboard-advanced-new.html';
                 } else {
-                    window.location.href = 'dashboard-trial-fresh.html';
+                    window.location.href = 'dashboard-basic-new.html';
                 }
                 return;
             }
@@ -219,7 +219,7 @@ async function verifySubscriptionAndRedirect() {
         
         // If not found in userProfiles, check specific collections based on current page
         const currentPage = window.location.pathname;
-        let collectionName = 'Trial User Accounts'; // default
+        let collectionName = 'Basic User Accounts'; // default
         
         if (currentPage.includes('dashboard-basic-new.html')) {
             collectionName = 'Basic User Accounts';
@@ -227,8 +227,8 @@ async function verifySubscriptionAndRedirect() {
             collectionName = 'Pro User Accounts';
         } else if (currentPage.includes('dashboard-advanced-new.html')) {
             collectionName = 'Advanced Pro User Accounts';
-        } else if (currentPage.includes('dashboard-trial-new.html') || currentPage.includes('dashboard-trial-fresh.html')) {
-            collectionName = 'Trial User Accounts';
+        } else if (currentPage.includes('dashboard-basic-new.html')) {
+            collectionName = 'Basic User Accounts';
         }
         
         console.log('🔍 User not found in userProfiles, checking', collectionName, 'collection...');
@@ -238,7 +238,7 @@ async function verifySubscriptionAndRedirect() {
             console.log('❌ User not found in any collection, redirecting to trial dashboard');
             isRedirecting = true;
             await new Promise(resolve => setTimeout(resolve, 1500));
-                window.location.href = 'https://nestmateus.com/dashboard-trial-fresh.html';
+                window.location.href = 'https://nestmateus.com/dashboard-basic-new.html';
             return;
         }
 
@@ -263,7 +263,7 @@ async function verifySubscriptionAndRedirect() {
         // Add a small delay to show loading screen
         await new Promise(resolve => setTimeout(resolve, 1500));
         
-                window.location.href = 'https://nestmateus.com/dashboard-trial-fresh.html';
+                window.location.href = 'https://nestmateus.com/dashboard-basic-new.html';
     }
 }
 
@@ -297,7 +297,7 @@ async function verifyDashboardAccess(expectedAccountType) {
 
         // Determine which collection to check based on expected account type
         const db = firebase.firestore();
-        let collectionName = 'Trial User Accounts'; // default
+        let collectionName = 'Basic User Accounts'; // default
         
         if (expectedAccountType === 'basic') {
             collectionName = 'Basic User Accounts';
@@ -306,7 +306,7 @@ async function verifyDashboardAccess(expectedAccountType) {
         } else if (expectedAccountType === 'advanced') {
             collectionName = 'Advanced Pro User Accounts';
         } else if (expectedAccountType === 'trial') {
-            collectionName = 'Trial User Accounts';
+            collectionName = 'Basic User Accounts';
         }
         
         console.log('🔍 Checking', collectionName, 'for', expectedAccountType, 'access');
@@ -317,7 +317,7 @@ async function verifyDashboardAccess(expectedAccountType) {
         if (!userDoc.exists) {
             console.log('❌ User not found in', collectionName, 'collection');
             console.log('❌ Access denied, redirecting to trial dashboard');
-                window.location.href = 'https://nestmateus.com/dashboard-trial-fresh.html';
+                window.location.href = 'https://nestmateus.com/dashboard-basic-new.html';
             return false;
         }
 
@@ -328,7 +328,7 @@ async function verifyDashboardAccess(expectedAccountType) {
     } catch (error) {
         console.error('❌ Error verifying dashboard access:', error);
         console.log('🔄 Fallback: redirecting to trial dashboard');
-                window.location.href = 'https://nestmateus.com/dashboard-trial-fresh.html';
+                window.location.href = 'https://nestmateus.com/dashboard-basic-new.html';
         return false;
     }
 }

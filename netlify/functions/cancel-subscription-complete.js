@@ -182,9 +182,9 @@ async function moveToTrialCollection(userId, email, currentPlan) {
     }
 
     // Step 2: Add user to Trial collection
-    await db.collection('Trial User Accounts').doc(userId).set(userData, { merge: true });
-    updates.push('Added to Trial User Accounts');
-    console.log('✅ Added user to Trial User Accounts');
+    await db.collection('Basic User Accounts').doc(userId).set(userData, { merge: true });
+    updates.push('Added to Basic User Accounts');
+    console.log('✅ Added user to Basic User Accounts');
 
     // Step 3: Update userProfiles collection for compatibility
     await db.collection('userProfiles').doc(userId).set(userData, { merge: true });
@@ -211,6 +211,6 @@ function getCollectionName(plan) {
     case 'advanced':
       return 'Advanced Pro User Accounts';
     default:
-      return 'Trial User Accounts';
+      return 'Basic User Accounts';
   }
 }

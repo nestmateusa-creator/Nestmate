@@ -245,6 +245,6 @@ function getCollectionName(plan) {
     case 'advanced':
       return 'Advanced Pro User Accounts';
     default:
-      return 'Trial User Accounts';
+      return 'Basic User Accounts';
   }
 }

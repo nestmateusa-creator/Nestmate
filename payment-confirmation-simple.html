@@ -192,7 +192,7 @@
                 const collectionName = planType === 'basic' ? 'Basic User Accounts' : 
                                      planType === 'pro' ? 'Pro User Accounts' : 
                                      planType === 'advanced' ? 'Advanced Pro User Accounts' : 
-                                     'Trial User Accounts';
+                                     'Basic User Accounts';
                 
                 try {
                     await db.collection(collectionName).doc(user.uid).set(updateData, { merge: true });
@@ -251,7 +251,7 @@
                     
                     document.getElementById('planName').textContent = planNames[planType] || planType;
                     document.getElementById('planPrice').textContent = planPrices[planType] || '';
-                    document.getElementById('dashboardLink').href = dashboardUrls[planType] || 'dashboard-trial-fresh.html';
+                    document.getElementById('dashboardLink').href = dashboardUrls[planType] || 'dashboard-basic-new.html';
                     
                     // Update account
                     const success = await updateAccount(planType);
@@ -264,7 +264,7 @@
                     
                 } else {
                     // Not a successful payment
-                    window.location.href = 'dashboard-trial-fresh.html';
+                    window.location.href = 'dashboard-basic-new.html';
                 }
                 
             } catch (error) {

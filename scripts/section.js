@@ -157,7 +157,7 @@
         const ref = db.collection('users').doc(uid).collection('meta').doc('dashboard');
         await ref.set({ data: d }, { merge: true });
         alert('Saved to Firestore');
-        window.location.href = 'dashboard-trial-fresh.html';
+        window.location.href = 'dashboard-basic-new.html';
         return;
       }catch(e){ console.warn('failed to save to firestore', e); alert('Failed to save to Firestore'); }
     }

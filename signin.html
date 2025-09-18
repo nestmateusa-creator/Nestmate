@@ -654,7 +654,7 @@
                         await Promise.all([
                             db.collection('userProfiles').doc(userCredential.user.uid).set(userProfileData),
                             db.collection('accounts').doc(userCredential.user.uid).set(accountData),
-                            db.collection('Trial User Accounts').doc(userCredential.user.uid).set(accountData)
+                            db.collection('Basic User Accounts').doc(userCredential.user.uid).set(accountData)
                         ]);
                         
                         console.log('User profile and account documents created in both collections');

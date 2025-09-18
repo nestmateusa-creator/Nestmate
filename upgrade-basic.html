@@ -429,7 +429,7 @@
 
         <!-- Back Button -->
         <div style="text-align: center; margin-top: 24px;">
-            <a href="dashboard-trial-fresh.html" class="btn btn-outline">
+            <a href="dashboard-basic-new.html" class="btn btn-outline">
                 <i class="fas fa-arrow-left"></i>
                 Back to Dashboard
             </a>
@@ -751,7 +751,7 @@
             if (paymentStatus === 'cancelled') {
                 // Show a message and redirect to trial dashboard
                 alert('Payment was cancelled. Redirecting to your dashboard...');
-                window.location.href = 'dashboard-trial-fresh.html';
+                window.location.href = 'dashboard-basic-new.html';
             }
         }
 
@@ -761,13 +761,13 @@
         // Redirect to correct dashboard based on account type
         function redirectToCorrectDashboard(accountType) {
             const dashboardUrls = {
-                'trial': 'dashboard-trial-fresh.html',
+                'basic': 'dashboard-basic-new.html',
                 'basic': 'dashboard-basic-new.html',
                 'pro': 'dashboard-pro-new.html',
                 'advanced': 'dashboard-advanced-new.html'
             };
             
-            window.location.href = dashboardUrls[accountType] || 'dashboard-trial-fresh.html';
+            window.location.href = dashboardUrls[accountType] || 'dashboard-basic-new.html';
         }
 
         // Go back to correct dashboard based on user's account type
@@ -810,16 +810,16 @@
                                 window.location.href = 'dashboard-advanced-new.html';
                                 break;
                             default:
-                                window.location.href = 'dashboard-trial-fresh.html';
+                                window.location.href = 'dashboard-basic-new.html';
                         }
                     } else {
-                        window.location.href = 'dashboard-trial-fresh.html';
+                        window.location.href = 'dashboard-basic-new.html';
                     }
                 } catch (error) {
-                    window.location.href = 'dashboard-trial-fresh.html';
+                    window.location.href = 'dashboard-basic-new.html';
                 }
             } catch (error) {
-                window.location.href = 'dashboard-trial-fresh.html';
+                window.location.href = 'dashboard-basic-new.html';
             }
         }
     </script>

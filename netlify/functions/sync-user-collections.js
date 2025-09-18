@@ -209,10 +209,10 @@ async function moveToTrialCollection(userId, userData, currentAccountType) {
     updatedAt: new Date().toISOString()
   };
   
-  await db.collection('Trial User Accounts').doc(userId).set(trialData, { merge: true });
+  await db.collection('Basic User Accounts').doc(userId).set(trialData, { merge: true });
   await db.collection('userProfiles').doc(userId).set(trialData, { merge: true });
   
-  console.log('✅ Added to Trial User Accounts');
+  console.log('✅ Added to Basic User Accounts');
 }
 
 async function moveToCorrectCollection(userId, userData, fromAccountType, toAccountType, subscription) {
@@ -253,6 +253,6 @@ function getCollectionName(plan) {
     case 'advanced':
       return 'Advanced Pro User Accounts';
     default:
-      return 'Trial User Accounts';
+      return 'Basic User Accounts';
   }
 }

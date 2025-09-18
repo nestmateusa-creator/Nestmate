@@ -211,7 +211,7 @@
                     Unable to update your account. Please contact support.
                 </div>
 
-                <a href="dashboard-trial-fresh.html" class="btn btn-primary">
+                <a href="dashboard-basic-new.html" class="btn btn-primary">
                     <i class="fas fa-arrow-left"></i>
                     Back to Dashboard
                 </a>
@@ -326,7 +326,7 @@
                 console.log('🚨 Update data:', updateData);
 
                 // Determine the correct collection based on plan type
-                let collectionName = 'Trial User Accounts'; // default
+                let collectionName = 'Basic User Accounts'; // default
                 switch (planType.toLowerCase()) {
                     case 'basic':
                         collectionName = 'Basic User Accounts';
@@ -338,7 +338,7 @@
                         collectionName = 'Advanced Pro User Accounts';
                         break;
                     default:
-                        collectionName = 'Trial User Accounts';
+                        collectionName = 'Basic User Accounts';
                 }
                 
                 console.log('🚨 Writing user to collection:', collectionName);
@@ -430,7 +430,7 @@
             
             document.getElementById('planName').textContent = planNames[planType] || 'Plan';
             document.getElementById('planPrice').textContent = planPrices[planType] || '';
-            document.getElementById('dashboardLink').href = dashboardUrls[planType] || 'dashboard-trial-fresh.html';
+            document.getElementById('dashboardLink').href = dashboardUrls[planType] || 'dashboard-basic-new.html';
             
             console.log('🚨 Final dashboard link href:', document.getElementById('dashboardLink').href);
         }
@@ -550,7 +550,7 @@
                 } else {
                     // Not a successful payment, redirect to trial dashboard
                     console.log('🚨 Not a successful payment, redirecting to trial dashboard');
-                    window.location.href = 'dashboard-trial-fresh.html';
+                    window.location.href = 'dashboard-basic-new.html';
                 }
             } catch (error) {
                 console.error('🚨 Payment confirmation error:', error);
