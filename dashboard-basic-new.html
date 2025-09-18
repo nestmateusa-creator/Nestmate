@@ -361,6 +361,456 @@
             flex-wrap: wrap;
         }
 
+        /* Home Dashboard Styles */
+        .home-dashboard {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .home-health-card {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(34, 197, 94, 0.1));
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(20px);
+        }
+
+        .health-score {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, #10b981 0deg 306deg, rgba(255,255,255,0.1) 306deg 360deg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .score-circle::before {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: var(--glass);
+            border-radius: 50%;
+            backdrop-filter: blur(10px);
+        }
+
+        .score-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: white;
+            z-index: 1;
+        }
+
+        .score-label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.8);
+            z-index: 1;
+        }
+
+        .health-details h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+
+        .health-details p {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 1rem;
+        }
+
+        .health-factors {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .factor {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .factor.good {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .factor.warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .quick-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .stat-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: white;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .calendar-task-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .calendar-widget, .upcoming-tasks {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            backdrop-filter: blur(20px);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .calendar-header h3 {
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .calendar-nav {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .calendar-nav button {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            color: white;
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .calendar-nav button:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .calendar-day:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .calendar-day.has-task::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            width: 6px;
+            height: 6px;
+            background: #10b981;
+            border-radius: 50%;
+        }
+
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .task-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .task-item.urgent {
+            border-left: 4px solid #ef4444;
+        }
+
+        .task-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .task-title {
+            font-weight: 600;
+            color: white;
+        }
+
+        .task-date {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .task-priority {
+            font-size: 0.8rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .task-action {
+            background: var(--success);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .task-action:hover {
+            background: #059669;
+            transform: scale(1.1);
+        }
+
+        .systems-overview {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            backdrop-filter: blur(20px);
+        }
+
+        .systems-overview h3 {
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .systems-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .system-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .system-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-3px);
+        }
+
+        .system-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .system-icon.hvac { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+        .system-icon.plumbing { background: linear-gradient(135deg, #06b6d4, #0891b2); }
+        .system-icon.electrical { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .system-icon.roof { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+
+        .system-info h4 {
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .system-status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .system-status.good {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .system-status.warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .system-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .system-details span {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .weather-alerts {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            backdrop-filter: blur(20px);
+        }
+
+        .weather-alerts h3 {
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .alert-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .alert-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .alert-card.winter {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(29, 78, 216, 0.1));
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .alert-card.maintenance {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.1));
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+
+        .alert-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .alert-content h4 {
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .alert-content p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .alert-action {
+            background: var(--primary);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .alert-action:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .home-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .main-container {
@@ -378,16 +828,33 @@
                 min-height: auto;
             }
 
-            .feature-list {
+            .calendar-task-section {
                 grid-template-columns: 1fr;
             }
 
-            .feature-actions {
+            .health-score {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .quick-stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .systems-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .alert-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .home-actions {
                 flex-direction: column;
                 align-items: center;
             }
 
-            .feature-actions .btn {
+            .home-actions .btn {
                 width: 100%;
                 max-width: 300px;
             }
@@ -957,50 +1424,245 @@
             <!-- Home Management Section -->
             <div id="homeSection" class="content-section active">
                 <div class="section-header">
-                    <h2 class="section-title">Home Management</h2>
-                    <p class="section-subtitle">Comprehensive home tracking from roof to crawlspace</p>
+                    <h2 class="section-title">🏠 Your Home Command Center</h2>
+                    <p class="section-subtitle">Complete home intelligence from foundation to roof</p>
                 </div>
                 
-                <div class="feature-content">
-                    <div class="feature-description">
-                        <p>Manage every detail of your first home with ease. Track everything from your roof to your crawlspace with our comprehensive home management system.</p>
-                    </div>
-                    
-                    <div class="feature-list">
-                        <div class="feature-item">
-                            <i class="fas fa-check"></i>
-                            <span>Complete home profile & details</span>
-                        </div>
-                        <div class="feature-item">
-                            <i class="fas fa-check"></i>
-                            <span>Roof, HVAC, plumbing, electrical data</span>
-                        </div>
-                        <div class="feature-item">
-                            <i class="fas fa-check"></i>
-                            <span>Foundation, crawlspace, attic info</span>
-                        </div>
-                        <div class="feature-item">
-                            <i class="fas fa-check"></i>
-                            <span>Appliance & system tracking</span>
-                        </div>
-                        <div class="feature-item">
-                            <i class="fas fa-check"></i>
-                            <span>Maintenance history & schedules</span>
-                        </div>
-                        <div class="feature-item">
-                            <i class="fas fa-check"></i>
-                            <span>Document & photo storage</span>
+                <!-- Home Overview Dashboard -->
+                <div class="home-dashboard">
+                    <!-- Home Health Score -->
+                    <div class="home-health-card">
+                        <div class="health-score">
+                            <div class="score-circle">
+                                <div class="score-number" id="homeHealthScore">85</div>
+                                <div class="score-label">Home Health</div>
+                            </div>
+                            <div class="health-details">
+                                <h3>Your Home is in Great Shape! 🎉</h3>
+                                <p>All major systems are functioning well. Keep up the excellent maintenance!</p>
+                                <div class="health-factors">
+                                    <div class="factor good">
+                                        <i class="fas fa-check-circle"></i>
+                                        <span>HVAC System</span>
+                                    </div>
+                                    <div class="factor good">
+                                        <i class="fas fa-check-circle"></i>
+                                        <span>Plumbing</span>
+                                    </div>
+                                    <div class="factor warning">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        <span>Roof (5 years old)</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    
-                    <div class="feature-actions">
+
+                    <!-- Quick Stats Grid -->
+                    <div class="quick-stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-home"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-number" id="homeAge">12</div>
+                                <div class="stat-label">Years Old</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-expand-arrows-alt"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-number" id="homeSqft">2,450</div>
+                                <div class="stat-label">Square Feet</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-bed"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-number" id="homeBedrooms">4</div>
+                                <div class="stat-label">Bedrooms</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-bath"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-number" id="homeBathrooms">3</div>
+                                <div class="stat-label">Bathrooms</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Calendar & Tasks -->
+                    <div class="calendar-task-section">
+                        <div class="calendar-widget">
+                            <div class="calendar-header">
+                                <h3><i class="fas fa-calendar-alt"></i> Maintenance Calendar</h3>
+                                <div class="calendar-nav">
+                                    <button onclick="previousMonth()"><i class="fas fa-chevron-left"></i></button>
+                                    <span id="currentMonth">December 2024</span>
+                                    <button onclick="nextMonth()"><i class="fas fa-chevron-right"></i></button>
+                                </div>
+                            </div>
+                            <div class="calendar-grid" id="maintenanceCalendar">
+                                <!-- Calendar will be generated by JavaScript -->
+                            </div>
+                        </div>
+                        
+                        <div class="upcoming-tasks">
+                            <h3><i class="fas fa-tasks"></i> Upcoming Tasks</h3>
+                            <div class="task-list">
+                                <div class="task-item urgent">
+                                    <div class="task-icon">
+                                        <i class="fas fa-fire"></i>
+                                    </div>
+                                    <div class="task-details">
+                                        <div class="task-title">Replace HVAC Filter</div>
+                                        <div class="task-date">Due: Dec 15, 2024</div>
+                                        <div class="task-priority">High Priority</div>
+                                    </div>
+                                    <button class="task-action" onclick="completeTask('hvac-filter')">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                </div>
+                                <div class="task-item">
+                                    <div class="task-icon">
+                                        <i class="fas fa-tint"></i>
+                                    </div>
+                                    <div class="task-details">
+                                        <div class="task-title">Check Water Heater</div>
+                                        <div class="task-date">Due: Dec 20, 2024</div>
+                                        <div class="task-priority">Medium Priority</div>
+                                    </div>
+                                    <button class="task-action" onclick="completeTask('water-heater')">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                </div>
+                                <div class="task-item">
+                                    <div class="task-icon">
+                                        <i class="fas fa-leaf"></i>
+                                    </div>
+                                    <div class="task-details">
+                                        <div class="task-title">Clean Gutters</div>
+                                        <div class="task-date">Due: Jan 5, 2025</div>
+                                        <div class="task-priority">Low Priority</div>
+                                    </div>
+                                    <button class="task-action" onclick="completeTask('gutters')">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Home Systems Overview -->
+                    <div class="systems-overview">
+                        <h3><i class="fas fa-cogs"></i> Home Systems Status</h3>
+                        <div class="systems-grid">
+                            <div class="system-card">
+                                <div class="system-icon hvac">
+                                    <i class="fas fa-thermometer-half"></i>
+                                </div>
+                                <div class="system-info">
+                                    <h4>HVAC System</h4>
+                                    <div class="system-status good">Excellent</div>
+                                    <div class="system-details">
+                                        <span>Last Service: Nov 15, 2024</span>
+                                        <span>Next Service: Feb 15, 2025</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="system-card">
+                                <div class="system-icon plumbing">
+                                    <i class="fas fa-tint"></i>
+                                </div>
+                                <div class="system-info">
+                                    <h4>Plumbing</h4>
+                                    <div class="system-status good">Good</div>
+                                    <div class="system-details">
+                                        <span>Water Heater: 3 years old</span>
+                                        <span>Pipes: Copper (excellent)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="system-card">
+                                <div class="system-icon electrical">
+                                    <i class="fas fa-bolt"></i>
+                                </div>
+                                <div class="system-info">
+                                    <h4>Electrical</h4>
+                                    <div class="system-status warning">Needs Attention</div>
+                                    <div class="system-details">
+                                        <span>Panel: 200 Amp</span>
+                                        <span>Last Inspection: 2022</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="system-card">
+                                <div class="system-icon roof">
+                                    <i class="fas fa-home"></i>
+                                </div>
+                                <div class="system-info">
+                                    <h4>Roof</h4>
+                                    <div class="system-status warning">Monitor</div>
+                                    <div class="system-details">
+                                        <span>Material: Asphalt Shingles</span>
+                                        <span>Age: 5 years</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Weather & Seasonal Alerts -->
+                    <div class="weather-alerts">
+                        <h3><i class="fas fa-cloud-sun"></i> Weather & Seasonal Alerts</h3>
+                        <div class="alert-cards">
+                            <div class="alert-card winter">
+                                <div class="alert-icon">
+                                    <i class="fas fa-snowflake"></i>
+                                </div>
+                                <div class="alert-content">
+                                    <h4>Winter Preparation</h4>
+                                    <p>Temperature dropping to 25°F tonight. Ensure pipes are insulated!</p>
+                                    <button class="alert-action">View Winter Checklist</button>
+                                </div>
+                            </div>
+                            <div class="alert-card maintenance">
+                                <div class="alert-icon">
+                                    <i class="fas fa-tools"></i>
+                                </div>
+                                <div class="alert-content">
+                                    <h4>Seasonal Maintenance</h4>
+                                    <p>Spring maintenance checklist available. 12 tasks recommended.</p>
+                                    <button class="alert-action">Start Spring Tasks</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="home-actions">
                         <button class="btn btn-primary" onclick="openHomeManagement()">
-                            <i class="fas fa-arrow-right"></i>
-                            Manage Home
+                            <i class="fas fa-edit"></i>
+                            Edit Home Details
                         </button>
                         <button class="btn btn-outline" onclick="viewHomeData()">
-                            <i class="fas fa-eye"></i>
-                            View Data
+                            <i class="fas fa-chart-line"></i>
+                            View Reports
+                        </button>
+                        <button class="btn btn-outline" onclick="addMaintenanceTask()">
+                            <i class="fas fa-plus"></i>
+                            Add Task
+                        </button>
+                        <button class="btn btn-outline" onclick="viewHomeHistory()">
+                            <i class="fas fa-history"></i>
+                            Maintenance History
                         </button>
                     </div>
                 </div>
@@ -2031,9 +2693,126 @@
             }
         }
 
+        // Calendar and Task Management Functions
+        let currentDate = new Date();
+        let currentMonth = currentDate.getMonth();
+        let currentYear = currentDate.getFullYear();
+
+        function generateCalendar() {
+            const calendarGrid = document.getElementById('maintenanceCalendar');
+            const monthNames = ["January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"];
+            
+            document.getElementById('currentMonth').textContent = `${monthNames[currentMonth]} ${currentYear}`;
+            
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            
+            calendarGrid.innerHTML = '';
+            
+            // Add day headers
+            const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayHeaders.forEach(day => {
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'calendar-day-header';
+                dayHeader.textContent = day;
+                dayHeader.style.fontWeight = 'bold';
+                dayHeader.style.color = 'rgba(255, 255, 255, 0.7)';
+                calendarGrid.appendChild(dayHeader);
+            });
+            
+            // Add empty cells for days before the first day of the month
+            for (let i = 0; i < firstDay; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'calendar-day';
+                calendarGrid.appendChild(emptyDay);
+            }
+            
+            // Add days of the month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                dayElement.textContent = day;
+                
+                // Add task indicator for certain days
+                if ([15, 20, 25].includes(day)) {
+                    dayElement.classList.add('has-task');
+                }
+                
+                // Highlight today
+                if (day === currentDate.getDate() && currentMonth === currentDate.getMonth() && currentYear === currentDate.getFullYear()) {
+                    dayElement.style.background = 'rgba(102, 126, 234, 0.3)';
+                    dayElement.style.border = '1px solid rgba(102, 126, 234, 0.5)';
+                }
+                
+                dayElement.onclick = () => showDayTasks(day);
+                calendarGrid.appendChild(dayElement);
+            }
+        }
+
+        function previousMonth() {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            generateCalendar();
+        }
+
+        function nextMonth() {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            generateCalendar();
+        }
+
+        function showDayTasks(day) {
+            alert(`Tasks for ${currentMonth + 1}/${day}/${currentYear}:\n\n• HVAC Filter Check\n• Water Heater Inspection\n• Gutter Cleaning`);
+        }
+
+        function completeTask(taskId) {
+            const taskElement = event.target.closest('.task-item');
+            taskElement.style.opacity = '0.5';
+            taskElement.style.textDecoration = 'line-through';
+            
+            setTimeout(() => {
+                taskElement.remove();
+                updateHomeHealthScore();
+            }, 1000);
+        }
+
+        function updateHomeHealthScore() {
+            const scoreElement = document.getElementById('homeHealthScore');
+            const currentScore = parseInt(scoreElement.textContent);
+            const newScore = Math.min(100, currentScore + 2);
+            scoreElement.textContent = newScore;
+            
+            // Update the circular progress
+            const scoreCircle = document.querySelector('.score-circle');
+            const percentage = (newScore / 100) * 360;
+            scoreCircle.style.background = `conic-gradient(from 0deg, #10b981 0deg ${percentage}deg, rgba(255,255,255,0.1) ${percentage}deg 360deg)`;
+        }
+
+        function addMaintenanceTask() {
+            const taskName = prompt('Enter task name:');
+            const taskDate = prompt('Enter due date (MM/DD/YYYY):');
+            
+            if (taskName && taskDate) {
+                alert(`Task "${taskName}" added for ${taskDate}`);
+                // Here you would add the task to the database
+            }
+        }
+
+        function viewHomeHistory() {
+            alert('Maintenance History:\n\n• Nov 15, 2024 - HVAC Service\n• Oct 20, 2024 - Plumbing Check\n• Sep 10, 2024 - Electrical Inspection');
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             loadUserData();
             createParticles();
+            generateCalendar();
             
             // Test the navigation function
             console.log('Dashboard loaded, testing navigation...');
