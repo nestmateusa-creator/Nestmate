@@ -124,6 +124,29 @@ async function verifySubscriptionAndRedirect() {
                 
                 console.log('📊 Subscription check result:', result);
                 
+                // If we have an active subscription, sync Firebase collections
+                if (result.hasActiveSubscription) {
+                    console.log('🔄 Syncing Firebase collections...');
+                    try {
+                        const syncResponse = await fetch('/.netlify/functions/sync-user-collections', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                email: user.email
+                            })
+                        });
+                        
+                        if (syncResponse.ok) {
+                            const syncResult = await syncResponse.json();
+                            console.log('✅ Collection sync result:', syncResult);
+                        }
+                    } catch (syncError) {
+                        console.log('⚠️ Collection sync failed:', syncError);
+                    }
+                }
+                
                 // Check if we're already on the correct dashboard
                 const currentPage = window.location.pathname;
                 const isCorrectDashboard = (currentPage.includes('dashboard-basic-new.html') && (accountType === 'basic' || accountType === 'Basic')) ||
