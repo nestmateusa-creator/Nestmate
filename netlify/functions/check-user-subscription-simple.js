@@ -56,14 +56,19 @@ exports.handler = async (event, context) => {
         const customer = customers.data[0];
         console.log('👤 Found customer in Stripe:', customer.id);
         
-        // Get active subscriptions
+        // Get active and trialing subscriptions
         const subscriptions = await stripe.subscriptions.list({
           customer: customer.id,
-          status: 'active',
+          status: 'all',
         });
 
-        if (subscriptions.data.length > 0) {
-          stripeSubscription = subscriptions.data[0];
+        // Filter for active or trialing subscriptions
+        const validSubscriptions = subscriptions.data.filter(sub => 
+          sub.status === 'active' || sub.status === 'trialing'
+        );
+
+        if (validSubscriptions.length > 0) {
+          stripeSubscription = validSubscriptions[0];
           const price = stripeSubscription.items.data[0].price;
           
           console.log('💳 Found active subscription with price:', price.unit_amount);
@@ -77,9 +82,9 @@ exports.handler = async (event, context) => {
             stripeAccountType = 'advanced';
           }
           
-          console.log('✅ Stripe subscription found:', stripeAccountType);
+          console.log('✅ Stripe subscription found:', stripeAccountType, 'status:', stripeSubscription.status);
         } else {
-          console.log('❌ No active subscriptions found');
+          console.log('❌ No active or trialing subscriptions found');
         }
       } else {
         console.log('❌ Customer not found in Stripe');
