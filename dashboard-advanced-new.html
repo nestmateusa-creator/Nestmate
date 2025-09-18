@@ -354,6 +354,14 @@
                     <div class="action-description">Switch to Pro plan</div>
                 </a>
                 
+                <a href="#" class="action-btn" onclick="initiateCancellation('advanced'); return false;" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+                    <div class="action-icon">
+                        <i class="fas fa-times"></i>
+                    </div>
+                    <div class="action-title">Cancel Subscription</div>
+                    <div class="action-description">Move to Trial status</div>
+                </a>
+                
                 <a href="#" class="action-btn" onclick="contactSupport()">
                     <div class="action-icon">
                         <i class="fas fa-question-circle"></i>
@@ -443,6 +451,14 @@ Thank you for your assistance!`;
 
             const mailtoLink = `mailto:support@nestmateus.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
             window.open(mailtoLink);
+        }
+
+        // Handle subscription cancellation
+        function initiateCancellation(currentPlan) {
+            if (confirm(`Are you sure you want to cancel your ${currentPlan} subscription? You will be moved to Trial status and can choose a new plan anytime.`)) {
+                // Redirect to cancellation handler with parameters
+                window.location.href = `cancellation-handler.html?plan=${currentPlan}`;
+            }
         }
     </script>
 </body>

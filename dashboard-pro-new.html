@@ -375,6 +375,10 @@
                     <i class="fas fa-credit-card"></i>
                     Manage Billing
                 </button>
+                <button class="btn btn-danger" onclick="initiateCancellation('pro')">
+                    <i class="fas fa-times"></i>
+                    Cancel Subscription
+                </button>
             </div>
         </div>
     </div>
@@ -434,6 +438,14 @@
             }).catch((error) => {
                 console.error('Error signing out:', error);
             });
+        }
+
+        // Handle subscription cancellation
+        function initiateCancellation(currentPlan) {
+            if (confirm(`Are you sure you want to cancel your ${currentPlan} subscription? You will be moved to Trial status and can choose a new plan anytime.`)) {
+                // Redirect to cancellation handler with parameters
+                window.location.href = `cancellation-handler.html?plan=${currentPlan}`;
+            }
         }
 
         // Initialize page

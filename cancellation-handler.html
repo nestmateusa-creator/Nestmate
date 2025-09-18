@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Processing Cancellation - NestMate</title>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f0f9ff;
+            text-align: center;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .loading {
+            font-size: 48px;
+            color: #ef4444;
+            margin-bottom: 20px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .status {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .success {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        .btn {
+            background: #7c3aed;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+            font-weight: bold;
+        }
+        .btn:hover {
+            background: #6d28d9;
+        }
+        .btn-secondary {
+            background: #6b7280;
+        }
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+        .upgrade-options {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .plan-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 10px 0;
+            text-align: left;
+        }
+        .plan-card h3 {
+            margin: 0 0 10px 0;
+            color: #7c3aed;
+        }
+        .plan-price {
+            font-size: 24px;
+            font-weight: bold;
+            color: #059669;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="loading">⏳</div>
+        <h1>Processing Your Cancellation</h1>
+        <p>Please wait while we cancel your subscription and update your account...</p>
+        
+        <div class="status" id="status">
+            <div id="statusText">Initializing...</div>
+        </div>
+        
+        <div id="successSection" style="display: none;">
+            <h2>✅ Subscription Cancelled Successfully!</h2>
+            <p>Your subscription has been cancelled and your account has been moved to Trial status.</p>
+            
+            <div class="upgrade-options">
+                <h3>Choose a New Plan</h3>
+                <p>You can upgrade to any of our plans at any time:</p>
+                
+                <div class="plan-card">
+                    <h3>🚀 Basic Plan</h3>
+                    <div class="plan-price">$5/month</div>
+                    <ul>
+                        <li>Basic features</li>
+                        <li>Standard support</li>
+                        <li>Essential tools</li>
+                    </ul>
+                    <a href="upgrade-basic.html" class="btn">Choose Basic</a>
+                </div>
+                
+                <div class="plan-card">
+                    <h3>⭐ Pro Plan</h3>
+                    <div class="plan-price">$10/month</div>
+                    <ul>
+                        <li>All Basic features</li>
+                        <li>Advanced tools</li>
+                        <li>Priority support</li>
+                    </ul>
+                    <a href="upgrade-pro.html" class="btn">Choose Pro</a>
+                </div>
+                
+                <div class="plan-card">
+                    <h3>👑 Advanced Pro Plan</h3>
+                    <div class="plan-price">$16/month</div>
+                    <ul>
+                        <li>All Pro features</li>
+                        <li>Premium tools</li>
+                        <li>24/7 support</li>
+                        <li>Advanced analytics</li>
+                    </ul>
+                    <a href="upgrade-advanced.html" class="btn">Choose Advanced</a>
+                </div>
+            </div>
+            
+            <div style="margin-top: 30px;">
+                <a href="dashboard-trial-fresh.html" class="btn btn-secondary">Continue with Trial</a>
+            </div>
+        </div>
+        
+        <div id="errorSection" style="display: none;">
+            <h2>❌ Error Processing Cancellation</h2>
+            <p id="errorMessage">There was an issue processing your cancellation. Please contact support.</p>
+            <a href="index.html" class="btn">Return Home</a>
+        </div>
+    </div>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
+            authDomain: "nestmate-167ed.firebaseapp.com",
+            projectId: "nestmate-167ed",
+            storageBucket: "nestmate-167ed.appspot.com",
+            messagingSenderId: "865171535257",
+            appId: "1:865171535257:web:nextmate-web-app",
+            measurementId: "G-NEXTMATE-ANALYTICS"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        // Get URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentPlan = urlParams.get('plan') || 'unknown';
+
+        function updateStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            const statusText = document.getElementById('statusText');
+            
+            statusText.textContent = message;
+            statusDiv.className = `status ${type}`;
+        }
+
+        function showSuccess() {
+            document.getElementById('successSection').style.display = 'block';
+            updateStatus('✅ Subscription cancelled and account moved to Trial', 'success');
+        }
+
+        function showError(message) {
+            document.getElementById('errorSection').style.display = 'block';
+            document.getElementById('errorMessage').textContent = message;
+            updateStatus(`❌ Error: ${message}`, 'error');
+        }
+
+        async function processCancellation() {
+            try {
+                updateStatus('Checking authentication...', 'info');
+                
+                // Wait for user to be authenticated
+                let user = auth.currentUser;
+                let attempts = 0;
+                
+                while (!user && attempts < 10) {
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    user = auth.currentUser;
+                    attempts++;
+                    updateStatus(`Waiting for authentication... (${attempts}/10)`, 'info');
+                }
+                
+                if (!user) {
+                    throw new Error('User not authenticated. Please sign in and try again.');
+                }
+
+                updateStatus(`User authenticated: ${user.email}`, 'info');
+                updateStatus(`Cancelling ${currentPlan} subscription...`, 'info');
+
+                // Call the complete cancellation function
+                updateStatus('Cancelling Stripe subscription...', 'info');
+                const response = await fetch('/.netlify/functions/cancel-subscription-complete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        userId: user.uid,
+                        email: user.email,
+                        currentPlan: currentPlan
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to cancel subscription');
+                }
+
+                const result = await response.json();
+                updateStatus('✅ Stripe subscription cancelled', 'success');
+                updateStatus('Moving to Trial collection...', 'info');
+
+                // Wait a moment for Firebase to sync
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                updateStatus('✅ Account moved to Trial', 'success');
+                updateStatus(`Cancellation complete: ${result.firebaseUpdates.join(', ')}`, 'success');
+
+                // Show success with upgrade options
+                showSuccess();
+
+            } catch (error) {
+                console.error('Cancellation processing error:', error);
+                showError(error.message);
+            }
+        }
+
+        // Start processing when page loads
+        document.addEventListener('DOMContentLoaded', processCancellation);
+    </script>
+</body>
+</html>
