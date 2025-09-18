@@ -923,28 +923,28 @@
         <div class="sidebar">
             <h2 class="sidebar-title">Navigation</h2>
             
-            <button class="nav-button active" onclick="showSection('home')">
+            <button class="nav-button active" onclick="showSection('home', this)">
                 <div class="nav-icon home">
                     <i class="fas fa-home"></i>
                 </div>
                 <span>Home Management</span>
             </button>
             
-            <button class="nav-button" onclick="showSection('tasks')">
+            <button class="nav-button" onclick="showSection('tasks', this)">
                 <div class="nav-icon tasks">
                     <i class="fas fa-tasks"></i>
                 </div>
                 <span>Tasks & Reminders</span>
             </button>
             
-            <button class="nav-button" onclick="showSection('emergency')">
+            <button class="nav-button" onclick="showSection('emergency', this)">
                 <div class="nav-icon emergency">
                     <i class="fas fa-phone"></i>
                 </div>
                 <span>Emergency Services</span>
             </button>
             
-            <button class="nav-button" onclick="showSection('products')">
+            <button class="nav-button" onclick="showSection('products', this)">
                 <div class="nav-icon products">
                     <i class="fas fa-shopping-cart"></i>
                 </div>
@@ -2001,7 +2001,9 @@
 
         // Initialize page
         // Sidebar Navigation Function
-        function showSection(sectionName) {
+        function showSection(sectionName, clickedElement) {
+            console.log('Switching to section:', sectionName);
+            
             // Hide all content sections
             const sections = document.querySelectorAll('.content-section');
             sections.forEach(section => {
@@ -2018,18 +2020,25 @@
             const targetSection = document.getElementById(sectionName + 'Section');
             if (targetSection) {
                 targetSection.classList.add('active');
+                console.log('Section activated:', sectionName + 'Section');
+            } else {
+                console.error('Section not found:', sectionName + 'Section');
             }
 
             // Add active class to clicked button
-            const clickedButton = event.target.closest('.nav-button');
-            if (clickedButton) {
-                clickedButton.classList.add('active');
+            if (clickedElement) {
+                clickedElement.classList.add('active');
             }
         }
 
         document.addEventListener('DOMContentLoaded', function() {
             loadUserData();
             createParticles();
+            
+            // Test the navigation function
+            console.log('Dashboard loaded, testing navigation...');
+            console.log('Available sections:', document.querySelectorAll('.content-section').length);
+            console.log('Available nav buttons:', document.querySelectorAll('.nav-button').length);
         });
 
         // Listen for auth state changes
