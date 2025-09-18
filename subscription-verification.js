@@ -108,7 +108,7 @@ async function verifySubscriptionAndRedirect() {
         const db = firebase.firestore();
         
         try {
-            const response = await fetch('/.netlify/functions/check-user-subscription', {
+            const response = await fetch('/.netlify/functions/check-user-subscription-simple', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
