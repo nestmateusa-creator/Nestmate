@@ -333,11 +333,11 @@
             <p>Manage your Basic plan subscription and explore upgrade options.</p>
             
             <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 20px;">
-                <button class="btn btn-success" onclick="window.location.href='upgrade-pro.html'">
+                <button class="btn btn-success" onclick="initiateUpgrade('pro', 'basic')">
                     <i class="fas fa-arrow-up"></i>
                     Upgrade to Pro - $10/month
                 </button>
-                <button class="btn btn-primary" onclick="window.location.href='upgrade-advanced.html'">
+                <button class="btn btn-primary" onclick="initiateUpgrade('advanced', 'basic')">
                     <i class="fas fa-star"></i>
                     Upgrade to Advanced - $16/month
                 </button>
@@ -404,6 +404,14 @@
             }).catch((error) => {
                 console.error('Error signing out:', error);
             });
+        }
+
+        // Handle plan upgrades
+        function initiateUpgrade(newPlan, currentPlan) {
+            if (confirm(`Are you sure you want to upgrade from ${currentPlan} to ${newPlan}? This will update your subscription and billing.`)) {
+                // Redirect to upgrade handler with parameters
+                window.location.href = `upgrade-handler.html?plan=${newPlan}&current=${currentPlan}`;
+            }
         }
 
         // Initialize page
