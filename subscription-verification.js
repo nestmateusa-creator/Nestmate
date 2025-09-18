@@ -103,9 +103,61 @@ async function verifySubscriptionAndRedirect() {
         console.log('🔍 Current URL:', window.location.href);
         console.log('🔍 URL parameters:', new URLSearchParams(window.location.search).toString());
 
-        // First, check userProfiles collection for the most up-to-date info
-        console.log('🔍 Checking userProfiles collection first...');
+        // First, check with Stripe to get the most accurate subscription status
+        console.log('🔍 Checking subscription status with Stripe...');
         const db = firebase.firestore();
+        
+        try {
+            const response = await fetch('/.netlify/functions/check-user-subscription', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: user.email
+                })
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                const accountType = result.accountType || 'trial';
+                
+                console.log('📊 Subscription check result:', result);
+                
+                // Check if we're already on the correct dashboard
+                const currentPage = window.location.pathname;
+                const isCorrectDashboard = (currentPage.includes('dashboard-basic-new.html') && (accountType === 'basic' || accountType === 'Basic')) ||
+                                         (currentPage.includes('dashboard-pro-new.html') && (accountType === 'pro' || accountType === 'Pro')) ||
+                                         (currentPage.includes('dashboard-advanced-new.html') && (accountType === 'advanced' || accountType === 'Advanced' || accountType === 'Advanced Pro')) ||
+                                         ((currentPage.includes('dashboard-trial-new.html') || currentPage.includes('dashboard-trial-fresh.html')) && (accountType === 'trial' || accountType === 'Trial'));
+                
+                if (isCorrectDashboard) {
+                    console.log('✅ User is on correct dashboard');
+                    return;
+                } else {
+                    console.log('🔄 Redirecting to correct dashboard based on account type...');
+                    
+                    // Redirect to the correct dashboard based on account type
+                    if (accountType === 'basic' || accountType === 'Basic') {
+                        window.location.href = 'dashboard-basic-new.html';
+                    } else if (accountType === 'pro' || accountType === 'Pro') {
+                        window.location.href = 'dashboard-pro-new.html';
+                    } else if (accountType === 'advanced' || accountType === 'Advanced' || accountType === 'Advanced Pro') {
+                        window.location.href = 'dashboard-advanced-new.html';
+                    } else {
+                        window.location.href = 'dashboard-trial-fresh.html';
+                    }
+                    return;
+                }
+            } else {
+                console.log('⚠️ Subscription check failed, falling back to Firebase...');
+            }
+        } catch (error) {
+            console.log('⚠️ Error checking subscription, falling back to Firebase:', error);
+        }
+
+        // Fallback: Check userProfiles collection
+        console.log('🔍 Checking userProfiles collection as fallback...');
         const userProfilesDoc = await db.collection('userProfiles').doc(user.uid).get();
         
         if (userProfilesDoc.exists) {
