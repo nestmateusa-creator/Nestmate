@@ -1,5 +1,5 @@
 // Test Stripe connection
-const stripe = require('stripe')('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');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 async function testStripe() {
     try {

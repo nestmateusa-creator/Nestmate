@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Processing Payment - NestMate</title>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f0f9ff;
+            text-align: center;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .loading {
+            font-size: 48px;
+            color: #7c3aed;
+            margin-bottom: 20px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .status {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .success {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        .btn {
+            background: #7c3aed;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+            font-weight: bold;
+        }
+        .btn:hover {
+            background: #6d28d9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="loading">⏳</div>
+        <h1>Processing Your Payment</h1>
+        <p>Please wait while we verify your subscription and set up your account...</p>
+        
+        <div class="status" id="status">
+            <div id="statusText">Initializing...</div>
+        </div>
+        
+        <div id="successSection" style="display: none;">
+            <h2>✅ Payment Successful!</h2>
+            <p>Your subscription has been activated. You can now access your dashboard.</p>
+            <a href="#" id="dashboardLink" class="btn">Go to Dashboard</a>
+        </div>
+        
+        <div id="errorSection" style="display: none;">
+            <h2>❌ Error Processing Payment</h2>
+            <p id="errorMessage">There was an issue processing your payment. Please contact support.</p>
+            <a href="index.html" class="btn">Return Home</a>
+        </div>
+    </div>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
+            authDomain: "nestmate-167ed.firebaseapp.com",
+            projectId: "nestmate-167ed",
+            storageBucket: "nestmate-167ed.appspot.com",
+            messagingSenderId: "865171535257",
+            appId: "1:865171535257:web:nextmate-web-app",
+            measurementId: "G-NEXTMATE-ANALYTICS"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        // Get URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('session_id');
+        const plan = urlParams.get('plan') || 'basic';
+
+        // Plan to collection mapping
+        const planCollections = {
+            'basic': 'Basic User Accounts',
+            'pro': 'Pro User Accounts', 
+            'advanced': 'Advanced Pro User Accounts'
+        };
+
+        const planDashboards = {
+            'basic': 'dashboard-basic-new.html',
+            'pro': 'dashboard-pro-new.html',
+            'advanced': 'dashboard-advanced-new.html'
+        };
+
+        function updateStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            const statusText = document.getElementById('statusText');
+            
+            statusText.textContent = message;
+            statusDiv.className = `status ${type}`;
+        }
+
+        function showSuccess(plan) {
+            document.getElementById('successSection').style.display = 'block';
+            document.getElementById('dashboardLink').href = planDashboards[plan];
+            updateStatus(`✅ Successfully activated ${plan} subscription!`, 'success');
+        }
+
+        function showError(message) {
+            document.getElementById('errorSection').style.display = 'block';
+            document.getElementById('errorMessage').textContent = message;
+            updateStatus(`❌ Error: ${message}`, 'error');
+        }
+
+        async function processPayment() {
+            try {
+                updateStatus('Checking authentication...', 'info');
+                
+                // Wait for user to be authenticated
+                let user = auth.currentUser;
+                let attempts = 0;
+                
+                while (!user && attempts < 10) {
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    user = auth.currentUser;
+                    attempts++;
+                    updateStatus(`Waiting for authentication... (${attempts}/10)`, 'info');
+                }
+                
+                if (!user) {
+                    throw new Error('User not authenticated. Please sign in and try again.');
+                }
+
+                updateStatus(`User authenticated: ${user.email}`, 'info');
+                updateStatus(`Processing ${plan} subscription...`, 'info');
+
+                // Prepare user data
+                const userData = {
+                    uid: user.uid,
+                    email: user.email,
+                    displayName: user.displayName || 'User',
+                    accountType: plan,
+                    plan: plan,
+                    subscriptionStatus: 'active',
+                    subscriptionDate: new Date().toISOString(),
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    role: 'user',
+                    status: 'active'
+                };
+
+                updateStatus(`Saving to ${planCollections[plan]} collection...`, 'info');
+
+                // Save to the correct collection based on plan
+                const collectionName = planCollections[plan];
+                await db.collection(collectionName).doc(user.uid).set(userData, { merge: true });
+                
+                updateStatus(`✅ Saved to ${collectionName}`, 'success');
+
+                // Also update userProfiles for compatibility
+                updateStatus('Updating user profile...', 'info');
+                await db.collection('userProfiles').doc(user.uid).set(userData, { merge: true });
+                
+                updateStatus('✅ User profile updated', 'success');
+
+                // Show success
+                showSuccess(plan);
+
+            } catch (error) {
+                console.error('Payment processing error:', error);
+                showError(error.message);
+            }
+        }
+
+        // Start processing when page loads
+        document.addEventListener('DOMContentLoaded', processPayment);
+    </script>
+</body>
+</html>
