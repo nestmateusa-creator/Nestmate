@@ -726,39 +726,51 @@
                         <h3 class="feature-title">Home Management</h3>
                     </div>
                 </div>
-                <p class="feature-description">Track and manage all your home details, maintenance schedules, and important information.</p>
+                <p class="feature-description">Comprehensive home tracking from roof to crawlspace. Manage every detail of your first home with ease.</p>
                 <ul class="feature-list">
-                    <li><i class="fas fa-check"></i> Home details tracking</li>
-                    <li><i class="fas fa-check"></i> Property information</li>
-                    <li><i class="fas fa-check"></i> Basic maintenance logs</li>
-                    <li><i class="fas fa-check"></i> Document storage</li>
+                    <li><i class="fas fa-check"></i> Complete home profile & details</li>
+                    <li><i class="fas fa-check"></i> Roof, HVAC, plumbing, electrical data</li>
+                    <li><i class="fas fa-check"></i> Foundation, crawlspace, attic info</li>
+                    <li><i class="fas fa-check"></i> Appliance & system tracking</li>
+                    <li><i class="fas fa-check"></i> Maintenance history & schedules</li>
+                    <li><i class="fas fa-check"></i> Document & photo storage</li>
                 </ul>
                 <button class="btn btn-primary" onclick="openHomeManagement()">
                     <i class="fas fa-arrow-right"></i>
-                    Manage Homes
+                    Manage Home
+                </button>
+                <button class="btn btn-outline" onclick="viewHomeData()" style="margin-left: 1rem;">
+                    <i class="fas fa-eye"></i>
+                    View Data
                 </button>
             </div>
 
-            <!-- Property Management -->
+            <!-- Task & Reminder Management -->
             <div class="feature-card">
                 <div class="feature-header">
                     <div class="feature-icon property">
-                        <i class="fas fa-building"></i>
+                        <i class="fas fa-tasks"></i>
                     </div>
                     <div>
-                        <h3 class="feature-title">Property Management</h3>
+                        <h3 class="feature-title">Tasks & Reminders</h3>
                     </div>
                 </div>
-                <p class="feature-description">Keep track of your property-related tasks, documents, and important dates.</p>
+                <p class="feature-description">Stay on top of 10 essential tasks & reminders. Never miss important home maintenance again.</p>
                 <ul class="feature-list">
-                    <li><i class="fas fa-check"></i> Property tracking</li>
-                    <li><i class="fas fa-check"></i> Basic task management</li>
-                    <li><i class="fas fa-check"></i> Property documents</li>
-                    <li><i class="fas fa-check"></i> Maintenance reminders</li>
+                    <li><i class="fas fa-check"></i> 10 essential home tasks</li>
+                    <li><i class="fas fa-check"></i> Smart reminders & alerts</li>
+                    <li><i class="fas fa-check"></i> Priority-based organization</li>
+                    <li><i class="fas fa-check"></i> Due date tracking</li>
+                    <li><i class="fas fa-check"></i> Task completion history</li>
+                    <li><i class="fas fa-check"></i> Seasonal maintenance guides</li>
                 </ul>
-                <button class="btn btn-primary" onclick="openPropertyManagement()">
+                <button class="btn btn-primary" onclick="openTaskManagement()">
                     <i class="fas fa-arrow-right"></i>
-                    Manage Property
+                    Manage Tasks
+                </button>
+                <button class="btn btn-outline" onclick="viewTasks()" style="margin-left: 1rem;">
+                    <i class="fas fa-list"></i>
+                    View All
                 </button>
             </div>
 
@@ -795,16 +807,22 @@
                         <h3 class="feature-title">Product Recommendations</h3>
                     </div>
                 </div>
-                <p class="feature-description">Discover personalized product recommendations for your home and lifestyle.</p>
+                <p class="feature-description">Discover smart product picks just for you. Save and revisit your favorite finds.</p>
                 <ul class="feature-list">
-                    <li><i class="fas fa-check"></i> Basic recommendations</li>
-                    <li><i class="fas fa-check"></i> Product reviews</li>
+                    <li><i class="fas fa-check"></i> Smart product recommendations</li>
+                    <li><i class="fas fa-check"></i> Save favorite products</li>
+                    <li><i class="fas fa-check"></i> Product reviews & ratings</li>
                     <li><i class="fas fa-check"></i> Shopping lists</li>
-                    <li><i class="fas fa-check"></i> Price tracking</li>
+                    <li><i class="fas fa-check"></i> Home-specific suggestions</li>
+                    <li><i class="fas fa-check"></i> Price tracking alerts</li>
                 </ul>
                 <button class="btn btn-primary" onclick="window.location.href='product-recommendations.html'">
                     <i class="fas fa-arrow-right"></i>
                     View Products
+                </button>
+                <button class="btn btn-outline" onclick="viewSavedProducts()" style="margin-left: 1rem;">
+                    <i class="fas fa-heart"></i>
+                    Saved Items
                 </button>
             </div>
         </div>
@@ -841,10 +859,17 @@
 
     <!-- Home Management Modal -->
     <div id="homeModal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
             <div class="modal-header">
-                <h3 class="modal-title">Home Management</h3>
+                <h3 class="modal-title">Complete Home Management</h3>
                 <button class="close-btn" onclick="closeModal('homeModal')">&times;</button>
+            </div>
+            
+            <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+                <button class="btn btn-primary" onclick="showHomeSection('basic')" id="basicTab">Basic Info</button>
+                <button class="btn btn-outline" onclick="showHomeSection('structure')" id="structureTab">Structure</button>
+                <button class="btn btn-outline" onclick="showHomeSection('systems')" id="systemsTab">Systems</button>
+                <button class="btn btn-outline" onclick="showHomeSection('appliances')" id="appliancesTab">Appliances</button>
             </div>
             <form id="homeForm">
                 <div class="form-group">
@@ -1070,6 +1095,249 @@
             }
         }
 
+        // Load and display home data
+        async function loadAndDisplayHomeData() {
+            if (!currentUser) return;
+
+            try {
+                const homesSnapshot = await db.collection('NESTMATE USER HOME SAVED DATA')
+                    .where('userId', '==', currentUser.uid)
+                    .where('type', '==', 'home')
+                    .get();
+
+                if (homesSnapshot.empty) {
+                    showToast('No home data found. Please add your home information first.', 'error');
+                    return;
+                }
+
+                // Create a modal to display home data
+                const homeData = homesSnapshot.docs[0].data();
+                displayHomeDataModal(homeData);
+
+            } catch (error) {
+                console.error('Error loading home data:', error);
+                showToast('Error loading home data. Please try again.', 'error');
+            }
+        }
+
+        // Display home data in a modal
+        function displayHomeDataModal(homeData) {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'block';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
+                    <div class="modal-header">
+                        <h3 class="modal-title">Your Home Data</h3>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+                    </div>
+                    <div style="color: white; padding: 1rem;">
+                        <h4 style="margin-bottom: 1rem; color: #10b981;">Basic Information</h4>
+                        <p><strong>Home Name:</strong> ${homeData.homeName || 'Not specified'}</p>
+                        <p><strong>Address:</strong> ${homeData.homeAddress || 'Not specified'}</p>
+                        <p><strong>Property Type:</strong> ${homeData.propertyType || 'Not specified'}</p>
+                        <p><strong>Year Built:</strong> ${homeData.yearBuilt || 'Not specified'}</p>
+                        <p><strong>Square Footage:</strong> ${homeData.squareFootage || 'Not specified'}</p>
+                        <p><strong>Bedrooms:</strong> ${homeData.bedrooms || 'Not specified'}</p>
+                        <p><strong>Bathrooms:</strong> ${homeData.bathrooms || 'Not specified'}</p>
+                        
+                        ${homeData.foundationType ? `
+                        <h4 style="margin: 2rem 0 1rem 0; color: #10b981;">Foundation</h4>
+                        <p><strong>Foundation Type:</strong> ${homeData.foundationType}</p>
+                        <p><strong>Foundation Condition:</strong> ${homeData.foundationCondition || 'Not specified'}</p>
+                        ` : ''}
+                        
+                        ${homeData.roofMaterial ? `
+                        <h4 style="margin: 2rem 0 1rem 0; color: #10b981;">Roof</h4>
+                        <p><strong>Roof Material:</strong> ${homeData.roofMaterial}</p>
+                        <p><strong>Roof Age:</strong> ${homeData.roofAge || 'Not specified'} years</p>
+                        ` : ''}
+                        
+                        ${homeData.heatingType ? `
+                        <h4 style="margin: 2rem 0 1rem 0; color: #10b981;">HVAC System</h4>
+                        <p><strong>Heating Type:</strong> ${homeData.heatingType}</p>
+                        <p><strong>Cooling Type:</strong> ${homeData.coolingType || 'Not specified'}</p>
+                        <p><strong>HVAC Age:</strong> ${homeData.hvacAge || 'Not specified'} years</p>
+                        ` : ''}
+                        
+                        ${homeData.waterHeaterType ? `
+                        <h4 style="margin: 2rem 0 1rem 0; color: #10b981;">Plumbing</h4>
+                        <p><strong>Water Heater Type:</strong> ${homeData.waterHeaterType}</p>
+                        <p><strong>Water Heater Age:</strong> ${homeData.waterHeaterAge || 'Not specified'} years</p>
+                        <p><strong>Pipe Material:</strong> ${homeData.pipeMaterial || 'Not specified'}</p>
+                        ` : ''}
+                        
+                        ${homeData.electricalAmperage ? `
+                        <h4 style="margin: 2rem 0 1rem 0; color: #10b981;">Electrical</h4>
+                        <p><strong>Panel Amperage:</strong> ${homeData.electricalAmperage} Amp</p>
+                        <p><strong>Wiring Type:</strong> ${homeData.wiringType || 'Not specified'}</p>
+                        ` : ''}
+                        
+                        ${homeData.refrigeratorInfo ? `
+                        <h4 style="margin: 2rem 0 1rem 0; color: #10b981;">Appliances</h4>
+                        <p><strong>Refrigerator:</strong> ${homeData.refrigeratorInfo} (${homeData.refrigeratorAge || 'Unknown'} years old)</p>
+                        <p><strong>Dishwasher:</strong> ${homeData.dishwasherInfo || 'Not specified'} (${homeData.dishwasherAge || 'Unknown'} years old)</p>
+                        <p><strong>Stove/Oven:</strong> ${homeData.stoveType || 'Not specified'} (${homeData.stoveAge || 'Unknown'} years old)</p>
+                        ` : ''}
+                        
+                        ${homeData.homeNotes ? `
+                        <h4 style="margin: 2rem 0 1rem 0; color: #10b981;">Notes</h4>
+                        <p>${homeData.homeNotes}</p>
+                        ` : ''}
+                    </div>
+                    <div style="text-align: center; margin-top: 2rem;">
+                        <button class="btn btn-primary" onclick="openHomeManagement(); this.closest('.modal').remove();">
+                            <i class="fas fa-edit"></i>
+                            Edit Home Data
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        // Load and display tasks
+        async function loadAndDisplayTasks() {
+            if (!currentUser) return;
+
+            try {
+                const tasksSnapshot = await db.collection('NESTMATE USER HOME SAVED DATA')
+                    .where('userId', '==', currentUser.uid)
+                    .where('type', '==', 'task')
+                    .orderBy('createdAt', 'desc')
+                    .get();
+
+                if (tasksSnapshot.empty) {
+                    showToast('No tasks found. Create your first task!', 'error');
+                    return;
+                }
+
+                displayTasksModal(tasksSnapshot.docs);
+
+            } catch (error) {
+                console.error('Error loading tasks:', error);
+                showToast('Error loading tasks. Please try again.', 'error');
+            }
+        }
+
+        // Display tasks in a modal
+        function displayTasksModal(taskDocs) {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'block';
+            
+            const tasksHtml = taskDocs.map(doc => {
+                const task = doc.data();
+                const priorityColor = {
+                    'low': '#10b981',
+                    'medium': '#f59e0b',
+                    'high': '#ef4444',
+                    'urgent': '#dc2626'
+                }[task.priority] || '#64748b';
+                
+                return `
+                    <div style="background: var(--glass); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1rem; margin-bottom: 1rem;">
+                        <div style="display: flex; justify-content: between; align-items: start; margin-bottom: 0.5rem;">
+                            <h4 style="color: white; margin: 0;">${task.taskTitle}</h4>
+                            <span style="background: ${priorityColor}; color: white; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.75rem; text-transform: uppercase;">
+                                ${task.priority}
+                            </span>
+                        </div>
+                        <p style="color: rgba(255,255,255,0.8); margin-bottom: 0.5rem;">${task.taskDescription}</p>
+                        <div style="display: flex; gap: 1rem; font-size: 0.875rem; color: rgba(255,255,255,0.6);">
+                            <span><i class="fas fa-tag"></i> ${task.category}</span>
+                            ${task.dueDate ? `<span><i class="fas fa-calendar"></i> Due: ${new Date(task.dueDate).toLocaleDateString()}</span>` : ''}
+                            <span><i class="fas fa-circle" style="color: ${task.status === 'active' ? '#10b981' : '#ef4444'}"></i> ${task.status}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
+                    <div class="modal-header">
+                        <h3 class="modal-title">Your Tasks & Reminders</h3>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+                    </div>
+                    <div style="color: white; padding: 1rem;">
+                        ${tasksHtml}
+                    </div>
+                    <div style="text-align: center; margin-top: 2rem;">
+                        <button class="btn btn-primary" onclick="openTaskManagement(); this.closest('.modal').remove();">
+                            <i class="fas fa-plus"></i>
+                            Add New Task
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        // Load and display saved products
+        async function loadAndDisplaySavedProducts() {
+            if (!currentUser) return;
+
+            try {
+                const productsSnapshot = await db.collection('NESTMATE USER HOME SAVED DATA')
+                    .where('userId', '==', currentUser.uid)
+                    .where('type', '==', 'saved_product')
+                    .orderBy('createdAt', 'desc')
+                    .get();
+
+                if (productsSnapshot.empty) {
+                    showToast('No saved products found. Start saving your favorite products!', 'error');
+                    return;
+                }
+
+                displayProductsModal(productsSnapshot.docs);
+
+            } catch (error) {
+                console.error('Error loading saved products:', error);
+                showToast('Error loading saved products. Please try again.', 'error');
+            }
+        }
+
+        // Display saved products in a modal
+        function displayProductsModal(productDocs) {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'block';
+            
+            const productsHtml = productDocs.map(doc => {
+                const product = doc.data();
+                return `
+                    <div style="background: var(--glass); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1rem; margin-bottom: 1rem;">
+                        <h4 style="color: white; margin: 0 0 0.5rem 0;">${product.productName || 'Unnamed Product'}</h4>
+                        <p style="color: rgba(255,255,255,0.8); margin-bottom: 0.5rem;">${product.productDescription || 'No description available'}</p>
+                        <div style="display: flex; gap: 1rem; font-size: 0.875rem; color: rgba(255,255,255,0.6);">
+                            ${product.productPrice ? `<span><i class="fas fa-dollar-sign"></i> $${product.productPrice}</span>` : ''}
+                            ${product.productCategory ? `<span><i class="fas fa-tag"></i> ${product.productCategory}</span>` : ''}
+                            <span><i class="fas fa-heart" style="color: #ef4444;"></i> Saved</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
+                    <div class="modal-header">
+                        <h3 class="modal-title">Your Saved Products</h3>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+                    </div>
+                    <div style="color: white; padding: 1rem;">
+                        ${productsHtml}
+                    </div>
+                    <div style="text-align: center; margin-top: 2rem;">
+                        <button class="btn btn-primary" onclick="window.location.href='product-recommendations.html'; this.closest('.modal').remove();">
+                            <i class="fas fa-shopping-cart"></i>
+                            Browse More Products
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
         // Save data to Firebase
         async function saveToFirebase(data, type) {
             if (!currentUser) return false;
@@ -1101,14 +1369,53 @@
         // Modal functions
         function openHomeManagement() {
             document.getElementById('homeModal').style.display = 'block';
+            showHomeSection('basic'); // Show basic section by default
         }
 
-        function openPropertyManagement() {
+        function openTaskManagement() {
             document.getElementById('propertyModal').style.display = 'block';
         }
 
         function openEmergencyServices() {
             document.getElementById('emergencyModal').style.display = 'block';
+        }
+
+        // Home section navigation
+        function showHomeSection(section) {
+            // Hide all sections
+            const sections = ['basic', 'structure', 'systems', 'appliances'];
+            sections.forEach(s => {
+                const sectionEl = document.getElementById(s + 'Section');
+                const tabEl = document.getElementById(s + 'Tab');
+                if (sectionEl) sectionEl.style.display = 'none';
+                if (tabEl) {
+                    tabEl.className = 'btn btn-outline';
+                }
+            });
+
+            // Show selected section
+            const selectedSection = document.getElementById(section + 'Section');
+            const selectedTab = document.getElementById(section + 'Tab');
+            if (selectedSection) selectedSection.style.display = 'block';
+            if (selectedTab) {
+                selectedTab.className = 'btn btn-primary';
+            }
+        }
+
+        // View functions
+        function viewHomeData() {
+            // Load and display saved home data
+            loadAndDisplayHomeData();
+        }
+
+        function viewTasks() {
+            // Load and display saved tasks
+            loadAndDisplayTasks();
+        }
+
+        function viewSavedProducts() {
+            // Load and display saved products
+            loadAndDisplaySavedProducts();
         }
 
         function closeModal(modalId) {
