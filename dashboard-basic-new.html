@@ -159,11 +159,238 @@
         }
 
         .main-container {
-            max-width: 1400px;
+            display: flex;
+            max-width: 1600px;
             margin: 0 auto;
             padding: 2rem;
             position: relative;
             z-index: 10;
+            gap: 2rem;
+            min-height: calc(100vh - 120px);
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 300px;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 2rem;
+            height: fit-content;
+        }
+
+        .sidebar-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-button {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .nav-button:hover::before {
+            left: 100%;
+        }
+
+        .nav-button:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-button.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .nav-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .nav-icon.home { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+        .nav-icon.tasks { background: linear-gradient(135deg, #ec4899, #be185d); }
+        .nav-icon.emergency { background: linear-gradient(135deg, #10b981, #059669); }
+        .nav-icon.products { background: linear-gradient(135deg, #f59e0b, #d97706); }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            min-height: 600px;
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-subtitle {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 400;
+        }
+
+        .feature-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .feature-description {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .feature-description p {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+        }
+
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .feature-item i {
+            color: var(--success);
+            font-size: 1rem;
+        }
+
+        .feature-item span {
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+        }
+
+        .feature-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+                padding: 1rem;
+            }
+
+            .sidebar {
+                width: 100%;
+                position: static;
+                margin-bottom: 2rem;
+            }
+
+            .content-area {
+                min-height: auto;
+            }
+
+            .feature-list {
+                grid-template-columns: 1fr;
+            }
+
+            .feature-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .feature-actions .btn {
+                width: 100%;
+                max-width: 300px;
+            }
         }
 
         .welcome-section {
@@ -692,39 +919,229 @@
 
     <!-- Main Content -->
     <div class="main-container">
-        <!-- Welcome Section -->
-        <div class="welcome-section">
-            <h1 class="welcome-title">Welcome to Your Basic Dashboard!</h1>
-            <p class="welcome-subtitle">Manage your home, track your property, and discover products tailored for you.</p>
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+            <h2 class="sidebar-title">Navigation</h2>
+            
+            <button class="nav-button active" onclick="showSection('home')">
+                <div class="nav-icon home">
+                    <i class="fas fa-home"></i>
+                </div>
+                <span>Home Management</span>
+            </button>
+            
+            <button class="nav-button" onclick="showSection('tasks')">
+                <div class="nav-icon tasks">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <span>Tasks & Reminders</span>
+            </button>
+            
+            <button class="nav-button" onclick="showSection('emergency')">
+                <div class="nav-icon emergency">
+                    <i class="fas fa-phone"></i>
+                </div>
+                <span>Emergency Services</span>
+            </button>
+            
+            <button class="nav-button" onclick="showSection('products')">
+                <div class="nav-icon products">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <span>Product Recommendations</span>
+            </button>
         </div>
 
-        <!-- Quick Stats -->
-        <div class="quick-stats">
-            <div class="stat-card">
-                <div class="stat-number" id="homesCount">0</div>
-                <div class="stat-label">Homes Tracked</div>
+        <!-- Content Area -->
+        <div class="content-area">
+            <!-- Home Management Section -->
+            <div id="homeSection" class="content-section active">
+                <div class="section-header">
+                    <h2 class="section-title">Home Management</h2>
+                    <p class="section-subtitle">Comprehensive home tracking from roof to crawlspace</p>
+                </div>
+                
+                <div class="feature-content">
+                    <div class="feature-description">
+                        <p>Manage every detail of your first home with ease. Track everything from your roof to your crawlspace with our comprehensive home management system.</p>
+                    </div>
+                    
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>Complete home profile & details</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>Roof, HVAC, plumbing, electrical data</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>Foundation, crawlspace, attic info</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>Appliance & system tracking</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>Maintenance history & schedules</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>Document & photo storage</span>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-actions">
+                        <button class="btn btn-primary" onclick="openHomeManagement()">
+                            <i class="fas fa-arrow-right"></i>
+                            Manage Home
+                        </button>
+                        <button class="btn btn-outline" onclick="viewHomeData()">
+                            <i class="fas fa-eye"></i>
+                            View Data
+                        </button>
+                    </div>
+                </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-number" id="contactsCount">0</div>
-                <div class="stat-label">Emergency Contacts</div>
+
+            <!-- Tasks & Reminders Section -->
+            <div id="tasksSection" class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Tasks & Reminders</h2>
+                    <p class="section-subtitle">Stay on top of 10 essential tasks & reminders</p>
+                </div>
+                
+                <div class="feature-content">
+                    <div class="feature-description">
+                        <p>Never miss important home maintenance again. Stay organized with our smart task management system designed specifically for homeowners.</p>
+                    </div>
+                    
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>10 essential home tasks</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>Smart reminders & alerts</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>Priority-based organization</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>Due date tracking</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>Task completion history</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>Seasonal maintenance guides</span>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-actions">
+                        <button class="btn btn-primary" onclick="openTaskManagement()">
+                            <i class="fas fa-arrow-right"></i>
+                            Manage Tasks
+                        </button>
+                        <button class="btn btn-outline" onclick="viewTasks()">
+                            <i class="fas fa-eye"></i>
+                            View Tasks
+                        </button>
+                    </div>
+                </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-number" id="productsCount">0</div>
-                <div class="stat-label">Saved Products</div>
+
+            <!-- Emergency Services Section -->
+            <div id="emergencySection" class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Emergency Services</h2>
+                    <p class="section-subtitle">Quick access to emergency contacts and essential services</p>
+                </div>
+                
+                <div class="feature-content">
+                    <div class="feature-description">
+                        <p>Be prepared for any emergency with quick access to essential contacts and services for your home.</p>
+                    </div>
+                    
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>Emergency contacts</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>Service provider directory</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>Quick call buttons</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>Location-based services</span>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-actions">
+                        <button class="btn btn-primary" onclick="openEmergencyServices()">
+                            <i class="fas fa-arrow-right"></i>
+                            Emergency Services
+                        </button>
+                    </div>
+                </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-number" id="tasksCount">0</div>
-                <div class="stat-label">Active Tasks</div>
+
+            <!-- Product Recommendations Section -->
+            <div id="productsSection" class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Product Recommendations</h2>
+                    <p class="section-subtitle">Discover smart product picks tailored to your home</p>
+                </div>
+                
+                <div class="feature-content">
+                    <div class="feature-description">
+                        <p>Find the perfect products for your home with our personalized recommendations and save your favorites for easy access.</p>
+                    </div>
+                    
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>Personalized recommendations</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>Home-specific suggestions</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>Save favorite products</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check"></i>
+                            <span>Price tracking & alerts</span>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-actions">
+                        <button class="btn btn-primary" onclick="window.location.href='product-recommendations.html'">
+                            <i class="fas fa-arrow-right"></i>
+                            Browse Products
+                        </button>
+                        <button class="btn btn-outline" onclick="viewSavedProducts()">
+                            <i class="fas fa-eye"></i>
+                            View Saved
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
-
-        <!-- Features Grid -->
-        <div class="features-grid">
-            <!-- Home Management -->
-            <div class="feature-card">
-                <div class="feature-header">
-                    <div class="feature-icon home">
-                        <i class="fas fa-home"></i>
                     </div>
                     <div>
                         <h3 class="feature-title">Home Management</h3>
@@ -1583,6 +2000,33 @@
         }
 
         // Initialize page
+        // Sidebar Navigation Function
+        function showSection(sectionName) {
+            // Hide all content sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Remove active class from all nav buttons
+            const navButtons = document.querySelectorAll('.nav-button');
+            navButtons.forEach(button => {
+                button.classList.remove('active');
+            });
+
+            // Show selected section
+            const targetSection = document.getElementById(sectionName + 'Section');
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+
+            // Add active class to clicked button
+            const clickedButton = event.target.closest('.nav-button');
+            if (clickedButton) {
+                clickedButton.classList.add('active');
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             loadUserData();
             createParticles();
