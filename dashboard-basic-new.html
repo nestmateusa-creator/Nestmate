@@ -2022,13 +2022,13 @@
     <script>
         // Firebase Configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyBvOkBwJ1Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4",
+            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
             authDomain: "nestmate-167ed.firebaseapp.com",
             projectId: "nestmate-167ed",
             storageBucket: "nestmate-167ed.appspot.com",
-            messagingSenderId: "123456789012",
-            appId: "1:123456789012:web:abcdefghijklmnopqrstuv",
-            measurementId: "G-XXXXXXXXXX"
+            messagingSenderId: "865171535257",
+            appId: "1:865171535257:web:nextmate-web-app",
+            measurementId: "G-NEXTMATE-ANALYTICS"
         };
 
         // Initialize Firebase
@@ -2045,11 +2045,17 @@
 
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', function() {
-            initializeDashboard();
-            loadUserData();
-            generateCalendar();
-            loadEssentialTasks();
-            loadProductRecommendations();
+            console.log('DOM Content Loaded - Initializing dashboard...');
+            try {
+                initializeDashboard();
+                loadUserData();
+                generateCalendar();
+                loadEssentialTasks();
+                loadProductRecommendations();
+                console.log('Dashboard initialization completed successfully');
+            } catch (error) {
+                console.error('Error during dashboard initialization:', error);
+            }
         });
 
         // Dashboard initialization
@@ -2076,29 +2082,47 @@
         // Sidebar Navigation Functions
         function showSection(sectionName, clickedElement) {
             console.log('showSection called with:', sectionName);
+            console.log('clickedElement:', clickedElement);
             
-            // Hide all content sections
-            const sections = document.querySelectorAll('.content-section');
-            sections.forEach(section => section.classList.remove('active'));
-            
-            // Remove active class from all nav items
-            const navItems = document.querySelectorAll('.nav-item');
-            navItems.forEach(item => item.classList.remove('active'));
-            
-            // Show selected section
-            const targetSection = document.getElementById(sectionName + 'Section');
-            if (targetSection) {
-                targetSection.classList.add('active');
-                console.log('Section found and activated:', sectionName + 'Section');
-            } else {
-                console.error('Section not found:', sectionName + 'Section');
+            try {
+                // Hide all content sections
+                const sections = document.querySelectorAll('.content-section');
+                console.log('Found sections:', sections.length);
+                sections.forEach(section => {
+                    section.classList.remove('active');
+                    console.log('Removed active from:', section.id);
+                });
+                
+                // Remove active class from all nav items
+                const navItems = document.querySelectorAll('.nav-item');
+                console.log('Found nav items:', navItems.length);
+                navItems.forEach(item => item.classList.remove('active'));
+                
+                // Show selected section
+                const targetSection = document.getElementById(sectionName + 'Section');
+                console.log('Looking for section:', sectionName + 'Section');
+                console.log('Target section found:', targetSection);
+                
+                if (targetSection) {
+                    targetSection.classList.add('active');
+                    console.log('Section activated:', sectionName + 'Section');
+                    console.log('Section content:', targetSection.innerHTML);
+                } else {
+                    console.error('Section not found:', sectionName + 'Section');
+                    console.log('Available sections:', document.querySelectorAll('[id$="Section"]'));
+                }
+                
+                // Add active class to clicked nav item
+                if (clickedElement) {
+                    clickedElement.classList.add('active');
+                    console.log('Nav item activated');
+                }
+                
+                // Load section content
+                loadSectionContent(sectionName);
+            } catch (error) {
+                console.error('Error in showSection:', error);
             }
-            
-            // Add active class to clicked nav item
-            clickedElement.classList.add('active');
-            
-            // Load section content
-            loadSectionContent(sectionName);
         }
 
         function loadSectionContent(sectionName) {
@@ -2110,50 +2134,58 @@
                 return;
             }
             
+            console.log('Section found, current content:', section.innerHTML);
+            
             // Always load content for the selected section
-            switch(sectionName) {
-                case 'basic':
-                    console.log('Loading basic info content');
-                    loadBasicInfoContent();
-                    break;
-                case 'structure':
-                    console.log('Loading structure content');
-                    loadStructureContent();
-                    break;
-                case 'systems':
-                    console.log('Loading systems content');
-                    loadSystemsContent();
-                    break;
-                case 'bedrooms':
-                    console.log('Loading bedrooms content');
-                    loadBedroomsContent();
-                    break;
-                case 'bathrooms':
-                    console.log('Loading bathrooms content');
-                    loadBathroomsContent();
-                    break;
-                case 'kitchen':
-                    console.log('Loading kitchen content');
-                    loadKitchenContent();
-                    break;
-                case 'living':
-                    console.log('Loading living areas content');
-                    loadLivingAreasContent();
-                    break;
-                case 'garage':
-                    console.log('Loading garage content');
-                    loadGarageContent();
-                    break;
-                case 'exterior':
-                    console.log('Loading exterior content');
-                    loadExteriorContent();
-                    break;
-                case 'appliances':
-                    console.log('Loading appliances content');
-                    loadAppliancesContent();
-                    break;
-                default:
-                    console.log('No content loader for section:', sectionName);
+            try {
+                switch(sectionName) {
+                    case 'basic':
+                        console.log('Loading basic info content');
+                        loadBasicInfoContent();
+                        break;
+                    case 'structure':
+                        console.log('Loading structure content');
+                        loadStructureContent();
+                        break;
+                    case 'systems':
+                        console.log('Loading systems content');
+                        loadSystemsContent();
+                        break;
+                    case 'bedrooms':
+                        console.log('Loading bedrooms content');
+                        loadBedroomsContent();
+                        break;
+                    case 'bathrooms':
+                        console.log('Loading bathrooms content');
+                        loadBathroomsContent();
+                        break;
+                    case 'kitchen':
+                        console.log('Loading kitchen content');
+                        loadKitchenContent();
+                        break;
+                    case 'living':
+                        console.log('Loading living areas content');
+                        loadLivingAreasContent();
+                        break;
+                    case 'garage':
+                        console.log('Loading garage content');
+                        loadGarageContent();
+                        break;
+                    case 'exterior':
+                        console.log('Loading exterior content');
+                        loadExteriorContent();
+                        break;
+                    case 'appliances':
+                        console.log('Loading appliances content');
+                        loadAppliancesContent();
+                        break;
+                    default:
+                        console.log('No content loader for section:', sectionName);
+                }
+                console.log('Content loaded for section:', sectionName);
+                console.log('Section content after loading:', section.innerHTML);
+            } catch (error) {
+                console.error('Error loading content for section:', sectionName, error);
             }
         }
 
