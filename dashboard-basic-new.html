@@ -208,6 +208,341 @@
             min-height: 100px;
             resize: vertical;
         }
+
+        /* Dashboard Overview Styles */
+        .dashboard-overview {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+        }
+
+        .stat-info {
+            flex: 1;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #10b981;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .action-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .action-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(16, 185, 129, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .action-card.primary {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1));
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .action-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+
+        .action-card p {
+            opacity: 0.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-features {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .card-features span {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            color: #10b981;
+        }
+
+        /* Modal Enhancements */
+        .modal-content {
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .tab-navigation {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .tab-btn {
+            padding: 1rem 1.5rem;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            color: white;
+            border-bottom-color: #10b981;
+        }
+
+        .tab-btn:hover {
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .section-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            color: #10b981;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Calendar Styles */
+        .calendar-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .calendar-nav {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .calendar-day:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .calendar-day.has-tasks {
+            background: rgba(16, 185, 129, 0.3);
+        }
+
+        .calendar-day.today {
+            background: rgba(16, 185, 129, 0.5);
+            font-weight: bold;
+        }
+
+        /* Task List Styles */
+        .task-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .task-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .task-checkbox {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+        }
+
+        .task-checkbox.checked {
+            background: #10b981;
+            border-color: #10b981;
+        }
+
+        .task-content {
+            flex: 1;
+        }
+
+        .task-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .task-due {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        /* Product Grid Styles */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .product-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        .product-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-price {
+            color: #10b981;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .quick-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .action-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                margin: 2% auto;
+                max-width: 95vw;
+            }
+        }
     </style>
 </head>
 <body>
@@ -227,18 +562,95 @@
     </header>
 
     <main class="main-content">
-        <div class="welcome-section">
-            <h1>Welcome to Your Basic Dashboard</h1>
-            <p>Simple home management for your first home</p>
-        </div>
+        <!-- Dashboard Overview -->
+        <div class="dashboard-overview">
+            <div class="welcome-section">
+                <h1>🏠 Your Home Command Center</h1>
+                <p>Complete home intelligence from foundation to roof</p>
+            </div>
 
-        <div class="dashboard-card">
-            <h2>🏠 Your Home</h2>
-            <p>Manage your home information and settings</p>
-            <button class="btn btn-primary" onclick="openHomeManagement()">
-                <i class="fas fa-home"></i>
-                Manage Home
-            </button>
+            <!-- Quick Stats -->
+            <div class="quick-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">🏠</div>
+                    <div class="stat-info">
+                        <div class="stat-number" id="homeAge">--</div>
+                        <div class="stat-label">Years Old</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📐</div>
+                    <div class="stat-info">
+                        <div class="stat-number" id="homeSqft">--</div>
+                        <div class="stat-label">Square Feet</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-info">
+                        <div class="stat-number" id="tasksCompleted">0</div>
+                        <div class="stat-label">Tasks Done</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-info">
+                        <div class="stat-number" id="favoritesCount">0</div>
+                        <div class="stat-label">Favorites</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Action Cards -->
+            <div class="action-grid">
+                <div class="action-card primary" onclick="openHomeManagement()">
+                    <div class="card-icon">🏠</div>
+                    <h3>Complete Home Management</h3>
+                    <p>Manage every detail from roof to crawlspace</p>
+                    <div class="card-features">
+                        <span>✓ Foundation & Structure</span>
+                        <span>✓ Roof & Exterior</span>
+                        <span>✓ HVAC & Systems</span>
+                        <span>✓ Appliances & Equipment</span>
+                    </div>
+                </div>
+
+                <div class="action-card" onclick="openTasksCalendar()">
+                    <div class="card-icon">📅</div>
+                    <h3>Tasks & Calendar</h3>
+                    <p>10 essential tasks with smart reminders</p>
+                    <div class="card-features">
+                        <span>✓ Interactive Calendar</span>
+                        <span>✓ Task Management</span>
+                        <span>✓ Smart Reminders</span>
+                        <span>✓ Progress Tracking</span>
+                    </div>
+                </div>
+
+                <div class="action-card" onclick="openProductRecommendations()">
+                    <div class="card-icon">🛍️</div>
+                    <h3>Product Recommendations</h3>
+                    <p>Discover smart picks for your home</p>
+                    <div class="card-features">
+                        <span>✓ Smart Recommendations</span>
+                        <span>✓ Save Favorites</span>
+                        <span>✓ Price Tracking</span>
+                        <span>✓ Direct Ordering</span>
+                    </div>
+                </div>
+
+                <div class="action-card" onclick="openEmergencyServices()">
+                    <div class="card-icon">🚨</div>
+                    <h3>Emergency Services</h3>
+                    <p>Quick access to essential contacts</p>
+                    <div class="card-features">
+                        <span>✓ Emergency Contacts</span>
+                        <span>✓ Service Directory</span>
+                        <span>✓ Quick Call Buttons</span>
+                        <span>✓ Location Services</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 
