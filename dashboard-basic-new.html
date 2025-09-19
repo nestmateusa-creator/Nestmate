@@ -212,10 +212,102 @@
             resize: vertical;
         }
 
-        /* Dashboard Overview Styles */
-        .dashboard-overview {
+        /* Dashboard Container Styles */
+        .dashboard-container {
+            display: flex;
+            min-height: calc(100vh - 80px);
             max-width: 1400px;
             margin: 0 auto;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            border-right: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 2rem 0;
+            position: sticky;
+            top: 80px;
+            height: calc(100vh - 80px);
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 0 2rem 2rem 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 1rem;
+        }
+
+        .sidebar-header h2 {
+            color: #10b981;
+            font-size: 1.5rem;
+            margin: 0;
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 0 1rem;
+        }
+
+        .nav-item {
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1rem;
+            font-weight: 500;
+            text-align: left;
+            width: 100%;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1));
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+        }
+
+        .nav-item i {
+            font-size: 1.2rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Content Area Styles */
+        .content-area {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .quick-stats {
@@ -738,6 +830,39 @@
 
         /* Responsive Design */
         @media (max-width: 768px) {
+            .dashboard-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+                padding: 1rem 0;
+            }
+            
+            .sidebar-nav {
+                flex-direction: row;
+                overflow-x: auto;
+                padding: 0 1rem;
+                gap: 0.5rem;
+            }
+            
+            .nav-item {
+                white-space: nowrap;
+                min-width: 120px;
+                justify-content: center;
+                padding: 0.8rem 1rem;
+            }
+            
+            .nav-item span {
+                display: none;
+            }
+            
+            .content-area {
+                padding: 1rem;
+            }
+            
             .quick-stats {
                 grid-template-columns: repeat(2, 1fr);
             }
@@ -774,93 +899,191 @@
     </header>
 
     <main class="main-content">
-        <!-- Dashboard Overview -->
-        <div class="dashboard-overview">
-            <div class="welcome-section">
-                <h1>🏠 Your Home Command Center</h1>
-                <p>Complete home intelligence from foundation to roof</p>
+        <div class="dashboard-container">
+            <!-- Sidebar Navigation -->
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <h2>🏠 Home Management</h2>
+                </div>
+                
+                <nav class="sidebar-nav">
+                    <button class="nav-item active" onclick="showSection('overview', this)">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard Overview</span>
+                    </button>
+                    
+                    <button class="nav-item" onclick="showSection('basic', this)">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Basic Info</span>
+                    </button>
+                    
+                    <button class="nav-item" onclick="showSection('structure', this)">
+                        <i class="fas fa-building"></i>
+                        <span>Structure</span>
+                    </button>
+                    
+                    <button class="nav-item" onclick="showSection('systems', this)">
+                        <i class="fas fa-cogs"></i>
+                        <span>Systems</span>
+                    </button>
+                    
+                    <button class="nav-item" onclick="showSection('bedrooms', this)">
+                        <i class="fas fa-bed"></i>
+                        <span>Bedrooms</span>
+                    </button>
+                    
+                    <button class="nav-item" onclick="showSection('bathrooms', this)">
+                        <i class="fas fa-bath"></i>
+                        <span>Bathrooms</span>
+                    </button>
+                    
+                    <button class="nav-item" onclick="showSection('kitchen', this)">
+                        <i class="fas fa-utensils"></i>
+                        <span>Kitchen</span>
+                    </button>
+                    
+                    <button class="nav-item" onclick="showSection('living', this)">
+                        <i class="fas fa-couch"></i>
+                        <span>Living Areas</span>
+                    </button>
+                    
+                    <button class="nav-item" onclick="showSection('garage', this)">
+                        <i class="fas fa-car"></i>
+                        <span>Garage</span>
+                    </button>
+                    
+                    <button class="nav-item" onclick="showSection('exterior', this)">
+                        <i class="fas fa-home"></i>
+                        <span>Exterior</span>
+                    </button>
+                    
+                    <button class="nav-item" onclick="showSection('appliances', this)">
+                        <i class="fas fa-tv"></i>
+                        <span>Appliances</span>
+                    </button>
+                </nav>
             </div>
 
-            <!-- Quick Stats -->
-            <div class="quick-stats">
-                <div class="stat-card">
-                    <div class="stat-icon">🏠</div>
-                    <div class="stat-info">
-                        <div class="stat-number" id="homeAge">--</div>
-                        <div class="stat-label">Years Old</div>
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Dashboard Overview Section -->
+                <div id="overviewSection" class="content-section active">
+                    <div class="welcome-section">
+                        <h1>🏠 Your Home Command Center</h1>
+                        <p>Complete home intelligence from foundation to roof</p>
                     </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">📐</div>
-                    <div class="stat-info">
-                        <div class="stat-number" id="homeSqft">--</div>
-                        <div class="stat-label">Square Feet</div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">✅</div>
-                    <div class="stat-info">
-                        <div class="stat-number" id="tasksCompleted">0</div>
-                        <div class="stat-label">Tasks Done</div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">⭐</div>
-                    <div class="stat-info">
-                        <div class="stat-number" id="favoritesCount">0</div>
-                        <div class="stat-label">Favorites</div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Main Action Cards -->
-            <div class="action-grid">
-                <div class="action-card primary" onclick="openHomeManagement()">
-                    <div class="card-icon">🏠</div>
-                    <h3>Complete Home Management</h3>
-                    <p>Manage every detail from roof to crawlspace</p>
-                    <div class="card-features">
-                        <span>✓ Foundation & Structure</span>
-                        <span>✓ Roof & Exterior</span>
-                        <span>✓ HVAC & Systems</span>
-                        <span>✓ Appliances & Equipment</span>
+                    <!-- Quick Stats -->
+                    <div class="quick-stats">
+                        <div class="stat-card">
+                            <div class="stat-icon">🏠</div>
+                            <div class="stat-info">
+                                <div class="stat-number" id="homeAge">--</div>
+                                <div class="stat-label">Years Old</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📐</div>
+                            <div class="stat-info">
+                                <div class="stat-number" id="homeSqft">--</div>
+                                <div class="stat-label">Square Feet</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">✅</div>
+                            <div class="stat-info">
+                                <div class="stat-number" id="tasksCompleted">0</div>
+                                <div class="stat-label">Tasks Done</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">⭐</div>
+                            <div class="stat-info">
+                                <div class="stat-number" id="favoritesCount">0</div>
+                                <div class="stat-label">Favorites</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Action Cards -->
+                    <div class="action-grid">
+                        <div class="action-card primary" onclick="openTasksCalendar()">
+                            <div class="card-icon">📅</div>
+                            <h3>Tasks & Calendar</h3>
+                            <p>10 essential tasks with smart reminders</p>
+                            <div class="card-features">
+                                <span>✓ Interactive Calendar</span>
+                                <span>✓ Task Management</span>
+                                <span>✓ Smart Reminders</span>
+                                <span>✓ Progress Tracking</span>
+                            </div>
+                        </div>
+
+                        <div class="action-card" onclick="openProductRecommendations()">
+                            <div class="card-icon">🛍️</div>
+                            <h3>Product Recommendations</h3>
+                            <p>Discover smart picks for your home</p>
+                            <div class="card-features">
+                                <span>✓ Smart Recommendations</span>
+                                <span>✓ Save Favorites</span>
+                                <span>✓ Price Tracking</span>
+                                <span>✓ Direct Ordering</span>
+                            </div>
+                        </div>
+
+                        <div class="action-card" onclick="openEmergencyServices()">
+                            <div class="card-icon">🚨</div>
+                            <h3>Emergency Services</h3>
+                            <p>Quick access to essential contacts</p>
+                            <div class="card-features">
+                                <span>✓ Emergency Contacts</span>
+                                <span>✓ Service Directory</span>
+                                <span>✓ Quick Call Buttons</span>
+                                <span>✓ Location Services</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="action-card" onclick="openTasksCalendar()">
-                    <div class="card-icon">📅</div>
-                    <h3>Tasks & Calendar</h3>
-                    <p>10 essential tasks with smart reminders</p>
-                    <div class="card-features">
-                        <span>✓ Interactive Calendar</span>
-                        <span>✓ Task Management</span>
-                        <span>✓ Smart Reminders</span>
-                        <span>✓ Progress Tracking</span>
-                    </div>
+                <!-- All other sections will be dynamically loaded here -->
+                <div id="basicSection" class="content-section">
+                    <!-- Basic Info content will be loaded here -->
                 </div>
-
-                <div class="action-card" onclick="openProductRecommendations()">
-                    <div class="card-icon">🛍️</div>
-                    <h3>Product Recommendations</h3>
-                    <p>Discover smart picks for your home</p>
-                    <div class="card-features">
-                        <span>✓ Smart Recommendations</span>
-                        <span>✓ Save Favorites</span>
-                        <span>✓ Price Tracking</span>
-                        <span>✓ Direct Ordering</span>
-                    </div>
+                
+                <div id="structureSection" class="content-section">
+                    <!-- Structure content will be loaded here -->
                 </div>
-
-                <div class="action-card" onclick="openEmergencyServices()">
-                    <div class="card-icon">🚨</div>
-                    <h3>Emergency Services</h3>
-                    <p>Quick access to essential contacts</p>
-                    <div class="card-features">
-                        <span>✓ Emergency Contacts</span>
-                        <span>✓ Service Directory</span>
-                        <span>✓ Quick Call Buttons</span>
-                        <span>✓ Location Services</span>
-                    </div>
+                
+                <div id="systemsSection" class="content-section">
+                    <!-- Systems content will be loaded here -->
+                </div>
+                
+                <div id="bedroomsSection" class="content-section">
+                    <!-- Bedrooms content will be loaded here -->
+                </div>
+                
+                <div id="bathroomsSection" class="content-section">
+                    <!-- Bathrooms content will be loaded here -->
+                </div>
+                
+                <div id="kitchenSection" class="content-section">
+                    <!-- Kitchen content will be loaded here -->
+                </div>
+                
+                <div id="livingSection" class="content-section">
+                    <!-- Living Areas content will be loaded here -->
+                </div>
+                
+                <div id="garageSection" class="content-section">
+                    <!-- Garage content will be loaded here -->
+                </div>
+                
+                <div id="exteriorSection" class="content-section">
+                    <!-- Exterior content will be loaded here -->
+                </div>
+                
+                <div id="appliancesSection" class="content-section">
+                    <!-- Appliances content will be loaded here -->
                 </div>
             </div>
         </div>
@@ -1689,6 +1912,325 @@
             
             // Contact form submission
             document.getElementById('addContactForm').addEventListener('submit', handleContactFormSubmit);
+        }
+
+        // Sidebar Navigation Functions
+        function showSection(sectionName, clickedElement) {
+            // Hide all content sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => section.classList.remove('active'));
+            
+            // Remove active class from all nav items
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+            
+            // Show selected section
+            document.getElementById(sectionName + 'Section').classList.add('active');
+            
+            // Add active class to clicked nav item
+            clickedElement.classList.add('active');
+            
+            // Load section content if not already loaded
+            loadSectionContent(sectionName);
+        }
+
+        function loadSectionContent(sectionName) {
+            const section = document.getElementById(sectionName + 'Section');
+            
+            // Only load content if section is empty
+            if (section.innerHTML.trim() === '<!-- ' + sectionName + ' content will be loaded here -->' || section.innerHTML.trim() === '') {
+                switch(sectionName) {
+                    case 'basic':
+                        loadBasicInfoContent();
+                        break;
+                    case 'structure':
+                        loadStructureContent();
+                        break;
+                    case 'systems':
+                        loadSystemsContent();
+                        break;
+                    case 'bedrooms':
+                        loadBedroomsContent();
+                        break;
+                    case 'bathrooms':
+                        loadBathroomsContent();
+                        break;
+                    case 'kitchen':
+                        loadKitchenContent();
+                        break;
+                    case 'living':
+                        loadLivingAreasContent();
+                        break;
+                    case 'garage':
+                        loadGarageContent();
+                        break;
+                    case 'exterior':
+                        loadExteriorContent();
+                        break;
+                    case 'appliances':
+                        loadAppliancesContent();
+                        break;
+                }
+            }
+        }
+
+        function loadBasicInfoContent() {
+            const section = document.getElementById('basicSection');
+            section.innerHTML = `
+                <div class="section-header">
+                    <h3 class="section-title">Basic Home Information</h3>
+                </div>
+                <form id="basicInfoForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Home Name</label>
+                            <input type="text" class="form-input" id="homeName" placeholder="Enter home name" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Address</label>
+                            <input type="text" class="form-input" id="homeAddress" placeholder="Enter full address" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Property Type</label>
+                            <select class="form-input" id="propertyType" required>
+                                <option value="">Select property type</option>
+                                <option value="house">House</option>
+                                <option value="condo">Condo</option>
+                                <option value="townhouse">Townhouse</option>
+                                <option value="apartment">Apartment</option>
+                                <option value="mobile">Mobile Home</option>
+                                <option value="duplex">Duplex</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Square Footage</label>
+                            <input type="number" class="form-input" id="squareFootage" placeholder="Enter square footage">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Year Built</label>
+                            <input type="number" class="form-input" id="yearBuilt" placeholder="Enter year built">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Bedrooms</label>
+                            <input type="number" class="form-input" id="bedrooms" placeholder="Number of bedrooms">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Bathrooms</label>
+                            <input type="number" class="form-input" id="bathrooms" placeholder="Number of bathrooms">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Lot Size (sq ft)</label>
+                            <input type="number" class="form-input" id="lotSize" placeholder="Lot size in square feet">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Additional Notes</label>
+                        <textarea class="form-input form-textarea" id="homeNotes" placeholder="Additional notes about your home, maintenance history, or important details"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        <i class="fas fa-save"></i>
+                        Save Basic Information
+                    </button>
+                </form>
+            `;
+            
+            // Add event listener for the form
+            document.getElementById('basicInfoForm').addEventListener('submit', handleBasicInfoSubmit);
+        }
+
+        function loadBedroomsContent() {
+            const section = document.getElementById('bedroomsSection');
+            section.innerHTML = `
+                <div class="section-header">
+                    <h3 class="section-title">Bedroom Details</h3>
+                    <button type="button" class="btn btn-primary btn-small" onclick="addBedroom()">
+                        <i class="fas fa-plus"></i> Add Bedroom
+                    </button>
+                </div>
+                <div id="bedroomsList">
+                    <!-- Bedrooms will be dynamically added here -->
+                </div>
+            `;
+        }
+
+        function loadBathroomsContent() {
+            const section = document.getElementById('bathroomsSection');
+            section.innerHTML = `
+                <div class="section-header">
+                    <h3 class="section-title">Bathroom Details</h3>
+                    <button type="button" class="btn btn-primary btn-small" onclick="addBathroom()">
+                        <i class="fas fa-plus"></i> Add Bathroom
+                    </button>
+                </div>
+                <div id="bathroomsList">
+                    <!-- Bathrooms will be dynamically added here -->
+                </div>
+            `;
+        }
+
+        function loadKitchenContent() {
+            const section = document.getElementById('kitchenSection');
+            section.innerHTML = `
+                <div class="section-header">
+                    <h3 class="section-title">Kitchen Details</h3>
+                </div>
+                <form id="kitchenForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Kitchen Style</label>
+                            <select class="form-input" id="kitchenStyle">
+                                <option value="">Select kitchen style</option>
+                                <option value="traditional">Traditional</option>
+                                <option value="modern">Modern</option>
+                                <option value="contemporary">Contemporary</option>
+                                <option value="farmhouse">Farmhouse</option>
+                                <option value="industrial">Industrial</option>
+                                <option value="mediterranean">Mediterranean</option>
+                                <option value="scandinavian">Scandinavian</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Cabinet Material</label>
+                            <select class="form-input" id="cabinetMaterial">
+                                <option value="">Select cabinet material</option>
+                                <option value="wood">Wood</option>
+                                <option value="mdf">MDF</option>
+                                <option value="plywood">Plywood</option>
+                                <option value="particle-board">Particle Board</option>
+                                <option value="metal">Metal</option>
+                                <option value="glass">Glass</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Countertop Material</label>
+                            <select class="form-input" id="countertopMaterial">
+                                <option value="">Select countertop material</option>
+                                <option value="granite">Granite</option>
+                                <option value="quartz">Quartz</option>
+                                <option value="marble">Marble</option>
+                                <option value="butcher-block">Butcher Block</option>
+                                <option value="concrete">Concrete</option>
+                                <option value="laminate">Laminate</option>
+                                <option value="tile">Tile</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Backsplash Material</label>
+                            <select class="form-input" id="backsplashMaterial">
+                                <option value="">Select backsplash material</option>
+                                <option value="tile">Tile</option>
+                                <option value="glass">Glass</option>
+                                <option value="stone">Stone</option>
+                                <option value="metal">Metal</option>
+                                <option value="paint">Paint</option>
+                                <option value="wallpaper">Wallpaper</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Flooring Type</label>
+                            <select class="form-input" id="kitchenFlooring">
+                                <option value="">Select flooring type</option>
+                                <option value="hardwood">Hardwood</option>
+                                <option value="tile">Tile</option>
+                                <option value="vinyl">Vinyl</option>
+                                <option value="laminate">Laminate</option>
+                                <option value="concrete">Concrete</option>
+                                <option value="cork">Cork</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Kitchen Island</label>
+                            <select class="form-input" id="kitchenIsland">
+                                <option value="">Select island type</option>
+                                <option value="none">No Island</option>
+                                <option value="small">Small Island</option>
+                                <option value="large">Large Island</option>
+                                <option value="peninsula">Peninsula</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        <i class="fas fa-save"></i>
+                        Save Kitchen Information
+                    </button>
+                </form>
+            `;
+        }
+
+        function loadLivingAreasContent() {
+            const section = document.getElementById('livingSection');
+            section.innerHTML = `
+                <div class="section-header">
+                    <h3 class="section-title">Living Areas</h3>
+                    <button type="button" class="btn btn-primary btn-small" onclick="addLivingArea()">
+                        <i class="fas fa-plus"></i> Add Living Area
+                    </button>
+                </div>
+                <div id="livingAreasList">
+                    <!-- Living areas will be dynamically added here -->
+                </div>
+            `;
+        }
+
+        // Load other sections with placeholder content
+        function loadStructureContent() {
+            document.getElementById('structureSection').innerHTML = `
+                <div class="section-header">
+                    <h3 class="section-title">Foundation & Structure</h3>
+                </div>
+                <p style="color: rgba(255,255,255,0.8); text-align: center; padding: 2rem;">Foundation, roof, exterior, attic, and crawlspace details coming soon!</p>
+            `;
+        }
+
+        function loadSystemsContent() {
+            document.getElementById('systemsSection').innerHTML = `
+                <div class="section-header">
+                    <h3 class="section-title">HVAC, Plumbing & Electrical</h3>
+                </div>
+                <p style="color: rgba(255,255,255,0.8); text-align: center; padding: 2rem;">HVAC, plumbing, and electrical system details coming soon!</p>
+            `;
+        }
+
+        function loadGarageContent() {
+            document.getElementById('garageSection').innerHTML = `
+                <div class="section-header">
+                    <h3 class="section-title">Garage Details</h3>
+                </div>
+                <p style="color: rgba(255,255,255,0.8); text-align: center; padding: 2rem;">Garage, driveway, landscaping, pool, and fence details coming soon!</p>
+            `;
+        }
+
+        function loadExteriorContent() {
+            document.getElementById('exteriorSection').innerHTML = `
+                <div class="section-header">
+                    <h3 class="section-title">Exterior Features</h3>
+                </div>
+                <p style="color: rgba(255,255,255,0.8); text-align: center; padding: 2rem;">Exterior features and landscaping details coming soon!</p>
+            `;
+        }
+
+        function loadAppliancesContent() {
+            document.getElementById('appliancesSection').innerHTML = `
+                <div class="section-header">
+                    <h3 class="section-title">Appliances & Equipment</h3>
+                </div>
+                <p style="color: rgba(255,255,255,0.8); text-align: center; padding: 2rem;">Kitchen, laundry, and other appliance details coming soon!</p>
+            `;
+        }
+
+        function handleBasicInfoSubmit(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const homeData = {};
+            
+            const inputs = e.target.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                if (input.value) {
+                    homeData[input.id] = input.value;
+                }
+            });
+            
+            saveHomeDataToFirebase(homeData);
         }
 
         // Modal functions
