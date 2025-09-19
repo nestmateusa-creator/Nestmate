@@ -4,30 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Basic Dashboard - NestMate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
     <style>
-        :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --primary-light: #a5b4fc;
-            --secondary: #64748b;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --light: #f8fafc;
-            --dark: #0f172a;
-            --border: rgba(255, 255, 255, 0.1);
-            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            --shadow-lg: 0 35px 60px -12px rgba(0, 0, 0, 0.3);
-            --glass: rgba(255, 255, 255, 0.1);
-            --glass-border: rgba(255, 255, 255, 0.2);
-        }
-
         * {
             margin: 0;
             padding: 0;
@@ -35,87 +14,26 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             color: white;
-            overflow-x: hidden;
-        }
-
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Floating particles */
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .particle {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            animation: float 20s infinite linear;
-        }
-
-        @keyframes float {
-            0% {
-                transform: translateY(100vh) rotate(0deg);
-                opacity: 0;
-            }
-            10% {
-                opacity: 1;
-            }
-            90% {
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-100px) rotate(360deg);
-                opacity: 0;
-            }
         }
 
         .header {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
             padding: 1rem 2rem;
-            box-shadow: var(--shadow);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-radius: 0 0 20px 20px;
-        }
-
-        .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .logo {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 1.8rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 0 0 30px rgba(102, 126, 234, 0.5);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
         }
 
         .user-info {
@@ -124,1111 +42,109 @@
             gap: 1rem;
         }
 
-        .user-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 1.2rem;
-            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s ease;
-        }
-
-        .user-avatar:hover {
-            transform: scale(1.1);
-            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.4);
-        }
-
         .plan-badge {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 25px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .main-container {
-            display: flex;
-            max-width: 1600px;
-            margin: 0 auto;
-            padding: 2rem;
-            position: relative;
-            z-index: 10;
-            gap: 2rem;
-            min-height: calc(100vh - 120px);
-        }
-
-        /* Sidebar Navigation */
-        .sidebar {
-            width: 300px;
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: var(--shadow);
-            position: sticky;
-            top: 2rem;
-            height: fit-content;
-        }
-
-        .sidebar-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 2rem;
-            text-align: center;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .nav-button {
-            width: 100%;
-            padding: 1rem 1.5rem;
-            margin-bottom: 1rem;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 15px;
-            color: white;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .nav-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-            transition: left 0.5s;
-        }
-
-        .nav-button:hover::before {
-            left: 100%;
-        }
-
-        .nav-button:hover {
-            background: rgba(255, 255, 255, 0.15);
-            border-color: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-        }
-
-        .nav-button.active {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-color: rgba(255, 255, 255, 0.4);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-        }
-
-        .nav-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            flex-shrink: 0;
-        }
-
-        .nav-icon.home { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
-        .nav-icon.tasks { background: linear-gradient(135deg, #ec4899, #be185d); }
-        .nav-icon.emergency { background: linear-gradient(135deg, #10b981, #059669); }
-        .nav-icon.products { background: linear-gradient(135deg, #f59e0b, #d97706); }
-
-        /* Content Area */
-        .content-area {
-            flex: 1;
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: var(--shadow);
-            min-height: 600px;
-        }
-
-        .content-section {
-            display: none;
-            animation: fadeIn 0.5s ease-in-out;
-        }
-
-        .content-section.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .section-header {
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-
-        .section-title {
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .section-subtitle {
-            font-size: 1.1rem;
-            color: rgba(255, 255, 255, 0.8);
-            font-weight: 400;
-        }
-
-        .feature-content {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .feature-description {
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-
-        .feature-description p {
-            font-size: 1.1rem;
-            color: rgba(255, 255, 255, 0.9);
-            line-height: 1.6;
-        }
-
-        .feature-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .feature-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .feature-item:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .feature-item i {
-            color: var(--success);
-            font-size: 1rem;
-        }
-
-        .feature-item span {
-            color: rgba(255, 255, 255, 0.9);
-            font-weight: 500;
-        }
-
-        .feature-actions {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        /* Home Dashboard Styles */
-        .home-dashboard {
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-        }
-
-        .home-health-card {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(34, 197, 94, 0.1));
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            border-radius: 20px;
-            padding: 2rem;
-            backdrop-filter: blur(20px);
-        }
-
-        .health-score {
-            display: flex;
-            align-items: center;
-            gap: 2rem;
-        }
-
-        .score-circle {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            background: conic-gradient(from 0deg, #10b981 0deg 306deg, rgba(255,255,255,0.1) 306deg 360deg);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        .score-circle::before {
-            content: '';
-            position: absolute;
-            width: 80px;
-            height: 80px;
-            background: var(--glass);
-            border-radius: 50%;
-            backdrop-filter: blur(10px);
-        }
-
-        .score-number {
-            font-size: 2rem;
-            font-weight: 800;
-            color: white;
-            z-index: 1;
-        }
-
-        .score-label {
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.8);
-            z-index: 1;
-        }
-
-        .health-details h3 {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-            color: white;
-        }
-
-        .health-details p {
-            color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 1rem;
-        }
-
-        .health-factors {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .factor {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.9rem;
-        }
-
-        .factor.good {
-            background: rgba(16, 185, 129, 0.2);
-            color: #10b981;
-        }
-
-        .factor.warning {
-            background: rgba(245, 158, 11, 0.2);
-            color: #f59e0b;
-        }
-
-        .quick-stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-        }
-
-        .stat-card {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 15px;
-            padding: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        .stat-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-        }
-
-        .stat-number {
-            font-size: 2rem;
-            font-weight: 800;
-            color: white;
-        }
-
-        .stat-label {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .calendar-task-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-        }
-
-        .calendar-widget, .upcoming-tasks {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 1.5rem;
-            backdrop-filter: blur(20px);
-        }
-
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .calendar-header h3 {
-            color: white;
-            font-size: 1.2rem;
-        }
-
-        .calendar-nav {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .calendar-nav button {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 8px;
-            color: white;
-            padding: 0.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .calendar-nav button:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 0.5rem;
-        }
-
-        .calendar-day {
-            aspect-ratio: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .calendar-day:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .calendar-day.has-task::after {
-            content: '';
-            position: absolute;
-            bottom: 2px;
-            width: 6px;
-            height: 6px;
             background: #10b981;
-            border-radius: 50%;
-        }
-
-        .task-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .task-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .task-item:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateX(5px);
-        }
-
-        .task-item.urgent {
-            border-left: 4px solid #ef4444;
-        }
-
-        .task-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-        }
-
-        .task-title {
-            font-weight: 600;
-            color: white;
-        }
-
-        .task-date {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .task-priority {
-            font-size: 0.8rem;
-            padding: 0.2rem 0.5rem;
-            border-radius: 10px;
-            background: rgba(16, 185, 129, 0.2);
-            color: #10b981;
-        }
-
-        .task-action {
-            background: var(--success);
-            border: none;
-            border-radius: 8px;
-            color: white;
-            padding: 0.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .task-action:hover {
-            background: #059669;
-            transform: scale(1.1);
-        }
-
-        .systems-overview {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 1.5rem;
-            backdrop-filter: blur(20px);
-        }
-
-        .systems-overview h3 {
-            color: white;
-            margin-bottom: 1rem;
-        }
-
-        .systems-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-        }
-
-        .system-card {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .system-card:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateY(-3px);
-        }
-
-        .system-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-        }
-
-        .system-icon.hvac { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
-        .system-icon.plumbing { background: linear-gradient(135deg, #06b6d4, #0891b2); }
-        .system-icon.electrical { background: linear-gradient(135deg, #f59e0b, #d97706); }
-        .system-icon.roof { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
-
-        .system-info h4 {
-            color: white;
-            margin-bottom: 0.5rem;
-        }
-
-        .system-status {
-            padding: 0.3rem 0.8rem;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .system-status.good {
-            background: rgba(16, 185, 129, 0.2);
-            color: #10b981;
-        }
-
-        .system-status.warning {
-            background: rgba(245, 158, 11, 0.2);
-            color: #f59e0b;
-        }
-
-        .system-details {
-            display: flex;
-            flex-direction: column;
-            gap: 0.2rem;
-        }
-
-        .system-details span {
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .weather-alerts {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 1.5rem;
-            backdrop-filter: blur(20px);
-        }
-
-        .weather-alerts h3 {
-            color: white;
-            margin-bottom: 1rem;
-        }
-
-        .alert-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1rem;
-        }
-
-        .alert-card {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .alert-card.winter {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(29, 78, 216, 0.1));
-            border-color: rgba(59, 130, 246, 0.3);
-        }
-
-        .alert-card.maintenance {
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.1));
-            border-color: rgba(245, 158, 11, 0.3);
-        }
-
-        .alert-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-        }
-
-        .alert-content h4 {
-            color: white;
-            margin-bottom: 0.5rem;
-        }
-
-        .alert-content p {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .alert-action {
-            background: var(--primary);
-            border: none;
-            border-radius: 8px;
-            color: white;
             padding: 0.5rem 1rem;
-            cursor: pointer;
-            font-size: 0.8rem;
-            transition: all 0.3s ease;
-        }
-
-        .alert-action:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-        }
-
-        .home-actions {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .main-container {
-                flex-direction: column;
-                padding: 1rem;
-            }
-
-            .sidebar {
-                width: 100%;
-                position: static;
-                margin-bottom: 2rem;
-            }
-
-            .content-area {
-                min-height: auto;
-            }
-
-            .calendar-task-section {
-                grid-template-columns: 1fr;
-            }
-
-            .health-score {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .quick-stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .systems-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .alert-cards {
-                grid-template-columns: 1fr;
-            }
-
-            .home-actions {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .home-actions .btn {
-                width: 100%;
-                max-width: 300px;
-            }
-        }
-
-        .welcome-section {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 3rem;
-            margin-bottom: 3rem;
-            box-shadow: var(--shadow-lg);
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .welcome-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
-            background-size: 200% 100%;
-            animation: shimmer 3s ease-in-out infinite;
-        }
-
-        @keyframes shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
-        }
-
-        .welcome-title {
-            font-size: 3rem;
-            font-weight: 900;
-            background: linear-gradient(135deg, #ffffff, #f0f9ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 1rem;
-            text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
-        }
-
-        .welcome-subtitle {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 1.3rem;
-            margin-bottom: 2rem;
-            font-weight: 400;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2rem;
-            margin-bottom: 3rem;
-        }
-
-        .feature-card {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
             border-radius: 20px;
-            padding: 2rem;
-            box-shadow: var(--shadow);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .feature-card:hover::before {
-            left: 100%;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: var(--shadow-lg);
-            border-color: rgba(255, 255, 255, 0.3);
-        }
-
-        .feature-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .feature-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            color: white;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
-        }
-
-        .feature-icon:hover {
-            transform: scale(1.1) rotate(5deg);
-        }
-
-        .feature-icon.home { 
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
-        }
-        .feature-icon.property { 
-            background: linear-gradient(135deg, #f093fb, #f5576c);
-            box-shadow: 0 8px 32px rgba(240, 147, 251, 0.4);
-        }
-        .feature-icon.emergency { 
-            background: linear-gradient(135deg, #4facfe, #00f2fe);
-            box-shadow: 0 8px 32px rgba(79, 172, 254, 0.4);
-        }
-        .feature-icon.products { 
-            background: linear-gradient(135deg, #43e97b, #38f9d7);
-            box-shadow: 0 8px 32px rgba(67, 233, 123, 0.4);
-        }
-
-        .feature-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: white;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .feature-description {
-            color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 1.5rem;
-            line-height: 1.7;
-            font-size: 1rem;
-        }
-
-        .feature-list {
-            list-style: none;
-            margin-bottom: 1.5rem;
-        }
-
-        .feature-list li {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 0.75rem;
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 0.95rem;
-        }
-
-        .feature-list li i {
-            color: #10b981;
-            font-size: 1rem;
-            text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+            font-size: 0.9rem;
+            font-weight: 600;
         }
 
         .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 0.75rem;
-            padding: 1rem 2rem;
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            text-decoration: none;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            font-size: 0.95rem;
-            position: relative;
-            overflow: hidden;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .btn:hover::before {
-            left: 100%;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: #10b981;
             color: white;
-            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
         }
 
         .btn-primary:hover {
-            background: linear-gradient(135deg, #5a67d8, #6b46c1);
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-success {
-            background: var(--success);
-            color: white;
-        }
-
-        .btn-success:hover {
             background: #059669;
-            transform: translateY(-2px);
-        }
-
-        .btn-warning {
-            background: var(--warning);
-            color: white;
-        }
-
-        .btn-warning:hover {
-            background: #d97706;
-            transform: translateY(-2px);
-        }
-
-        .btn-danger {
-            background: var(--danger);
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: #dc2626;
-            transform: translateY(-2px);
         }
 
         .btn-outline {
             background: transparent;
-            color: var(--primary);
-            border: 2px solid var(--primary);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
         }
 
         .btn-outline:hover {
-            background: var(--primary);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-danger {
+            background: #ef4444;
             color: white;
         }
 
-        .subscription-section {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 3rem;
-            box-shadow: var(--shadow-lg);
-            margin-bottom: 3rem;
-            position: relative;
-            overflow: hidden;
+        .main-content {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        .subscription-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
-            background-size: 200% 100%;
-            animation: shimmer 3s ease-in-out infinite;
-        }
-
-        .section-title {
-            font-size: 2rem;
-            font-weight: 800;
-            color: white;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .subscription-actions {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .quick-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
+        .welcome-section {
+            text-align: center;
             margin-bottom: 3rem;
         }
 
-        .stat-card {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
+        .welcome-section h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-section p {
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
             border-radius: 16px;
             padding: 2rem;
             text-align: center;
-            box-shadow: var(--shadow);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+            max-width: 400px;
+            margin: 0 auto;
         }
 
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
-            background-size: 200% 100%;
-            animation: shimmer 3s ease-in-out infinite;
+        .dashboard-card h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
         }
 
-        .stat-card:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .stat-number {
-            font-size: 3rem;
-            font-weight: 900;
-            background: linear-gradient(135deg, #ffffff, #f0f9ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 0.5rem;
-            text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
-        }
-
-        .stat-label {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 1rem;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        .dashboard-card p {
+            opacity: 0.8;
+            margin-bottom: 2rem;
         }
 
         .modal {
             display: none;
             position: fixed;
-            top: 0;
+            z-index: 1000;
             left: 0;
+            top: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            backdrop-filter: blur(5px);
+            background-color: rgba(0, 0, 0, 0.5);
         }
 
         .modal-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            border-radius: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 5% auto;
             padding: 2rem;
-            max-width: 500px;
-            width: 90%;
+            border-radius: 16px;
+            max-width: 600px;
             max-height: 80vh;
             overflow-y: auto;
         }
@@ -1237,775 +153,138 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
         }
 
         .modal-title {
-            font-size: 1.25rem;
-            font-weight: bold;
-            color: var(--dark);
+            font-size: 1.5rem;
+            font-weight: 600;
         }
 
         .close-btn {
             background: none;
             border: none;
-            font-size: 1.5rem;
+            font-size: 2rem;
+            color: white;
             cursor: pointer;
-            color: var(--secondary);
+            opacity: 0.7;
+        }
+
+        .close-btn:hover {
+            opacity: 1;
         }
 
         .form-group {
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
 
         .form-label {
             display: block;
             margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: var(--dark);
+            font-weight: 500;
+            color: white;
         }
 
         .form-input {
             width: 100%;
             padding: 0.75rem;
-            border: 2px solid var(--border);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
             font-size: 1rem;
-            transition: border-color 0.3s ease;
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
         }
 
         .form-input:focus {
             outline: none;
-            border-color: var(--primary);
+            border-color: #10b981;
         }
 
         .form-textarea {
-            resize: vertical;
             min-height: 100px;
-        }
-
-        .home-section {
-            display: block;
-        }
-
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 2rem;
-        }
-
-        .spinner {
-            border: 4px solid var(--border);
-            border-top: 4px solid var(--primary);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 1rem;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--success);
-            color: white;
-            padding: 1rem 1.5rem;
-            border-radius: 8px;
-            box-shadow: var(--shadow-lg);
-            z-index: 1001;
-            transform: translateX(400px);
-            transition: transform 0.3s ease;
-        }
-
-        .toast.show {
-            transform: translateX(0);
-        }
-
-        .toast.error {
-            background: var(--danger);
-        }
-
-        @media (max-width: 768px) {
-            .main-container {
-                padding: 1rem;
-            }
-
-            .header-content {
-                padding: 0 1rem;
-            }
-
-            .features-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .subscription-actions {
-                flex-direction: column;
-            }
-
-            .quick-stats {
-                grid-template-columns: repeat(2, 1fr);
-            }
+            resize: vertical;
         }
     </style>
 </head>
 <body>
-    <!-- Floating Particles -->
-    <div class="particles" id="particles"></div>
-
-        <!-- Header -->
     <header class="header">
-        <div class="header-content">
-            <div class="logo">
-                <i class="fas fa-home"></i>
-                <span>NestMate</span>
-            </div>
-            <div class="user-info">
-                <div class="user-avatar" id="userAvatar">U</div>
-                <div>
-                    <div id="userName">Basic User</div>
-                    <div id="userEmail" style="font-size: 0.875rem; color: var(--secondary);">user@example.com</div>
-                </div>
-                <div class="plan-badge">Basic Plan</div>
-                <button class="btn btn-outline" onclick="window.location.href='profile.html'">
-                    <i class="fas fa-user"></i>
-                    Profile
-                </button>
-                <button class="btn btn-danger" onclick="signOut()">
-                    <i class="fas fa-sign-out-alt"></i>
-                    Sign Out
-                </button>
-            </div>
+        <div class="logo">
+            <i class="fas fa-home"></i> NestMate
+        </div>
+        <div class="user-info">
+            <div class="plan-badge">BASIC PLAN</div>
+            <button class="btn btn-outline" onclick="window.location.href='profile.html'">
+                <i class="fas fa-user"></i> PROFILE
+            </button>
+            <button class="btn btn-danger" onclick="signOut()">
+                <i class="fas fa-sign-out-alt"></i> SIGN OUT
+            </button>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <div class="main-container">
-        <!-- Sidebar Navigation -->
-        <div class="sidebar">
-            <h2 class="sidebar-title">Navigation</h2>
-            
-            <button class="nav-button active" onclick="showSection('home', this)">
-                <div class="nav-icon home">
-                    <i class="fas fa-home"></i>
-                </div>
-                <span>Home Management</span>
-            </button>
-            
-            <button class="nav-button" onclick="showSection('tasks', this)">
-                <div class="nav-icon tasks">
-                    <i class="fas fa-tasks"></i>
-                </div>
-                <span>Tasks & Reminders</span>
-            </button>
-            
-            <button class="nav-button" onclick="showSection('emergency', this)">
-                <div class="nav-icon emergency">
-                    <i class="fas fa-phone"></i>
-                </div>
-                <span>Emergency Services</span>
-            </button>
-            
-            <button class="nav-button" onclick="showSection('products', this)">
-                <div class="nav-icon products">
-                    <i class="fas fa-shopping-cart"></i>
-                </div>
-                <span>Product Recommendations</span>
-            </button>
+    <main class="main-content">
+        <div class="welcome-section">
+            <h1>Welcome to Your Basic Dashboard</h1>
+            <p>Simple home management for your first home</p>
         </div>
 
-        <!-- Content Area -->
-        <div class="content-area">
-            <!-- Home Management Section -->
-            <div id="homeSection" class="content-section active">
-                <div class="section-header">
-                    <h2 class="section-title">🏠 Your Home Command Center</h2>
-                    <p class="section-subtitle">Complete home intelligence from foundation to roof</p>
-                </div>
-                
-                <!-- Home Overview Dashboard -->
-                <div class="home-dashboard">
-                    <!-- Home Health Score -->
-                    <div class="home-health-card">
-                        <div class="health-score">
-                            <div class="score-circle">
-                                <div class="score-number" id="homeHealthScore">85</div>
-                                <div class="score-label">Home Health</div>
-                            </div>
-                            <div class="health-details">
-                                <h3>Your Home is in Great Shape! 🎉</h3>
-                                <p>All major systems are functioning well. Keep up the excellent maintenance!</p>
-                                <div class="health-factors">
-                                    <div class="factor good">
-                                        <i class="fas fa-check-circle"></i>
-                                        <span>HVAC System</span>
-                                    </div>
-                                    <div class="factor good">
-                                        <i class="fas fa-check-circle"></i>
-                                        <span>Plumbing</span>
-                                    </div>
-                                    <div class="factor warning">
-                                        <i class="fas fa-exclamation-triangle"></i>
-                                        <span>Roof (5 years old)</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Quick Stats Grid -->
-                    <div class="quick-stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-icon">
-                                <i class="fas fa-home"></i>
-                            </div>
-                            <div class="stat-info">
-                                <div class="stat-number" id="homeAge">12</div>
-                                <div class="stat-label">Years Old</div>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon">
-                                <i class="fas fa-expand-arrows-alt"></i>
-                            </div>
-                            <div class="stat-info">
-                                <div class="stat-number" id="homeSqft">2,450</div>
-                                <div class="stat-label">Square Feet</div>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon">
-                                <i class="fas fa-bed"></i>
-                            </div>
-                            <div class="stat-info">
-                                <div class="stat-number" id="homeBedrooms">4</div>
-                                <div class="stat-label">Bedrooms</div>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon">
-                                <i class="fas fa-bath"></i>
-                            </div>
-                            <div class="stat-info">
-                                <div class="stat-number" id="homeBathrooms">3</div>
-                                <div class="stat-label">Bathrooms</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Interactive Calendar & Tasks -->
-                    <div class="calendar-task-section">
-                        <div class="calendar-widget">
-                            <div class="calendar-header">
-                                <h3><i class="fas fa-calendar-alt"></i> Maintenance Calendar</h3>
-                                <div class="calendar-nav">
-                                    <button onclick="previousMonth()"><i class="fas fa-chevron-left"></i></button>
-                                    <span id="currentMonth">December 2024</span>
-                                    <button onclick="nextMonth()"><i class="fas fa-chevron-right"></i></button>
-                                </div>
-                            </div>
-                            <div class="calendar-grid" id="maintenanceCalendar">
-                                <!-- Calendar will be generated by JavaScript -->
-                            </div>
-                        </div>
-                        
-                        <div class="upcoming-tasks">
-                            <h3><i class="fas fa-tasks"></i> Upcoming Tasks</h3>
-                            <div class="task-list">
-                                <div class="task-item urgent">
-                                    <div class="task-icon">
-                                        <i class="fas fa-fire"></i>
-                                    </div>
-                                    <div class="task-details">
-                                        <div class="task-title">Replace HVAC Filter</div>
-                                        <div class="task-date">Due: Dec 15, 2024</div>
-                                        <div class="task-priority">High Priority</div>
-                                    </div>
-                                    <button class="task-action" onclick="completeTask('hvac-filter')">
-                                        <i class="fas fa-check"></i>
-                                    </button>
-                                </div>
-                                <div class="task-item">
-                                    <div class="task-icon">
-                                        <i class="fas fa-tint"></i>
-                                    </div>
-                                    <div class="task-details">
-                                        <div class="task-title">Check Water Heater</div>
-                                        <div class="task-date">Due: Dec 20, 2024</div>
-                                        <div class="task-priority">Medium Priority</div>
-                                    </div>
-                                    <button class="task-action" onclick="completeTask('water-heater')">
-                                        <i class="fas fa-check"></i>
-                                    </button>
-                                </div>
-                                <div class="task-item">
-                                    <div class="task-icon">
-                                        <i class="fas fa-leaf"></i>
-                                    </div>
-                                    <div class="task-details">
-                                        <div class="task-title">Clean Gutters</div>
-                                        <div class="task-date">Due: Jan 5, 2025</div>
-                                        <div class="task-priority">Low Priority</div>
-                                    </div>
-                                    <button class="task-action" onclick="completeTask('gutters')">
-                                        <i class="fas fa-check"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Home Systems Overview -->
-                    <div class="systems-overview">
-                        <h3><i class="fas fa-cogs"></i> Home Systems Status</h3>
-                        <div class="systems-grid">
-                            <div class="system-card">
-                                <div class="system-icon hvac">
-                                    <i class="fas fa-thermometer-half"></i>
-                                </div>
-                                <div class="system-info">
-                                    <h4>HVAC System</h4>
-                                    <div class="system-status good">Excellent</div>
-                                    <div class="system-details">
-                                        <span>Last Service: Nov 15, 2024</span>
-                                        <span>Next Service: Feb 15, 2025</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="system-card">
-                                <div class="system-icon plumbing">
-                                    <i class="fas fa-tint"></i>
-                                </div>
-                                <div class="system-info">
-                                    <h4>Plumbing</h4>
-                                    <div class="system-status good">Good</div>
-                                    <div class="system-details">
-                                        <span>Water Heater: 3 years old</span>
-                                        <span>Pipes: Copper (excellent)</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="system-card">
-                                <div class="system-icon electrical">
-                                    <i class="fas fa-bolt"></i>
-                                </div>
-                                <div class="system-info">
-                                    <h4>Electrical</h4>
-                                    <div class="system-status warning">Needs Attention</div>
-                                    <div class="system-details">
-                                        <span>Panel: 200 Amp</span>
-                                        <span>Last Inspection: 2022</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="system-card">
-                                <div class="system-icon roof">
-                                    <i class="fas fa-home"></i>
-                                </div>
-                                <div class="system-info">
-                                    <h4>Roof</h4>
-                                    <div class="system-status warning">Monitor</div>
-                                    <div class="system-details">
-                                        <span>Material: Asphalt Shingles</span>
-                                        <span>Age: 5 years</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Weather & Seasonal Alerts -->
-                    <div class="weather-alerts">
-                        <h3><i class="fas fa-cloud-sun"></i> Weather & Seasonal Alerts</h3>
-                        <div class="alert-cards">
-                            <div class="alert-card winter">
-                                <div class="alert-icon">
-                                    <i class="fas fa-snowflake"></i>
-                                </div>
-                                <div class="alert-content">
-                                    <h4>Winter Preparation</h4>
-                                    <p>Temperature dropping to 25°F tonight. Ensure pipes are insulated!</p>
-                                    <button class="alert-action">View Winter Checklist</button>
-                                </div>
-                            </div>
-                            <div class="alert-card maintenance">
-                                <div class="alert-icon">
-                                    <i class="fas fa-tools"></i>
-                                </div>
-                                <div class="alert-content">
-                                    <h4>Seasonal Maintenance</h4>
-                                    <p>Spring maintenance checklist available. 12 tasks recommended.</p>
-                                    <button class="alert-action">Start Spring Tasks</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div class="home-actions">
-                        <button class="btn btn-primary" onclick="openHomeManagement()">
-                            <i class="fas fa-edit"></i>
-                            Edit Home Details
-                        </button>
-                        <button class="btn btn-outline" onclick="viewHomeData()">
-                            <i class="fas fa-chart-line"></i>
-                            View Reports
-                        </button>
-                        <button class="btn btn-outline" onclick="addMaintenanceTask()">
-                            <i class="fas fa-plus"></i>
-                            Add Task
-                        </button>
-                        <button class="btn btn-outline" onclick="viewHomeHistory()">
-                            <i class="fas fa-history"></i>
-                            Maintenance History
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Tasks & Reminders Section -->
-            <div id="tasksSection" class="content-section">
-                <div class="section-header">
-                    <h2 class="section-title">Tasks & Reminders</h2>
-                    <p class="section-subtitle">Stay on top of 10 essential tasks & reminders</p>
-                </div>
-                
-                <div class="feature-content">
-                    <div class="feature-description">
-                        <p>Never miss important home maintenance again. Stay organized with our smart task management system designed specifically for homeowners.</p>
-                    </div>
-                    
-                    <div class="feature-list">
-                        <div class="feature-item">
-                            <i class="fas fa-check"></i>
-                            <span>10 essential home tasks</span>
-                        </div>
-                        <div class="feature-item">
-                            <i class="fas fa-check"></i>
-                            <span>Smart reminders & alerts</span>
-                        </div>
-                        <div class="feature-item">
-                            <i class="fas fa-check"></i>
-                            <span>Priority-based organization</span>
-                        </div>
-                        <div class="feature-item">
-                            <i class="fas fa-check"></i>
-                            <span>Due date tracking</span>
-                        </div>
-                        <div class="feature-item">
-                            <i class="fas fa-check"></i>
-                            <span>Task completion history</span>
-                        </div>
-                        <div class="feature-item">
-                            <i class="fas fa-check"></i>
-                            <span>Seasonal maintenance guides</span>
-                        </div>
-                    </div>
-                    
-                    <div class="feature-actions">
-                        <button class="btn btn-primary" onclick="openTaskManagement()">
-                            <i class="fas fa-arrow-right"></i>
-                            Manage Tasks
-                        </button>
-                        <button class="btn btn-outline" onclick="viewTasks()">
-                            <i class="fas fa-eye"></i>
-                            View Tasks
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Emergency Services Section -->
-            <div id="emergencySection" class="content-section">
-                <div class="section-header">
-                    <h2 class="section-title">Emergency Services</h2>
-                    <p class="section-subtitle">Quick access to emergency contacts and essential services</p>
-                </div>
-                
-                <div class="feature-content">
-                    <div class="feature-description">
-                        <p>Be prepared for any emergency with quick access to essential contacts and services for your home.</p>
-                    </div>
-                    
-                    <div class="feature-list">
-                        <div class="feature-item">
-                            <i class="fas fa-check"></i>
-                            <span>Emergency contacts</span>
-                        </div>
-                        <div class="feature-item">
-                            <i class="fas fa-check"></i>
-                            <span>Service provider directory</span>
-                        </div>
-                        <div class="feature-item">
-                            <i class="fas fa-check"></i>
-                            <span>Quick call buttons</span>
-                        </div>
-                        <div class="feature-item">
-                            <i class="fas fa-check"></i>
-                            <span>Location-based services</span>
-                        </div>
-                    </div>
-                    
-                    <div class="feature-actions">
-                        <button class="btn btn-primary" onclick="openEmergencyServices()">
-                            <i class="fas fa-arrow-right"></i>
-                            Emergency Services
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Product Recommendations Section -->
-            <div id="productsSection" class="content-section">
-                <div class="section-header">
-                    <h2 class="section-title">Product Recommendations</h2>
-                    <p class="section-subtitle">Discover smart product picks tailored to your home</p>
-                </div>
-                
-                <div class="feature-content">
-                    <div class="feature-description">
-                        <p>Find the perfect products for your home with our personalized recommendations and save your favorites for easy access.</p>
-                    </div>
-                    
-                    <div class="feature-list">
-                        <div class="feature-item">
-                            <i class="fas fa-check"></i>
-                            <span>Personalized recommendations</span>
-                        </div>
-                        <div class="feature-item">
-                            <i class="fas fa-check"></i>
-                            <span>Home-specific suggestions</span>
-                        </div>
-                        <div class="feature-item">
-                            <i class="fas fa-check"></i>
-                            <span>Save favorite products</span>
-                        </div>
-                        <div class="feature-item">
-                            <i class="fas fa-check"></i>
-                            <span>Price tracking & alerts</span>
-                        </div>
-                    </div>
-                    
-                    <div class="feature-actions">
-                        <button class="btn btn-primary" onclick="window.location.href='product-recommendations.html'">
-                            <i class="fas fa-arrow-right"></i>
-                            Browse Products
-                        </button>
-                        <button class="btn btn-outline" onclick="viewSavedProducts()">
-                            <i class="fas fa-eye"></i>
-                            View Saved
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-                    </div>
-                    <div>
-                        <h3 class="feature-title">Home Management</h3>
-                    </div>
-                </div>
-                <p class="feature-description">Comprehensive home tracking from roof to crawlspace. Manage every detail of your first home with ease.</p>
-                <ul class="feature-list">
-                    <li><i class="fas fa-check"></i> Complete home profile & details</li>
-                    <li><i class="fas fa-check"></i> Roof, HVAC, plumbing, electrical data</li>
-                    <li><i class="fas fa-check"></i> Foundation, crawlspace, attic info</li>
-                    <li><i class="fas fa-check"></i> Appliance & system tracking</li>
-                    <li><i class="fas fa-check"></i> Maintenance history & schedules</li>
-                    <li><i class="fas fa-check"></i> Document & photo storage</li>
-                </ul>
-                <button class="btn btn-primary" onclick="openHomeManagement()">
-                    <i class="fas fa-arrow-right"></i>
-                    Manage Home
-                </button>
-                <button class="btn btn-outline" onclick="viewHomeData()" style="margin-left: 1rem;">
-                    <i class="fas fa-eye"></i>
-                    View Data
-                </button>
-            </div>
-
-            <!-- Task & Reminder Management -->
-            <div class="feature-card">
-                <div class="feature-header">
-                    <div class="feature-icon property">
-                        <i class="fas fa-tasks"></i>
-                    </div>
-                    <div>
-                        <h3 class="feature-title">Tasks & Reminders</h3>
-                    </div>
-                </div>
-                <p class="feature-description">Stay on top of 10 essential tasks & reminders. Never miss important home maintenance again.</p>
-                <ul class="feature-list">
-                    <li><i class="fas fa-check"></i> 10 essential home tasks</li>
-                    <li><i class="fas fa-check"></i> Smart reminders & alerts</li>
-                    <li><i class="fas fa-check"></i> Priority-based organization</li>
-                    <li><i class="fas fa-check"></i> Due date tracking</li>
-                    <li><i class="fas fa-check"></i> Task completion history</li>
-                    <li><i class="fas fa-check"></i> Seasonal maintenance guides</li>
-                </ul>
-                <button class="btn btn-primary" onclick="openTaskManagement()">
-                    <i class="fas fa-arrow-right"></i>
-                    Manage Tasks
-                </button>
-                <button class="btn btn-outline" onclick="viewTasks()" style="margin-left: 1rem;">
-                    <i class="fas fa-list"></i>
-                    View All
-                </button>
-            </div>
-
-            <!-- Emergency Services -->
-            <div class="feature-card">
-                <div class="feature-header">
-                    <div class="feature-icon emergency">
-                        <i class="fas fa-phone"></i>
-                    </div>
-                    <div>
-                        <h3 class="feature-title">Emergency Services</h3>
-                    </div>
-                </div>
-                <p class="feature-description">Quick access to emergency contacts and essential services for your home.</p>
-                <ul class="feature-list">
-                    <li><i class="fas fa-check"></i> Emergency contacts</li>
-                    <li><i class="fas fa-check"></i> Service provider directory</li>
-                    <li><i class="fas fa-check"></i> Quick call buttons</li>
-                    <li><i class="fas fa-check"></i> Location-based services</li>
-                </ul>
-                <button class="btn btn-primary" onclick="openEmergencyServices()">
-                    <i class="fas fa-arrow-right"></i>
-                    Emergency Services
-                </button>
-            </div>
-
-            <!-- Product Recommendations -->
-            <div class="feature-card">
-                <div class="feature-header">
-                    <div class="feature-icon products">
-                        <i class="fas fa-shopping-cart"></i>
-                    </div>
-                    <div>
-                        <h3 class="feature-title">Product Recommendations</h3>
-                    </div>
-                </div>
-                <p class="feature-description">Discover smart product picks just for you. Save and revisit your favorite finds.</p>
-                <ul class="feature-list">
-                    <li><i class="fas fa-check"></i> Smart product recommendations</li>
-                    <li><i class="fas fa-check"></i> Save favorite products</li>
-                    <li><i class="fas fa-check"></i> Product reviews & ratings</li>
-                    <li><i class="fas fa-check"></i> Shopping lists</li>
-                    <li><i class="fas fa-check"></i> Home-specific suggestions</li>
-                    <li><i class="fas fa-check"></i> Price tracking alerts</li>
-                </ul>
-                <button class="btn btn-primary" onclick="window.location.href='product-recommendations.html'">
-                    <i class="fas fa-arrow-right"></i>
-                    View Products
-                </button>
-                <button class="btn btn-outline" onclick="viewSavedProducts()" style="margin-left: 1rem;">
-                    <i class="fas fa-heart"></i>
-                    Saved Items
-                </button>
-            </div>
-        </div>
-
-        <!-- Subscription Management -->
-        <div class="subscription-section">
-            <h2 class="section-title">
-                <i class="fas fa-credit-card"></i>
-                Subscription Management
-            </h2>
-            <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: 2rem; text-align: center; font-size: 1.1rem;">
-                Manage your Basic plan subscription and explore upgrade options.
-            </p>
-            <div class="subscription-actions">
-                <button class="btn btn-success" onclick="window.open('https://buy.stripe.com/14AeVf4E29IHbLT4Sx1sQ0N', '_blank')">
-                    <i class="fas fa-arrow-up"></i>
-                Upgrade to Pro - $10/month
+        <div class="dashboard-card">
+            <h2>🏠 Your Home</h2>
+            <p>Manage your home information and settings</p>
+            <button class="btn btn-primary" onclick="openHomeManagement()">
+                <i class="fas fa-home"></i>
+                Manage Home
             </button>
-                <button class="btn btn-warning" onclick="window.open('https://buy.stripe.com/9B628t1rQ2gfdU1et71sQ0O', '_blank')">
-                    <i class="fas fa-star"></i>
-                    Upgrade to Advanced - $16/month
-                </button>
-                <button class="btn btn-outline" onclick="window.open('https://buy.stripe.com/9B600lc6u4oneY50Ch1sQ0M', '_blank')">
-                    <i class="fas fa-credit-card"></i>
-                    Manage Billing
-                </button>
-                <button class="btn btn-danger" onclick="initiateCancellation('basic')">
-                    <i class="fas fa-times"></i>
-                    Cancel Subscription
-                </button>
-            </div>
         </div>
-    </div>
+    </main>
 
     <!-- Home Management Modal -->
     <div id="homeModal" class="modal">
-        <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
+        <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">Complete Home Management</h3>
+                <h3 class="modal-title">Home Management</h3>
                 <button class="close-btn" onclick="closeModal('homeModal')">&times;</button>
             </div>
             
-            <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
-                <button class="btn btn-primary" onclick="showHomeSection('basic')" id="basicTab">Basic Info</button>
-                <button class="btn btn-outline" onclick="showHomeSection('structure')" id="structureTab">Structure</button>
-                <button class="btn btn-outline" onclick="showHomeSection('systems')" id="systemsTab">Systems</button>
-                <button class="btn btn-outline" onclick="showHomeSection('appliances')" id="appliancesTab">Appliances</button>
-            </div>
             <form id="homeForm">
-                <!-- Basic Information Section -->
-                <div id="basicSection" class="home-section">
-                    <h4 style="color: white; margin-bottom: 1rem; font-size: 1.2rem;">Basic Home Information</h4>
-                    <div class="form-group">
-                        <label class="form-label">Home Name</label>
-                        <input type="text" class="form-input" id="homeName" placeholder="Enter home name" required>
-                    </div>
+                <div class="form-group">
+                    <label class="form-label">Home Name</label>
+                    <input type="text" class="form-input" id="homeName" placeholder="Enter home name" required>
+                </div>
+                
                 <div class="form-group">
                     <label class="form-label">Address</label>
                     <input type="text" class="form-input" id="homeAddress" placeholder="Enter full address" required>
                 </div>
+                
                 <div class="form-group">
                     <label class="form-label">Property Type</label>
                     <select class="form-input" id="propertyType" required>
                         <option value="">Select property type</option>
                         <option value="house">House</option>
-                        <option value="apartment">Apartment</option>
                         <option value="condo">Condo</option>
                         <option value="townhouse">Townhouse</option>
-                        <option value="other">Other</option>
+                        <option value="apartment">Apartment</option>
                     </select>
                 </div>
+                
                 <div class="form-group">
                     <label class="form-label">Square Footage</label>
                     <input type="number" class="form-input" id="squareFootage" placeholder="Enter square footage">
                 </div>
+                
                 <div class="form-group">
                     <label class="form-label">Year Built</label>
                     <input type="number" class="form-input" id="yearBuilt" placeholder="Enter year built">
                 </div>
+                
                 <div class="form-group">
                     <label class="form-label">Notes</label>
                     <textarea class="form-input form-textarea" id="homeNotes" placeholder="Additional notes about your home"></textarea>
-                </div>
-
-                <!-- Structure Section -->
-                <div id="structureSection" class="home-section" style="display: none;">
-                    <h4 style="color: white; margin-bottom: 1rem; font-size: 1.2rem;">Structure & Foundation</h4>
-                    <p style="color: rgba(255,255,255,0.8);">Foundation, roof, exterior, attic, and crawlspace details coming soon!</p>
-                </div>
-
-                <!-- Systems Section -->
-                <div id="systemsSection" class="home-section" style="display: none;">
-                    <h4 style="color: white; margin-bottom: 1rem; font-size: 1.2rem;">Home Systems</h4>
-                    <p style="color: rgba(255,255,255,0.8);">HVAC, plumbing, and electrical system details coming soon!</p>
-                </div>
-
-                <!-- Appliances Section -->
-                <div id="appliancesSection" class="home-section" style="display: none;">
-                    <h4 style="color: white; margin-bottom: 1rem; font-size: 1.2rem;">Appliances & Equipment</h4>
-                    <p style="color: rgba(255,255,255,0.8);">Kitchen, laundry, and other appliance details coming soon!</p>
                 </div>
 
                 <button type="submit" class="btn btn-primary" style="width: 100%;">
@@ -2016,779 +295,34 @@
         </div>
     </div>
 
-    <!-- Property Management Modal -->
-    <div id="propertyModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Property Management</h3>
-                <button class="close-btn" onclick="closeModal('propertyModal')">&times;</button>
-            </div>
-            <form id="propertyForm">
-                <div class="form-group">
-                    <label class="form-label">Task Title</label>
-                    <input type="text" class="form-input" id="taskTitle" placeholder="Enter task title" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Task Description</label>
-                    <textarea class="form-input form-textarea" id="taskDescription" placeholder="Describe the task" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Priority</label>
-                    <select class="form-input" id="taskPriority" required>
-                        <option value="">Select priority</option>
-                        <option value="low">Low</option>
-                        <option value="medium">Medium</option>
-                        <option value="high">High</option>
-                        <option value="urgent">Urgent</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Due Date</label>
-                    <input type="date" class="form-input" id="taskDueDate">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Category</label>
-                    <select class="form-input" id="taskCategory" required>
-                        <option value="">Select category</option>
-                        <option value="maintenance">Maintenance</option>
-                        <option value="repair">Repair</option>
-                        <option value="cleaning">Cleaning</option>
-                        <option value="inspection">Inspection</option>
-                        <option value="upgrade">Upgrade</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">
-                    <i class="fas fa-plus"></i>
-                    Add Task
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Emergency Services Modal -->
-    <div id="emergencyModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Emergency Services</h3>
-                <button class="close-btn" onclick="closeModal('emergencyModal')">&times;</button>
-            </div>
-            <form id="emergencyForm">
-                <div class="form-group">
-                    <label class="form-label">Contact Name</label>
-                    <input type="text" class="form-input" id="contactName" placeholder="Enter contact name" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Phone Number</label>
-                    <input type="tel" class="form-input" id="contactPhone" placeholder="Enter phone number" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Service Type</label>
-                    <select class="form-input" id="serviceType" required>
-                        <option value="">Select service type</option>
-                        <option value="emergency">Emergency Services</option>
-                        <option value="plumber">Plumber</option>
-                        <option value="electrician">Electrician</option>
-                        <option value="hvac">HVAC</option>
-                        <option value="locksmith">Locksmith</option>
-                        <option value="security">Security</option>
-                        <option value="medical">Medical</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Company/Organization</label>
-                    <input type="text" class="form-input" id="contactCompany" placeholder="Enter company name">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Notes</label>
-                    <textarea class="form-input form-textarea" id="contactNotes" placeholder="Additional notes about this contact"></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">
-                    <i class="fas fa-phone"></i>
-                    Add Emergency Contact
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="loading">
-        <div class="spinner"></div>
-        <p>Loading...</p>
-    </div>
-
-    <!-- Toast Notifications -->
-    <div id="toast" class="toast"></div>
-
     <script>
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
-            authDomain: "nestmate-167ed.firebaseapp.com",
-            projectId: "nestmate-167ed",
-            storageBucket: "nestmate-167ed.appspot.com",
-            messagingSenderId: "865171535257",
-            appId: "1:865171535257:web:nextmate-web-app",
-            measurementId: "G-NEXTMATE-ANALYTICS"
-        };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-
-        let currentUser = null;
-
-        // Load user data
-        function loadUserData() {
-            currentUser = auth.currentUser;
-            if (currentUser) {
-                document.getElementById('userName').textContent = currentUser.displayName || 'Basic User';
-                document.getElementById('userEmail').textContent = currentUser.email;
-                document.getElementById('userAvatar').textContent = (currentUser.displayName || currentUser.email || 'U').charAt(0).toUpperCase();
-                loadUserStats();
-            } else {
-                // Wait a bit for auth state to be ready
-                setTimeout(() => {
-                    currentUser = auth.currentUser;
-                    if (!currentUser) {
-                        window.location.href = 'signin.html';
-                    } else {
-                        loadUserData();
-                    }
-                }, 1000);
-            }
-        }
-
-        // Load user statistics
-        async function loadUserStats() {
-            if (!currentUser) return;
-
-            try {
-                // Load homes count
-                const homesSnapshot = await db.collection('NESTMATE USER HOME SAVED DATA')
-                    .where('userId', '==', currentUser.uid)
-                    .where('type', '==', 'home')
-                    .get();
-                document.getElementById('homesCount').textContent = homesSnapshot.size;
-
-                // Load emergency contacts count
-                const contactsSnapshot = await db.collection('NESTMATE USER HOME SAVED DATA')
-                    .where('userId', '==', currentUser.uid)
-                    .where('type', '==', 'emergency_contact')
-                    .get();
-                document.getElementById('contactsCount').textContent = contactsSnapshot.size;
-
-                // Load saved products count
-                const productsSnapshot = await db.collection('NESTMATE USER HOME SAVED DATA')
-                    .where('userId', '==', currentUser.uid)
-                    .where('type', '==', 'saved_product')
-                    .get();
-                document.getElementById('productsCount').textContent = productsSnapshot.size;
-
-                // Load active tasks count
-                const tasksSnapshot = await db.collection('NESTMATE USER HOME SAVED DATA')
-                    .where('userId', '==', currentUser.uid)
-                    .where('type', '==', 'task')
-                    .where('status', '==', 'active')
-                    .get();
-                document.getElementById('tasksCount').textContent = tasksSnapshot.size;
-
-            } catch (error) {
-                console.error('Error loading user stats:', error);
-            }
-        }
-
-        // Load and display home data
-        async function loadAndDisplayHomeData() {
-            if (!currentUser) return;
-
-            try {
-                const homesSnapshot = await db.collection('NESTMATE USER HOME SAVED DATA')
-                    .where('userId', '==', currentUser.uid)
-                    .where('type', '==', 'home')
-                    .get();
-
-                if (homesSnapshot.empty) {
-                    showToast('No home data found. Please add your home information first.', 'error');
-                    return;
-                }
-
-                // Create a modal to display home data
-                const homeData = homesSnapshot.docs[0].data();
-                displayHomeDataModal(homeData);
-
-            } catch (error) {
-                console.error('Error loading home data:', error);
-                showToast('Error loading home data. Please try again.', 'error');
-            }
-        }
-
-        // Display home data in a modal
-        function displayHomeDataModal(homeData) {
-            const modal = document.createElement('div');
-            modal.className = 'modal';
-            modal.style.display = 'block';
-            modal.innerHTML = `
-                <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
-                    <div class="modal-header">
-                        <h3 class="modal-title">Your Home Data</h3>
-                        <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
-                    </div>
-                    <div style="color: white; padding: 1rem;">
-                        <h4 style="margin-bottom: 1rem; color: #10b981;">Basic Information</h4>
-                        <p><strong>Home Name:</strong> ${homeData.homeName || 'Not specified'}</p>
-                        <p><strong>Address:</strong> ${homeData.homeAddress || 'Not specified'}</p>
-                        <p><strong>Property Type:</strong> ${homeData.propertyType || 'Not specified'}</p>
-                        <p><strong>Year Built:</strong> ${homeData.yearBuilt || 'Not specified'}</p>
-                        <p><strong>Square Footage:</strong> ${homeData.squareFootage || 'Not specified'}</p>
-                        <p><strong>Bedrooms:</strong> ${homeData.bedrooms || 'Not specified'}</p>
-                        <p><strong>Bathrooms:</strong> ${homeData.bathrooms || 'Not specified'}</p>
-                        
-                        
-                        ${homeData.homeNotes ? `
-                        <h4 style="margin: 2rem 0 1rem 0; color: #10b981;">Notes</h4>
-                        <p>${homeData.homeNotes}</p>
-                        ` : ''}
-                    </div>
-                    <div style="text-align: center; margin-top: 2rem;">
-                        <button class="btn btn-primary" onclick="openHomeManagement(); this.closest('.modal').remove();">
-                            <i class="fas fa-edit"></i>
-                            Edit Home Data
-                        </button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(modal);
-        }
-
-        // Load and display tasks
-        async function loadAndDisplayTasks() {
-            if (!currentUser) return;
-
-            try {
-                const tasksSnapshot = await db.collection('NESTMATE USER HOME SAVED DATA')
-                    .where('userId', '==', currentUser.uid)
-                    .where('type', '==', 'task')
-                    .orderBy('createdAt', 'desc')
-                    .get();
-
-                if (tasksSnapshot.empty) {
-                    showToast('No tasks found. Create your first task!', 'error');
-                    return;
-                }
-
-                displayTasksModal(tasksSnapshot.docs);
-
-            } catch (error) {
-                console.error('Error loading tasks:', error);
-                showToast('Error loading tasks. Please try again.', 'error');
-            }
-        }
-
-        // Display tasks in a modal
-        function displayTasksModal(taskDocs) {
-            const modal = document.createElement('div');
-            modal.className = 'modal';
-            modal.style.display = 'block';
-            
-            const tasksHtml = taskDocs.map(doc => {
-                const task = doc.data();
-                const priorityColor = {
-                    'low': '#10b981',
-                    'medium': '#f59e0b',
-                    'high': '#ef4444',
-                    'urgent': '#dc2626'
-                }[task.priority] || '#64748b';
-                
-                return `
-                    <div style="background: var(--glass); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1rem; margin-bottom: 1rem;">
-                        <div style="display: flex; justify-content: between; align-items: start; margin-bottom: 0.5rem;">
-                            <h4 style="color: white; margin: 0;">${task.taskTitle}</h4>
-                            <span style="background: ${priorityColor}; color: white; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.75rem; text-transform: uppercase;">
-                                ${task.priority}
-                            </span>
-                        </div>
-                        <p style="color: rgba(255,255,255,0.8); margin-bottom: 0.5rem;">${task.taskDescription}</p>
-                        <div style="display: flex; gap: 1rem; font-size: 0.875rem; color: rgba(255,255,255,0.6);">
-                            <span><i class="fas fa-tag"></i> ${task.category}</span>
-                            ${task.dueDate ? `<span><i class="fas fa-calendar"></i> Due: ${new Date(task.dueDate).toLocaleDateString()}</span>` : ''}
-                            <span><i class="fas fa-circle" style="color: ${task.status === 'active' ? '#10b981' : '#ef4444'}"></i> ${task.status}</span>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            modal.innerHTML = `
-                <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
-                    <div class="modal-header">
-                        <h3 class="modal-title">Your Tasks & Reminders</h3>
-                        <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
-                    </div>
-                    <div style="color: white; padding: 1rem;">
-                        ${tasksHtml}
-                    </div>
-                    <div style="text-align: center; margin-top: 2rem;">
-                        <button class="btn btn-primary" onclick="openTaskManagement(); this.closest('.modal').remove();">
-                            <i class="fas fa-plus"></i>
-                            Add New Task
-                        </button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(modal);
-        }
-
-        // Load and display saved products
-        async function loadAndDisplaySavedProducts() {
-            if (!currentUser) return;
-
-            try {
-                const productsSnapshot = await db.collection('NESTMATE USER HOME SAVED DATA')
-                    .where('userId', '==', currentUser.uid)
-                    .where('type', '==', 'saved_product')
-                    .orderBy('createdAt', 'desc')
-                    .get();
-
-                if (productsSnapshot.empty) {
-                    showToast('No saved products found. Start saving your favorite products!', 'error');
-                    return;
-                }
-
-                displayProductsModal(productsSnapshot.docs);
-
-            } catch (error) {
-                console.error('Error loading saved products:', error);
-                showToast('Error loading saved products. Please try again.', 'error');
-            }
-        }
-
-        // Display saved products in a modal
-        function displayProductsModal(productDocs) {
-            const modal = document.createElement('div');
-            modal.className = 'modal';
-            modal.style.display = 'block';
-            
-            const productsHtml = productDocs.map(doc => {
-                const product = doc.data();
-                return `
-                    <div style="background: var(--glass); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1rem; margin-bottom: 1rem;">
-                        <h4 style="color: white; margin: 0 0 0.5rem 0;">${product.productName || 'Unnamed Product'}</h4>
-                        <p style="color: rgba(255,255,255,0.8); margin-bottom: 0.5rem;">${product.productDescription || 'No description available'}</p>
-                        <div style="display: flex; gap: 1rem; font-size: 0.875rem; color: rgba(255,255,255,0.6);">
-                            ${product.productPrice ? `<span><i class="fas fa-dollar-sign"></i> $${product.productPrice}</span>` : ''}
-                            ${product.productCategory ? `<span><i class="fas fa-tag"></i> ${product.productCategory}</span>` : ''}
-                            <span><i class="fas fa-heart" style="color: #ef4444;"></i> Saved</span>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            modal.innerHTML = `
-                <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
-                    <div class="modal-header">
-                        <h3 class="modal-title">Your Saved Products</h3>
-                        <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
-                    </div>
-                    <div style="color: white; padding: 1rem;">
-                        ${productsHtml}
-                    </div>
-                    <div style="text-align: center; margin-top: 2rem;">
-                        <button class="btn btn-primary" onclick="window.location.href='product-recommendations.html'; this.closest('.modal').remove();">
-                            <i class="fas fa-shopping-cart"></i>
-                            Browse More Products
-                        </button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(modal);
-        }
-
-        // Save data to Firebase
-        async function saveToFirebase(data, type) {
-            if (!currentUser) return false;
-
-            try {
-                const timestamp = new Date().toISOString();
-                const docData = {
-                    ...data,
-                    userId: currentUser.uid,
-                    userEmail: currentUser.email,
-                    type: type,
-                    createdAt: timestamp,
-                    updatedAt: timestamp
-                };
-
-                // Save to main collection
-                await db.collection('NESTMATE USER HOME SAVED DATA').add(docData);
-                
-                // Save to backup collection
-                await db.collection('NESTMATE USER HOME SAVED DATA BACKUP').add(docData);
-
-                return true;
-            } catch (error) {
-                console.error('Error saving to Firebase:', error);
-                return false;
-            }
-        }
-
-        // Modal functions
+        // Simple dashboard functionality
         function openHomeManagement() {
             document.getElementById('homeModal').style.display = 'block';
-            showHomeSection('basic'); // Show basic section by default
-        }
-
-        function openTaskManagement() {
-            document.getElementById('propertyModal').style.display = 'block';
-        }
-
-        function openEmergencyServices() {
-            document.getElementById('emergencyModal').style.display = 'block';
-        }
-
-        // Home section navigation
-        function showHomeSection(section) {
-            // Hide all sections
-            const sections = ['basic', 'structure', 'systems', 'appliances'];
-            sections.forEach(s => {
-                const sectionEl = document.getElementById(s + 'Section');
-                const tabEl = document.getElementById(s + 'Tab');
-                if (sectionEl) sectionEl.style.display = 'none';
-                if (tabEl) {
-                    tabEl.className = 'btn btn-outline';
-                }
-            });
-
-            // Show selected section
-            const selectedSection = document.getElementById(section + 'Section');
-            const selectedTab = document.getElementById(section + 'Tab');
-            if (selectedSection) selectedSection.style.display = 'block';
-            if (selectedTab) {
-                selectedTab.className = 'btn btn-primary';
-            }
-        }
-
-        // View functions
-        function viewHomeData() {
-            // Load and display saved home data
-            loadAndDisplayHomeData();
-        }
-
-        function viewTasks() {
-            // Load and display saved tasks
-            loadAndDisplayTasks();
-        }
-
-        function viewSavedProducts() {
-            // Load and display saved products
-            loadAndDisplaySavedProducts();
         }
 
         function closeModal(modalId) {
             document.getElementById(modalId).style.display = 'none';
         }
 
+        function signOut() {
+            if (confirm('Are you sure you want to sign out?')) {
+                window.location.href = 'signin.html';
+            }
+        }
+
         // Close modal when clicking outside
         window.onclick = function(event) {
-            const modals = document.querySelectorAll('.modal');
-            modals.forEach(modal => {
-                if (event.target === modal) {
-                    modal.style.display = 'none';
-                }
-            });
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
         }
 
-        // Form submissions
-        document.getElementById('homeForm').addEventListener('submit', async function(e) {
+        // Handle form submission
+        document.getElementById('homeForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            
-            const homeData = {
-                homeName: document.getElementById('homeName').value,
-                homeAddress: document.getElementById('homeAddress').value,
-                propertyType: document.getElementById('propertyType').value,
-                squareFootage: document.getElementById('squareFootage').value,
-                yearBuilt: document.getElementById('yearBuilt').value,
-                notes: document.getElementById('homeNotes').value
-            };
-
-            const success = await saveToFirebase(homeData, 'home');
-            if (success) {
-                showToast('Home information saved successfully!', 'success');
-                closeModal('homeModal');
-                document.getElementById('homeForm').reset();
-                loadUserStats();
-            } else {
-                showToast('Error saving home information. Please try again.', 'error');
-            }
-        });
-
-        document.getElementById('propertyForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const taskData = {
-                taskTitle: document.getElementById('taskTitle').value,
-                taskDescription: document.getElementById('taskDescription').value,
-                priority: document.getElementById('taskPriority').value,
-                dueDate: document.getElementById('taskDueDate').value,
-                category: document.getElementById('taskCategory').value,
-                status: 'active'
-            };
-
-            const success = await saveToFirebase(taskData, 'task');
-            if (success) {
-                showToast('Task added successfully!', 'success');
-                closeModal('propertyModal');
-                document.getElementById('propertyForm').reset();
-                loadUserStats();
-            } else {
-                showToast('Error adding task. Please try again.', 'error');
-            }
-        });
-
-        document.getElementById('emergencyForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const contactData = {
-                contactName: document.getElementById('contactName').value,
-                contactPhone: document.getElementById('contactPhone').value,
-                serviceType: document.getElementById('serviceType').value,
-                company: document.getElementById('contactCompany').value,
-                notes: document.getElementById('contactNotes').value
-            };
-
-            const success = await saveToFirebase(contactData, 'emergency_contact');
-            if (success) {
-                showToast('Emergency contact added successfully!', 'success');
-                closeModal('emergencyModal');
-                document.getElementById('emergencyForm').reset();
-                loadUserStats();
-            } else {
-                showToast('Error adding emergency contact. Please try again.', 'error');
-            }
-        });
-
-        // Toast notification
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.className = `toast ${type}`;
-            toast.classList.add('show');
-            
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-
-        // Handle subscription cancellation
-        function initiateCancellation(currentPlan) {
-            if (confirm(`Are you sure you want to cancel your ${currentPlan} subscription? You will be moved to Trial status and can choose a new plan anytime.`)) {
-                window.location.href = `cancellation-handler.html?plan=${currentPlan}`;
-            }
-        }
-
-        // Sign out function
-        function signOut() {
-            auth.signOut().then(() => {
-                window.location.href = 'signin.html';
-            }).catch((error) => {
-                console.error('Error signing out:', error);
-            });
-        }
-
-        // Create floating particles
-        function createParticles() {
-            const particlesContainer = document.getElementById('particles');
-            const particleCount = 50;
-
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                
-                // Random size between 2px and 6px
-                const size = Math.random() * 4 + 2;
-                particle.style.width = size + 'px';
-                particle.style.height = size + 'px';
-                
-                // Random position
-                particle.style.left = Math.random() * 100 + '%';
-                
-                // Random animation delay
-                particle.style.animationDelay = Math.random() * 20 + 's';
-                
-                // Random animation duration
-                particle.style.animationDuration = (Math.random() * 10 + 15) + 's';
-                
-                particlesContainer.appendChild(particle);
-            }
-        }
-
-        // Initialize page
-        // Sidebar Navigation Function
-        function showSection(sectionName, clickedElement) {
-            console.log('Switching to section:', sectionName);
-            
-            // Hide all content sections
-            const sections = document.querySelectorAll('.content-section');
-            sections.forEach(section => {
-                section.classList.remove('active');
-            });
-
-            // Remove active class from all nav buttons
-            const navButtons = document.querySelectorAll('.nav-button');
-            navButtons.forEach(button => {
-                button.classList.remove('active');
-            });
-
-            // Show selected section
-            const targetSection = document.getElementById(sectionName + 'Section');
-            if (targetSection) {
-                targetSection.classList.add('active');
-                console.log('Section activated:', sectionName + 'Section');
-            } else {
-                console.error('Section not found:', sectionName + 'Section');
-            }
-
-            // Add active class to clicked button
-            if (clickedElement) {
-                clickedElement.classList.add('active');
-            }
-        }
-
-        // Calendar and Task Management Functions
-        let currentDate = new Date();
-        let currentMonth = currentDate.getMonth();
-        let currentYear = currentDate.getFullYear();
-
-        function generateCalendar() {
-            const calendarGrid = document.getElementById('maintenanceCalendar');
-            const monthNames = ["January", "February", "March", "April", "May", "June",
-                "July", "August", "September", "October", "November", "December"];
-            
-            document.getElementById('currentMonth').textContent = `${monthNames[currentMonth]} ${currentYear}`;
-            
-            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-            
-            calendarGrid.innerHTML = '';
-            
-            // Add day headers
-            const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-            dayHeaders.forEach(day => {
-                const dayHeader = document.createElement('div');
-                dayHeader.className = 'calendar-day-header';
-                dayHeader.textContent = day;
-                dayHeader.style.fontWeight = 'bold';
-                dayHeader.style.color = 'rgba(255, 255, 255, 0.7)';
-                calendarGrid.appendChild(dayHeader);
-            });
-            
-            // Add empty cells for days before the first day of the month
-            for (let i = 0; i < firstDay; i++) {
-                const emptyDay = document.createElement('div');
-                emptyDay.className = 'calendar-day';
-                calendarGrid.appendChild(emptyDay);
-            }
-            
-            // Add days of the month
-            for (let day = 1; day <= daysInMonth; day++) {
-                const dayElement = document.createElement('div');
-                dayElement.className = 'calendar-day';
-                dayElement.textContent = day;
-                
-                // Add task indicator for certain days
-                if ([15, 20, 25].includes(day)) {
-                    dayElement.classList.add('has-task');
-                }
-                
-                // Highlight today
-                if (day === currentDate.getDate() && currentMonth === currentDate.getMonth() && currentYear === currentDate.getFullYear()) {
-                    dayElement.style.background = 'rgba(102, 126, 234, 0.3)';
-                    dayElement.style.border = '1px solid rgba(102, 126, 234, 0.5)';
-                }
-                
-                dayElement.onclick = () => showDayTasks(day);
-                calendarGrid.appendChild(dayElement);
-            }
-        }
-
-        function previousMonth() {
-            currentMonth--;
-            if (currentMonth < 0) {
-                currentMonth = 11;
-                currentYear--;
-            }
-            generateCalendar();
-        }
-
-        function nextMonth() {
-            currentMonth++;
-            if (currentMonth > 11) {
-                currentMonth = 0;
-                currentYear++;
-            }
-            generateCalendar();
-        }
-
-        function showDayTasks(day) {
-            alert(`Tasks for ${currentMonth + 1}/${day}/${currentYear}:\n\n• HVAC Filter Check\n• Water Heater Inspection\n• Gutter Cleaning`);
-        }
-
-        function completeTask(taskId) {
-            const taskElement = event.target.closest('.task-item');
-            taskElement.style.opacity = '0.5';
-            taskElement.style.textDecoration = 'line-through';
-            
-            setTimeout(() => {
-                taskElement.remove();
-                updateHomeHealthScore();
-            }, 1000);
-        }
-
-        function updateHomeHealthScore() {
-            const scoreElement = document.getElementById('homeHealthScore');
-            const currentScore = parseInt(scoreElement.textContent);
-            const newScore = Math.min(100, currentScore + 2);
-            scoreElement.textContent = newScore;
-            
-            // Update the circular progress
-            const scoreCircle = document.querySelector('.score-circle');
-            const percentage = (newScore / 100) * 360;
-            scoreCircle.style.background = `conic-gradient(from 0deg, #10b981 0deg ${percentage}deg, rgba(255,255,255,0.1) ${percentage}deg 360deg)`;
-        }
-
-        function addMaintenanceTask() {
-            const taskName = prompt('Enter task name:');
-            const taskDate = prompt('Enter due date (MM/DD/YYYY):');
-            
-            if (taskName && taskDate) {
-                alert(`Task "${taskName}" added for ${taskDate}`);
-                // Here you would add the task to the database
-            }
-        }
-
-        function viewHomeHistory() {
-            alert('Maintenance History:\n\n• Nov 15, 2024 - HVAC Service\n• Oct 20, 2024 - Plumbing Check\n• Sep 10, 2024 - Electrical Inspection');
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            loadUserData();
-            createParticles();
-            generateCalendar();
-            
-            // Test the navigation function
-            console.log('Dashboard loaded, testing navigation...');
-            console.log('Available sections:', document.querySelectorAll('.content-section').length);
-            console.log('Available nav buttons:', document.querySelectorAll('.nav-button').length);
-        });
-
-        // Listen for auth state changes
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                loadUserData();
-            } else {
-                window.location.href = 'signin.html';
-            }
+            alert('Home information saved successfully!');
+            closeModal('homeModal');
         });
     </script>
 </body>
