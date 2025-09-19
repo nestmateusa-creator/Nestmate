@@ -6,6 +6,9 @@
     <title>Basic Dashboard - NestMate</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
     <style>
         * {
             margin: 0;
@@ -524,6 +527,158 @@
             font-size: 0.9rem;
         }
 
+        /* Emergency Services Styles */
+        .emergency-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .emergency-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .emergency-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(239, 68, 68, 0.5);
+        }
+
+        .emergency-card.critical {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .emergency-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .emergency-card h4 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+
+        .emergency-card p {
+            opacity: 0.8;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .emergency-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #10b981;
+        }
+
+        .service-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .service-category {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .service-category:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .service-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .service-category h4 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+
+        .service-category p {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        .contacts-list {
+            margin-top: 2rem;
+        }
+
+        .contact-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .contact-info h5 {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .contact-info p {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        .contact-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .category-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .category-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .category-card h4 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+
+        .category-card p {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .quick-stats {
@@ -654,72 +809,939 @@
         </div>
     </main>
 
-    <!-- Home Management Modal -->
-    <div id="homeModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Home Management</h3>
-                <button class="close-btn" onclick="closeModal('homeModal')">&times;</button>
-            </div>
-            
-            <form id="homeForm">
-                <div class="form-group">
-                    <label class="form-label">Home Name</label>
-                    <input type="text" class="form-input" id="homeName" placeholder="Enter home name" required>
+    <!-- Include all modals -->
+    <div id="modals-container">
+        <!-- Home Management Modal -->
+        <div id="homeModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">🏠 Complete Home Management</h3>
+                    <button class="close-btn" onclick="closeModal('homeModal')">&times;</button>
                 </div>
                 
-                <div class="form-group">
-                    <label class="form-label">Address</label>
-                    <input type="text" class="form-input" id="homeAddress" placeholder="Enter full address" required>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Property Type</label>
-                    <select class="form-input" id="propertyType" required>
-                        <option value="">Select property type</option>
-                        <option value="house">House</option>
-                        <option value="condo">Condo</option>
-                        <option value="townhouse">Townhouse</option>
-                        <option value="apartment">Apartment</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Square Footage</label>
-                    <input type="number" class="form-input" id="squareFootage" placeholder="Enter square footage">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Year Built</label>
-                    <input type="number" class="form-input" id="yearBuilt" placeholder="Enter year built">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Notes</label>
-                    <textarea class="form-input form-textarea" id="homeNotes" placeholder="Additional notes about your home"></textarea>
+                <div class="tab-navigation">
+                    <button class="tab-btn active" onclick="showTab('basic')">Basic Info</button>
+                    <button class="tab-btn" onclick="showTab('structure')">Structure</button>
+                    <button class="tab-btn" onclick="showTab('systems')">Systems</button>
+                    <button class="tab-btn" onclick="showTab('interior')">Interior</button>
+                    <button class="tab-btn" onclick="showTab('exterior')">Exterior</button>
+                    <button class="tab-btn" onclick="showTab('appliances')">Appliances</button>
                 </div>
 
-                <button type="submit" class="btn btn-primary" style="width: 100%;">
-                    <i class="fas fa-save"></i>
-                    Save Home Information
-                </button>
-            </form>
+                <form id="homeForm">
+                    <!-- Basic Information Tab -->
+                    <div id="basicTab" class="tab-content active">
+                        <div class="section-header">
+                            <h4 class="section-title">Basic Home Information</h4>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Home Name</label>
+                                <input type="text" class="form-input" id="homeName" placeholder="Enter home name" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Address</label>
+                                <input type="text" class="form-input" id="homeAddress" placeholder="Enter full address" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Property Type</label>
+                                <select class="form-input" id="propertyType" required>
+                                    <option value="">Select property type</option>
+                                    <option value="house">House</option>
+                                    <option value="condo">Condo</option>
+                                    <option value="townhouse">Townhouse</option>
+                                    <option value="apartment">Apartment</option>
+                                    <option value="mobile">Mobile Home</option>
+                                    <option value="duplex">Duplex</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Square Footage</label>
+                                <input type="number" class="form-input" id="squareFootage" placeholder="Enter square footage">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Year Built</label>
+                                <input type="number" class="form-input" id="yearBuilt" placeholder="Enter year built">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Bedrooms</label>
+                                <input type="number" class="form-input" id="bedrooms" placeholder="Number of bedrooms">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Bathrooms</label>
+                                <input type="number" class="form-input" id="bathrooms" placeholder="Number of bathrooms">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Lot Size (sq ft)</label>
+                                <input type="number" class="form-input" id="lotSize" placeholder="Lot size in square feet">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Other tabs will be loaded dynamically -->
+                    <div id="structureTab" class="tab-content">
+                        <div class="section-header">
+                            <h4 class="section-title">Foundation & Structure</h4>
+                        </div>
+                        <p style="color: rgba(255,255,255,0.8);">Foundation, roof, exterior, attic, and crawlspace details coming soon!</p>
+                    </div>
+
+                    <div id="systemsTab" class="tab-content">
+                        <div class="section-header">
+                            <h4 class="section-title">HVAC, Plumbing & Electrical</h4>
+                        </div>
+                        <p style="color: rgba(255,255,255,0.8);">HVAC, plumbing, and electrical system details coming soon!</p>
+                    </div>
+
+                    <div id="interiorTab" class="tab-content">
+                        <div class="section-header">
+                            <h4 class="section-title">Interior Details</h4>
+                        </div>
+                        <p style="color: rgba(255,255,255,0.8);">Flooring, windows, blinds, trim styles, and interior details coming soon!</p>
+                    </div>
+
+                    <div id="exteriorTab" class="tab-content">
+                        <div class="section-header">
+                            <h4 class="section-title">Exterior Features</h4>
+                        </div>
+                        <p style="color: rgba(255,255,255,0.8);">Garage, driveway, landscaping, pool, and fence details coming soon!</p>
+                    </div>
+
+                    <div id="appliancesTab" class="tab-content">
+                        <div class="section-header">
+                            <h4 class="section-title">Appliances & Equipment</h4>
+                        </div>
+                        <p style="color: rgba(255,255,255,0.8);">Kitchen, laundry, and other appliance details coming soon!</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Additional Notes</label>
+                        <textarea class="form-input form-textarea" id="homeNotes" placeholder="Additional notes about your home, maintenance history, or important details"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        <i class="fas fa-save"></i>
+                        Save Complete Home Information
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tasks & Calendar Modal -->
+        <div id="tasksModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">📅 Tasks & Calendar</h3>
+                    <button class="close-btn" onclick="closeModal('tasksModal')">&times;</button>
+                </div>
+                
+                <div class="tab-navigation">
+                    <button class="tab-btn active" onclick="showTasksTab('calendar')">Calendar</button>
+                    <button class="tab-btn" onclick="showTasksTab('tasks')">Tasks</button>
+                    <button class="tab-btn" onclick="showTasksTab('add-task')">Add Task</button>
+                </div>
+
+                <!-- Calendar Tab -->
+                <div id="calendarTab" class="tab-content active">
+                    <div class="calendar-container">
+                        <div class="calendar-header">
+                            <button class="calendar-nav" onclick="previousMonth()">‹</button>
+                            <h3 id="currentMonth">January 2025</h3>
+                            <button class="calendar-nav" onclick="nextMonth()">›</button>
+                        </div>
+                        <div class="calendar-grid" id="calendarGrid">
+                            <!-- Calendar days will be generated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tasks Tab -->
+                <div id="tasksTab" class="tab-content">
+                    <div class="section-header">
+                        <h4 class="section-title">10 Essential Home Tasks</h4>
+                        <p>Stay on top of important home maintenance</p>
+                    </div>
+                    
+                    <div class="task-list" id="allTasksList">
+                        <!-- Essential tasks will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Add Task Tab -->
+                <div id="addTaskTab" class="tab-content">
+                    <div class="section-header">
+                        <h4 class="section-title">Add New Task</h4>
+                    </div>
+                    
+                    <form id="addTaskForm">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Task Title</label>
+                                <input type="text" class="form-input" id="taskTitle" placeholder="Enter task title" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Priority</label>
+                                <select class="form-input" id="taskPriority" required>
+                                    <option value="">Select priority</option>
+                                    <option value="high">High</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="low">Low</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Due Date</label>
+                                <input type="date" class="form-input" id="taskDueDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Category</label>
+                                <select class="form-input" id="taskCategory" required>
+                                    <option value="">Select category</option>
+                                    <option value="maintenance">Maintenance</option>
+                                    <option value="cleaning">Cleaning</option>
+                                    <option value="inspection">Inspection</option>
+                                    <option value="repair">Repair</option>
+                                    <option value="upgrade">Upgrade</option>
+                                    <option value="seasonal">Seasonal</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-input form-textarea" id="taskDescription" placeholder="Enter task description"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">
+                            <i class="fas fa-plus"></i>
+                            Add Task
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Recommendations Modal -->
+        <div id="productsModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">🛍️ Product Recommendations</h3>
+                    <button class="close-btn" onclick="closeModal('productsModal')">&times;</button>
+                </div>
+                
+                <div class="tab-navigation">
+                    <button class="tab-btn active" onclick="showProductsTab('recommendations')">Smart Picks</button>
+                    <button class="tab-btn" onclick="showProductsTab('favorites')">My Favorites</button>
+                    <button class="tab-btn" onclick="showProductsTab('categories')">Categories</button>
+                </div>
+
+                <!-- Recommendations Tab -->
+                <div id="recommendationsTab" class="tab-content active">
+                    <div class="section-header">
+                        <h4 class="section-title">Smart Product Picks for Your Home</h4>
+                        <p>Personalized recommendations based on your home details</p>
+                    </div>
+                    
+                    <div class="product-grid" id="recommendationsGrid">
+                        <!-- Product recommendations will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Favorites Tab -->
+                <div id="favoritesTab" class="tab-content">
+                    <div class="section-header">
+                        <h4 class="section-title">Your Favorite Products</h4>
+                        <p>Save and revisit your favorite finds</p>
+                    </div>
+                    
+                    <div class="product-grid" id="favoritesGrid">
+                        <!-- Favorite products will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Categories Tab -->
+                <div id="categoriesTab" class="tab-content">
+                    <div class="section-header">
+                        <h4 class="section-title">Browse by Category</h4>
+                    </div>
+                    
+                    <div class="category-grid">
+                        <div class="category-card" onclick="loadCategoryProducts('hvac')">
+                            <div class="category-icon">🌡️</div>
+                            <h4>HVAC & Climate</h4>
+                            <p>Heating, cooling, and air quality</p>
+                        </div>
+                        <div class="category-card" onclick="loadCategoryProducts('plumbing')">
+                            <div class="category-icon">🚿</div>
+                            <h4>Plumbing</h4>
+                            <p>Fixtures, tools, and maintenance</p>
+                        </div>
+                        <div class="category-card" onclick="loadCategoryProducts('electrical')">
+                            <div class="category-icon">⚡</div>
+                            <h4>Electrical</h4>
+                            <p>Lighting, outlets, and safety</p>
+                        </div>
+                        <div class="category-card" onclick="loadCategoryProducts('flooring')">
+                            <div class="category-icon">🏠</div>
+                            <h4>Flooring</h4>
+                            <p>Hardwood, tile, and carpet</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Emergency Services Modal -->
+        <div id="emergencyModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">🚨 Emergency Services</h3>
+                    <button class="close-btn" onclick="closeModal('emergencyModal')">&times;</button>
+                </div>
+                
+                <div class="tab-navigation">
+                    <button class="tab-btn active" onclick="showEmergencyTab('contacts')">Emergency Contacts</button>
+                    <button class="tab-btn" onclick="showEmergencyTab('services')">Service Directory</button>
+                    <button class="tab-btn" onclick="showEmergencyTab('add-contact')">Add Contact</button>
+                </div>
+
+                <!-- Emergency Contacts Tab -->
+                <div id="contactsTab" class="tab-content active">
+                    <div class="section-header">
+                        <h4 class="section-title">Quick Access Emergency Contacts</h4>
+                        <p>One-click calling for emergencies</p>
+                    </div>
+                    
+                    <div class="emergency-grid">
+                        <div class="emergency-card critical" onclick="callEmergency('911')">
+                            <div class="emergency-icon">🚨</div>
+                            <h4>Emergency Services</h4>
+                            <p>Police, Fire, Medical</p>
+                            <div class="emergency-number">911</div>
+                        </div>
+                        <div class="emergency-card" onclick="callEmergency('poison-control')">
+                            <div class="emergency-icon">☠️</div>
+                            <h4>Poison Control</h4>
+                            <p>24/7 Poison Help</p>
+                            <div class="emergency-number">1-800-222-1222</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service Directory Tab -->
+                <div id="servicesTab" class="tab-content">
+                    <div class="section-header">
+                        <h4 class="section-title">Service Provider Directory</h4>
+                        <p>Find trusted local services</p>
+                    </div>
+                    
+                    <div class="service-categories">
+                        <div class="service-category" onclick="loadServiceProviders('plumber')">
+                            <div class="service-icon">🔧</div>
+                            <h4>Plumbers</h4>
+                            <p>Leaks, repairs, installations</p>
+                        </div>
+                        <div class="service-category" onclick="loadServiceProviders('electrician')">
+                            <div class="service-icon">⚡</div>
+                            <h4>Electricians</h4>
+                            <p>Wiring, outlets, fixtures</p>
+                        </div>
+                        <div class="service-category" onclick="loadServiceProviders('hvac')">
+                            <div class="service-icon">🌡️</div>
+                            <h4>HVAC</h4>
+                            <p>Heating, cooling, maintenance</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Contact Tab -->
+                <div id="addContactTab" class="tab-content">
+                    <div class="section-header">
+                        <h4 class="section-title">Add Emergency Contact</h4>
+                    </div>
+                    
+                    <form id="addContactForm">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Contact Name</label>
+                                <input type="text" class="form-input" id="contactName" placeholder="Enter contact name" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Phone Number</label>
+                                <input type="tel" class="form-input" id="contactPhone" placeholder="Enter phone number" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Service Type</label>
+                                <select class="form-input" id="contactServiceType" required>
+                                    <option value="">Select service type</option>
+                                    <option value="emergency">Emergency Services</option>
+                                    <option value="plumber">Plumber</option>
+                                    <option value="electrician">Electrician</option>
+                                    <option value="hvac">HVAC</option>
+                                    <option value="locksmith">Locksmith</option>
+                                    <option value="security">Security</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">
+                            <i class="fas fa-phone"></i>
+                            Add Emergency Contact
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // Simple dashboard functionality
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBvOkBwJ1Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4",
+            authDomain: "nestmate-167ed.firebaseapp.com",
+            projectId: "nestmate-167ed",
+            storageBucket: "nestmate-167ed.appspot.com",
+            messagingSenderId: "123456789012",
+            appId: "1:123456789012:web:abcdefghijklmnopqrstuv",
+            measurementId: "G-XXXXXXXXXX"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        // Global variables
+        let currentUser = null;
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+        let tasks = [];
+        let homeData = {};
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDashboard();
+            loadUserData();
+            generateCalendar();
+            loadEssentialTasks();
+            loadProductRecommendations();
+        });
+
+        // Dashboard initialization
+        function initializeDashboard() {
+            // Update quick stats
+            updateQuickStats();
+            
+            // Set up event listeners
+            setupEventListeners();
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Home form submission
+            document.getElementById('homeForm').addEventListener('submit', handleHomeFormSubmit);
+            
+            // Task form submission
+            document.getElementById('addTaskForm').addEventListener('submit', handleTaskFormSubmit);
+            
+            // Contact form submission
+            document.getElementById('addContactForm').addEventListener('submit', handleContactFormSubmit);
+        }
+
+        // Modal functions
         function openHomeManagement() {
             document.getElementById('homeModal').style.display = 'block';
+            loadHomeData();
+        }
+
+        function openTasksCalendar() {
+            document.getElementById('tasksModal').style.display = 'block';
+            generateCalendar();
+        }
+
+        function openProductRecommendations() {
+            document.getElementById('productsModal').style.display = 'block';
+            loadProductRecommendations();
+        }
+
+        function openEmergencyServices() {
+            document.getElementById('emergencyModal').style.display = 'block';
+            loadEmergencyContacts();
         }
 
         function closeModal(modalId) {
             document.getElementById(modalId).style.display = 'none';
         }
 
+        // Tab navigation functions
+        function showTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('#homeModal .tab-content');
+            tabContents.forEach(tab => tab.classList.remove('active'));
+            
+            // Remove active class from all tab buttons
+            const tabButtons = document.querySelectorAll('#homeModal .tab-btn');
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected tab content
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
+
+        function showTasksTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('#tasksModal .tab-content');
+            tabContents.forEach(tab => tab.classList.remove('active'));
+            
+            // Remove active class from all tab buttons
+            const tabButtons = document.querySelectorAll('#tasksModal .tab-btn');
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected tab content
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
+
+        function showProductsTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('#productsModal .tab-content');
+            tabContents.forEach(tab => tab.classList.remove('active'));
+            
+            // Remove active class from all tab buttons
+            const tabButtons = document.querySelectorAll('#productsModal .tab-btn');
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected tab content
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
+
+        function showEmergencyTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('#emergencyModal .tab-content');
+            tabContents.forEach(tab => tab.classList.remove('active'));
+            
+            // Remove active class from all tab buttons
+            const tabButtons = document.querySelectorAll('#emergencyModal .tab-btn');
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected tab content
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
+
+        // Calendar functions
+        function generateCalendar() {
+            const calendarGrid = document.getElementById('calendarGrid');
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+            
+            document.getElementById('currentMonth').textContent = monthNames[currentMonth] + ' ' + currentYear;
+            
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            
+            calendarGrid.innerHTML = '';
+            
+            // Add day headers
+            const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayHeaders.forEach(day => {
+                const dayHeader = document.createElement('div');
+                dayHeader.textContent = day;
+                dayHeader.style.fontWeight = 'bold';
+                dayHeader.style.textAlign = 'center';
+                dayHeader.style.padding = '0.5rem';
+                calendarGrid.appendChild(dayHeader);
+            });
+            
+            // Add empty cells for days before the first day of the month
+            for (let i = 0; i < firstDay; i++) {
+                const emptyDay = document.createElement('div');
+                calendarGrid.appendChild(emptyDay);
+            }
+            
+            // Add days of the month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.textContent = day;
+                dayElement.className = 'calendar-day';
+                
+                // Check if today
+                const today = new Date();
+                if (currentYear === today.getFullYear() && currentMonth === today.getMonth() && day === today.getDate()) {
+                    dayElement.classList.add('today');
+                }
+                
+                // Check if has tasks
+                const dayTasks = getTasksForDate(currentYear, currentMonth, day);
+                if (dayTasks.length > 0) {
+                    dayElement.classList.add('has-tasks');
+                }
+                
+                dayElement.onclick = () => showDayTasks(day);
+                calendarGrid.appendChild(dayElement);
+            }
+        }
+
+        function previousMonth() {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            generateCalendar();
+        }
+
+        function nextMonth() {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            generateCalendar();
+        }
+
+        function showDayTasks(day) {
+            const dayTasks = getTasksForDate(currentYear, currentMonth, day);
+            const dayTasksDiv = document.getElementById('dayTasks');
+            const selectedDateSpan = document.getElementById('selectedDate');
+            const dayTaskList = document.getElementById('dayTaskList');
+            
+            selectedDateSpan.textContent = `${currentMonth + 1}/${day}/${currentYear}`;
+            
+            if (dayTasks.length === 0) {
+                dayTaskList.innerHTML = '<p style="color: rgba(255,255,255,0.7); text-align: center; padding: 2rem;">No tasks for this day</p>';
+            } else {
+                dayTaskList.innerHTML = dayTasks.map(task => `
+                    <div class="task-item">
+                        <div class="task-checkbox ${task.completed ? 'checked' : ''}" onclick="toggleTask('${task.id}')"></div>
+                        <div class="task-content">
+                            <div class="task-title">${task.title}</div>
+                            <div class="task-due">${task.category} - ${task.priority} priority</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            dayTasksDiv.style.display = 'block';
+        }
+
+        // Task management functions
+        function loadEssentialTasks() {
+            const essentialTasks = [
+                { id: '1', title: 'Change HVAC Filter', category: 'maintenance', priority: 'high', dueDate: '2025-01-15', completed: false },
+                { id: '2', title: 'Test Smoke Detectors', category: 'safety', priority: 'high', dueDate: '2025-01-20', completed: false },
+                { id: '3', title: 'Clean Gutters', category: 'maintenance', priority: 'medium', dueDate: '2025-02-01', completed: false },
+                { id: '4', title: 'Inspect Water Heater', category: 'inspection', priority: 'medium', dueDate: '2025-02-10', completed: false },
+                { id: '5', title: 'Check Weather Stripping', category: 'maintenance', priority: 'low', dueDate: '2025-02-15', completed: false },
+                { id: '6', title: 'Service HVAC System', category: 'maintenance', priority: 'high', dueDate: '2025-03-01', completed: false },
+                { id: '7', title: 'Clean Dryer Vent', category: 'safety', priority: 'high', dueDate: '2025-03-10', completed: false },
+                { id: '8', title: 'Inspect Roof', category: 'inspection', priority: 'medium', dueDate: '2025-03-20', completed: false },
+                { id: '9', title: 'Test GFCI Outlets', category: 'safety', priority: 'medium', dueDate: '2025-04-01', completed: false },
+                { id: '10', title: 'Clean Refrigerator Coils', category: 'maintenance', priority: 'low', dueDate: '2025-04-15', completed: false }
+            ];
+            
+            tasks = essentialTasks;
+            displayTasks();
+        }
+
+        function displayTasks() {
+            const tasksList = document.getElementById('allTasksList');
+            tasksList.innerHTML = tasks.map(task => `
+                <div class="task-item">
+                    <div class="task-checkbox ${task.completed ? 'checked' : ''}" onclick="toggleTask('${task.id}')"></div>
+                    <div class="task-content">
+                        <div class="task-title">${task.title}</div>
+                        <div class="task-due">Due: ${task.dueDate} - ${task.category} (${task.priority} priority)</div>
+                    </div>
+                </div>
+            `).join('');
+            
+            updateTaskStats();
+        }
+
+        function toggleTask(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                task.completed = !task.completed;
+                displayTasks();
+                saveTasksToFirebase();
+            }
+        }
+
+        function getTasksForDate(year, month, day) {
+            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            return tasks.filter(task => task.dueDate === dateStr);
+        }
+
+        function updateTaskStats() {
+            const completedTasks = tasks.filter(task => task.completed).length;
+            document.getElementById('tasksCompleted').textContent = completedTasks;
+        }
+
+        // Form handlers
+        function handleHomeFormSubmit(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const homeData = {};
+            
+            // Collect all form data
+            const inputs = e.target.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                if (input.value) {
+                    homeData[input.id] = input.value;
+                }
+            });
+            
+            saveHomeDataToFirebase(homeData);
+        }
+
+        function handleTaskFormSubmit(e) {
+            e.preventDefault();
+            
+            const newTask = {
+                id: Date.now().toString(),
+                title: document.getElementById('taskTitle').value,
+                priority: document.getElementById('taskPriority').value,
+                dueDate: document.getElementById('taskDueDate').value,
+                category: document.getElementById('taskCategory').value,
+                description: document.getElementById('taskDescription').value,
+                completed: false
+            };
+            
+            tasks.push(newTask);
+            displayTasks();
+            saveTasksToFirebase();
+            
+            // Reset form
+            e.target.reset();
+            alert('Task added successfully!');
+        }
+
+        function handleContactFormSubmit(e) {
+            e.preventDefault();
+            
+            const contactData = {
+                name: document.getElementById('contactName').value,
+                phone: document.getElementById('contactPhone').value,
+                serviceType: document.getElementById('contactServiceType').value,
+                timestamp: new Date().toISOString()
+            };
+            
+            saveContactToFirebase(contactData);
+            
+            // Reset form
+            e.target.reset();
+            alert('Emergency contact added successfully!');
+        }
+
+        // Firebase functions
+        function loadUserData() {
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    currentUser = user;
+                    loadHomeDataFromFirebase();
+                    loadTasksFromFirebase();
+                }
+            });
+        }
+
+        function saveHomeDataToFirebase(data) {
+            if (!currentUser) return;
+            
+            const userRef = db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid);
+            const backupRef = db.collection('NESTMATE USER HOME SAVED DATA BACKUP').doc(currentUser.uid);
+            
+            userRef.set(data, { merge: true })
+                .then(() => {
+                    backupRef.set(data, { merge: true });
+                    homeData = data;
+                    updateQuickStats();
+                    alert('Home information saved successfully!');
+                    closeModal('homeModal');
+                })
+                .catch(error => {
+                    console.error('Error saving home data:', error);
+                    alert('Error saving home data. Please try again.');
+                });
+        }
+
+        function loadHomeDataFromFirebase() {
+            if (!currentUser) return;
+            
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
+                .then(doc => {
+                    if (doc.exists) {
+                        homeData = doc.data();
+                        loadHomeData();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading home data:', error);
+                });
+        }
+
+        function loadHomeData() {
+            Object.keys(homeData).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.value = homeData[key];
+                }
+            });
+            updateQuickStats();
+        }
+
+        function saveTasksToFirebase() {
+            if (!currentUser) return;
+            
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).update({
+                tasks: tasks
+            }).catch(error => {
+                console.error('Error saving tasks:', error);
+            });
+        }
+
+        function loadTasksFromFirebase() {
+            if (!currentUser) return;
+            
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
+                .then(doc => {
+                    if (doc.exists && doc.data().tasks) {
+                        tasks = doc.data().tasks;
+                        displayTasks();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading tasks:', error);
+                });
+        }
+
+        function saveContactToFirebase(contactData) {
+            if (!currentUser) return;
+            
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).collection('emergencyContacts').add(contactData)
+                .then(() => {
+                    loadEmergencyContacts();
+                })
+                .catch(error => {
+                    console.error('Error saving contact:', error);
+                });
+        }
+
+        function loadEmergencyContacts() {
+            if (!currentUser) return;
+            
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).collection('emergencyContacts').get()
+                .then(snapshot => {
+                    const contactsList = document.getElementById('emergencyContactsList');
+                    if (snapshot.empty) {
+                        contactsList.innerHTML = '<p style="color: rgba(255,255,255,0.7); text-align: center; padding: 2rem;">No custom emergency contacts added yet</p>';
+                    } else {
+                        contactsList.innerHTML = snapshot.docs.map(doc => {
+                            const contact = doc.data();
+                            return `
+                                <div class="contact-item">
+                                    <div class="contact-info">
+                                        <h5>${contact.name}</h5>
+                                        <p>${contact.serviceType} - ${contact.phone}</p>
+                                    </div>
+                                    <div class="contact-actions">
+                                        <button class="btn btn-primary btn-small" onclick="callEmergency('${contact.phone}')">
+                                            <i class="fas fa-phone"></i> Call
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading contacts:', error);
+                });
+        }
+
+        // Product recommendations
+        function loadProductRecommendations() {
+            const recommendations = [
+                { id: '1', title: 'Smart Thermostat', price: '$249', category: 'hvac', image: '🌡️' },
+                { id: '2', title: 'Water Leak Detector', price: '$89', category: 'plumbing', image: '💧' },
+                { id: '3', title: 'Smart Doorbell', price: '$199', category: 'security', image: '🔔' },
+                { id: '4', title: 'Air Purifier', price: '$299', category: 'hvac', image: '🌬️' }
+            ];
+            
+            const recommendationsGrid = document.getElementById('recommendationsGrid');
+            recommendationsGrid.innerHTML = recommendations.map(product => `
+                <div class="product-card">
+                    <div class="product-image">${product.image}</div>
+                    <div class="product-title">${product.title}</div>
+                    <div class="product-price">${product.price}</div>
+                    <div class="product-actions">
+                        <button class="btn btn-primary btn-small" onclick="addToFavorites('${product.id}')">
+                            <i class="fas fa-heart"></i> Save
+                        </button>
+                        <button class="btn btn-outline btn-small" onclick="viewProduct('${product.id}')">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addToFavorites(productId) {
+            alert('Product added to favorites!');
+            // Update favorites count
+            const currentCount = parseInt(document.getElementById('favoritesCount').textContent);
+            document.getElementById('favoritesCount').textContent = currentCount + 1;
+        }
+
+        function viewProduct(productId) {
+            alert('Opening product details...');
+        }
+
+        function loadCategoryProducts(category) {
+            alert(`Loading ${category} products...`);
+        }
+
+        function loadServiceProviders(serviceType) {
+            alert(`Loading ${serviceType} service providers...`);
+        }
+
+        function callEmergency(number) {
+            if (number === '911') {
+                if (confirm('Are you sure you want to call 911? This is for emergencies only.')) {
+                    window.location.href = 'tel:911';
+                }
+            } else {
+                window.location.href = `tel:${number}`;
+            }
+        }
+
+        // Utility functions
+        function updateQuickStats() {
+            if (homeData.yearBuilt) {
+                const currentYear = new Date().getFullYear();
+                const homeAge = currentYear - parseInt(homeData.yearBuilt);
+                document.getElementById('homeAge').textContent = homeAge;
+            }
+            
+            if (homeData.squareFootage) {
+                document.getElementById('homeSqft').textContent = homeData.squareFootage.toLocaleString();
+            }
+        }
+
         function signOut() {
             if (confirm('Are you sure you want to sign out?')) {
-                window.location.href = 'signin.html';
+                auth.signOut().then(() => {
+                    window.location.href = 'signin.html';
+                });
             }
         }
 
@@ -729,13 +1751,6 @@
                 event.target.style.display = 'none';
             }
         }
-
-        // Handle form submission
-        document.getElementById('homeForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('Home information saved successfully!');
-            closeModal('homeModal');
-        });
     </script>
 </body>
 </html>

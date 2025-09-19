@@ -1,0 +1,127 @@
+<!-- Product Recommendations Modal -->
+<div id="productsModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">🛍️ Product Recommendations</h3>
+            <button class="close-btn" onclick="closeModal('productsModal')">&times;</button>
+        </div>
+        
+        <div class="tab-navigation">
+            <button class="tab-btn active" onclick="showProductsTab('recommendations')">Smart Picks</button>
+            <button class="tab-btn" onclick="showProductsTab('favorites')">My Favorites</button>
+            <button class="tab-btn" onclick="showProductsTab('categories')">Categories</button>
+        </div>
+
+        <!-- Recommendations Tab -->
+        <div id="recommendationsTab" class="tab-content active">
+            <div class="section-header">
+                <h4 class="section-title">Smart Product Picks for Your Home</h4>
+                <p>Personalized recommendations based on your home details</p>
+            </div>
+            
+            <div class="product-grid" id="recommendationsGrid">
+                <!-- Product recommendations will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Favorites Tab -->
+        <div id="favoritesTab" class="tab-content">
+            <div class="section-header">
+                <h4 class="section-title">Your Favorite Products</h4>
+                <p>Save and revisit your favorite finds</p>
+            </div>
+            
+            <div class="product-grid" id="favoritesGrid">
+                <!-- Favorite products will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Categories Tab -->
+        <div id="categoriesTab" class="tab-content">
+            <div class="section-header">
+                <h4 class="section-title">Browse by Category</h4>
+            </div>
+            
+            <div class="category-grid">
+                <div class="category-card" onclick="loadCategoryProducts('hvac')">
+                    <div class="category-icon">🌡️</div>
+                    <h4>HVAC & Climate</h4>
+                    <p>Heating, cooling, and air quality</p>
+                </div>
+                <div class="category-card" onclick="loadCategoryProducts('plumbing')">
+                    <div class="category-icon">🚿</div>
+                    <h4>Plumbing</h4>
+                    <p>Fixtures, tools, and maintenance</p>
+                </div>
+                <div class="category-card" onclick="loadCategoryProducts('electrical')">
+                    <div class="category-icon">⚡</div>
+                    <h4>Electrical</h4>
+                    <p>Lighting, outlets, and safety</p>
+                </div>
+                <div class="category-card" onclick="loadCategoryProducts('flooring')">
+                    <div class="category-icon">🏠</div>
+                    <h4>Flooring</h4>
+                    <p>Hardwood, tile, and carpet</p>
+                </div>
+                <div class="category-card" onclick="loadCategoryProducts('windows')">
+                    <div class="category-icon">🪟</div>
+                    <h4>Windows & Doors</h4>
+                    <p>Blinds, shades, and hardware</p>
+                </div>
+                <div class="category-card" onclick="loadCategoryProducts('appliances')">
+                    <div class="category-icon">🔌</div>
+                    <h4>Appliances</h4>
+                    <p>Kitchen and laundry essentials</p>
+                </div>
+                <div class="category-card" onclick="loadCategoryProducts('outdoor')">
+                    <div class="category-icon">🌳</div>
+                    <h4>Outdoor & Garden</h4>
+                    <p>Landscaping and exterior</p>
+                </div>
+                <div class="category-card" onclick="loadCategoryProducts('security')">
+                    <div class="category-icon">🔒</div>
+                    <h4>Security & Safety</h4>
+                    <p>Locks, alarms, and monitoring</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.category-card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.category-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.category-card h4 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: white;
+}
+
+.category-card p {
+    opacity: 0.8;
+    font-size: 0.9rem;
+}
+</style>

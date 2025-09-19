@@ -1,0 +1,262 @@
+<!-- Emergency Services Modal -->
+<div id="emergencyModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">🚨 Emergency Services</h3>
+            <button class="close-btn" onclick="closeModal('emergencyModal')">&times;</button>
+        </div>
+        
+        <div class="tab-navigation">
+            <button class="tab-btn active" onclick="showEmergencyTab('contacts')">Emergency Contacts</button>
+            <button class="tab-btn" onclick="showEmergencyTab('services')">Service Directory</button>
+            <button class="tab-btn" onclick="showEmergencyTab('add-contact')">Add Contact</button>
+        </div>
+
+        <!-- Emergency Contacts Tab -->
+        <div id="contactsTab" class="tab-content active">
+            <div class="section-header">
+                <h4 class="section-title">Quick Access Emergency Contacts</h4>
+                <p>One-click calling for emergencies</p>
+            </div>
+            
+            <div class="emergency-grid">
+                <div class="emergency-card critical" onclick="callEmergency('911')">
+                    <div class="emergency-icon">🚨</div>
+                    <h4>Emergency Services</h4>
+                    <p>Police, Fire, Medical</p>
+                    <div class="emergency-number">911</div>
+                </div>
+                <div class="emergency-card" onclick="callEmergency('poison-control')">
+                    <div class="emergency-icon">☠️</div>
+                    <h4>Poison Control</h4>
+                    <p>24/7 Poison Help</p>
+                    <div class="emergency-number">1-800-222-1222</div>
+                </div>
+                <div class="emergency-card" onclick="callEmergency('gas-emergency')">
+                    <div class="emergency-icon">⛽</div>
+                    <h4>Gas Emergency</h4>
+                    <p>Gas Leak or Emergency</p>
+                    <div class="emergency-number">Call Local Utility</div>
+                </div>
+            </div>
+            
+            <div class="contacts-list" id="emergencyContactsList">
+                <!-- Custom emergency contacts will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Service Directory Tab -->
+        <div id="servicesTab" class="tab-content">
+            <div class="section-header">
+                <h4 class="section-title">Service Provider Directory</h4>
+                <p>Find trusted local services</p>
+            </div>
+            
+            <div class="service-categories">
+                <div class="service-category" onclick="loadServiceProviders('plumber')">
+                    <div class="service-icon">🔧</div>
+                    <h4>Plumbers</h4>
+                    <p>Leaks, repairs, installations</p>
+                </div>
+                <div class="service-category" onclick="loadServiceProviders('electrician')">
+                    <div class="service-icon">⚡</div>
+                    <h4>Electricians</h4>
+                    <p>Wiring, outlets, fixtures</p>
+                </div>
+                <div class="service-category" onclick="loadServiceProviders('hvac')">
+                    <div class="service-icon">🌡️</div>
+                    <h4>HVAC</h4>
+                    <p>Heating, cooling, maintenance</p>
+                </div>
+                <div class="service-category" onclick="loadServiceProviders('locksmith')">
+                    <div class="service-icon">🔐</div>
+                    <h4>Locksmiths</h4>
+                    <p>Lockouts, repairs, security</p>
+                </div>
+                <div class="service-category" onclick="loadServiceProviders('pest-control')">
+                    <div class="service-icon">🐛</div>
+                    <h4>Pest Control</h4>
+                    <p>Inspection, treatment, prevention</p>
+                </div>
+                <div class="service-category" onclick="loadServiceProviders('cleaning')">
+                    <div class="service-icon">🧹</div>
+                    <h4>Cleaning Services</h4>
+                    <p>Deep clean, maintenance</p>
+                </div>
+            </div>
+            
+            <div id="serviceProvidersList" style="display: none;">
+                <h4>Service Providers</h4>
+                <div class="providers-list">
+                    <!-- Service providers will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Contact Tab -->
+        <div id="addContactTab" class="tab-content">
+            <div class="section-header">
+                <h4 class="section-title">Add Emergency Contact</h4>
+            </div>
+            
+            <form id="addContactForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Contact Name</label>
+                        <input type="text" class="form-input" id="contactName" placeholder="Enter contact name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone Number</label>
+                        <input type="tel" class="form-input" id="contactPhone" placeholder="Enter phone number" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Service Type</label>
+                        <select class="form-input" id="contactServiceType" required>
+                            <option value="">Select service type</option>
+                            <option value="emergency">Emergency Services</option>
+                            <option value="plumber">Plumber</option>
+                            <option value="electrician">Electrician</option>
+                            <option value="hvac">HVAC</option>
+                            <option value="locksmith">Locksmith</option>
+                            <option value="security">Security</option>
+                            <option value="pest-control">Pest Control</option>
+                            <option value="cleaning">Cleaning</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Company/Organization</label>
+                        <input type="text" class="form-input" id="contactCompany" placeholder="Company name (optional)">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <textarea class="form-input form-textarea" id="contactNotes" placeholder="Additional notes about this contact"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <i class="fas fa-phone"></i>
+                    Add Emergency Contact
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.emergency-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.emergency-card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.emergency-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(239, 68, 68, 0.5);
+}
+
+.emergency-card.critical {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.emergency-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.emergency-card h4 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: white;
+}
+
+.emergency-card p {
+    opacity: 0.8;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.emergency-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #10b981;
+}
+
+.service-categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.service-category {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.service-category:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.service-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.service-category h4 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: white;
+}
+
+.service-category p {
+    opacity: 0.8;
+    font-size: 0.9rem;
+}
+
+.contacts-list {
+    margin-top: 2rem;
+}
+
+.contact-item {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.contact-info h5 {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.contact-info p {
+    opacity: 0.8;
+    font-size: 0.9rem;
+}
+
+.contact-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+</style>

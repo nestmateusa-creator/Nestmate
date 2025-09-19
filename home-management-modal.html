@@ -1,0 +1,393 @@
+<!-- Home Management Modal -->
+<div id="homeModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">🏠 Complete Home Management</h3>
+            <button class="close-btn" onclick="closeModal('homeModal')">&times;</button>
+        </div>
+        
+        <div class="tab-navigation">
+            <button class="tab-btn active" onclick="showTab('basic')">Basic Info</button>
+            <button class="tab-btn" onclick="showTab('structure')">Structure</button>
+            <button class="tab-btn" onclick="showTab('systems')">Systems</button>
+            <button class="tab-btn" onclick="showTab('interior')">Interior</button>
+            <button class="tab-btn" onclick="showTab('exterior')">Exterior</button>
+            <button class="tab-btn" onclick="showTab('appliances')">Appliances</button>
+        </div>
+
+        <form id="homeForm">
+            <!-- Basic Information Tab -->
+            <div id="basicTab" class="tab-content active">
+                <div class="section-header">
+                    <h4 class="section-title">Basic Home Information</h4>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Home Name</label>
+                        <input type="text" class="form-input" id="homeName" placeholder="Enter home name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Address</label>
+                        <input type="text" class="form-input" id="homeAddress" placeholder="Enter full address" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Property Type</label>
+                        <select class="form-input" id="propertyType" required>
+                            <option value="">Select property type</option>
+                            <option value="house">House</option>
+                            <option value="condo">Condo</option>
+                            <option value="townhouse">Townhouse</option>
+                            <option value="apartment">Apartment</option>
+                            <option value="mobile">Mobile Home</option>
+                            <option value="duplex">Duplex</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Square Footage</label>
+                        <input type="number" class="form-input" id="squareFootage" placeholder="Enter square footage">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Year Built</label>
+                        <input type="number" class="form-input" id="yearBuilt" placeholder="Enter year built">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Bedrooms</label>
+                        <input type="number" class="form-input" id="bedrooms" placeholder="Number of bedrooms">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Bathrooms</label>
+                        <input type="number" class="form-input" id="bathrooms" placeholder="Number of bathrooms">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Lot Size (sq ft)</label>
+                        <input type="number" class="form-input" id="lotSize" placeholder="Lot size in square feet">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Structure Tab -->
+            <div id="structureTab" class="tab-content">
+                <div class="section-header">
+                    <h4 class="section-title">Foundation & Structure</h4>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Foundation Type</label>
+                        <select class="form-input" id="foundationType">
+                            <option value="">Select foundation type</option>
+                            <option value="concrete-slab">Concrete Slab</option>
+                            <option value="crawlspace">Crawlspace</option>
+                            <option value="basement">Basement</option>
+                            <option value="pier-beam">Pier & Beam</option>
+                            <option value="concrete-block">Concrete Block</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Foundation Condition</label>
+                        <select class="form-input" id="foundationCondition">
+                            <option value="">Select condition</option>
+                            <option value="excellent">Excellent</option>
+                            <option value="good">Good</option>
+                            <option value="fair">Fair</option>
+                            <option value="poor">Poor</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Roof Material</label>
+                        <select class="form-input" id="roofMaterial">
+                            <option value="">Select roof material</option>
+                            <option value="asphalt-shingles">Asphalt Shingles</option>
+                            <option value="metal">Metal</option>
+                            <option value="tile">Tile</option>
+                            <option value="slate">Slate</option>
+                            <option value="wood-shingles">Wood Shingles</option>
+                            <option value="flat-roof">Flat Roof</option>
+                            <option value="rubber">Rubber Membrane</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Roof Age (years)</label>
+                        <input type="number" class="form-input" id="roofAge" placeholder="Age of roof">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Exterior Material</label>
+                        <select class="form-input" id="exteriorMaterial">
+                            <option value="">Select exterior material</option>
+                            <option value="vinyl-siding">Vinyl Siding</option>
+                            <option value="brick">Brick</option>
+                            <option value="wood-siding">Wood Siding</option>
+                            <option value="stucco">Stucco</option>
+                            <option value="stone">Stone</option>
+                            <option value="aluminum-siding">Aluminum Siding</option>
+                            <option value="fiber-cement">Fiber Cement</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Exterior Condition</label>
+                        <select class="form-input" id="exteriorCondition">
+                            <option value="">Select condition</option>
+                            <option value="excellent">Excellent</option>
+                            <option value="good">Good</option>
+                            <option value="fair">Fair</option>
+                            <option value="poor">Poor</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Systems Tab -->
+            <div id="systemsTab" class="tab-content">
+                <div class="section-header">
+                    <h4 class="section-title">HVAC, Plumbing & Electrical</h4>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Heating Type</label>
+                        <select class="form-input" id="heatingType">
+                            <option value="">Select heating type</option>
+                            <option value="forced-air">Forced Air</option>
+                            <option value="radiant">Radiant Heat</option>
+                            <option value="heat-pump">Heat Pump</option>
+                            <option value="baseboard">Baseboard</option>
+                            <option value="wood-stove">Wood Stove</option>
+                            <option value="electric">Electric</option>
+                            <option value="gas">Gas</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Cooling Type</label>
+                        <select class="form-input" id="coolingType">
+                            <option value="">Select cooling type</option>
+                            <option value="central-ac">Central AC</option>
+                            <option value="heat-pump">Heat Pump</option>
+                            <option value="window-units">Window Units</option>
+                            <option value="ductless-mini-split">Ductless Mini-Split</option>
+                            <option value="evaporative">Evaporative Cooler</option>
+                            <option value="none">No Cooling</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">HVAC Age (years)</label>
+                        <input type="number" class="form-input" id="hvacAge" placeholder="Age of HVAC system">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Water Heater Type</label>
+                        <select class="form-input" id="waterHeaterType">
+                            <option value="">Select water heater type</option>
+                            <option value="tank-electric">Tank Electric</option>
+                            <option value="tank-gas">Tank Gas</option>
+                            <option value="tankless-electric">Tankless Electric</option>
+                            <option value="tankless-gas">Tankless Gas</option>
+                            <option value="heat-pump">Heat Pump</option>
+                            <option value="solar">Solar</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Water Heater Age (years)</label>
+                        <input type="number" class="form-input" id="waterHeaterAge" placeholder="Age of water heater">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Electrical Panel Amperage</label>
+                        <select class="form-input" id="electricalAmperage">
+                            <option value="">Select amperage</option>
+                            <option value="100">100 Amp</option>
+                            <option value="150">150 Amp</option>
+                            <option value="200">200 Amp</option>
+                            <option value="400">400 Amp</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interior Tab -->
+            <div id="interiorTab" class="tab-content">
+                <div class="section-header">
+                    <h4 class="section-title">Interior Details</h4>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Floor Type (Main)</label>
+                        <select class="form-input" id="floorType">
+                            <option value="">Select floor type</option>
+                            <option value="hardwood">Hardwood</option>
+                            <option value="laminate">Laminate</option>
+                            <option value="tile">Tile</option>
+                            <option value="carpet">Carpet</option>
+                            <option value="vinyl">Vinyl</option>
+                            <option value="concrete">Concrete</option>
+                            <option value="bamboo">Bamboo</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Window Count</label>
+                        <input type="number" class="form-input" id="windowCount" placeholder="Total number of windows">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Window Type</label>
+                        <select class="form-input" id="windowType">
+                            <option value="">Select window type</option>
+                            <option value="single-hung">Single Hung</option>
+                            <option value="double-hung">Double Hung</option>
+                            <option value="casement">Casement</option>
+                            <option value="sliding">Sliding</option>
+                            <option value="bay">Bay</option>
+                            <option value="picture">Picture</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Blind/Shade Type</label>
+                        <select class="form-input" id="blindType">
+                            <option value="">Select blind/shade type</option>
+                            <option value="venetian">Venetian Blinds</option>
+                            <option value="vertical">Vertical Blinds</option>
+                            <option value="roller">Roller Shades</option>
+                            <option value="cellular">Cellular Shades</option>
+                            <option value="roman">Roman Shades</option>
+                            <option value="wood">Wood Blinds</option>
+                            <option value="fabric">Fabric Shades</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Trim Style</label>
+                        <select class="form-input" id="trimStyle">
+                            <option value="">Select trim style</option>
+                            <option value="colonial">Colonial</option>
+                            <option value="craftsman">Craftsman</option>
+                            <option value="modern">Modern</option>
+                            <option value="traditional">Traditional</option>
+                            <option value="minimal">Minimal</option>
+                            <option value="ornate">Ornate</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Ceiling Height (ft)</label>
+                        <input type="number" class="form-input" id="ceilingHeight" placeholder="Average ceiling height">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exterior Tab -->
+            <div id="exteriorTab" class="tab-content">
+                <div class="section-header">
+                    <h4 class="section-title">Exterior Features</h4>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Garage Type</label>
+                        <select class="form-input" id="garageType">
+                            <option value="">Select garage type</option>
+                            <option value="attached">Attached</option>
+                            <option value="detached">Detached</option>
+                            <option value="carport">Carport</option>
+                            <option value="none">No Garage</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Garage Spaces</label>
+                        <input type="number" class="form-input" id="garageSpaces" placeholder="Number of garage spaces">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Driveway Material</label>
+                        <select class="form-input" id="drivewayMaterial">
+                            <option value="">Select driveway material</option>
+                            <option value="asphalt">Asphalt</option>
+                            <option value="concrete">Concrete</option>
+                            <option value="gravel">Gravel</option>
+                            <option value="pavers">Pavers</option>
+                            <option value="brick">Brick</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Landscaping</label>
+                        <select class="form-input" id="landscaping">
+                            <option value="">Select landscaping type</option>
+                            <option value="minimal">Minimal</option>
+                            <option value="moderate">Moderate</option>
+                            <option value="extensive">Extensive</option>
+                            <option value="xeriscape">Xeriscape</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Pool</label>
+                        <select class="form-input" id="pool">
+                            <option value="">Select pool type</option>
+                            <option value="none">No Pool</option>
+                            <option value="in-ground">In-Ground</option>
+                            <option value="above-ground">Above-Ground</option>
+                            <option value="hot-tub">Hot Tub Only</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Fence Type</label>
+                        <select class="form-input" id="fenceType">
+                            <option value="">Select fence type</option>
+                            <option value="none">No Fence</option>
+                            <option value="wood">Wood</option>
+                            <option value="vinyl">Vinyl</option>
+                            <option value="chain-link">Chain Link</option>
+                            <option value="aluminum">Aluminum</option>
+                            <option value="brick">Brick</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Appliances Tab -->
+            <div id="appliancesTab" class="tab-content">
+                <div class="section-header">
+                    <h4 class="section-title">Appliances & Equipment</h4>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Refrigerator Brand/Model</label>
+                        <input type="text" class="form-input" id="refrigeratorInfo" placeholder="Brand and model">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Refrigerator Age (years)</label>
+                        <input type="number" class="form-input" id="refrigeratorAge" placeholder="Age of refrigerator">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Dishwasher Brand/Model</label>
+                        <input type="text" class="form-input" id="dishwasherInfo" placeholder="Brand and model">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Dishwasher Age (years)</label>
+                        <input type="number" class="form-input" id="dishwasherAge" placeholder="Age of dishwasher">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Stove/Oven Type</label>
+                        <select class="form-input" id="stoveType">
+                            <option value="">Select stove type</option>
+                            <option value="gas">Gas</option>
+                            <option value="electric">Electric</option>
+                            <option value="induction">Induction</option>
+                            <option value="dual-fuel">Dual Fuel</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Stove/Oven Age (years)</label>
+                        <input type="number" class="form-input" id="stoveAge" placeholder="Age of stove/oven">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Washer Brand/Model</label>
+                        <input type="text" class="form-input" id="washerInfo" placeholder="Brand and model">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Dryer Brand/Model</label>
+                        <input type="text" class="form-input" id="dryerInfo" placeholder="Brand and model">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Additional Notes</label>
+                <textarea class="form-input form-textarea" id="homeNotes" placeholder="Additional notes about your home, maintenance history, or important details"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                <i class="fas fa-save"></i>
+                Save Complete Home Information
+            </button>
+        </form>
+    </div>
+</div>
