@@ -310,6 +310,29 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* Section Header Styles */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .section-title {
+            color: #10b981;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 0;
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+
         .quick-stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -1916,6 +1939,8 @@
 
         // Sidebar Navigation Functions
         function showSection(sectionName, clickedElement) {
+            console.log('showSection called with:', sectionName);
+            
             // Hide all content sections
             const sections = document.querySelectorAll('.content-section');
             sections.forEach(section => section.classList.remove('active'));
@@ -1925,52 +1950,74 @@
             navItems.forEach(item => item.classList.remove('active'));
             
             // Show selected section
-            document.getElementById(sectionName + 'Section').classList.add('active');
+            const targetSection = document.getElementById(sectionName + 'Section');
+            if (targetSection) {
+                targetSection.classList.add('active');
+                console.log('Section found and activated:', sectionName + 'Section');
+            } else {
+                console.error('Section not found:', sectionName + 'Section');
+            }
             
             // Add active class to clicked nav item
             clickedElement.classList.add('active');
             
-            // Load section content if not already loaded
+            // Load section content
             loadSectionContent(sectionName);
         }
 
         function loadSectionContent(sectionName) {
+            console.log('loadSectionContent called with:', sectionName);
             const section = document.getElementById(sectionName + 'Section');
             
-            // Only load content if section is empty
-            if (section.innerHTML.trim() === '<!-- ' + sectionName + ' content will be loaded here -->' || section.innerHTML.trim() === '') {
-                switch(sectionName) {
-                    case 'basic':
-                        loadBasicInfoContent();
-                        break;
-                    case 'structure':
-                        loadStructureContent();
-                        break;
-                    case 'systems':
-                        loadSystemsContent();
-                        break;
-                    case 'bedrooms':
-                        loadBedroomsContent();
-                        break;
-                    case 'bathrooms':
-                        loadBathroomsContent();
-                        break;
-                    case 'kitchen':
-                        loadKitchenContent();
-                        break;
-                    case 'living':
-                        loadLivingAreasContent();
-                        break;
-                    case 'garage':
-                        loadGarageContent();
-                        break;
-                    case 'exterior':
-                        loadExteriorContent();
-                        break;
-                    case 'appliances':
-                        loadAppliancesContent();
-                        break;
-                }
+            if (!section) {
+                console.error('Section element not found:', sectionName + 'Section');
+                return;
+            }
+            
+            // Always load content for the selected section
+            switch(sectionName) {
+                case 'basic':
+                    console.log('Loading basic info content');
+                    loadBasicInfoContent();
+                    break;
+                case 'structure':
+                    console.log('Loading structure content');
+                    loadStructureContent();
+                    break;
+                case 'systems':
+                    console.log('Loading systems content');
+                    loadSystemsContent();
+                    break;
+                case 'bedrooms':
+                    console.log('Loading bedrooms content');
+                    loadBedroomsContent();
+                    break;
+                case 'bathrooms':
+                    console.log('Loading bathrooms content');
+                    loadBathroomsContent();
+                    break;
+                case 'kitchen':
+                    console.log('Loading kitchen content');
+                    loadKitchenContent();
+                    break;
+                case 'living':
+                    console.log('Loading living areas content');
+                    loadLivingAreasContent();
+                    break;
+                case 'garage':
+                    console.log('Loading garage content');
+                    loadGarageContent();
+                    break;
+                case 'exterior':
+                    console.log('Loading exterior content');
+                    loadExteriorContent();
+                    break;
+                case 'appliances':
+                    console.log('Loading appliances content');
+                    loadAppliancesContent();
+                    break;
+                default:
+                    console.log('No content loader for section:', sectionName);
             }
         }
 
