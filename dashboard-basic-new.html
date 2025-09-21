@@ -1039,6 +1039,592 @@
                 max-width: 95vw;
             }
         }
+
+        /* Enhanced Dashboard Styles */
+        .welcome-section {
+            margin-bottom: 2rem;
+        }
+
+        .welcome-content {
+            text-align: center;
+        }
+
+        .welcome-stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .welcome-stat {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .quick-stats-enhanced {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card.enhanced {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card.enhanced:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .stat-subtitle {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 0.25rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .dashboard-widget {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .dashboard-widget:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .widget-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .widget-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .widget-action {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .widget-action:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .widget-content {
+            padding: 1.5rem;
+        }
+
+        /* Calendar Widget */
+        .mini-calendar {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .upcoming-tasks h4 {
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .task-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .task-icon {
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .task-details {
+            flex: 1;
+        }
+
+        .task-title {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .task-date {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .task-priority {
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .task-priority.high {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+        }
+
+        .task-priority.medium {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fde68a;
+        }
+
+        .task-priority.low {
+            background: rgba(34, 197, 94, 0.2);
+            color: #86efac;
+        }
+
+        /* Weather Widget */
+        .weather-info {
+            margin-bottom: 1.5rem;
+        }
+
+        .current-weather {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .weather-icon {
+            font-size: 2.5rem;
+        }
+
+        .weather-details {
+            flex: 1;
+        }
+
+        .temperature {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .condition {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 0.25rem;
+        }
+
+        .location {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .weather-forecast {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .forecast-item {
+            text-align: center;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            flex: 1;
+        }
+
+        .forecast-day {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 0.25rem;
+        }
+
+        .forecast-temp {
+            font-weight: 600;
+        }
+
+        .maintenance-alerts h4 {
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .alert-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .alert-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 3px solid;
+        }
+
+        .alert-item.high {
+            background: rgba(239, 68, 68, 0.1);
+            border-left-color: #ef4444;
+        }
+
+        .alert-item.medium {
+            background: rgba(245, 158, 11, 0.1);
+            border-left-color: #f59e0b;
+        }
+
+        .alert-item.low {
+            background: rgba(34, 197, 94, 0.1);
+            border-left-color: #22c55e;
+        }
+
+        .alert-icon {
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .alert-details {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .alert-description {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Health Score Widget */
+        .health-score {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .score-circle {
+            background: conic-gradient(from 0deg, #10b981 0deg, #10b981 306deg, rgba(255,255,255,0.1) 306deg, rgba(255,255,255,0.1) 360deg);
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .score-circle::before {
+            content: '';
+            position: absolute;
+            width: 90px;
+            height: 90px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .score-number {
+            font-size: 2rem;
+            font-weight: 700;
+            z-index: 1;
+        }
+
+        .score-label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            z-index: 1;
+        }
+
+        .health-breakdown {
+            width: 100%;
+        }
+
+        .health-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .health-category {
+            min-width: 80px;
+            font-size: 0.9rem;
+        }
+
+        .health-bar {
+            flex: 1;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .health-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #34d399);
+            transition: width 0.3s ease;
+        }
+
+        .health-percentage {
+            min-width: 35px;
+            font-size: 0.8rem;
+            text-align: right;
+        }
+
+        /* Quick Actions Widget */
+        .quick-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 1rem;
+        }
+
+        .quick-action {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .quick-action:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .action-icon {
+            font-size: 1.5rem;
+        }
+
+        .action-label {
+            font-size: 0.8rem;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        /* Activity Widget */
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .activity-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .activity-icon {
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .activity-details {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .activity-description {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 0.25rem;
+        }
+
+        .activity-time {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Savings Widget */
+        .savings-overview {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .savings-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            flex: 1;
+        }
+
+        .savings-icon {
+            font-size: 1.5rem;
+        }
+
+        .savings-details {
+            flex: 1;
+        }
+
+        .savings-amount {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .savings-label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .savings-period {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .savings-tips h4 {
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .tip-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .tip-icon {
+            font-size: 1rem;
+            width: 16px;
+            text-align: center;
+        }
+
+        .tip-text {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.4;
+        }
+
+        /* Responsive Design for Enhanced Dashboard */
+        @media (max-width: 768px) {
+            .welcome-stats {
+                gap: 1rem;
+            }
+
+            .welcome-stat {
+                font-size: 0.8rem;
+                padding: 0.4rem 0.8rem;
+            }
+
+            .quick-stats-enhanced {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .widget-content {
+                padding: 1rem;
+            }
+
+            .score-circle {
+                width: 100px;
+                height: 100px;
+            }
+
+            .score-circle::before {
+                width: 75px;
+                height: 75px;
+            }
+
+            .score-number {
+                font-size: 1.5rem;
+            }
+
+            .quick-actions-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .savings-overview {
+                flex-direction: column;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1127,78 +1713,333 @@
             <div class="content-area">
                 <!-- Dashboard Overview Section -->
                 <div id="overviewSection" class="content-section active">
+                    <!-- Welcome Header -->
                     <div class="welcome-section">
-                        <h1>🏠 Your Home Command Center</h1>
-                        <p>Complete home intelligence from foundation to roof</p>
+                        <div class="welcome-content">
+                            <h1>🏠 Your Home Command Center</h1>
+                            <p>Complete home intelligence from foundation to roof</p>
+                            <div class="welcome-stats">
+                                <span class="welcome-stat">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span id="currentDate">Loading...</span>
+                                </span>
+                                <span class="welcome-stat">
+                                    <i class="fas fa-clock"></i>
+                                    <span id="currentTime">Loading...</span>
+                                </span>
+                                <span class="welcome-stat">
+                                    <i class="fas fa-thermometer-half"></i>
+                                    <span id="currentWeather">Loading...</span>
+                                </span>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- Quick Stats -->
-                    <div class="quick-stats">
-                        <div class="stat-card">
+                    <!-- Enhanced Quick Stats -->
+                    <div class="quick-stats-enhanced">
+                        <div class="stat-card enhanced">
                             <div class="stat-icon">🏠</div>
                             <div class="stat-info">
                                 <div class="stat-number" id="homeAge">--</div>
                                 <div class="stat-label">Years Old</div>
+                                <div class="stat-subtitle">Home Age</div>
                             </div>
                         </div>
-                        <div class="stat-card">
+                        <div class="stat-card enhanced">
                             <div class="stat-icon">📐</div>
                             <div class="stat-info">
                                 <div class="stat-number" id="homeSqft">--</div>
                                 <div class="stat-label">Square Feet</div>
+                                <div class="stat-subtitle">Total Area</div>
                             </div>
                         </div>
-                        <div class="stat-card">
+                        <div class="stat-card enhanced">
                             <div class="stat-icon">✅</div>
                             <div class="stat-info">
                                 <div class="stat-number" id="tasksCompleted">0</div>
                                 <div class="stat-label">Tasks Done</div>
+                                <div class="stat-subtitle">This Month</div>
                             </div>
                         </div>
-                        <div class="stat-card">
-                            <div class="stat-icon">⭐</div>
+                        <div class="stat-card enhanced">
+                            <div class="stat-icon">⚠️</div>
                             <div class="stat-info">
-                                <div class="stat-number" id="favoritesCount">0</div>
-                                <div class="stat-label">Favorites</div>
+                                <div class="stat-number" id="maintenanceAlerts">0</div>
+                                <div class="stat-label">Alerts</div>
+                                <div class="stat-subtitle">Maintenance</div>
+                            </div>
+                        </div>
+                        <div class="stat-card enhanced">
+                            <div class="stat-icon">💰</div>
+                            <div class="stat-info">
+                                <div class="stat-number" id="monthlySavings">$0</div>
+                                <div class="stat-label">Saved</div>
+                                <div class="stat-subtitle">This Month</div>
+                            </div>
+                        </div>
+                        <div class="stat-card enhanced">
+                            <div class="stat-icon">🔧</div>
+                            <div class="stat-info">
+                                <div class="stat-number" id="serviceRecords">0</div>
+                                <div class="stat-label">Services</div>
+                                <div class="stat-subtitle">This Year</div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Main Action Cards -->
-                    <div class="action-grid">
-                        <div class="action-card primary" onclick="openTasksCalendar()">
-                            <div class="card-icon">📅</div>
-                            <h3>Tasks & Calendar</h3>
-                            <p>10 essential tasks with smart reminders</p>
-                            <div class="card-features">
-                                <span>✓ Interactive Calendar</span>
-                                <span>✓ Task Management</span>
-                                <span>✓ Smart Reminders</span>
-                                <span>✓ Progress Tracking</span>
+                    <!-- Main Dashboard Grid -->
+                    <div class="dashboard-grid">
+                        <!-- Calendar & Tasks Section -->
+                        <div class="dashboard-widget calendar-widget">
+                            <div class="widget-header">
+                                <h3><i class="fas fa-calendar-alt"></i> Calendar & Tasks</h3>
+                                <button class="widget-action" onclick="openTasksCalendar()">
+                                    <i class="fas fa-external-link-alt"></i>
+                                </button>
+                            </div>
+                            <div class="widget-content">
+                                <div class="mini-calendar" id="miniCalendar">
+                                    <!-- Calendar will be generated here -->
+                                </div>
+                                <div class="upcoming-tasks">
+                                    <h4>Upcoming Tasks</h4>
+                                    <div class="task-list" id="upcomingTasksList">
+                                        <div class="task-item">
+                                            <div class="task-icon">🔧</div>
+                                            <div class="task-details">
+                                                <div class="task-title">HVAC Filter Change</div>
+                                                <div class="task-date">Due: Tomorrow</div>
+                                            </div>
+                                            <div class="task-priority high">High</div>
+                                        </div>
+                                        <div class="task-item">
+                                            <div class="task-icon">🧽</div>
+                                            <div class="task-details">
+                                                <div class="task-title">Gutter Cleaning</div>
+                                                <div class="task-date">Due: Next Week</div>
+                                            </div>
+                                            <div class="task-priority medium">Medium</div>
+                                        </div>
+                                        <div class="task-item">
+                                            <div class="task-icon">🔍</div>
+                                            <div class="task-details">
+                                                <div class="task-title">Smoke Detector Test</div>
+                                                <div class="task-date">Due: Next Month</div>
+                                            </div>
+                                            <div class="task-priority low">Low</div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="action-card" onclick="openProductRecommendations()">
-                            <div class="card-icon">🛍️</div>
-                            <h3>Product Recommendations</h3>
-                            <p>Discover smart picks for your home</p>
-                            <div class="card-features">
-                                <span>✓ Smart Recommendations</span>
-                                <span>✓ Save Favorites</span>
-                                <span>✓ Price Tracking</span>
-                                <span>✓ Direct Ordering</span>
+                        <!-- Weather & Maintenance Alerts -->
+                        <div class="dashboard-widget weather-widget">
+                            <div class="widget-header">
+                                <h3><i class="fas fa-cloud-sun"></i> Weather & Alerts</h3>
+                                <button class="widget-action" onclick="refreshWeather()">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                            <div class="widget-content">
+                                <div class="weather-info">
+                                    <div class="current-weather">
+                                        <div class="weather-icon">☀️</div>
+                                        <div class="weather-details">
+                                            <div class="temperature">72°F</div>
+                                            <div class="condition">Sunny</div>
+                                            <div class="location">Your Location</div>
+                                        </div>
+                                    </div>
+                                    <div class="weather-forecast">
+                                        <div class="forecast-item">
+                                            <div class="forecast-day">Today</div>
+                                            <div class="forecast-temp">72°F</div>
+                                        </div>
+                                        <div class="forecast-item">
+                                            <div class="forecast-day">Tomorrow</div>
+                                            <div class="forecast-temp">68°F</div>
+                                        </div>
+                                        <div class="forecast-item">
+                                            <div class="forecast-day">Day 3</div>
+                                            <div class="forecast-temp">75°F</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="maintenance-alerts">
+                                    <h4>Maintenance Alerts</h4>
+                                    <div class="alert-list" id="maintenanceAlertsList">
+                                        <div class="alert-item high">
+                                            <div class="alert-icon">⚠️</div>
+                                            <div class="alert-details">
+                                                <div class="alert-title">HVAC Filter Overdue</div>
+                                                <div class="alert-description">Filter should be changed every 3 months</div>
+                                            </div>
+                                        </div>
+                                        <div class="alert-item medium">
+                                            <div class="alert-icon">💡</div>
+                                            <div class="alert-details">
+                                                <div class="alert-title">Light Bulb Replacement</div>
+                                                <div class="alert-description">Kitchen light needs new bulb</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="action-card" onclick="openEmergencyServices()">
-                            <div class="card-icon">🚨</div>
-                            <h3>Emergency Services</h3>
-                            <p>Quick access to essential contacts</p>
-                            <div class="card-features">
-                                <span>✓ Emergency Contacts</span>
-                                <span>✓ Service Directory</span>
-                                <span>✓ Quick Call Buttons</span>
-                                <span>✓ Location Services</span>
+                        <!-- Home Health Score -->
+                        <div class="dashboard-widget health-widget">
+                            <div class="widget-header">
+                                <h3><i class="fas fa-heartbeat"></i> Home Health Score</h3>
+                                <button class="widget-action" onclick="showHealthDetails()">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                            </div>
+                            <div class="widget-content">
+                                <div class="health-score">
+                                    <div class="score-circle">
+                                        <div class="score-number" id="homeHealthScore">85</div>
+                                        <div class="score-label">Health Score</div>
+                                    </div>
+                                    <div class="health-breakdown">
+                                        <div class="health-item">
+                                            <div class="health-category">Structure</div>
+                                            <div class="health-bar">
+                                                <div class="health-progress" style="width: 90%"></div>
+                                            </div>
+                                            <div class="health-percentage">90%</div>
+                                        </div>
+                                        <div class="health-item">
+                                            <div class="health-category">Systems</div>
+                                            <div class="health-bar">
+                                                <div class="health-progress" style="width: 85%"></div>
+                                            </div>
+                                            <div class="health-percentage">85%</div>
+                                        </div>
+                                        <div class="health-item">
+                                            <div class="health-category">Maintenance</div>
+                                            <div class="health-bar">
+                                                <div class="health-progress" style="width: 80%"></div>
+                                            </div>
+                                            <div class="health-percentage">80%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Actions -->
+                        <div class="dashboard-widget actions-widget">
+                            <div class="widget-header">
+                                <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                            </div>
+                            <div class="widget-content">
+                                <div class="quick-actions-grid">
+                                    <button class="quick-action" onclick="openTasksCalendar()">
+                                        <div class="action-icon">📅</div>
+                                        <div class="action-label">Tasks & Calendar</div>
+                                    </button>
+                                    <button class="quick-action" onclick="openProductRecommendations()">
+                                        <div class="action-icon">🛍️</div>
+                                        <div class="action-label">Products</div>
+                                    </button>
+                                    <button class="quick-action" onclick="openEmergencyServices()">
+                                        <div class="action-icon">🚨</div>
+                                        <div class="action-label">Emergency</div>
+                                    </button>
+                                    <button class="quick-action" onclick="showAddServiceModal()">
+                                        <div class="action-icon">🔧</div>
+                                        <div class="action-label">Add Service</div>
+                                    </button>
+                                    <button class="quick-action" onclick="showSection('basic', document.querySelector('.nav-item'))">
+                                        <div class="action-icon">📝</div>
+                                        <div class="action-label">Home Details</div>
+                                    </button>
+                                    <button class="quick-action" onclick="exportHomeData()">
+                                        <div class="action-icon">📊</div>
+                                        <div class="action-label">Export Data</div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Activity -->
+                        <div class="dashboard-widget activity-widget">
+                            <div class="widget-header">
+                                <h3><i class="fas fa-history"></i> Recent Activity</h3>
+                                <button class="widget-action" onclick="showAllActivity()">
+                                    <i class="fas fa-external-link-alt"></i>
+                                </button>
+                            </div>
+                            <div class="widget-content">
+                                <div class="activity-list" id="recentActivityList">
+                                    <div class="activity-item">
+                                        <div class="activity-icon">✅</div>
+                                        <div class="activity-details">
+                                            <div class="activity-title">Task Completed</div>
+                                            <div class="activity-description">HVAC filter changed</div>
+                                            <div class="activity-time">2 hours ago</div>
+                                        </div>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-icon">📝</div>
+                                        <div class="activity-details">
+                                            <div class="activity-title">Service Record Added</div>
+                                            <div class="activity-description">Plumbing inspection completed</div>
+                                            <div class="activity-time">1 day ago</div>
+                                        </div>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-icon">🛍️</div>
+                                        <div class="activity-details">
+                                            <div class="activity-title">Product Added</div>
+                                            <div class="activity-description">Smart thermostat favorited</div>
+                                            <div class="activity-time">3 days ago</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Energy & Cost Savings -->
+                        <div class="dashboard-widget savings-widget">
+                            <div class="widget-header">
+                                <h3><i class="fas fa-dollar-sign"></i> Energy & Savings</h3>
+                                <button class="widget-action" onclick="showSavingsDetails()">
+                                    <i class="fas fa-chart-line"></i>
+                                </button>
+                            </div>
+                            <div class="widget-content">
+                                <div class="savings-overview">
+                                    <div class="savings-item">
+                                        <div class="savings-icon">⚡</div>
+                                        <div class="savings-details">
+                                            <div class="savings-amount">$45</div>
+                                            <div class="savings-label">Energy Saved</div>
+                                            <div class="savings-period">This Month</div>
+                                        </div>
+                                    </div>
+                                    <div class="savings-item">
+                                        <div class="savings-icon">🔧</div>
+                                        <div class="savings-details">
+                                            <div class="savings-amount">$120</div>
+                                            <div class="savings-label">Maintenance</div>
+                                            <div class="savings-period">Prevented</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="savings-tips">
+                                    <h4>Savings Tips</h4>
+                                    <div class="tip-item">
+                                        <div class="tip-icon">💡</div>
+                                        <div class="tip-text">Switch to LED bulbs to save 75% on lighting costs</div>
+                                    </div>
+                                    <div class="tip-item">
+                                        <div class="tip-icon">🌡️</div>
+                                        <div class="tip-text">Programmable thermostat can save 10% on heating/cooling</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -5413,6 +6254,242 @@
                 button.closest('.room-section').remove();
             }
         }
+
+        // Enhanced Dashboard Functions
+        function initializeDashboard() {
+            updateDateTime();
+            updateQuickStats();
+            generateMiniCalendar();
+            loadDashboardData();
+            
+            // Update time every minute
+            setInterval(updateDateTime, 60000);
+        }
+
+        function updateDateTime() {
+            const now = new Date();
+            
+            // Update current date
+            const dateOptions = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            };
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', dateOptions);
+            
+            // Update current time
+            const timeOptions = { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: true
+            };
+            document.getElementById('currentTime').textContent = now.toLocaleTimeString('en-US', timeOptions);
+        }
+
+        function generateMiniCalendar() {
+            const calendar = document.getElementById('miniCalendar');
+            const now = new Date();
+            const monthNames = ["January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"];
+            
+            calendar.innerHTML = `
+                <h4>${monthNames[now.getMonth()]} ${now.getFullYear()}</h4>
+                <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.25rem; margin-top: 0.5rem;">
+                    <div style="font-size: 0.7rem; text-align: center; color: rgba(255,255,255,0.6);">S</div>
+                    <div style="font-size: 0.7rem; text-align: center; color: rgba(255,255,255,0.6);">M</div>
+                    <div style="font-size: 0.7rem; text-align: center; color: rgba(255,255,255,0.6);">T</div>
+                    <div style="font-size: 0.7rem; text-align: center; color: rgba(255,255,255,0.6);">W</div>
+                    <div style="font-size: 0.7rem; text-align: center; color: rgba(255,255,255,0.6);">T</div>
+                    <div style="font-size: 0.7rem; text-align: center; color: rgba(255,255,255,0.6);">F</div>
+                    <div style="font-size: 0.7rem; text-align: center; color: rgba(255,255,255,0.6);">S</div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.25rem; margin-top: 0.25rem;" id="calendarDays">
+                    <!-- Days will be generated here -->
+                </div>
+            `;
+            
+            // Generate calendar days
+            const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+            const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            const startDate = new Date(firstDay);
+            startDate.setDate(startDate.getDate() - firstDay.getDay());
+            
+            const calendarDays = document.getElementById('calendarDays');
+            for (let i = 0; i < 42; i++) {
+                const date = new Date(startDate);
+                date.setDate(startDate.getDate() + i);
+                
+                const dayElement = document.createElement('div');
+                dayElement.style.cssText = `
+                    font-size: 0.7rem; 
+                    text-align: center; 
+                    padding: 0.25rem; 
+                    border-radius: 4px; 
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                `;
+                
+                if (date.getMonth() === now.getMonth()) {
+                    dayElement.style.color = 'white';
+                    if (date.getDate() === now.getDate()) {
+                        dayElement.style.background = 'rgba(16, 185, 129, 0.8)';
+                        dayElement.style.fontWeight = 'bold';
+                    }
+                } else {
+                    dayElement.style.color = 'rgba(255,255,255,0.3)';
+                }
+                
+                dayElement.textContent = date.getDate();
+                dayElement.onmouseover = () => {
+                    if (date.getMonth() === now.getMonth()) {
+                        dayElement.style.background = 'rgba(255,255,255,0.1)';
+                    }
+                };
+                dayElement.onmouseout = () => {
+                    if (date.getDate() !== now.getDate() || date.getMonth() !== now.getMonth()) {
+                        dayElement.style.background = 'transparent';
+                    }
+                };
+                
+                calendarDays.appendChild(dayElement);
+            }
+        }
+
+        function loadDashboardData() {
+            if (!currentUser) return;
+            
+            // Load service records count
+            const db = firebase.firestore();
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).collection('serviceHistory').get()
+                .then(querySnapshot => {
+                    document.getElementById('serviceRecords').textContent = querySnapshot.size;
+                })
+                .catch(error => console.error('Error loading service records:', error));
+            
+            // Simulate other data
+            document.getElementById('maintenanceAlerts').textContent = '2';
+            document.getElementById('monthlySavings').textContent = '$165';
+            
+            // Update weather (placeholder)
+            document.getElementById('currentWeather').textContent = '72°F Sunny';
+        }
+
+        function refreshWeather() {
+            // Simulate weather refresh
+            const temps = [68, 70, 72, 74, 76];
+            const conditions = ['Sunny', 'Partly Cloudy', 'Cloudy', 'Clear'];
+            
+            const randomTemp = temps[Math.floor(Math.random() * temps.length)];
+            const randomCondition = conditions[Math.floor(Math.random() * conditions.length)];
+            
+            document.getElementById('currentWeather').textContent = `${randomTemp}°F ${randomCondition}`;
+            
+            // Update weather widget
+            const weatherDetails = document.querySelector('.weather-details');
+            if (weatherDetails) {
+                weatherDetails.querySelector('.temperature').textContent = `${randomTemp}°F`;
+                weatherDetails.querySelector('.condition').textContent = randomCondition;
+            }
+            
+            // Show refresh animation
+            const refreshBtn = event.target.closest('.widget-action');
+            refreshBtn.style.transform = 'rotate(360deg)';
+            setTimeout(() => {
+                refreshBtn.style.transform = 'rotate(0deg)';
+            }, 500);
+        }
+
+        function showHealthDetails() {
+            alert('Home Health Score Details:\n\n' +
+                  '• Structure: 90% - Excellent condition\n' +
+                  '• Systems: 85% - Good condition, minor maintenance needed\n' +
+                  '• Maintenance: 80% - Some overdue tasks\n\n' +
+                  'Overall Score: 85% - Your home is in great shape!');
+        }
+
+        function showSavingsDetails() {
+            alert('Energy & Cost Savings Details:\n\n' +
+                  '• Energy Saved: $45 this month\n' +
+                  '• Maintenance Prevented: $120\n' +
+                  '• Total Savings: $165\n\n' +
+                  'Keep up the great work with regular maintenance!');
+        }
+
+        function showAllActivity() {
+            alert('Recent Activity:\n\n' +
+                  '• HVAC filter changed (2 hours ago)\n' +
+                  '• Plumbing inspection completed (1 day ago)\n' +
+                  '• Smart thermostat favorited (3 days ago)\n' +
+                  '• Gutter cleaning scheduled (1 week ago)\n' +
+                  '• Smoke detector tested (2 weeks ago)');
+        }
+
+        function exportHomeData() {
+            if (!currentUser) {
+                alert('Please log in to export data');
+                return;
+            }
+            
+            // Simulate data export
+            const exportData = {
+                homeInfo: homeData,
+                exportDate: new Date().toISOString(),
+                user: currentUser.email
+            };
+            
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'home-data-export.json';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            alert('Home data exported successfully!');
+        }
+
+        // Initialize dashboard when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Existing initialization code...
+            console.log('Dashboard loading...');
+            
+            // Initialize Firebase and authentication
+            const firebaseConfig = {
+                apiKey: "AIzaSyBs9-LoO6vGlmhzC3zRjJYWR8XrJoJNGas",
+                authDomain: "nestmate-a8f2e.firebaseapp.com",
+                projectId: "nestmate-a8f2e",
+                storageBucket: "nestmate-a8f2e.appspot.com",
+                messagingSenderId: "1095892005315",
+                appId: "1:1095892005315:web:b7f4b5b5b7f4b5b5b7f4b5"
+            };
+
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+
+            const auth = firebase.auth();
+            const db = firebase.firestore();
+
+            auth.onAuthStateChanged(function(user) {
+                if (user) {
+                    currentUser = user;
+                    console.log('User authenticated:', user.email);
+                    
+                    // Initialize enhanced dashboard
+                    setTimeout(() => {
+                        initializeDashboard();
+                    }, 1000);
+                } else {
+                    console.log('No user authenticated, redirecting to signin');
+                    window.location.href = 'signin.html';
+                }
+            });
+        });
 
         // Close modal when clicking outside
         window.onclick = function(event) {
