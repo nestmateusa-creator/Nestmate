@@ -2285,14 +2285,49 @@
             section.innerHTML = `
                 <div class="section-header">
                     <h3 class="section-title">Bedroom Details</h3>
-                    <button type="button" class="btn btn-primary btn-small" onclick="addBedroom()">
-                        <i class="fas fa-plus"></i> Add Bedroom
-                    </button>
+                    <div class="header-actions">
+                        <button type="button" class="btn btn-secondary btn-small" onclick="toggleEditMode('bedrooms')" id="editBedroomsBtn">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button type="button" class="btn btn-primary btn-small" onclick="addBedroom()">
+                            <i class="fas fa-plus"></i> Add Bedroom
+                        </button>
+                        <button type="button" class="btn btn-primary btn-small" onclick="showAddServiceModal()">
+                            <i class="fas fa-plus"></i> Add Service
+                        </button>
+                    </div>
                 </div>
-                <div id="bedroomsList">
-                    <!-- Bedrooms will be dynamically added here -->
+                
+                <!-- Bedrooms Form -->
+                <form id="bedroomsForm">
+                    <div id="bedroomsList">
+                        <!-- Bedrooms will be dynamically added here -->
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="toggleEditMode('bedrooms')" id="cancelBedroomsBtn" style="display: none;">
+                            Cancel
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="saveBedroomsData()" id="saveBedroomsBtn" style="display: none;">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Service History & Maintenance Records -->
+                <div class="service-history-section">
+                    <div class="section-subheader">
+                        <h4 class="subtitle">Service History & Maintenance Records</h4>
+                    </div>
+                    <div id="bedroomsServiceHistory" class="service-history-list">
+                        <!-- Service records will be loaded here -->
+                    </div>
                 </div>
             `;
+            
+            // Load existing data and service history
+            loadBedroomsData();
+            loadServiceHistory('bedrooms');
         }
 
         function loadBathroomsContent() {
@@ -2300,14 +2335,49 @@
             section.innerHTML = `
                 <div class="section-header">
                     <h3 class="section-title">Bathroom Details</h3>
-                    <button type="button" class="btn btn-primary btn-small" onclick="addBathroom()">
-                        <i class="fas fa-plus"></i> Add Bathroom
-                    </button>
+                    <div class="header-actions">
+                        <button type="button" class="btn btn-secondary btn-small" onclick="toggleEditMode('bathrooms')" id="editBathroomsBtn">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button type="button" class="btn btn-primary btn-small" onclick="addBathroom()">
+                            <i class="fas fa-plus"></i> Add Bathroom
+                        </button>
+                        <button type="button" class="btn btn-primary btn-small" onclick="showAddServiceModal()">
+                            <i class="fas fa-plus"></i> Add Service
+                        </button>
+                    </div>
                 </div>
-                <div id="bathroomsList">
-                    <!-- Bathrooms will be dynamically added here -->
+                
+                <!-- Bathrooms Form -->
+                <form id="bathroomsForm">
+                    <div id="bathroomsList">
+                        <!-- Bathrooms will be dynamically added here -->
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="toggleEditMode('bathrooms')" id="cancelBathroomsBtn" style="display: none;">
+                            Cancel
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="saveBathroomsData()" id="saveBathroomsBtn" style="display: none;">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Service History & Maintenance Records -->
+                <div class="service-history-section">
+                    <div class="section-subheader">
+                        <h4 class="subtitle">Service History & Maintenance Records</h4>
+                    </div>
+                    <div id="bathroomsServiceHistory" class="service-history-list">
+                        <!-- Service records will be loaded here -->
+                    </div>
                 </div>
             `;
+            
+            // Load existing data and service history
+            loadBathroomsData();
+            loadServiceHistory('bathrooms');
         }
 
         function loadKitchenContent() {
@@ -2846,6 +2916,48 @@
                     }
                 })
                 .catch(error => console.error('Error loading systems data:', error));
+        }
+
+        function loadBedroomsData() {
+            if (!currentUser) return;
+            
+            const db = firebase.firestore();
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
+                .then(doc => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        // Load bedrooms data if it exists
+                        if (data.bedrooms && Array.isArray(data.bedrooms)) {
+                            const bedroomsList = document.getElementById('bedroomsList');
+                            bedroomsList.innerHTML = '';
+                            data.bedrooms.forEach((bedroom, index) => {
+                                addBedroomToDOM(bedroom, index);
+                            });
+                        }
+                    }
+                })
+                .catch(error => console.error('Error loading bedrooms data:', error));
+        }
+
+        function loadBathroomsData() {
+            if (!currentUser) return;
+            
+            const db = firebase.firestore();
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
+                .then(doc => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        // Load bathrooms data if it exists
+                        if (data.bathrooms && Array.isArray(data.bathrooms)) {
+                            const bathroomsList = document.getElementById('bathroomsList');
+                            bathroomsList.innerHTML = '';
+                            data.bathrooms.forEach((bathroom, index) => {
+                                addBathroomToDOM(bathroom, index);
+                            });
+                        }
+                    }
+                })
+                .catch(error => console.error('Error loading bathrooms data:', error));
         }
 
         function loadServiceHistory() {
@@ -3424,6 +3536,79 @@
                 });
         }
 
+        function saveBedroomsData() {
+            if (!currentUser) return;
+            
+            const bedrooms = [];
+            const bedroomElements = document.querySelectorAll('.bedroom-item');
+            
+            bedroomElements.forEach((element, index) => {
+                const bedroomData = {
+                    name: element.querySelector('.bedroom-name').value || `Bedroom ${index + 1}`,
+                    size: element.querySelector('.bedroom-size').value || '',
+                    flooring: element.querySelector('.bedroom-flooring').value || '',
+                    windows: element.querySelector('.bedroom-windows').value || '',
+                    closet: element.querySelector('.bedroom-closet').value || '',
+                    notes: element.querySelector('.bedroom-notes').value || ''
+                };
+                bedrooms.push(bedroomData);
+            });
+            
+            const formData = { bedrooms };
+            
+            const userRef = db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid);
+            const backupRef = db.collection('NESTMATE USER HOME SAVED DATA BACKUP').doc(currentUser.uid);
+            
+            userRef.set(formData, { merge: true })
+                .then(() => {
+                    backupRef.set(formData, { merge: true });
+                    homeData = { ...homeData, ...formData };
+                    alert('Bedrooms information saved successfully!');
+                    toggleEditMode('bedrooms'); // Switch back to view mode
+                })
+                .catch(error => {
+                    console.error('Error saving bedrooms data:', error);
+                    alert('Error saving bedrooms data. Please try again.');
+                });
+        }
+
+        function saveBathroomsData() {
+            if (!currentUser) return;
+            
+            const bathrooms = [];
+            const bathroomElements = document.querySelectorAll('.bathroom-item');
+            
+            bathroomElements.forEach((element, index) => {
+                const bathroomData = {
+                    name: element.querySelector('.bathroom-name').value || `Bathroom ${index + 1}`,
+                    type: element.querySelector('.bathroom-type').value || '',
+                    size: element.querySelector('.bathroom-size').value || '',
+                    fixtures: element.querySelector('.bathroom-fixtures').value || '',
+                    flooring: element.querySelector('.bathroom-flooring').value || '',
+                    ventilation: element.querySelector('.bathroom-ventilation').value || '',
+                    notes: element.querySelector('.bathroom-notes').value || ''
+                };
+                bathrooms.push(bathroomData);
+            });
+            
+            const formData = { bathrooms };
+            
+            const userRef = db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid);
+            const backupRef = db.collection('NESTMATE USER HOME SAVED DATA BACKUP').doc(currentUser.uid);
+            
+            userRef.set(formData, { merge: true })
+                .then(() => {
+                    backupRef.set(formData, { merge: true });
+                    homeData = { ...homeData, ...formData };
+                    alert('Bathrooms information saved successfully!');
+                    toggleEditMode('bathrooms'); // Switch back to view mode
+                })
+                .catch(error => {
+                    console.error('Error saving bathrooms data:', error);
+                    alert('Error saving bathrooms data. Please try again.');
+                });
+        }
+
         function loadHomeDataFromFirebase() {
             if (!currentUser) return;
             
@@ -3677,6 +3862,61 @@
             bedroomsList.appendChild(bedroomDiv);
         }
 
+        function addBedroomToDOM(bedroomData, index) {
+            const bedroomsList = document.getElementById('bedroomsList');
+            const bedroomDiv = document.createElement('div');
+            bedroomDiv.className = 'room-section bedroom-item';
+            bedroomDiv.innerHTML = `
+                <div class="room-header">
+                    <h5>${bedroomData.name || `Bedroom ${index + 1}`}</h5>
+                    <button type="button" class="btn btn-danger btn-small" onclick="removeRoom(this)">
+                        <i class="fas fa-trash"></i> Remove
+                    </button>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Room Name</label>
+                        <input type="text" class="form-input bedroom-name" value="${bedroomData.name || ''}" placeholder="e.g., Master Bedroom, Guest Room" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Square Footage</label>
+                        <input type="number" class="form-input bedroom-size" value="${bedroomData.size || ''}" placeholder="Room size in sq ft" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Flooring Type</label>
+                        <select class="form-input bedroom-flooring" disabled>
+                            <option value="">Select flooring</option>
+                            <option value="hardwood" ${bedroomData.flooring === 'hardwood' ? 'selected' : ''}>Hardwood</option>
+                            <option value="carpet" ${bedroomData.flooring === 'carpet' ? 'selected' : ''}>Carpet</option>
+                            <option value="laminate" ${bedroomData.flooring === 'laminate' ? 'selected' : ''}>Laminate</option>
+                            <option value="tile" ${bedroomData.flooring === 'tile' ? 'selected' : ''}>Tile</option>
+                            <option value="vinyl" ${bedroomData.flooring === 'vinyl' ? 'selected' : ''}>Vinyl</option>
+                            <option value="bamboo" ${bedroomData.flooring === 'bamboo' ? 'selected' : ''}>Bamboo</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Window Count</label>
+                        <input type="number" class="form-input bedroom-windows" value="${bedroomData.windows || ''}" placeholder="Number of windows" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Closet Type</label>
+                        <select class="form-input bedroom-closet" disabled>
+                            <option value="">Select closet type</option>
+                            <option value="walk-in" ${bedroomData.closet === 'walk-in' ? 'selected' : ''}>Walk-in Closet</option>
+                            <option value="reach-in" ${bedroomData.closet === 'reach-in' ? 'selected' : ''}>Reach-in Closet</option>
+                            <option value="wardrobe" ${bedroomData.closet === 'wardrobe' ? 'selected' : ''}>Wardrobe</option>
+                            <option value="built-in" ${bedroomData.closet === 'built-in' ? 'selected' : ''}>Built-in</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-input bedroom-notes" placeholder="Additional notes about this bedroom" disabled>${bedroomData.notes || ''}</textarea>
+                    </div>
+                </div>
+            `;
+            bedroomsList.appendChild(bedroomDiv);
+        }
+
         function addBathroom() {
             bathroomCount++;
             const bathroomsList = document.getElementById('bathroomsList');
@@ -3764,6 +4004,70 @@
                     <div class="form-group">
                         <label class="form-label">Notes</label>
                         <textarea class="form-input form-textarea" id="bathroom${bathroomCount}Notes" placeholder="Additional notes about this bathroom"></textarea>
+                    </div>
+                </div>
+            `;
+            bathroomsList.appendChild(bathroomDiv);
+        }
+
+        function addBathroomToDOM(bathroomData, index) {
+            const bathroomsList = document.getElementById('bathroomsList');
+            const bathroomDiv = document.createElement('div');
+            bathroomDiv.className = 'room-section bathroom-item';
+            bathroomDiv.innerHTML = `
+                <div class="room-header">
+                    <h5>${bathroomData.name || `Bathroom ${index + 1}`}</h5>
+                    <button type="button" class="btn btn-danger btn-small" onclick="removeRoom(this)">
+                        <i class="fas fa-trash"></i> Remove
+                    </button>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Room Name</label>
+                        <input type="text" class="form-input bathroom-name" value="${bathroomData.name || ''}" placeholder="e.g., Master Bath, Guest Bath" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Bathroom Type</label>
+                        <select class="form-input bathroom-type" disabled>
+                            <option value="">Select type</option>
+                            <option value="full" ${bathroomData.type === 'full' ? 'selected' : ''}>Full Bathroom</option>
+                            <option value="half" ${bathroomData.type === 'half' ? 'selected' : ''}>Half Bathroom</option>
+                            <option value="three-quarter" ${bathroomData.type === 'three-quarter' ? 'selected' : ''}>Three-Quarter Bathroom</option>
+                            <option value="master" ${bathroomData.type === 'master' ? 'selected' : ''}>Master Bathroom</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Square Footage</label>
+                        <input type="number" class="form-input bathroom-size" value="${bathroomData.size || ''}" placeholder="Room size in sq ft" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Fixtures</label>
+                        <input type="text" class="form-input bathroom-fixtures" value="${bathroomData.fixtures || ''}" placeholder="e.g., Toilet, Sink, Shower, Tub" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Flooring Type</label>
+                        <select class="form-input bathroom-flooring" disabled>
+                            <option value="">Select flooring</option>
+                            <option value="tile" ${bathroomData.flooring === 'tile' ? 'selected' : ''}>Tile</option>
+                            <option value="vinyl" ${bathroomData.flooring === 'vinyl' ? 'selected' : ''}>Vinyl</option>
+                            <option value="laminate" ${bathroomData.flooring === 'laminate' ? 'selected' : ''}>Laminate</option>
+                            <option value="stone" ${bathroomData.flooring === 'stone' ? 'selected' : ''}>Stone</option>
+                            <option value="concrete" ${bathroomData.flooring === 'concrete' ? 'selected' : ''}>Concrete</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Ventilation</label>
+                        <select class="form-input bathroom-ventilation" disabled>
+                            <option value="">Select ventilation</option>
+                            <option value="exhaust-fan" ${bathroomData.ventilation === 'exhaust-fan' ? 'selected' : ''}>Exhaust Fan</option>
+                            <option value="window" ${bathroomData.ventilation === 'window' ? 'selected' : ''}>Window</option>
+                            <option value="both" ${bathroomData.ventilation === 'both' ? 'selected' : ''}>Both Fan & Window</option>
+                            <option value="none" ${bathroomData.ventilation === 'none' ? 'selected' : ''}>None</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-input bathroom-notes" placeholder="Additional notes about this bathroom" disabled>${bathroomData.notes || ''}</textarea>
                     </div>
                 </div>
             `;
