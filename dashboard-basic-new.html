@@ -3334,31 +3334,45 @@
 
         // Edit Mode Functions
         function toggleEditMode(section) {
-            const form = document.getElementById(section + 'InfoForm');
+            // Handle different form naming conventions
+            let formId;
+            if (section === 'basic') {
+                formId = 'basicInfoForm';
+            } else {
+                formId = section + 'Form';
+            }
+            
+            const form = document.getElementById(formId);
+            if (!form) {
+                console.error('Form not found:', formId);
+                return;
+            }
+            
             const inputs = form.querySelectorAll('input, select, textarea');
             const editBtn = document.getElementById('edit' + section.charAt(0).toUpperCase() + section.slice(1) + 'Btn');
+            const cancelBtn = document.getElementById('cancel' + section.charAt(0).toUpperCase() + section.slice(1) + 'Btn');
+            const saveBtn = document.getElementById('save' + section.charAt(0).toUpperCase() + section.slice(1) + 'Btn');
             
-            if (inputs[0].disabled) {
+            if (inputs[0] && inputs[0].disabled) {
                 // Enable edit mode
                 inputs.forEach(input => input.disabled = false);
                 editBtn.innerHTML = '<i class="fas fa-save"></i> Save';
                 editBtn.classList.remove('btn-secondary');
                 editBtn.classList.add('btn-success');
+                
+                // Show cancel and save buttons
+                if (cancelBtn) cancelBtn.style.display = 'inline-block';
+                if (saveBtn) saveBtn.style.display = 'inline-block';
             } else {
-                // Save and disable edit mode
+                // Disable edit mode
                 inputs.forEach(input => input.disabled = true);
                 editBtn.innerHTML = '<i class="fas fa-edit"></i> Edit';
                 editBtn.classList.remove('btn-success');
                 editBtn.classList.add('btn-secondary');
                 
-                // Save the data
-                const homeData = {};
-                inputs.forEach(input => {
-                    if (input.value) {
-                        homeData[input.id] = input.value;
-                    }
-                });
-                saveHomeDataToFirebase(homeData);
+                // Hide cancel and save buttons
+                if (cancelBtn) cancelBtn.style.display = 'none';
+                if (saveBtn) saveBtn.style.display = 'none';
             }
         }
 
@@ -3580,22 +3594,40 @@
                 .catch(error => console.error('Error loading appliances data:', error));
         }
 
-        function loadServiceHistory() {
+        function loadServiceHistory(section = null) {
             if (!currentUser) return;
             
             const db = firebase.firestore();
-            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).collection('serviceHistory')
-                .orderBy('date', 'desc')
-                .get()
+            let query = db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).collection('serviceHistory');
+            
+            // If section is specified, filter by section
+            if (section) {
+                query = query.where('section', '==', section);
+            }
+            
+            query.orderBy('date', 'desc').get()
                 .then(querySnapshot => {
-                    const serviceHistoryList = document.getElementById('serviceHistoryList');
+                    // Determine which service history list to update
+                    let serviceHistoryListId;
+                    if (section) {
+                        serviceHistoryListId = section + 'ServiceHistory';
+                    } else {
+                        serviceHistoryListId = 'serviceHistoryList';
+                    }
+                    
+                    const serviceHistoryList = document.getElementById(serviceHistoryListId);
+                    if (!serviceHistoryList) {
+                        console.error('Service history list not found:', serviceHistoryListId);
+                        return;
+                    }
+                    
                     serviceHistoryList.innerHTML = '';
                     
                     if (querySnapshot.empty) {
                         serviceHistoryList.innerHTML = `
                             <div class="no-records">
                                 <p style="color: rgba(255,255,255,0.6); text-align: center; padding: 2rem;">
-                                    No service records yet. Click "Add Record" to get started!
+                                    No service records yet. Click "Add Service" to get started!
                                 </p>
                             </div>
                         `;
