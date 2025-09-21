@@ -4199,8 +4199,21 @@
                     name: element.querySelector('.bedroom-name').value || `Bedroom ${index + 1}`,
                     size: element.querySelector('.bedroom-size').value || '',
                     flooring: element.querySelector('.bedroom-flooring').value || '',
-                    windows: element.querySelector('.bedroom-windows').value || '',
+                    flooringColor: element.querySelector('.bedroom-flooring-color').value || '',
                     closet: element.querySelector('.bedroom-closet').value || '',
+                    closetSize: element.querySelector('.bedroom-closet-size').value || '',
+                    windows: element.querySelector('.bedroom-windows').value || '',
+                    window1Size: element.querySelector('.bedroom-window1-size').value || '',
+                    window2Size: element.querySelector('.bedroom-window2-size').value || '',
+                    windowTreatments: element.querySelector('.bedroom-window-treatments').value || '',
+                    treatmentSizes: element.querySelector('.bedroom-treatment-sizes').value || '',
+                    trimStyle: element.querySelector('.bedroom-trim-style').value || '',
+                    trimMaterial: element.querySelector('.bedroom-trim-material').value || '',
+                    trimColor: element.querySelector('.bedroom-trim-color').value || '',
+                    ceilingHeight: element.querySelector('.bedroom-ceiling-height').value || '',
+                    ceilingType: element.querySelector('.bedroom-ceiling-type').value || '',
+                    lighting: element.querySelector('.bedroom-lighting').value || '',
+                    outlets: element.querySelector('.bedroom-outlets').value || '',
                     notes: element.querySelector('.bedroom-notes').value || ''
                 };
                 bedrooms.push(bedroomData);
@@ -4235,9 +4248,22 @@
                     name: element.querySelector('.bathroom-name').value || `Bathroom ${index + 1}`,
                     type: element.querySelector('.bathroom-type').value || '',
                     size: element.querySelector('.bathroom-size').value || '',
-                    fixtures: element.querySelector('.bathroom-fixtures').value || '',
                     flooring: element.querySelector('.bathroom-flooring').value || '',
+                    flooringColor: element.querySelector('.bathroom-flooring-color').value || '',
+                    toiletType: element.querySelector('.bathroom-toilet-type').value || '',
+                    toiletBrand: element.querySelector('.bathroom-toilet-brand').value || '',
+                    sinkType: element.querySelector('.bathroom-sink-type').value || '',
+                    sinkMaterial: element.querySelector('.bathroom-sink-material').value || '',
+                    showerType: element.querySelector('.bathroom-shower-type').value || '',
+                    tubType: element.querySelector('.bathroom-tub-type').value || '',
+                    countertop: element.querySelector('.bathroom-countertop').value || '',
+                    vanityStyle: element.querySelector('.bathroom-vanity-style').value || '',
+                    mirrorType: element.querySelector('.bathroom-mirror-type').value || '',
+                    lighting: element.querySelector('.bathroom-lighting').value || '',
                     ventilation: element.querySelector('.bathroom-ventilation').value || '',
+                    windowSize: element.querySelector('.bathroom-window-size').value || '',
+                    windowTreatments: element.querySelector('.bathroom-window-treatments').value || '',
+                    outlets: element.querySelector('.bathroom-outlets').value || '',
                     notes: element.querySelector('.bathroom-notes').value || ''
                 };
                 bathrooms.push(bathroomData);
@@ -4604,11 +4630,13 @@
                             <option value="tile">Tile</option>
                             <option value="vinyl">Vinyl</option>
                             <option value="bamboo">Bamboo</option>
+                            <option value="cork">Cork</option>
+                            <option value="concrete">Polished Concrete</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Window Count</label>
-                        <input type="number" class="form-input" id="bedroom${bedroomCount}Windows" placeholder="Number of windows">
+                        <label class="form-label">Flooring Color/Finish</label>
+                        <input type="text" class="form-input" id="bedroom${bedroomCount}FlooringColor" placeholder="e.g., Oak Natural, Gray Carpet">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Closet Type</label>
@@ -4621,25 +4649,93 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Ceiling Fan</label>
-                        <select class="form-input" id="bedroom${bedroomCount}Fan">
-                            <option value="">Select fan type</option>
-                            <option value="none">No Fan</option>
-                            <option value="ceiling">Ceiling Fan</option>
-                            <option value="wall">Wall Fan</option>
-                            <option value="floor">Floor Fan</option>
+                        <label class="form-label">Closet Size (sq ft)</label>
+                        <input type="number" class="form-input" id="bedroom${bedroomCount}ClosetSize" placeholder="Closet square footage">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Window Count</label>
+                        <input type="number" class="form-input" id="bedroom${bedroomCount}Windows" placeholder="Number of windows">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Window 1 Size (W x H)</label>
+                        <input type="text" class="form-input" id="bedroom${bedroomCount}Window1Size" placeholder="e.g., 36x48 inches">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Window 2 Size (W x H)</label>
+                        <input type="text" class="form-input" id="bedroom${bedroomCount}Window2Size" placeholder="e.g., 24x36 inches">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Window Treatments</label>
+                        <select class="form-input" id="bedroom${bedroomCount}WindowTreatments">
+                            <option value="">Select treatments</option>
+                            <option value="blinds">Blinds</option>
+                            <option value="curtains">Curtains</option>
+                            <option value="shades">Shades</option>
+                            <option value="shutters">Shutters</option>
+                            <option value="none">None</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Blind/Curtain Sizes</label>
+                        <input type="text" class="form-input" id="bedroom${bedroomCount}TreatmentSizes" placeholder="e.g., 36x48 blinds, 84x96 curtains">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Trim Style</label>
+                        <select class="form-input" id="bedroom${bedroomCount}TrimStyle">
+                            <option value="">Select trim style</option>
+                            <option value="colonial">Colonial</option>
+                            <option value="craftsman">Craftsman</option>
+                            <option value="modern">Modern</option>
+                            <option value="traditional">Traditional</option>
+                            <option value="minimal">Minimal</option>
+                            <option value="ornate">Ornate</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Trim Material</label>
+                        <select class="form-input" id="bedroom${bedroomCount}TrimMaterial">
+                            <option value="">Select trim material</option>
+                            <option value="wood">Wood</option>
+                            <option value="mdf">MDF</option>
+                            <option value="pvc">PVC</option>
+                            <option value="composite">Composite</option>
+                            <option value="metal">Metal</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Trim Color</label>
+                        <input type="text" class="form-input" id="bedroom${bedroomCount}TrimColor" placeholder="e.g., White, Natural Oak, Gray">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Ceiling Height (ft)</label>
+                        <input type="number" class="form-input" id="bedroom${bedroomCount}CeilingHeight" placeholder="e.g., 9, 10, 12" step="0.5">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Ceiling Type</label>
+                        <select class="form-input" id="bedroom${bedroomCount}CeilingType">
+                            <option value="">Select ceiling type</option>
+                            <option value="flat">Flat</option>
+                            <option value="vaulted">Vaulted</option>
+                            <option value="tray">Tray Ceiling</option>
+                            <option value="coffered">Coffered</option>
+                            <option value="beamed">Exposed Beams</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Lighting Type</label>
                         <select class="form-input" id="bedroom${bedroomCount}Lighting">
                             <option value="">Select lighting</option>
-                            <option value="overhead">Overhead Light</option>
-                            <option value="recessed">Recessed Lighting</option>
-                            <option value="track">Track Lighting</option>
+                            <option value="ceiling-fan">Ceiling Fan</option>
                             <option value="chandelier">Chandelier</option>
-                            <option value="multiple">Multiple Fixtures</option>
+                            <option value="recessed">Recessed Lighting</option>
+                            <option value="pendant">Pendant Lights</option>
+                            <option value="track">Track Lighting</option>
+                            <option value="table-lamps">Table Lamps</option>
                         </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Electrical Outlets</label>
+                        <input type="number" class="form-input" id="bedroom${bedroomCount}Outlets" placeholder="Number of outlets" min="0">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Notes</label>
@@ -4680,11 +4776,13 @@
                             <option value="tile" ${bedroomData.flooring === 'tile' ? 'selected' : ''}>Tile</option>
                             <option value="vinyl" ${bedroomData.flooring === 'vinyl' ? 'selected' : ''}>Vinyl</option>
                             <option value="bamboo" ${bedroomData.flooring === 'bamboo' ? 'selected' : ''}>Bamboo</option>
+                            <option value="cork" ${bedroomData.flooring === 'cork' ? 'selected' : ''}>Cork</option>
+                            <option value="concrete" ${bedroomData.flooring === 'concrete' ? 'selected' : ''}>Polished Concrete</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Window Count</label>
-                        <input type="number" class="form-input bedroom-windows" value="${bedroomData.windows || ''}" placeholder="Number of windows" disabled>
+                        <label class="form-label">Flooring Color/Finish</label>
+                        <input type="text" class="form-input bedroom-flooring-color" value="${bedroomData.flooringColor || ''}" placeholder="e.g., Oak Natural, Gray Carpet" disabled>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Closet Type</label>
@@ -4697,8 +4795,97 @@
                         </select>
                     </div>
                     <div class="form-group">
+                        <label class="form-label">Closet Size (sq ft)</label>
+                        <input type="number" class="form-input bedroom-closet-size" value="${bedroomData.closetSize || ''}" placeholder="Closet square footage" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Window Count</label>
+                        <input type="number" class="form-input bedroom-windows" value="${bedroomData.windows || ''}" placeholder="Number of windows" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Window 1 Size (W x H)</label>
+                        <input type="text" class="form-input bedroom-window1-size" value="${bedroomData.window1Size || ''}" placeholder="e.g., 36x48 inches" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Window 2 Size (W x H)</label>
+                        <input type="text" class="form-input bedroom-window2-size" value="${bedroomData.window2Size || ''}" placeholder="e.g., 24x36 inches" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Window Treatments</label>
+                        <select class="form-input bedroom-window-treatments" disabled>
+                            <option value="">Select treatments</option>
+                            <option value="blinds" ${bedroomData.windowTreatments === 'blinds' ? 'selected' : ''}>Blinds</option>
+                            <option value="curtains" ${bedroomData.windowTreatments === 'curtains' ? 'selected' : ''}>Curtains</option>
+                            <option value="shades" ${bedroomData.windowTreatments === 'shades' ? 'selected' : ''}>Shades</option>
+                            <option value="shutters" ${bedroomData.windowTreatments === 'shutters' ? 'selected' : ''}>Shutters</option>
+                            <option value="none" ${bedroomData.windowTreatments === 'none' ? 'selected' : ''}>None</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Blind/Curtain Sizes</label>
+                        <input type="text" class="form-input bedroom-treatment-sizes" value="${bedroomData.treatmentSizes || ''}" placeholder="e.g., 36x48 blinds, 84x96 curtains" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Trim Style</label>
+                        <select class="form-input bedroom-trim-style" disabled>
+                            <option value="">Select trim style</option>
+                            <option value="colonial" ${bedroomData.trimStyle === 'colonial' ? 'selected' : ''}>Colonial</option>
+                            <option value="craftsman" ${bedroomData.trimStyle === 'craftsman' ? 'selected' : ''}>Craftsman</option>
+                            <option value="modern" ${bedroomData.trimStyle === 'modern' ? 'selected' : ''}>Modern</option>
+                            <option value="traditional" ${bedroomData.trimStyle === 'traditional' ? 'selected' : ''}>Traditional</option>
+                            <option value="minimal" ${bedroomData.trimStyle === 'minimal' ? 'selected' : ''}>Minimal</option>
+                            <option value="ornate" ${bedroomData.trimStyle === 'ornate' ? 'selected' : ''}>Ornate</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Trim Material</label>
+                        <select class="form-input bedroom-trim-material" disabled>
+                            <option value="">Select trim material</option>
+                            <option value="wood" ${bedroomData.trimMaterial === 'wood' ? 'selected' : ''}>Wood</option>
+                            <option value="mdf" ${bedroomData.trimMaterial === 'mdf' ? 'selected' : ''}>MDF</option>
+                            <option value="pvc" ${bedroomData.trimMaterial === 'pvc' ? 'selected' : ''}>PVC</option>
+                            <option value="composite" ${bedroomData.trimMaterial === 'composite' ? 'selected' : ''}>Composite</option>
+                            <option value="metal" ${bedroomData.trimMaterial === 'metal' ? 'selected' : ''}>Metal</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Trim Color</label>
+                        <input type="text" class="form-input bedroom-trim-color" value="${bedroomData.trimColor || ''}" placeholder="e.g., White, Natural Oak, Gray" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Ceiling Height (ft)</label>
+                        <input type="number" class="form-input bedroom-ceiling-height" value="${bedroomData.ceilingHeight || ''}" placeholder="e.g., 9, 10, 12" step="0.5" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Ceiling Type</label>
+                        <select class="form-input bedroom-ceiling-type" disabled>
+                            <option value="">Select ceiling type</option>
+                            <option value="flat" ${bedroomData.ceilingType === 'flat' ? 'selected' : ''}>Flat</option>
+                            <option value="vaulted" ${bedroomData.ceilingType === 'vaulted' ? 'selected' : ''}>Vaulted</option>
+                            <option value="tray" ${bedroomData.ceilingType === 'tray' ? 'selected' : ''}>Tray Ceiling</option>
+                            <option value="coffered" ${bedroomData.ceilingType === 'coffered' ? 'selected' : ''}>Coffered</option>
+                            <option value="beamed" ${bedroomData.ceilingType === 'beamed' ? 'selected' : ''}>Exposed Beams</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Lighting Type</label>
+                        <select class="form-input bedroom-lighting" disabled>
+                            <option value="">Select lighting</option>
+                            <option value="ceiling-fan" ${bedroomData.lighting === 'ceiling-fan' ? 'selected' : ''}>Ceiling Fan</option>
+                            <option value="chandelier" ${bedroomData.lighting === 'chandelier' ? 'selected' : ''}>Chandelier</option>
+                            <option value="recessed" ${bedroomData.lighting === 'recessed' ? 'selected' : ''}>Recessed Lighting</option>
+                            <option value="pendant" ${bedroomData.lighting === 'pendant' ? 'selected' : ''}>Pendant Lights</option>
+                            <option value="track" ${bedroomData.lighting === 'track' ? 'selected' : ''}>Track Lighting</option>
+                            <option value="table-lamps" ${bedroomData.lighting === 'table-lamps' ? 'selected' : ''}>Table Lamps</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Electrical Outlets</label>
+                        <input type="number" class="form-input bedroom-outlets" value="${bedroomData.outlets || ''}" placeholder="Number of outlets" min="0" disabled>
+                    </div>
+                    <div class="form-group">
                         <label class="form-label">Notes</label>
-                        <textarea class="form-input bedroom-notes" placeholder="Additional notes about this bedroom" disabled>${bedroomData.notes || ''}</textarea>
+                        <textarea class="form-input form-textarea bedroom-notes" placeholder="Additional notes about this bedroom" disabled>${bedroomData.notes || ''}</textarea>
                     </div>
                 </div>
             `;
@@ -4723,50 +4910,18 @@
                         <input type="text" class="form-input" id="bathroom${bathroomCount}Name" placeholder="e.g., Master Bath, Guest Bath, Powder Room">
                     </div>
                     <div class="form-group">
+                        <label class="form-label">Bathroom Type</label>
+                        <select class="form-input" id="bathroom${bathroomCount}Type">
+                            <option value="">Select type</option>
+                            <option value="full">Full Bathroom</option>
+                            <option value="half">Half Bathroom</option>
+                            <option value="three-quarter">Three-Quarter Bathroom</option>
+                            <option value="master">Master Bathroom</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label class="form-label">Square Footage</label>
                         <input type="number" class="form-input" id="bathroom${bathroomCount}Sqft" placeholder="Room size in sq ft">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Toilet Type</label>
-                        <select class="form-input" id="bathroom${bathroomCount}Toilet">
-                            <option value="">Select toilet type</option>
-                            <option value="standard">Standard</option>
-                            <option value="comfort-height">Comfort Height</option>
-                            <option value="wall-mounted">Wall Mounted</option>
-                            <option value="dual-flush">Dual Flush</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Shower Type</label>
-                        <select class="form-input" id="bathroom${bathroomCount}Shower">
-                            <option value="">Select shower type</option>
-                            <option value="none">No Shower</option>
-                            <option value="shower-stall">Shower Stall</option>
-                            <option value="walk-in">Walk-in Shower</option>
-                            <option value="shower-tub">Shower/Tub Combo</option>
-                            <option value="separate">Separate Shower & Tub</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Bathtub Type</label>
-                        <select class="form-input" id="bathroom${bathroomCount}Tub">
-                            <option value="">Select tub type</option>
-                            <option value="none">No Bathtub</option>
-                            <option value="standard">Standard Tub</option>
-                            <option value="garden">Garden Tub</option>
-                            <option value="soaking">Soaking Tub</option>
-                            <option value="whirlpool">Whirlpool/Jetted</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Vanity Type</label>
-                        <select class="form-input" id="bathroom${bathroomCount}Vanity">
-                            <option value="">Select vanity type</option>
-                            <option value="single">Single Sink</option>
-                            <option value="double">Double Sink</option>
-                            <option value="floating">Floating Vanity</option>
-                            <option value="built-in">Built-in</option>
-                        </select>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Flooring Type</label>
@@ -4775,19 +4930,148 @@
                             <option value="tile">Tile</option>
                             <option value="vinyl">Vinyl</option>
                             <option value="laminate">Laminate</option>
+                            <option value="stone">Stone</option>
                             <option value="concrete">Concrete</option>
-                            <option value="natural-stone">Natural Stone</option>
+                            <option value="marble">Marble</option>
+                            <option value="granite">Granite</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Flooring Color/Finish</label>
+                        <input type="text" class="form-input" id="bathroom${bathroomCount}FlooringColor" placeholder="e.g., White Ceramic, Gray Marble">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Toilet Type</label>
+                        <select class="form-input" id="bathroom${bathroomCount}ToiletType">
+                            <option value="">Select toilet type</option>
+                            <option value="standard">Standard</option>
+                            <option value="comfort-height">Comfort Height</option>
+                            <option value="wall-mounted">Wall Mounted</option>
+                            <option value="smart">Smart Toilet</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Toilet Brand</label>
+                        <input type="text" class="form-input" id="bathroom${bathroomCount}ToiletBrand" placeholder="e.g., Kohler, Toto, American Standard">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Sink Type</label>
+                        <select class="form-input" id="bathroom${bathroomCount}SinkType">
+                            <option value="">Select sink type</option>
+                            <option value="pedestal">Pedestal</option>
+                            <option value="vanity">Vanity</option>
+                            <option value="wall-mounted">Wall Mounted</option>
+                            <option value="vessel">Vessel</option>
+                            <option value="undermount">Undermount</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Sink Material</label>
+                        <select class="form-input" id="bathroom${bathroomCount}SinkMaterial">
+                            <option value="">Select sink material</option>
+                            <option value="porcelain">Porcelain</option>
+                            <option value="ceramic">Ceramic</option>
+                            <option value="glass">Glass</option>
+                            <option value="stone">Stone</option>
+                            <option value="stainless-steel">Stainless Steel</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Shower Type</label>
+                        <select class="form-input" id="bathroom${bathroomCount}ShowerType">
+                            <option value="">Select shower type</option>
+                            <option value="none">No Shower</option>
+                            <option value="tub-shower">Tub/Shower Combo</option>
+                            <option value="walk-in">Walk-in Shower</option>
+                            <option value="corner">Corner Shower</option>
+                            <option value="steam">Steam Shower</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tub Type</label>
+                        <select class="form-input" id="bathroom${bathroomCount}TubType">
+                            <option value="">Select tub type</option>
+                            <option value="none">No Tub</option>
+                            <option value="standard">Standard Tub</option>
+                            <option value="garden">Garden Tub</option>
+                            <option value="soaking">Soaking Tub</option>
+                            <option value="whirlpool">Whirlpool/Jetted</option>
+                            <option value="freestanding">Freestanding</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Countertop Material</label>
+                        <select class="form-input" id="bathroom${bathroomCount}Countertop">
+                            <option value="">Select countertop</option>
+                            <option value="granite">Granite</option>
+                            <option value="marble">Marble</option>
+                            <option value="quartz">Quartz</option>
+                            <option value="laminate">Laminate</option>
+                            <option value="solid-surface">Solid Surface</option>
+                            <option value="tile">Tile</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Vanity/Cabinet Style</label>
+                        <select class="form-input" id="bathroom${bathroomCount}VanityStyle">
+                            <option value="">Select vanity style</option>
+                            <option value="traditional">Traditional</option>
+                            <option value="modern">Modern</option>
+                            <option value="rustic">Rustic</option>
+                            <option value="shaker">Shaker</option>
+                            <option value="floating">Floating</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Mirror Type</label>
+                        <select class="form-input" id="bathroom${bathroomCount}MirrorType">
+                            <option value="">Select mirror type</option>
+                            <option value="wall-mounted">Wall Mounted</option>
+                            <option value="medicine-cabinet">Medicine Cabinet</option>
+                            <option value="framed">Framed Mirror</option>
+                            <option value="frameless">Frameless</option>
+                            <option value="lighted">Lighted Mirror</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Lighting Type</label>
+                        <select class="form-input" id="bathroom${bathroomCount}Lighting">
+                            <option value="">Select lighting</option>
+                            <option value="vanity-lights">Vanity Lights</option>
+                            <option value="recessed">Recessed Lighting</option>
+                            <option value="pendant">Pendant Lights</option>
+                            <option value="chandelier">Chandelier</option>
+                            <option value="track">Track Lighting</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Ventilation</label>
-                        <select class="form-input" id="bathroom${bathroomCount}Vent">
+                        <select class="form-input" id="bathroom${bathroomCount}Ventilation">
                             <option value="">Select ventilation</option>
                             <option value="exhaust-fan">Exhaust Fan</option>
                             <option value="window">Window</option>
                             <option value="both">Both Fan & Window</option>
-                            <option value="none">No Ventilation</option>
+                            <option value="none">None</option>
                         </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Window Size (W x H)</label>
+                        <input type="text" class="form-input" id="bathroom${bathroomCount}WindowSize" placeholder="e.g., 24x36 inches">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Window Treatments</label>
+                        <select class="form-input" id="bathroom${bathroomCount}WindowTreatments">
+                            <option value="">Select treatments</option>
+                            <option value="blinds">Blinds</option>
+                            <option value="curtains">Curtains</option>
+                            <option value="shades">Shades</option>
+                            <option value="frosted-glass">Frosted Glass</option>
+                            <option value="none">None</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Electrical Outlets</label>
+                        <input type="number" class="form-input" id="bathroom${bathroomCount}Outlets" placeholder="Number of outlets" min="0">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Notes</label>
@@ -4829,10 +5113,6 @@
                         <input type="number" class="form-input bathroom-size" value="${bathroomData.size || ''}" placeholder="Room size in sq ft" disabled>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Fixtures</label>
-                        <input type="text" class="form-input bathroom-fixtures" value="${bathroomData.fixtures || ''}" placeholder="e.g., Toilet, Sink, Shower, Tub" disabled>
-                    </div>
-                    <div class="form-group">
                         <label class="form-label">Flooring Type</label>
                         <select class="form-input bathroom-flooring" disabled>
                             <option value="">Select flooring</option>
@@ -4841,6 +5121,116 @@
                             <option value="laminate" ${bathroomData.flooring === 'laminate' ? 'selected' : ''}>Laminate</option>
                             <option value="stone" ${bathroomData.flooring === 'stone' ? 'selected' : ''}>Stone</option>
                             <option value="concrete" ${bathroomData.flooring === 'concrete' ? 'selected' : ''}>Concrete</option>
+                            <option value="marble" ${bathroomData.flooring === 'marble' ? 'selected' : ''}>Marble</option>
+                            <option value="granite" ${bathroomData.flooring === 'granite' ? 'selected' : ''}>Granite</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Flooring Color/Finish</label>
+                        <input type="text" class="form-input bathroom-flooring-color" value="${bathroomData.flooringColor || ''}" placeholder="e.g., White Ceramic, Gray Marble" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Toilet Type</label>
+                        <select class="form-input bathroom-toilet-type" disabled>
+                            <option value="">Select toilet type</option>
+                            <option value="standard" ${bathroomData.toiletType === 'standard' ? 'selected' : ''}>Standard</option>
+                            <option value="comfort-height" ${bathroomData.toiletType === 'comfort-height' ? 'selected' : ''}>Comfort Height</option>
+                            <option value="wall-mounted" ${bathroomData.toiletType === 'wall-mounted' ? 'selected' : ''}>Wall Mounted</option>
+                            <option value="smart" ${bathroomData.toiletType === 'smart' ? 'selected' : ''}>Smart Toilet</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Toilet Brand</label>
+                        <input type="text" class="form-input bathroom-toilet-brand" value="${bathroomData.toiletBrand || ''}" placeholder="e.g., Kohler, Toto, American Standard" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Sink Type</label>
+                        <select class="form-input bathroom-sink-type" disabled>
+                            <option value="">Select sink type</option>
+                            <option value="pedestal" ${bathroomData.sinkType === 'pedestal' ? 'selected' : ''}>Pedestal</option>
+                            <option value="vanity" ${bathroomData.sinkType === 'vanity' ? 'selected' : ''}>Vanity</option>
+                            <option value="wall-mounted" ${bathroomData.sinkType === 'wall-mounted' ? 'selected' : ''}>Wall Mounted</option>
+                            <option value="vessel" ${bathroomData.sinkType === 'vessel' ? 'selected' : ''}>Vessel</option>
+                            <option value="undermount" ${bathroomData.sinkType === 'undermount' ? 'selected' : ''}>Undermount</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Sink Material</label>
+                        <select class="form-input bathroom-sink-material" disabled>
+                            <option value="">Select sink material</option>
+                            <option value="porcelain" ${bathroomData.sinkMaterial === 'porcelain' ? 'selected' : ''}>Porcelain</option>
+                            <option value="ceramic" ${bathroomData.sinkMaterial === 'ceramic' ? 'selected' : ''}>Ceramic</option>
+                            <option value="glass" ${bathroomData.sinkMaterial === 'glass' ? 'selected' : ''}>Glass</option>
+                            <option value="stone" ${bathroomData.sinkMaterial === 'stone' ? 'selected' : ''}>Stone</option>
+                            <option value="stainless-steel" ${bathroomData.sinkMaterial === 'stainless-steel' ? 'selected' : ''}>Stainless Steel</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Shower Type</label>
+                        <select class="form-input bathroom-shower-type" disabled>
+                            <option value="">Select shower type</option>
+                            <option value="none" ${bathroomData.showerType === 'none' ? 'selected' : ''}>No Shower</option>
+                            <option value="tub-shower" ${bathroomData.showerType === 'tub-shower' ? 'selected' : ''}>Tub/Shower Combo</option>
+                            <option value="walk-in" ${bathroomData.showerType === 'walk-in' ? 'selected' : ''}>Walk-in Shower</option>
+                            <option value="corner" ${bathroomData.showerType === 'corner' ? 'selected' : ''}>Corner Shower</option>
+                            <option value="steam" ${bathroomData.showerType === 'steam' ? 'selected' : ''}>Steam Shower</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tub Type</label>
+                        <select class="form-input bathroom-tub-type" disabled>
+                            <option value="">Select tub type</option>
+                            <option value="none" ${bathroomData.tubType === 'none' ? 'selected' : ''}>No Tub</option>
+                            <option value="standard" ${bathroomData.tubType === 'standard' ? 'selected' : ''}>Standard Tub</option>
+                            <option value="garden" ${bathroomData.tubType === 'garden' ? 'selected' : ''}>Garden Tub</option>
+                            <option value="soaking" ${bathroomData.tubType === 'soaking' ? 'selected' : ''}>Soaking Tub</option>
+                            <option value="whirlpool" ${bathroomData.tubType === 'whirlpool' ? 'selected' : ''}>Whirlpool/Jetted</option>
+                            <option value="freestanding" ${bathroomData.tubType === 'freestanding' ? 'selected' : ''}>Freestanding</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Countertop Material</label>
+                        <select class="form-input bathroom-countertop" disabled>
+                            <option value="">Select countertop</option>
+                            <option value="granite" ${bathroomData.countertop === 'granite' ? 'selected' : ''}>Granite</option>
+                            <option value="marble" ${bathroomData.countertop === 'marble' ? 'selected' : ''}>Marble</option>
+                            <option value="quartz" ${bathroomData.countertop === 'quartz' ? 'selected' : ''}>Quartz</option>
+                            <option value="laminate" ${bathroomData.countertop === 'laminate' ? 'selected' : ''}>Laminate</option>
+                            <option value="solid-surface" ${bathroomData.countertop === 'solid-surface' ? 'selected' : ''}>Solid Surface</option>
+                            <option value="tile" ${bathroomData.countertop === 'tile' ? 'selected' : ''}>Tile</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Vanity/Cabinet Style</label>
+                        <select class="form-input bathroom-vanity-style" disabled>
+                            <option value="">Select vanity style</option>
+                            <option value="traditional" ${bathroomData.vanityStyle === 'traditional' ? 'selected' : ''}>Traditional</option>
+                            <option value="modern" ${bathroomData.vanityStyle === 'modern' ? 'selected' : ''}>Modern</option>
+                            <option value="rustic" ${bathroomData.vanityStyle === 'rustic' ? 'selected' : ''}>Rustic</option>
+                            <option value="shaker" ${bathroomData.vanityStyle === 'shaker' ? 'selected' : ''}>Shaker</option>
+                            <option value="floating" ${bathroomData.vanityStyle === 'floating' ? 'selected' : ''}>Floating</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Mirror Type</label>
+                        <select class="form-input bathroom-mirror-type" disabled>
+                            <option value="">Select mirror type</option>
+                            <option value="wall-mounted" ${bathroomData.mirrorType === 'wall-mounted' ? 'selected' : ''}>Wall Mounted</option>
+                            <option value="medicine-cabinet" ${bathroomData.mirrorType === 'medicine-cabinet' ? 'selected' : ''}>Medicine Cabinet</option>
+                            <option value="framed" ${bathroomData.mirrorType === 'framed' ? 'selected' : ''}>Framed Mirror</option>
+                            <option value="frameless" ${bathroomData.mirrorType === 'frameless' ? 'selected' : ''}>Frameless</option>
+                            <option value="lighted" ${bathroomData.mirrorType === 'lighted' ? 'selected' : ''}>Lighted Mirror</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Lighting Type</label>
+                        <select class="form-input bathroom-lighting" disabled>
+                            <option value="">Select lighting</option>
+                            <option value="vanity-lights" ${bathroomData.lighting === 'vanity-lights' ? 'selected' : ''}>Vanity Lights</option>
+                            <option value="recessed" ${bathroomData.lighting === 'recessed' ? 'selected' : ''}>Recessed Lighting</option>
+                            <option value="pendant" ${bathroomData.lighting === 'pendant' ? 'selected' : ''}>Pendant Lights</option>
+                            <option value="chandelier" ${bathroomData.lighting === 'chandelier' ? 'selected' : ''}>Chandelier</option>
+                            <option value="track" ${bathroomData.lighting === 'track' ? 'selected' : ''}>Track Lighting</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -4854,8 +5244,27 @@
                         </select>
                     </div>
                     <div class="form-group">
+                        <label class="form-label">Window Size (W x H)</label>
+                        <input type="text" class="form-input bathroom-window-size" value="${bathroomData.windowSize || ''}" placeholder="e.g., 24x36 inches" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Window Treatments</label>
+                        <select class="form-input bathroom-window-treatments" disabled>
+                            <option value="">Select treatments</option>
+                            <option value="blinds" ${bathroomData.windowTreatments === 'blinds' ? 'selected' : ''}>Blinds</option>
+                            <option value="curtains" ${bathroomData.windowTreatments === 'curtains' ? 'selected' : ''}>Curtains</option>
+                            <option value="shades" ${bathroomData.windowTreatments === 'shades' ? 'selected' : ''}>Shades</option>
+                            <option value="frosted-glass" ${bathroomData.windowTreatments === 'frosted-glass' ? 'selected' : ''}>Frosted Glass</option>
+                            <option value="none" ${bathroomData.windowTreatments === 'none' ? 'selected' : ''}>None</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Electrical Outlets</label>
+                        <input type="number" class="form-input bathroom-outlets" value="${bathroomData.outlets || ''}" placeholder="Number of outlets" min="0" disabled>
+                    </div>
+                    <div class="form-group">
                         <label class="form-label">Notes</label>
-                        <textarea class="form-input bathroom-notes" placeholder="Additional notes about this bathroom" disabled>${bathroomData.notes || ''}</textarea>
+                        <textarea class="form-input form-textarea bathroom-notes" placeholder="Additional notes about this bathroom" disabled>${bathroomData.notes || ''}</textarea>
                     </div>
                 </div>
             `;
