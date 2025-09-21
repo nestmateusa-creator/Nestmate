@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200" height="872" viewBox="0 0 1200 872" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="canopyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f8fafc;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#e0e7ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#c7d2fe;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2563eb;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#facc15;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f59e0b;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f1f5f9;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.15"/>
+    </filter>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <pattern id="circuitPattern" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+      <circle cx="10" cy="10" r="2" fill="url(#primaryGradient)" opacity="0.1"/>
+      <circle cx="50" cy="10" r="2" fill="url(#primaryGradient)" opacity="0.1"/>
+      <circle cx="10" cy="50" r="2" fill="url(#primaryGradient)" opacity="0.1"/>
+      <circle cx="50" cy="50" r="2" fill="url(#primaryGradient)" opacity="0.1"/>
+      <line x1="10" y1="10" x2="50" y2="10" stroke="url(#primaryGradient)" stroke-width="1" opacity="0.1"/>
+      <line x1="10" y1="50" x2="50" y2="50" stroke="url(#primaryGradient)" stroke-width="1" opacity="0.1"/>
+      <line x1="10" y1="10" x2="10" y2="50" stroke="url(#primaryGradient)" stroke-width="1" opacity="0.1"/>
+      <line x1="50" y1="10" x2="50" y2="50" stroke="url(#primaryGradient)" stroke-width="1" opacity="0.1"/>
+    </pattern>
+  </defs>
+  
+  <!-- Canopy Background -->
+  <rect width="1200" height="872" fill="url(#canopyGradient)"/>
+  
+  <!-- Subtle Circuit Pattern Overlay -->
+  <rect width="1200" height="872" fill="url(#circuitPattern)" opacity="0.3"/>
+  
+  <!-- Central Logo Container -->
+  <g transform="translate(600, 436)">
+    <!-- Logo Background Circle -->
+    <circle cx="0" cy="0" r="200" fill="url(#logoGradient)" filter="url(#shadow)"/>
+    <circle cx="0" cy="0" r="180" fill="rgba(37, 99, 235, 0.05)"/>
+    
+    <!-- House Icon -->
+    <g transform="translate(-80, -60)">
+      <!-- House Background -->
+      <circle cx="80" cy="60" r="50" fill="rgba(37, 99, 235, 0.1)"/>
+      <circle cx="80" cy="60" r="35" fill="rgba(37, 99, 235, 0.2)"/>
+      
+      <!-- House Structure -->
+      <rect x="50" y="50" width="60" height="40" fill="url(#primaryGradient)" rx="3"/>
+      
+      <!-- House Roof -->
+      <path d="M35 50 L80 20 L125 50 Z" fill="url(#accentGradient)"/>
+      
+      <!-- Door -->
+      <rect x="70" y="60" width="20" height="30" fill="white" rx="2"/>
+      
+      <!-- Windows -->
+      <rect x="55" y="55" width="12" height="12" fill="white" rx="1"/>
+      <rect x="93" y="55" width="12" height="12" fill="white" rx="1"/>
+      
+      <!-- Tech Elements -->
+      <circle cx="80" cy="35" r="4" fill="url(#primaryGradient)"/>
+      <circle cx="65" cy="45" r="3" fill="url(#primaryGradient)"/>
+      <circle cx="95" cy="45" r="3" fill="url(#primaryGradient)"/>
+      
+      <!-- Connection Lines -->
+      <line x1="80" y1="35" x2="65" y2="45" stroke="url(#primaryGradient)" stroke-width="2" opacity="0.6"/>
+      <line x1="80" y1="35" x2="95" y2="45" stroke="url(#primaryGradient)" stroke-width="2" opacity="0.6"/>
+    </g>
+    
+    <!-- Main Brand Text -->
+    <text x="0" y="80" font-family="Inter, sans-serif" font-size="72" font-weight="900" fill="url(#primaryGradient)" text-anchor="middle" letter-spacing="-3px" filter="url(#glow)">
+      NestMate
+    </text>
+    
+    <!-- Tagline -->
+    <text x="0" y="120" font-family="Inter, sans-serif" font-size="24" font-weight="600" fill="#64748b" text-anchor="middle" letter-spacing="2px">
+      YOUR HOME'S DIGITAL COMMAND CENTER
+    </text>
+    
+    <!-- Decorative Elements -->
+    <g transform="translate(-120, 140)">
+      <circle cx="0" cy="0" r="8" fill="url(#accentGradient)"/>
+      <circle cx="40" cy="0" r="6" fill="url(#primaryGradient)"/>
+      <circle cx="80" cy="0" r="8" fill="url(#accentGradient)"/>
+      <circle cx="120" cy="0" r="6" fill="url(#primaryGradient)"/>
+      <circle cx="160" cy="0" r="8" fill="url(#accentGradient)"/>
+      <circle cx="200" cy="0" r="6" fill="url(#primaryGradient)"/>
+      <circle cx="240" cy="0" r="8" fill="url(#accentGradient)"/>
+    </g>
+  </g>
+  
+  <!-- Corner Accent Elements -->
+  <g transform="translate(100, 100)" opacity="0.4">
+    <circle cx="0" cy="0" r="60" fill="url(#accentGradient)"/>
+    <circle cx="0" cy="0" r="40" fill="url(#primaryGradient)"/>
+    <circle cx="0" cy="0" r="20" fill="url(#accentGradient)"/>
+  </g>
+  
+  <g transform="translate(1100, 100)" opacity="0.4">
+    <circle cx="0" cy="0" r="60" fill="url(#primaryGradient)"/>
+    <circle cx="0" cy="0" r="40" fill="url(#accentGradient)"/>
+    <circle cx="0" cy="0" r="20" fill="url(#primaryGradient)"/>
+  </g>
+  
+  <g transform="translate(100, 772)" opacity="0.4">
+    <circle cx="0" cy="0" r="60" fill="url(#primaryGradient)"/>
+    <circle cx="0" cy="0" r="40" fill="url(#accentGradient)"/>
+    <circle cx="0" cy="0" r="20" fill="url(#primaryGradient)"/>
+  </g>
+  
+  <g transform="translate(1100, 772)" opacity="0.4">
+    <circle cx="0" cy="0" r="60" fill="url(#accentGradient)"/>
+    <circle cx="0" cy="0" r="40" fill="url(#primaryGradient)"/>
+    <circle cx="0" cy="0" r="20" fill="url(#accentGradient)"/>
+  </g>
+  
+  <!-- Side Accent Patterns -->
+  <g transform="translate(0, 200)" opacity="0.2">
+    <rect x="0" y="0" width="80" height="472" fill="url(#primaryGradient)"/>
+    <rect x="20" y="20" width="40" height="432" fill="url(#accentGradient)"/>
+    <rect x="40" y="40" width="40" height="392" fill="url(#primaryGradient)"/>
+  </g>
+  
+  <g transform="translate(1120, 200)" opacity="0.2">
+    <rect x="0" y="0" width="80" height="472" fill="url(#accentGradient)"/>
+    <rect x="20" y="20" width="40" height="432" fill="url(#primaryGradient)"/>
+    <rect x="40" y="40" width="40" height="392" fill="url(#accentGradient)"/>
+  </g>
+  
+  <!-- Top and Bottom Accent Bars -->
+  <rect x="0" y="0" width="1200" height="40" fill="url(#primaryGradient)" opacity="0.1"/>
+  <rect x="0" y="832" width="1200" height="40" fill="url(#accentGradient)" opacity="0.1"/>
+  
+  <!-- Floating Tech Elements -->
+  <g transform="translate(200, 300)" opacity="0.3">
+    <circle cx="0" cy="0" r="15" fill="url(#primaryGradient)"/>
+    <circle cx="30" cy="0" r="10" fill="url(#accentGradient)"/>
+    <circle cx="60" cy="0" r="15" fill="url(#primaryGradient)"/>
+    <line x1="0" y1="0" x2="30" y2="0" stroke="url(#primaryGradient)" stroke-width="2"/>
+    <line x1="30" y1="0" x2="60" y2="0" stroke="url(#accentGradient)" stroke-width="2"/>
+  </g>
+  
+  <g transform="translate(900, 500)" opacity="0.3">
+    <circle cx="0" cy="0" r="12" fill="url(#accentGradient)"/>
+    <circle cx="25" cy="0" r="8" fill="url(#primaryGradient)"/>
+    <circle cx="50" cy="0" r="12" fill="url(#accentGradient)"/>
+    <line x1="0" y1="0" x2="25" y2="0" stroke="url(#accentGradient)" stroke-width="2"/>
+    <line x1="25" y1="0" x2="50" y2="0" stroke="url(#primaryGradient)" stroke-width="2"/>
+  </g>
+</svg>
+
