@@ -21,7 +21,8 @@
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            color: white;
+            color: #ffffff;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }
 
         .header {
@@ -185,27 +186,42 @@
         .form-label {
             display: block;
             margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: white;
+            font-weight: 600;
+            color: #ffffff;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            font-size: 0.95rem;
         }
 
         .form-input {
             width: 100%;
             padding: 0.75rem;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.4);
             border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
             font-size: 1rem;
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
         }
 
         .form-input::placeholder {
-            color: rgba(255, 255, 255, 0.6);
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 400;
         }
 
         .form-input:focus {
             outline: none;
             border-color: #10b981;
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+            color: #ffffff;
+        }
+
+        .form-input:disabled {
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.7);
+            border-color: rgba(255, 255, 255, 0.2);
         }
 
         .form-textarea {
@@ -322,11 +338,12 @@
         }
 
         .section-title {
-            color: #10b981;
+            color: #ffffff;
             font-size: 1.8rem;
-            font-weight: 600;
+            font-weight: 700;
             margin: 0;
-            text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            letter-spacing: 0.5px;
         }
 
         .btn-small {
@@ -1128,10 +1145,12 @@
         .widget-header h3 {
             margin: 0;
             font-size: 1.1rem;
-            font-weight: 600;
+            font-weight: 700;
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            color: #ffffff;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
         }
 
         .widget-action {
@@ -1199,13 +1218,16 @@
         }
 
         .task-title {
-            font-weight: 500;
+            font-weight: 600;
             margin-bottom: 0.25rem;
+            color: #ffffff;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }
 
         .task-date {
             font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.7);
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
         }
 
         .task-priority {
@@ -1253,19 +1275,23 @@
 
         .temperature {
             font-size: 1.8rem;
-            font-weight: 600;
+            font-weight: 700;
             margin-bottom: 0.25rem;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .condition {
             font-size: 1rem;
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(255, 255, 255, 0.95);
             margin-bottom: 0.25rem;
+            font-weight: 600;
         }
 
         .location {
             font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.6);
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
         }
 
         .weather-forecast {
@@ -1284,12 +1310,15 @@
 
         .forecast-day {
             font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.7);
+            color: rgba(255, 255, 255, 0.9);
             margin-bottom: 0.25rem;
+            font-weight: 600;
         }
 
         .forecast-temp {
-            font-weight: 600;
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }
 
         .maintenance-alerts h4 {
@@ -1339,13 +1368,16 @@
         }
 
         .alert-title {
-            font-weight: 500;
+            font-weight: 600;
             margin-bottom: 0.25rem;
+            color: #ffffff;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }
 
         .alert-description {
             font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.7);
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
         }
 
         /* Health Score Widget */
@@ -1379,14 +1411,17 @@
 
         .score-number {
             font-size: 2rem;
-            font-weight: 700;
+            font-weight: 800;
             z-index: 1;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .score-label {
             font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.7);
+            color: rgba(255, 255, 255, 0.9);
             z-index: 1;
+            font-weight: 600;
         }
 
         .health-breakdown {
@@ -1403,6 +1438,9 @@
         .health-category {
             min-width: 80px;
             font-size: 0.9rem;
+            font-weight: 600;
+            color: #ffffff;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }
 
         .health-bar {
@@ -1423,6 +1461,9 @@
             min-width: 35px;
             font-size: 0.8rem;
             text-align: right;
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }
 
         /* Quick Actions Widget */
@@ -1460,6 +1501,9 @@
             font-size: 0.8rem;
             text-align: center;
             line-height: 1.2;
+            font-weight: 600;
+            color: #ffffff;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }
 
         /* Activity Widget */
@@ -1494,19 +1538,23 @@
         }
 
         .activity-title {
-            font-weight: 500;
+            font-weight: 600;
             margin-bottom: 0.25rem;
+            color: #ffffff;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }
 
         .activity-description {
             font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.7);
+            color: rgba(255, 255, 255, 0.9);
             margin-bottom: 0.25rem;
+            font-weight: 500;
         }
 
         .activity-time {
             font-size: 0.7rem;
-            color: rgba(255, 255, 255, 0.5);
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
         }
 
         /* Savings Widget */
@@ -1537,18 +1585,22 @@
 
         .savings-amount {
             font-size: 1.2rem;
-            font-weight: 600;
+            font-weight: 700;
             margin-bottom: 0.25rem;
+            color: #ffffff;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }
 
         .savings-label {
             font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
         }
 
         .savings-period {
             font-size: 0.7rem;
-            color: rgba(255, 255, 255, 0.6);
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
         }
 
         .savings-tips h4 {
@@ -1575,8 +1627,9 @@
 
         .tip-text {
             font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(255, 255, 255, 0.95);
             line-height: 1.4;
+            font-weight: 500;
         }
 
         /* Google Places Autocomplete Styles */
