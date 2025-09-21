@@ -2083,7 +2083,6 @@
         function showSection(sectionName, clickedElement) {
             console.log('showSection called with:', sectionName);
             console.log('clickedElement:', clickedElement);
-            alert('Section clicked: ' + sectionName); // Temporary test
             
             try {
                 // Hide all content sections
@@ -2420,18 +2419,294 @@
             document.getElementById('structureSection').innerHTML = `
                 <div class="section-header">
                     <h3 class="section-title">Foundation & Structure</h3>
+                    <div class="header-actions">
+                        <button type="button" class="btn btn-secondary btn-small" onclick="toggleEditMode('structure')" id="editStructureBtn">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button type="button" class="btn btn-primary btn-small" onclick="showAddServiceModal()">
+                            <i class="fas fa-plus"></i> Add Service
+                        </button>
+                    </div>
                 </div>
-                <p style="color: rgba(255,255,255,0.8); text-align: center; padding: 2rem;">Foundation, roof, exterior, attic, and crawlspace details coming soon!</p>
+
+                <!-- Structure Form -->
+                <form id="structureForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Foundation Type</label>
+                            <select class="form-input" id="foundationType" disabled>
+                                <option value="">Select Foundation Type</option>
+                                <option value="slab">Concrete Slab</option>
+                                <option value="crawlspace">Crawl Space</option>
+                                <option value="basement">Basement</option>
+                                <option value="pier-beam">Pier & Beam</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Foundation Year</label>
+                            <input type="number" class="form-input" id="foundationYear" placeholder="Year built" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Roof Type</label>
+                            <select class="form-input" id="roofType" disabled>
+                                <option value="">Select Roof Type</option>
+                                <option value="asphalt">Asphalt Shingles</option>
+                                <option value="metal">Metal</option>
+                                <option value="tile">Tile</option>
+                                <option value="slate">Slate</option>
+                                <option value="wood">Wood Shakes</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Roof Year</label>
+                            <input type="number" class="form-input" id="roofYear" placeholder="Year installed" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Exterior Material</label>
+                            <select class="form-input" id="exteriorMaterial" disabled>
+                                <option value="">Select Material</option>
+                                <option value="brick">Brick</option>
+                                <option value="vinyl">Vinyl Siding</option>
+                                <option value="wood">Wood Siding</option>
+                                <option value="stucco">Stucco</option>
+                                <option value="stone">Stone</option>
+                                <option value="fiber-cement">Fiber Cement</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Exterior Year</label>
+                            <input type="number" class="form-input" id="exteriorYear" placeholder="Year installed" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Attic Type</label>
+                            <select class="form-input" id="atticType" disabled>
+                                <option value="">Select Attic Type</option>
+                                <option value="accessible">Accessible</option>
+                                <option value="limited">Limited Access</option>
+                                <option value="none">No Attic</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Insulation Type</label>
+                            <select class="form-input" id="insulationType" disabled>
+                                <option value="">Select Insulation</option>
+                                <option value="fiberglass">Fiberglass</option>
+                                <option value="cellulose">Cellulose</option>
+                                <option value="spray-foam">Spray Foam</option>
+                                <option value="rigid">Rigid Board</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Insulation R-Value</label>
+                            <input type="text" class="form-input" id="insulationRValue" placeholder="e.g., R-38" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Crawl Space Access</label>
+                            <select class="form-input" id="crawlspaceAccess" disabled>
+                                <option value="">Select Access</option>
+                                <option value="easy">Easy Access</option>
+                                <option value="difficult">Difficult Access</option>
+                                <option value="none">No Crawl Space</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Last Inspection Date</label>
+                            <input type="date" class="form-input" id="lastInspectionDate" disabled>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="toggleEditMode('structure')" id="cancelStructureBtn" style="display: none;">
+                            Cancel
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="saveStructureData()" id="saveStructureBtn" style="display: none;">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Service History & Maintenance Records -->
+                <div class="service-history-section">
+                    <div class="section-subheader">
+                        <h4 class="subtitle">Service History & Maintenance Records</h4>
+                    </div>
+                    <div id="structureServiceHistory" class="service-history-list">
+                        <!-- Service records will be loaded here -->
+                    </div>
+                </div>
             `;
+            
+            // Load existing data and service history
+            loadStructureData();
+            loadServiceHistory('structure');
         }
 
         function loadSystemsContent() {
             document.getElementById('systemsSection').innerHTML = `
                 <div class="section-header">
                     <h3 class="section-title">HVAC, Plumbing & Electrical</h3>
+                    <div class="header-actions">
+                        <button type="button" class="btn btn-secondary btn-small" onclick="toggleEditMode('systems')" id="editSystemsBtn">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button type="button" class="btn btn-primary btn-small" onclick="showAddServiceModal()">
+                            <i class="fas fa-plus"></i> Add Service
+                        </button>
+                    </div>
                 </div>
-                <p style="color: rgba(255,255,255,0.8); text-align: center; padding: 2rem;">HVAC, plumbing, and electrical system details coming soon!</p>
+
+                <!-- Systems Form -->
+                <form id="systemsForm">
+                    <div class="form-grid">
+                        <!-- HVAC Section -->
+                        <div class="form-group">
+                            <label class="form-label">HVAC Type</label>
+                            <select class="form-input" id="hvacType" disabled>
+                                <option value="">Select HVAC Type</option>
+                                <option value="central-air">Central Air</option>
+                                <option value="heat-pump">Heat Pump</option>
+                                <option value="furnace">Furnace Only</option>
+                                <option value="ductless">Ductless Mini-Split</option>
+                                <option value="window-units">Window Units</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">HVAC Brand</label>
+                            <input type="text" class="form-input" id="hvacBrand" placeholder="e.g., Carrier, Trane" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">HVAC Year</label>
+                            <input type="number" class="form-input" id="hvacYear" placeholder="Year installed" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">HVAC SEER Rating</label>
+                            <input type="text" class="form-input" id="hvacSeerRating" placeholder="e.g., 16 SEER" disabled>
+                        </div>
+                        
+                        <!-- Plumbing Section -->
+                        <div class="form-group">
+                            <label class="form-label">Water Heater Type</label>
+                            <select class="form-input" id="waterHeaterType" disabled>
+                                <option value="">Select Type</option>
+                                <option value="tank">Tank Water Heater</option>
+                                <option value="tankless">Tankless Water Heater</option>
+                                <option value="heat-pump">Heat Pump Water Heater</option>
+                                <option value="solar">Solar Water Heater</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Water Heater Capacity</label>
+                            <input type="text" class="form-input" id="waterHeaterCapacity" placeholder="e.g., 50 gallons" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Water Heater Year</label>
+                            <input type="number" class="form-input" id="waterHeaterYear" placeholder="Year installed" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Pipe Material</label>
+                            <select class="form-input" id="pipeMaterial" disabled>
+                                <option value="">Select Material</option>
+                                <option value="copper">Copper</option>
+                                <option value="pex">PEX</option>
+                                <option value="pvc">PVC</option>
+                                <option value="galvanized">Galvanized Steel</option>
+                                <option value="cast-iron">Cast Iron</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Electrical Section -->
+                        <div class="form-group">
+                            <label class="form-label">Electrical Panel Amperage</label>
+                            <select class="form-input" id="electricalPanelAmps" disabled>
+                                <option value="">Select Amperage</option>
+                                <option value="100">100 Amps</option>
+                                <option value="150">150 Amps</option>
+                                <option value="200">200 Amps</option>
+                                <option value="400">400 Amps</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Electrical Panel Year</label>
+                            <input type="number" class="form-input" id="electricalPanelYear" placeholder="Year installed" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Wiring Type</label>
+                            <select class="form-input" id="wiringType" disabled>
+                                <option value="">Select Wiring</option>
+                                <option value="copper">Copper</option>
+                                <option value="aluminum">Aluminum</option>
+                                <option value="knob-tube">Knob & Tube</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">GFCI Outlets</label>
+                            <select class="form-input" id="gfciOutlets" disabled>
+                                <option value="">Select Status</option>
+                                <option value="all">All Required Areas</option>
+                                <option value="partial">Partial Coverage</option>
+                                <option value="none">None</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Last HVAC Service</label>
+                            <input type="date" class="form-input" id="lastHvacService" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Last Plumbing Inspection</label>
+                            <input type="date" class="form-input" id="lastPlumbingInspection" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Last Electrical Inspection</label>
+                            <input type="date" class="form-input" id="lastElectricalInspection" disabled>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="toggleEditMode('systems')" id="cancelSystemsBtn" style="display: none;">
+                            Cancel
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="saveSystemsData()" id="saveSystemsBtn" style="display: none;">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Service History & Maintenance Records -->
+                <div class="service-history-section">
+                    <div class="section-subheader">
+                        <h4 class="subtitle">Service History & Maintenance Records</h4>
+                    </div>
+                    <div id="systemsServiceHistory" class="service-history-list">
+                        <!-- Service records will be loaded here -->
+                    </div>
+                </div>
             `;
+            
+            // Load existing data and service history
+            loadSystemsData();
+            loadServiceHistory('systems');
         }
 
         function loadGarageContent() {
@@ -2527,6 +2802,50 @@
                     }
                 })
                 .catch(error => console.error('Error loading basic info:', error));
+        }
+
+        function loadStructureData() {
+            if (!currentUser) return;
+            
+            const db = firebase.firestore();
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
+                .then(doc => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        const inputs = document.querySelectorAll('#structureForm input, #structureForm select, #structureForm textarea');
+                        inputs.forEach(input => {
+                            if (data[input.id]) {
+                                input.value = data[input.id];
+                            }
+                        });
+                        
+                        // Disable inputs by default (view mode)
+                        inputs.forEach(input => input.disabled = true);
+                    }
+                })
+                .catch(error => console.error('Error loading structure data:', error));
+        }
+
+        function loadSystemsData() {
+            if (!currentUser) return;
+            
+            const db = firebase.firestore();
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
+                .then(doc => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        const inputs = document.querySelectorAll('#systemsForm input, #systemsForm select, #systemsForm textarea');
+                        inputs.forEach(input => {
+                            if (data[input.id]) {
+                                input.value = data[input.id];
+                            }
+                        });
+                        
+                        // Disable inputs by default (view mode)
+                        inputs.forEach(input => input.disabled = true);
+                    }
+                })
+                .catch(error => console.error('Error loading systems data:', error));
         }
 
         function loadServiceHistory() {
@@ -3052,6 +3371,56 @@
                 .catch(error => {
                     console.error('Error saving home data:', error);
                     alert('Error saving home data. Please try again.');
+                });
+        }
+
+        function saveStructureData() {
+            if (!currentUser) return;
+            
+            const formData = {};
+            const inputs = document.querySelectorAll('#structureForm input, #structureForm select, #structureForm textarea');
+            inputs.forEach(input => {
+                formData[input.id] = input.value;
+            });
+            
+            const userRef = db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid);
+            const backupRef = db.collection('NESTMATE USER HOME SAVED DATA BACKUP').doc(currentUser.uid);
+            
+            userRef.set(formData, { merge: true })
+                .then(() => {
+                    backupRef.set(formData, { merge: true });
+                    homeData = { ...homeData, ...formData };
+                    alert('Structure information saved successfully!');
+                    toggleEditMode('structure'); // Switch back to view mode
+                })
+                .catch(error => {
+                    console.error('Error saving structure data:', error);
+                    alert('Error saving structure data. Please try again.');
+                });
+        }
+
+        function saveSystemsData() {
+            if (!currentUser) return;
+            
+            const formData = {};
+            const inputs = document.querySelectorAll('#systemsForm input, #systemsForm select, #systemsForm textarea');
+            inputs.forEach(input => {
+                formData[input.id] = input.value;
+            });
+            
+            const userRef = db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid);
+            const backupRef = db.collection('NESTMATE USER HOME SAVED DATA BACKUP').doc(currentUser.uid);
+            
+            userRef.set(formData, { merge: true })
+                .then(() => {
+                    backupRef.set(formData, { merge: true });
+                    homeData = { ...homeData, ...formData };
+                    alert('Systems information saved successfully!');
+                    toggleEditMode('systems'); // Switch back to view mode
+                })
+                .catch(error => {
+                    console.error('Error saving systems data:', error);
+                    alert('Error saving systems data. Please try again.');
                 });
         }
 
