@@ -2385,6 +2385,14 @@
             section.innerHTML = `
                 <div class="section-header">
                     <h3 class="section-title">Kitchen Details</h3>
+                    <div class="header-actions">
+                        <button type="button" class="btn btn-secondary btn-small" onclick="toggleEditMode('kitchen')" id="editKitchenBtn">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button type="button" class="btn btn-primary btn-small" onclick="showAddServiceModal()">
+                            <i class="fas fa-plus"></i> Add Service
+                        </button>
+                    </div>
                 </div>
                 <form id="kitchenForm">
                     <div class="form-grid">
@@ -2461,12 +2469,31 @@
                             </select>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">
-                        <i class="fas fa-save"></i>
-                        Save Kitchen Information
-                    </button>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="toggleEditMode('kitchen')" id="cancelKitchenBtn" style="display: none;">
+                            Cancel
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="saveKitchenData()" id="saveKitchenBtn" style="display: none;">
+                            Save Changes
+                        </button>
+                    </div>
                 </form>
+
+                <!-- Service History & Maintenance Records -->
+                <div class="service-history-section">
+                    <div class="section-subheader">
+                        <h4 class="subtitle">Service History & Maintenance Records</h4>
+                    </div>
+                    <div id="kitchenServiceHistory" class="service-history-list">
+                        <!-- Service records will be loaded here -->
+                    </div>
+                </div>
             `;
+            
+            // Load existing data and service history
+            loadKitchenData();
+            loadServiceHistory('kitchen');
         }
 
         function loadLivingAreasContent() {
@@ -2474,14 +2501,49 @@
             section.innerHTML = `
                 <div class="section-header">
                     <h3 class="section-title">Living Areas</h3>
-                    <button type="button" class="btn btn-primary btn-small" onclick="addLivingArea()">
-                        <i class="fas fa-plus"></i> Add Living Area
-                    </button>
+                    <div class="header-actions">
+                        <button type="button" class="btn btn-secondary btn-small" onclick="toggleEditMode('living')" id="editLivingBtn">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button type="button" class="btn btn-primary btn-small" onclick="addLivingArea()">
+                            <i class="fas fa-plus"></i> Add Living Area
+                        </button>
+                        <button type="button" class="btn btn-primary btn-small" onclick="showAddServiceModal()">
+                            <i class="fas fa-plus"></i> Add Service
+                        </button>
+                    </div>
                 </div>
-                <div id="livingAreasList">
-                    <!-- Living areas will be dynamically added here -->
+                
+                <!-- Living Areas Form -->
+                <form id="livingForm">
+                    <div id="livingAreasList">
+                        <!-- Living areas will be dynamically added here -->
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="toggleEditMode('living')" id="cancelLivingBtn" style="display: none;">
+                            Cancel
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="saveLivingData()" id="saveLivingBtn" style="display: none;">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Service History & Maintenance Records -->
+                <div class="service-history-section">
+                    <div class="section-subheader">
+                        <h4 class="subtitle">Service History & Maintenance Records</h4>
+                    </div>
+                    <div id="livingServiceHistory" class="service-history-list">
+                        <!-- Service records will be loaded here -->
+                    </div>
                 </div>
             `;
+            
+            // Load existing data and service history
+            loadLivingData();
+            loadServiceHistory('living');
         }
 
         // Load other sections with placeholder content
@@ -2958,6 +3020,49 @@
                     }
                 })
                 .catch(error => console.error('Error loading bathrooms data:', error));
+        }
+
+        function loadKitchenData() {
+            if (!currentUser) return;
+            
+            const db = firebase.firestore();
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
+                .then(doc => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        const inputs = document.querySelectorAll('#kitchenForm input, #kitchenForm select, #kitchenForm textarea');
+                        inputs.forEach(input => {
+                            if (data[input.id]) {
+                                input.value = data[input.id];
+                            }
+                        });
+                        
+                        // Disable inputs by default (view mode)
+                        inputs.forEach(input => input.disabled = true);
+                    }
+                })
+                .catch(error => console.error('Error loading kitchen data:', error));
+        }
+
+        function loadLivingData() {
+            if (!currentUser) return;
+            
+            const db = firebase.firestore();
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
+                .then(doc => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        // Load living areas data if it exists
+                        if (data.livingAreas && Array.isArray(data.livingAreas)) {
+                            const livingAreasList = document.getElementById('livingAreasList');
+                            livingAreasList.innerHTML = '';
+                            data.livingAreas.forEach((livingArea, index) => {
+                                addLivingAreaToDOM(livingArea, index);
+                            });
+                        }
+                    }
+                })
+                .catch(error => console.error('Error loading living areas data:', error));
         }
 
         function loadServiceHistory() {
@@ -3609,6 +3714,67 @@
                 });
         }
 
+        function saveKitchenData() {
+            if (!currentUser) return;
+            
+            const formData = {};
+            const inputs = document.querySelectorAll('#kitchenForm input, #kitchenForm select, #kitchenForm textarea');
+            inputs.forEach(input => {
+                formData[input.id] = input.value;
+            });
+            
+            const userRef = db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid);
+            const backupRef = db.collection('NESTMATE USER HOME SAVED DATA BACKUP').doc(currentUser.uid);
+            
+            userRef.set(formData, { merge: true })
+                .then(() => {
+                    backupRef.set(formData, { merge: true });
+                    homeData = { ...homeData, ...formData };
+                    alert('Kitchen information saved successfully!');
+                    toggleEditMode('kitchen'); // Switch back to view mode
+                })
+                .catch(error => {
+                    console.error('Error saving kitchen data:', error);
+                    alert('Error saving kitchen data. Please try again.');
+                });
+        }
+
+        function saveLivingData() {
+            if (!currentUser) return;
+            
+            const livingAreas = [];
+            const livingAreaElements = document.querySelectorAll('.living-area-item');
+            
+            livingAreaElements.forEach((element, index) => {
+                const livingAreaData = {
+                    name: element.querySelector('.living-area-name').value || `Living Area ${index + 1}`,
+                    type: element.querySelector('.living-area-type').value || '',
+                    size: element.querySelector('.living-area-size').value || '',
+                    flooring: element.querySelector('.living-area-flooring').value || '',
+                    windows: element.querySelector('.living-area-windows').value || '',
+                    notes: element.querySelector('.living-area-notes').value || ''
+                };
+                livingAreas.push(livingAreaData);
+            });
+            
+            const formData = { livingAreas };
+            
+            const userRef = db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid);
+            const backupRef = db.collection('NESTMATE USER HOME SAVED DATA BACKUP').doc(currentUser.uid);
+            
+            userRef.set(formData, { merge: true })
+                .then(() => {
+                    backupRef.set(formData, { merge: true });
+                    homeData = { ...homeData, ...formData };
+                    alert('Living areas information saved successfully!');
+                    toggleEditMode('living'); // Switch back to view mode
+                })
+                .catch(error => {
+                    console.error('Error saving living areas data:', error);
+                    alert('Error saving living areas data. Please try again.');
+                });
+        }
+
         function loadHomeDataFromFirebase() {
             if (!currentUser) return;
             
@@ -4149,6 +4315,62 @@
                     <div class="form-group">
                         <label class="form-label">Notes</label>
                         <textarea class="form-input form-textarea" id="living${livingAreaCount}Notes" placeholder="Additional notes about this living area"></textarea>
+                    </div>
+                </div>
+            `;
+            livingAreasList.appendChild(livingDiv);
+        }
+
+        function addLivingAreaToDOM(livingAreaData, index) {
+            const livingAreasList = document.getElementById('livingAreasList');
+            const livingDiv = document.createElement('div');
+            livingDiv.className = 'room-section living-area-item';
+            livingDiv.innerHTML = `
+                <div class="room-header">
+                    <h5>${livingAreaData.name || `Living Area ${index + 1}`}</h5>
+                    <button type="button" class="btn btn-danger btn-small" onclick="removeRoom(this)">
+                        <i class="fas fa-trash"></i> Remove
+                    </button>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Room Name</label>
+                        <input type="text" class="form-input living-area-name" value="${livingAreaData.name || ''}" placeholder="e.g., Living Room, Family Room" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Room Type</label>
+                        <select class="form-input living-area-type" disabled>
+                            <option value="">Select type</option>
+                            <option value="living-room" ${livingAreaData.type === 'living-room' ? 'selected' : ''}>Living Room</option>
+                            <option value="family-room" ${livingAreaData.type === 'family-room' ? 'selected' : ''}>Family Room</option>
+                            <option value="dining-room" ${livingAreaData.type === 'dining-room' ? 'selected' : ''}>Dining Room</option>
+                            <option value="den" ${livingAreaData.type === 'den' ? 'selected' : ''}>Den</option>
+                            <option value="study" ${livingAreaData.type === 'study' ? 'selected' : ''}>Study</option>
+                            <option value="sunroom" ${livingAreaData.type === 'sunroom' ? 'selected' : ''}>Sunroom</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Square Footage</label>
+                        <input type="number" class="form-input living-area-size" value="${livingAreaData.size || ''}" placeholder="Room size in sq ft" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Flooring Type</label>
+                        <select class="form-input living-area-flooring" disabled>
+                            <option value="">Select flooring</option>
+                            <option value="hardwood" ${livingAreaData.flooring === 'hardwood' ? 'selected' : ''}>Hardwood</option>
+                            <option value="carpet" ${livingAreaData.flooring === 'carpet' ? 'selected' : ''}>Carpet</option>
+                            <option value="laminate" ${livingAreaData.flooring === 'laminate' ? 'selected' : ''}>Laminate</option>
+                            <option value="tile" ${livingAreaData.flooring === 'tile' ? 'selected' : ''}>Tile</option>
+                            <option value="vinyl" ${livingAreaData.flooring === 'vinyl' ? 'selected' : ''}>Vinyl</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Window Count</label>
+                        <input type="number" class="form-input living-area-windows" value="${livingAreaData.windows || ''}" placeholder="Number of windows" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-input living-area-notes" placeholder="Additional notes about this living area" disabled>${livingAreaData.notes || ''}</textarea>
                     </div>
                 </div>
             `;
