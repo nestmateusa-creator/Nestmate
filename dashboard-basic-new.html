@@ -9,6 +9,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBs9-LoO6vGlmhzC3zRjJYWR8XrJoJNGas&libraries=places&callback=initGooglePlaces" async defer></script>
     <style>
         * {
             margin: 0;
@@ -1576,6 +1577,48 @@
             font-size: 0.8rem;
             color: rgba(255, 255, 255, 0.8);
             line-height: 1.4;
+        }
+
+        /* Google Places Autocomplete Styles */
+        .pac-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-top: 4px;
+            z-index: 1000;
+        }
+
+        .pac-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            color: #333;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .pac-item:hover {
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .pac-item-selected {
+            background: rgba(102, 126, 234, 0.15);
+        }
+
+        .pac-item-query {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .pac-matched {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .pac-icon {
+            margin-right: 8px;
         }
 
         /* Responsive Design for Enhanced Dashboard */
@@ -6453,6 +6496,166 @@
             alert('Home data exported successfully!');
         }
 
+        // Google Places API Integration
+        let googlePlacesInitialized = false;
+        let autocompleteInstances = [];
+
+        function initGooglePlaces() {
+            console.log('Google Places API loaded successfully');
+            googlePlacesInitialized = true;
+            initializeAddressAutocomplete();
+        }
+
+        function initializeAddressAutocomplete() {
+            if (!googlePlacesInitialized) {
+                console.log('Google Places API not yet loaded, retrying...');
+                setTimeout(initializeAddressAutocomplete, 500);
+                return;
+            }
+
+            // Find all address input fields
+            const addressFields = document.querySelectorAll('input[id*="Address"], input[placeholder*="address"], input[placeholder*="Address"]');
+            
+            addressFields.forEach((field, index) => {
+                console.log(`Initializing autocomplete for field ${index + 1}:`, field.id || field.placeholder);
+                
+                // Create autocomplete instance
+                const autocomplete = new google.maps.places.Autocomplete(field, {
+                    types: ['address'],
+                    componentRestrictions: { country: 'us' }, // Restrict to US addresses
+                    fields: ['address_components', 'formatted_address', 'geometry', 'place_id']
+                });
+
+                // Store the instance
+                autocompleteInstances.push(autocomplete);
+
+                // Add event listener for place selection
+                autocomplete.addListener('place_changed', function() {
+                    const place = autocomplete.getPlace();
+                    
+                    if (!place.geometry || !place.geometry.location) {
+                        console.log('No details available for input: ' + place.name);
+                        return;
+                    }
+
+                    // Fill the address field with the formatted address
+                    field.value = place.formatted_address;
+                    
+                    // Log the selected place for debugging
+                    console.log('Address selected:', {
+                        formatted_address: place.formatted_address,
+                        place_id: place.place_id,
+                        geometry: place.geometry.location.toJSON()
+                    });
+
+                    // You can also extract individual components if needed
+                    if (place.address_components) {
+                        const addressComponents = {};
+                        place.address_components.forEach(component => {
+                            const type = component.types[0];
+                            addressComponents[type] = component.long_name;
+                        });
+                        console.log('Address components:', addressComponents);
+                    }
+
+                    // Trigger change event to notify other parts of the app
+                    field.dispatchEvent(new Event('change', { bubbles: true }));
+                });
+
+                // Add visual indicator that autocomplete is active
+                field.style.backgroundImage = 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'20\' height=\'20\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%23667eea\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpath d=\'M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\'/%3E%3Ccircle cx=\'12\' cy=\'10\' r=\'3\'/%3E%3C/svg%3E")';
+                field.style.backgroundRepeat = 'no-repeat';
+                field.style.backgroundPosition = 'right 12px center';
+                field.style.backgroundSize = '16px 16px';
+                field.style.paddingRight = '40px';
+            });
+
+            console.log(`Initialized ${autocompleteInstances.length} address autocomplete fields`);
+        }
+
+        // Function to reinitialize autocomplete for dynamically added fields
+        function reinitializeAddressAutocomplete() {
+            // Clear existing instances
+            autocompleteInstances = [];
+            
+            // Reinitialize
+            setTimeout(() => {
+                initializeAddressAutocomplete();
+            }, 100);
+        }
+
+        // Function to add autocomplete to a specific field
+        function addAutocompleteToField(field) {
+            if (!googlePlacesInitialized) {
+                console.log('Google Places API not loaded yet');
+                return;
+            }
+
+            const autocomplete = new google.maps.places.Autocomplete(field, {
+                types: ['address'],
+                componentRestrictions: { country: 'us' },
+                fields: ['address_components', 'formatted_address', 'geometry', 'place_id']
+            });
+
+            autocomplete.addListener('place_changed', function() {
+                const place = autocomplete.getPlace();
+                
+                if (!place.geometry || !place.geometry.location) {
+                    return;
+                }
+
+                field.value = place.formatted_address;
+                field.dispatchEvent(new Event('change', { bubbles: true }));
+            });
+
+            // Add visual indicator
+            field.style.backgroundImage = 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'20\' height=\'20\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%23667eea\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpath d=\'M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\'/%3E%3Ccircle cx=\'12\' cy=\'10\' r=\'3\'/%3E%3C/svg%3E")';
+            field.style.backgroundRepeat = 'no-repeat';
+            field.style.backgroundPosition = 'right 12px center';
+            field.style.backgroundSize = '16px 16px';
+            field.style.paddingRight = '40px';
+
+            autocompleteInstances.push(autocomplete);
+        }
+
+        // Set up MutationObserver to watch for new address fields
+        function setupAddressFieldObserver() {
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'childList') {
+                        mutation.addedNodes.forEach(function(node) {
+                            if (node.nodeType === 1) { // Element node
+                                // Check if the added node is an address input field
+                                if (node.tagName === 'INPUT' && 
+                                    (node.id && node.id.includes('Address')) ||
+                                    (node.placeholder && node.placeholder.toLowerCase().includes('address'))) {
+                                    console.log('New address field detected:', node.id || node.placeholder);
+                                    addAutocompleteToField(node);
+                                }
+                                
+                                // Check for address fields within the added node
+                                const addressFields = node.querySelectorAll ? 
+                                    node.querySelectorAll('input[id*="Address"], input[placeholder*="address"], input[placeholder*="Address"]') : [];
+                                
+                                addressFields.forEach(field => {
+                                    console.log('New address field detected in subtree:', field.id || field.placeholder);
+                                    addAutocompleteToField(field);
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+
+            // Start observing
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+
+            console.log('Address field observer set up');
+        }
+
         // Initialize dashboard when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
             // Existing initialization code...
@@ -6484,6 +6687,12 @@
                     setTimeout(() => {
                         initializeDashboard();
                     }, 1000);
+                    
+                    // Initialize autocomplete after a longer delay to ensure all content is loaded
+                    setTimeout(() => {
+                        initializeAddressAutocomplete();
+                        setupAddressFieldObserver();
+                    }, 2000);
                 } else {
                     console.log('No user authenticated, redirecting to signin');
                     window.location.href = 'signin.html';
