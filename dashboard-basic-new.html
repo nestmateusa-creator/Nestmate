@@ -2844,28 +2844,477 @@
         function loadGarageContent() {
             document.getElementById('garageSection').innerHTML = `
                 <div class="section-header">
-                    <h3 class="section-title">Garage Details</h3>
+                    <h3 class="section-title">Garage & Exterior Features</h3>
+                    <div class="header-actions">
+                        <button type="button" class="btn btn-secondary btn-small" onclick="toggleEditMode('garage')" id="editGarageBtn">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button type="button" class="btn btn-primary btn-small" onclick="showAddServiceModal()">
+                            <i class="fas fa-plus"></i> Add Service
+                        </button>
+                    </div>
                 </div>
-                <p style="color: rgba(255,255,255,0.8); text-align: center; padding: 2rem;">Garage, driveway, landscaping, pool, and fence details coming soon!</p>
+
+                <!-- Garage Form -->
+                <form id="garageForm">
+                    <div class="form-grid">
+                        <!-- Garage Section -->
+                        <div class="form-group">
+                            <label class="form-label">Garage Type</label>
+                            <select class="form-input" id="garageType" disabled>
+                                <option value="">Select garage type</option>
+                                <option value="attached">Attached Garage</option>
+                                <option value="detached">Detached Garage</option>
+                                <option value="carport">Carport</option>
+                                <option value="none">No Garage</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Garage Size</label>
+                            <select class="form-input" id="garageSize" disabled>
+                                <option value="">Select garage size</option>
+                                <option value="1-car">1 Car</option>
+                                <option value="2-car">2 Car</option>
+                                <option value="3-car">3 Car</option>
+                                <option value="4-car">4+ Car</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Garage Door Type</label>
+                            <select class="form-input" id="garageDoorType" disabled>
+                                <option value="">Select door type</option>
+                                <option value="manual">Manual</option>
+                                <option value="automatic">Automatic</option>
+                                <option value="smart">Smart/App Controlled</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Garage Door Year</label>
+                            <input type="number" class="form-input" id="garageDoorYear" placeholder="Year installed" disabled>
+                        </div>
+                        
+                        <!-- Driveway Section -->
+                        <div class="form-group">
+                            <label class="form-label">Driveway Material</label>
+                            <select class="form-input" id="drivewayMaterial" disabled>
+                                <option value="">Select material</option>
+                                <option value="asphalt">Asphalt</option>
+                                <option value="concrete">Concrete</option>
+                                <option value="gravel">Gravel</option>
+                                <option value="pavers">Pavers</option>
+                                <option value="stone">Stone</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Driveway Year</label>
+                            <input type="number" class="form-input" id="drivewayYear" placeholder="Year installed" disabled>
+                        </div>
+                        
+                        <!-- Pool Section -->
+                        <div class="form-group">
+                            <label class="form-label">Pool Type</label>
+                            <select class="form-input" id="poolType" disabled>
+                                <option value="">Select pool type</option>
+                                <option value="none">No Pool</option>
+                                <option value="in-ground">In-Ground Pool</option>
+                                <option value="above-ground">Above-Ground Pool</option>
+                                <option value="hot-tub">Hot Tub/Spa</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Pool Year</label>
+                            <input type="number" class="form-input" id="poolYear" placeholder="Year installed" disabled>
+                        </div>
+                        
+                        <!-- Fencing Section -->
+                        <div class="form-group">
+                            <label class="form-label">Fence Type</label>
+                            <select class="form-input" id="fenceType" disabled>
+                                <option value="">Select fence type</option>
+                                <option value="none">No Fence</option>
+                                <option value="wood">Wood</option>
+                                <option value="vinyl">Vinyl</option>
+                                <option value="aluminum">Aluminum</option>
+                                <option value="chain-link">Chain Link</option>
+                                <option value="brick">Brick/Stone</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Fence Year</label>
+                            <input type="number" class="form-input" id="fenceYear" placeholder="Year installed" disabled>
+                        </div>
+                        
+                        <!-- Landscaping Section -->
+                        <div class="form-group">
+                            <label class="form-label">Landscaping Type</label>
+                            <select class="form-input" id="landscapingType" disabled>
+                                <option value="">Select landscaping</option>
+                                <option value="minimal">Minimal</option>
+                                <option value="moderate">Moderate</option>
+                                <option value="extensive">Extensive</option>
+                                <option value="professional">Professional Design</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Irrigation System</label>
+                            <select class="form-input" id="irrigationSystem" disabled>
+                                <option value="">Select irrigation</option>
+                                <option value="none">None</option>
+                                <option value="manual">Manual</option>
+                                <option value="automatic">Automatic</option>
+                                <option value="smart">Smart System</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Last Exterior Maintenance</label>
+                            <input type="date" class="form-input" id="lastExteriorMaintenance" disabled>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="toggleEditMode('garage')" id="cancelGarageBtn" style="display: none;">
+                            Cancel
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="saveGarageData()" id="saveGarageBtn" style="display: none;">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Service History & Maintenance Records -->
+                <div class="service-history-section">
+                    <div class="section-subheader">
+                        <h4 class="subtitle">Service History & Maintenance Records</h4>
+                    </div>
+                    <div id="garageServiceHistory" class="service-history-list">
+                        <!-- Service records will be loaded here -->
+                    </div>
+                </div>
             `;
+            
+            // Load existing data and service history
+            loadGarageData();
+            loadServiceHistory('garage');
         }
 
         function loadExteriorContent() {
             document.getElementById('exteriorSection').innerHTML = `
                 <div class="section-header">
-                    <h3 class="section-title">Exterior Features</h3>
+                    <h3 class="section-title">Exterior Features & Landscaping</h3>
+                    <div class="header-actions">
+                        <button type="button" class="btn btn-secondary btn-small" onclick="toggleEditMode('exterior')" id="editExteriorBtn">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button type="button" class="btn btn-primary btn-small" onclick="showAddServiceModal()">
+                            <i class="fas fa-plus"></i> Add Service
+                        </button>
+                    </div>
                 </div>
-                <p style="color: rgba(255,255,255,0.8); text-align: center; padding: 2rem;">Exterior features and landscaping details coming soon!</p>
+
+                <!-- Exterior Form -->
+                <form id="exteriorForm">
+                    <div class="form-grid">
+                        <!-- Exterior Structure -->
+                        <div class="form-group">
+                            <label class="form-label">Exterior Siding Material</label>
+                            <select class="form-input" id="exteriorSiding" disabled>
+                                <option value="">Select siding material</option>
+                                <option value="brick">Brick</option>
+                                <option value="vinyl">Vinyl Siding</option>
+                                <option value="wood">Wood Siding</option>
+                                <option value="stucco">Stucco</option>
+                                <option value="stone">Stone</option>
+                                <option value="fiber-cement">Fiber Cement</option>
+                                <option value="aluminum">Aluminum</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Exterior Siding Year</label>
+                            <input type="number" class="form-input" id="exteriorSidingYear" placeholder="Year installed" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Roof Material</label>
+                            <select class="form-input" id="roofMaterial" disabled>
+                                <option value="">Select roof material</option>
+                                <option value="asphalt">Asphalt Shingles</option>
+                                <option value="metal">Metal</option>
+                                <option value="tile">Tile</option>
+                                <option value="slate">Slate</option>
+                                <option value="wood">Wood Shakes</option>
+                                <option value="rubber">Rubber Membrane</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Roof Year</label>
+                            <input type="number" class="form-input" id="roofYear" placeholder="Year installed" disabled>
+                        </div>
+                        
+                        <!-- Windows & Doors -->
+                        <div class="form-group">
+                            <label class="form-label">Window Type</label>
+                            <select class="form-input" id="windowType" disabled>
+                                <option value="">Select window type</option>
+                                <option value="single-pane">Single Pane</option>
+                                <option value="double-pane">Double Pane</option>
+                                <option value="triple-pane">Triple Pane</option>
+                                <option value="energy-efficient">Energy Efficient</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Window Year</label>
+                            <input type="number" class="form-input" id="windowYear" placeholder="Year installed" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Front Door Material</label>
+                            <select class="form-input" id="frontDoorMaterial" disabled>
+                                <option value="">Select door material</option>
+                                <option value="wood">Wood</option>
+                                <option value="steel">Steel</option>
+                                <option value="fiberglass">Fiberglass</option>
+                                <option value="glass">Glass</option>
+                                <option value="composite">Composite</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Front Door Year</label>
+                            <input type="number" class="form-input" id="frontDoorYear" placeholder="Year installed" disabled>
+                        </div>
+                        
+                        <!-- Outdoor Features -->
+                        <div class="form-group">
+                            <label class="form-label">Deck/Patio</label>
+                            <select class="form-input" id="deckPatio" disabled>
+                                <option value="">Select outdoor space</option>
+                                <option value="none">None</option>
+                                <option value="deck">Deck</option>
+                                <option value="patio">Patio</option>
+                                <option value="both">Both Deck & Patio</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Deck/Patio Material</label>
+                            <select class="form-input" id="deckPatioMaterial" disabled>
+                                <option value="">Select material</option>
+                                <option value="wood">Wood</option>
+                                <option value="composite">Composite</option>
+                                <option value="concrete">Concrete</option>
+                                <option value="stone">Stone</option>
+                                <option value="brick">Brick</option>
+                                <option value="pavers">Pavers</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Outdoor Lighting</label>
+                            <select class="form-input" id="outdoorLighting" disabled>
+                                <option value="">Select lighting</option>
+                                <option value="none">None</option>
+                                <option value="basic">Basic</option>
+                                <option value="landscape">Landscape Lighting</option>
+                                <option value="security">Security Lighting</option>
+                                <option value="smart">Smart Lighting</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Last Exterior Paint</label>
+                            <input type="date" class="form-input" id="lastExteriorPaint" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Last Roof Inspection</label>
+                            <input type="date" class="form-input" id="lastRoofInspection" disabled>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="toggleEditMode('exterior')" id="cancelExteriorBtn" style="display: none;">
+                            Cancel
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="saveExteriorData()" id="saveExteriorBtn" style="display: none;">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Service History & Maintenance Records -->
+                <div class="service-history-section">
+                    <div class="section-subheader">
+                        <h4 class="subtitle">Service History & Maintenance Records</h4>
+                    </div>
+                    <div id="exteriorServiceHistory" class="service-history-list">
+                        <!-- Service records will be loaded here -->
+                    </div>
+                </div>
             `;
+            
+            // Load existing data and service history
+            loadExteriorData();
+            loadServiceHistory('exterior');
         }
 
         function loadAppliancesContent() {
             document.getElementById('appliancesSection').innerHTML = `
                 <div class="section-header">
                     <h3 class="section-title">Appliances & Equipment</h3>
+                    <div class="header-actions">
+                        <button type="button" class="btn btn-secondary btn-small" onclick="toggleEditMode('appliances')" id="editAppliancesBtn">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button type="button" class="btn btn-primary btn-small" onclick="showAddServiceModal()">
+                            <i class="fas fa-plus"></i> Add Service
+                        </button>
+                    </div>
                 </div>
-                <p style="color: rgba(255,255,255,0.8); text-align: center; padding: 2rem;">Kitchen, laundry, and other appliance details coming soon!</p>
+
+                <!-- Appliances Form -->
+                <form id="appliancesForm">
+                    <div class="form-grid">
+                        <!-- Kitchen Appliances -->
+                        <div class="form-group">
+                            <label class="form-label">Refrigerator Brand</label>
+                            <input type="text" class="form-input" id="refrigeratorBrand" placeholder="e.g., Samsung, LG" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Refrigerator Year</label>
+                            <input type="number" class="form-input" id="refrigeratorYear" placeholder="Year purchased" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Dishwasher Brand</label>
+                            <input type="text" class="form-input" id="dishwasherBrand" placeholder="e.g., Bosch, KitchenAid" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Dishwasher Year</label>
+                            <input type="number" class="form-input" id="dishwasherYear" placeholder="Year purchased" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Stove/Oven Brand</label>
+                            <input type="text" class="form-input" id="stoveBrand" placeholder="e.g., GE, Whirlpool" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Stove/Oven Year</label>
+                            <input type="number" class="form-input" id="stoveYear" placeholder="Year purchased" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Microwave Brand</label>
+                            <input type="text" class="form-input" id="microwaveBrand" placeholder="e.g., Panasonic, Sharp" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Microwave Year</label>
+                            <input type="number" class="form-input" id="microwaveYear" placeholder="Year purchased" disabled>
+                        </div>
+                        
+                        <!-- Laundry Appliances -->
+                        <div class="form-group">
+                            <label class="form-label">Washer Brand</label>
+                            <input type="text" class="form-input" id="washerBrand" placeholder="e.g., Maytag, Speed Queen" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Washer Year</label>
+                            <input type="number" class="form-input" id="washerYear" placeholder="Year purchased" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Dryer Brand</label>
+                            <input type="text" class="form-input" id="dryerBrand" placeholder="e.g., Maytag, Speed Queen" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Dryer Year</label>
+                            <input type="number" class="form-input" id="dryerYear" placeholder="Year purchased" disabled>
+                        </div>
+                        
+                        <!-- HVAC & Other -->
+                        <div class="form-group">
+                            <label class="form-label">Water Softener</label>
+                            <select class="form-input" id="waterSoftener" disabled>
+                                <option value="">Select water softener</option>
+                                <option value="none">None</option>
+                                <option value="salt-based">Salt-Based</option>
+                                <option value="salt-free">Salt-Free</option>
+                                <option value="magnetic">Magnetic</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Water Softener Year</label>
+                            <input type="number" class="form-input" id="waterSoftenerYear" placeholder="Year installed" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Security System</label>
+                            <select class="form-input" id="securitySystem" disabled>
+                                <option value="">Select security system</option>
+                                <option value="none">None</option>
+                                <option value="basic">Basic Alarm</option>
+                                <option value="monitored">Monitored System</option>
+                                <option value="smart">Smart Security</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Security System Year</label>
+                            <input type="number" class="form-input" id="securitySystemYear" placeholder="Year installed" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Smart Home Features</label>
+                            <input type="text" class="form-input" id="smartHomeFeatures" placeholder="e.g., Smart Thermostat, Smart Locks" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Last Appliance Service</label>
+                            <input type="date" class="form-input" id="lastApplianceService" disabled>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="toggleEditMode('appliances')" id="cancelAppliancesBtn" style="display: none;">
+                            Cancel
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="saveAppliancesData()" id="saveAppliancesBtn" style="display: none;">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Service History & Maintenance Records -->
+                <div class="service-history-section">
+                    <div class="section-subheader">
+                        <h4 class="subtitle">Service History & Maintenance Records</h4>
+                    </div>
+                    <div id="appliancesServiceHistory" class="service-history-list">
+                        <!-- Service records will be loaded here -->
+                    </div>
+                </div>
             `;
+            
+            // Load existing data and service history
+            loadAppliancesData();
+            loadServiceHistory('appliances');
         }
 
         function handleBasicInfoSubmit(e) {
@@ -3063,6 +3512,72 @@
                     }
                 })
                 .catch(error => console.error('Error loading living areas data:', error));
+        }
+
+        function loadGarageData() {
+            if (!currentUser) return;
+            
+            const db = firebase.firestore();
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
+                .then(doc => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        const inputs = document.querySelectorAll('#garageForm input, #garageForm select, #garageForm textarea');
+                        inputs.forEach(input => {
+                            if (data[input.id]) {
+                                input.value = data[input.id];
+                            }
+                        });
+                        
+                        // Disable inputs by default (view mode)
+                        inputs.forEach(input => input.disabled = true);
+                    }
+                })
+                .catch(error => console.error('Error loading garage data:', error));
+        }
+
+        function loadExteriorData() {
+            if (!currentUser) return;
+            
+            const db = firebase.firestore();
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
+                .then(doc => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        const inputs = document.querySelectorAll('#exteriorForm input, #exteriorForm select, #exteriorForm textarea');
+                        inputs.forEach(input => {
+                            if (data[input.id]) {
+                                input.value = data[input.id];
+                            }
+                        });
+                        
+                        // Disable inputs by default (view mode)
+                        inputs.forEach(input => input.disabled = true);
+                    }
+                })
+                .catch(error => console.error('Error loading exterior data:', error));
+        }
+
+        function loadAppliancesData() {
+            if (!currentUser) return;
+            
+            const db = firebase.firestore();
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
+                .then(doc => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        const inputs = document.querySelectorAll('#appliancesForm input, #appliancesForm select, #appliancesForm textarea');
+                        inputs.forEach(input => {
+                            if (data[input.id]) {
+                                input.value = data[input.id];
+                            }
+                        });
+                        
+                        // Disable inputs by default (view mode)
+                        inputs.forEach(input => input.disabled = true);
+                    }
+                })
+                .catch(error => console.error('Error loading appliances data:', error));
         }
 
         function loadServiceHistory() {
@@ -3772,6 +4287,81 @@
                 .catch(error => {
                     console.error('Error saving living areas data:', error);
                     alert('Error saving living areas data. Please try again.');
+                });
+        }
+
+        function saveGarageData() {
+            if (!currentUser) return;
+            
+            const formData = {};
+            const inputs = document.querySelectorAll('#garageForm input, #garageForm select, #garageForm textarea');
+            inputs.forEach(input => {
+                formData[input.id] = input.value;
+            });
+            
+            const userRef = db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid);
+            const backupRef = db.collection('NESTMATE USER HOME SAVED DATA BACKUP').doc(currentUser.uid);
+            
+            userRef.set(formData, { merge: true })
+                .then(() => {
+                    backupRef.set(formData, { merge: true });
+                    homeData = { ...homeData, ...formData };
+                    alert('Garage information saved successfully!');
+                    toggleEditMode('garage'); // Switch back to view mode
+                })
+                .catch(error => {
+                    console.error('Error saving garage data:', error);
+                    alert('Error saving garage data. Please try again.');
+                });
+        }
+
+        function saveExteriorData() {
+            if (!currentUser) return;
+            
+            const formData = {};
+            const inputs = document.querySelectorAll('#exteriorForm input, #exteriorForm select, #exteriorForm textarea');
+            inputs.forEach(input => {
+                formData[input.id] = input.value;
+            });
+            
+            const userRef = db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid);
+            const backupRef = db.collection('NESTMATE USER HOME SAVED DATA BACKUP').doc(currentUser.uid);
+            
+            userRef.set(formData, { merge: true })
+                .then(() => {
+                    backupRef.set(formData, { merge: true });
+                    homeData = { ...homeData, ...formData };
+                    alert('Exterior information saved successfully!');
+                    toggleEditMode('exterior'); // Switch back to view mode
+                })
+                .catch(error => {
+                    console.error('Error saving exterior data:', error);
+                    alert('Error saving exterior data. Please try again.');
+                });
+        }
+
+        function saveAppliancesData() {
+            if (!currentUser) return;
+            
+            const formData = {};
+            const inputs = document.querySelectorAll('#appliancesForm input, #appliancesForm select, #appliancesForm textarea');
+            inputs.forEach(input => {
+                formData[input.id] = input.value;
+            });
+            
+            const userRef = db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid);
+            const backupRef = db.collection('NESTMATE USER HOME SAVED DATA BACKUP').doc(currentUser.uid);
+            
+            userRef.set(formData, { merge: true })
+                .then(() => {
+                    backupRef.set(formData, { merge: true });
+                    homeData = { ...homeData, ...formData };
+                    alert('Appliances information saved successfully!');
+                    toggleEditMode('appliances'); // Switch back to view mode
+                })
+                .catch(error => {
+                    console.error('Error saving appliances data:', error);
+                    alert('Error saving appliances data. Please try again.');
                 });
         }
 
