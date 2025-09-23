@@ -2997,14 +2997,7 @@
             }
         });
 
-        // Dashboard initialization
-        function initializeDashboard() {
-            // Update quick stats
-            updateQuickStats();
-            
-            // Set up event listeners
-            setupEventListeners();
-        }
+        // Dashboard initialization (moved to enhanced functions section)
 
         // Setup event listeners
         function setupEventListeners() {
@@ -4283,49 +4276,7 @@
             saveHomeDataToFirebase(homeData);
         }
 
-        // Edit Mode Functions
-        function toggleEditMode(section) {
-            // Handle different form naming conventions
-            let formId;
-            if (section === 'basic') {
-                formId = 'basicInfoForm';
-            } else {
-                formId = section + 'Form';
-            }
-            
-            const form = document.getElementById(formId);
-            if (!form) {
-                console.error('Form not found:', formId);
-                return;
-            }
-            
-            const inputs = form.querySelectorAll('input, select, textarea');
-            const editBtn = document.getElementById('edit' + section.charAt(0).toUpperCase() + section.slice(1) + 'Btn');
-            const cancelBtn = document.getElementById('cancel' + section.charAt(0).toUpperCase() + section.slice(1) + 'Btn');
-            const saveBtn = document.getElementById('save' + section.charAt(0).toUpperCase() + section.slice(1) + 'Btn');
-            
-            if (inputs[0] && inputs[0].disabled) {
-                // Enable edit mode
-                inputs.forEach(input => input.disabled = false);
-                editBtn.innerHTML = '<i class="fas fa-save"></i> Save';
-                editBtn.classList.remove('btn-secondary');
-                editBtn.classList.add('btn-success');
-                
-                // Show cancel and save buttons
-                if (cancelBtn) cancelBtn.style.display = 'inline-block';
-                if (saveBtn) saveBtn.style.display = 'inline-block';
-            } else {
-                // Disable edit mode
-                inputs.forEach(input => input.disabled = true);
-                editBtn.innerHTML = '<i class="fas fa-edit"></i> Edit';
-                editBtn.classList.remove('btn-success');
-                editBtn.classList.add('btn-secondary');
-                
-                // Hide cancel and save buttons
-                if (cancelBtn) cancelBtn.style.display = 'none';
-                if (saveBtn) saveBtn.style.display = 'none';
-            }
-        }
+        // Edit Mode Functions (moved to complete functions section)
 
         // Service History Functions
         function loadBasicInfoData() {
@@ -4641,76 +4592,7 @@
             `;
         }
 
-        function showAddServiceModal() {
-            const modal = document.createElement('div');
-            modal.className = 'modal';
-            modal.style.display = 'block';
-            modal.innerHTML = `
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h3>Add Service Record</h3>
-                        <span class="close" onclick="this.closest('.modal').remove()">&times;</span>
-                    </div>
-                    <form id="addServiceForm">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label class="form-label">Service Type</label>
-                                <select class="form-input" id="serviceType" required>
-                                    <option value="">Select service type</option>
-                                    <option value="maintenance">Maintenance</option>
-                                    <option value="repair">Repair</option>
-                                    <option value="upgrade">Upgrade</option>
-                                    <option value="inspection">Inspection</option>
-                                    <option value="cleaning">Cleaning</option>
-                                    <option value="installation">Installation</option>
-                                    <option value="other">Other</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Date</label>
-                                <input type="date" class="form-input" id="serviceDate" required>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Title</label>
-                                <input type="text" class="form-input" id="serviceTitle" placeholder="Service title" required>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Cost</label>
-                                <input type="number" class="form-input" id="serviceCost" placeholder="0.00" step="0.01">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Contractor/Company</label>
-                                <input type="text" class="form-input" id="serviceContractor" placeholder="Company name">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Warranty Period</label>
-                                <input type="text" class="form-input" id="serviceWarranty" placeholder="e.g., 1 year, 2 years">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Next Service Date</label>
-                                <input type="date" class="form-input" id="nextServiceDate">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Description</label>
-                            <textarea class="form-input form-textarea" id="serviceDescription" placeholder="Detailed description of the service performed" required></textarea>
-                        </div>
-                        <div class="modal-actions">
-                            <button type="button" class="btn btn-secondary" onclick="this.closest('.modal').remove()">Cancel</button>
-                            <button type="submit" class="btn btn-primary">Add Service Record</button>
-                        </div>
-                    </form>
-                </div>
-            `;
-            
-            document.body.appendChild(modal);
-            
-            // Set today's date as default
-            document.getElementById('serviceDate').value = new Date().toISOString().split('T')[0];
-            
-            // Add form submission handler
-            document.getElementById('addServiceForm').addEventListener('submit', handleAddServiceSubmit);
-        }
+        // showAddServiceModal function (moved to complete functions section)
 
         function handleAddServiceSubmit(e) {
             e.preventDefault();
