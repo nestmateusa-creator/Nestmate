@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pro Dashboard - NestMate</title>
+    <title>Advanced Pro Dashboard - NestMate</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
@@ -52,7 +52,7 @@
         }
 
         .plan-badge {
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
             padding: 0.5rem 1rem;
             border-radius: 20px;
             font-size: 0.9rem;
@@ -75,13 +75,13 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
             color: white;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .btn-primary:hover {
-            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
             transform: translateY(-1px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
         }
@@ -2299,12 +2299,216 @@
             transition: width 0.3s ease;
         }
 
+        /* Advanced Pro Features CSS */
+        .family-grid, .emergency-grid, .team-orders-grid, .family-dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .family-members-card, .family-tasks-card, .emergency-contacts-card, .emergency-history-card, 
+        .team-orders-card, .team-budget-card, .family-activity-card, .family-stats-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .family-members-header, .family-tasks-header, .emergency-contacts-header, .emergency-history-header,
+        .team-orders-header, .team-budget-header, .family-activity-header, .family-stats-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .family-members-header h5, .family-tasks-header h5, .emergency-contacts-header h5, .emergency-history-header h5,
+        .team-orders-header h5, .team-budget-header h5, .family-activity-header h5, .family-stats-header h5 {
+            color: #f1f5f9;
+            font-weight: 600;
+        }
+
+        .family-count, .tasks-count, .contacts-count, .history-count, .orders-count, .activity-count {
+            background: rgba(139, 92, 246, 0.2);
+            color: #8b5cf6;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .budget-amount {
+            color: #10b981;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .family-member-item, .family-task-item, .emergency-contact-item, .emergency-incident-item,
+        .team-order-item, .activity-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .family-member-item:last-child, .family-task-item:last-child, .emergency-contact-item:last-child,
+        .emergency-incident-item:last-child, .team-order-item:last-child, .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .member-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(139, 92, 246, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #8b5cf6;
+            margin-right: 1rem;
+        }
+
+        .member-info h6, .task-info h6, .contact-info h6, .incident-info h6, .order-info h6, .activity-details h6 {
+            color: #f1f5f9;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .member-info p, .task-info p, .contact-info p, .incident-info p, .order-info p, .activity-details p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .member-status, .task-priority, .incident-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .member-status.online {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .member-status.offline {
+            background: rgba(107, 114, 128, 0.2);
+            color: #6b7280;
+        }
+
+        .task-priority.high {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .task-priority.medium {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .incident-status.resolved {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .budget-breakdown {
+            margin-top: 1rem;
+        }
+
+        .budget-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .budget-item:last-child {
+            border-bottom: none;
+        }
+
+        .budget-category {
+            color: #cbd5e1;
+        }
+
+        .budget-value {
+            color: #f1f5f9;
+            font-weight: 600;
+        }
+
+        .family-stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(139, 92, 246, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #8b5cf6;
+        }
+
+        .stat-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-number {
+            color: #f1f5f9;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.8rem;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(16, 185, 129, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #10b981;
+            margin-right: 1rem;
+        }
+
         @media (max-width: 768px) {
-            .orders-grid, .price-tracking-grid, .health-score-grid {
+            .orders-grid, .price-tracking-grid, .health-score-grid,
+            .family-grid, .emergency-grid, .team-orders-grid, .family-dashboard-grid {
                 grid-template-columns: 1fr;
             }
             
             .homes-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .family-stats-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -2316,7 +2520,7 @@
             <i class="fas fa-home"></i> NestMate
         </div>
         <div class="user-info">
-            <div class="plan-badge">PRO PLAN</div>
+            <div class="plan-badge">ADVANCED PRO PLAN</div>
             <button class="btn btn-outline" onclick="window.location.href='profile.html'">
                 <i class="fas fa-user"></i> PROFILE
             </button>
@@ -2412,6 +2616,30 @@
                     <button class="nav-item" onclick="showSection('health-score', this)">
                         <i class="fas fa-heartbeat"></i>
                         <span>Home Health Score</span>
+                    </button>
+                    
+                    <!-- Advanced Pro Features -->
+                    <div class="nav-divider"></div>
+                    <div class="nav-section-title">Advanced Pro Features</div>
+                    
+                    <button class="nav-item" onclick="showSection('family-management', this)">
+                        <i class="fas fa-users"></i>
+                        <span>Family Management</span>
+                    </button>
+                    
+                    <button class="nav-item" onclick="showSection('emergency-services', this)">
+                        <i class="fas fa-phone-alt"></i>
+                        <span>Emergency Services</span>
+                    </button>
+                    
+                    <button class="nav-item" onclick="showSection('team-orders', this)">
+                        <i class="fas fa-shopping-basket"></i>
+                        <span>Team Product Orders</span>
+                    </button>
+                    
+                    <button class="nav-item" onclick="showSection('family-dashboard', this)">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Family Dashboard</span>
                     </button>
                 </nav>
             </div>
@@ -2990,6 +3218,311 @@
                                     </div>
                                     <div class="health-bar">
                                         <div class="health-progress" style="width: 84%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advanced Pro Features Content Sections -->
+                
+                <!-- Family Management Section -->
+                <div class="content-section" id="family-management">
+                    <div class="section-header">
+                        <h4 class="section-title">👨‍👩‍👧‍👦 Family Management</h4>
+                        <div class="header-actions">
+                            <button type="button" class="btn btn-primary btn-small" onclick="inviteFamilyMember()">
+                                <i class="fas fa-user-plus"></i> Invite Family Member
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="family-grid">
+                        <div class="family-members-card">
+                            <div class="family-members-header">
+                                <h5>Family Members (3/5)</h5>
+                                <span class="family-count">3 connected</span>
+                            </div>
+                            <div class="family-members-list">
+                                <div class="family-member-item">
+                                    <div class="member-avatar">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="member-info">
+                                        <h6>John Smith</h6>
+                                        <p>Owner • Admin</p>
+                                    </div>
+                                    <div class="member-status online">Online</div>
+                                </div>
+                                <div class="family-member-item">
+                                    <div class="member-avatar">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="member-info">
+                                        <h6>Sarah Smith</h6>
+                                        <p>Spouse • Manager</p>
+                                    </div>
+                                    <div class="member-status online">Online</div>
+                                </div>
+                                <div class="family-member-item">
+                                    <div class="member-avatar">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="member-info">
+                                        <h6>Mike Smith</h6>
+                                        <p>Son • Member</p>
+                                    </div>
+                                    <div class="member-status offline">Offline</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="family-tasks-card">
+                            <div class="family-tasks-header">
+                                <h5>Shared Tasks</h5>
+                                <span class="tasks-count">8 active</span>
+                            </div>
+                            <div class="family-tasks-list">
+                                <div class="family-task-item">
+                                    <div class="task-info">
+                                        <h6>Garden Maintenance</h6>
+                                        <p>Assigned to: Sarah Smith</p>
+                                    </div>
+                                    <div class="task-priority medium">Medium</div>
+                                </div>
+                                <div class="family-task-item">
+                                    <div class="task-info">
+                                        <h6>Pool Cleaning</h6>
+                                        <p>Assigned to: Mike Smith</p>
+                                    </div>
+                                    <div class="task-priority high">High</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Emergency Services Section -->
+                <div class="content-section" id="emergency-services">
+                    <div class="section-header">
+                        <h4 class="section-title">🚨 Emergency Services</h4>
+                        <div class="header-actions">
+                            <button type="button" class="btn btn-danger btn-small" onclick="callEmergency()">
+                                <i class="fas fa-phone"></i> Call Emergency
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="emergency-grid">
+                        <div class="emergency-contacts-card">
+                            <div class="emergency-contacts-header">
+                                <h5>Emergency Contacts</h5>
+                                <span class="contacts-count">5 contacts</span>
+                            </div>
+                            <div class="emergency-contacts-list">
+                                <div class="emergency-contact-item">
+                                    <div class="contact-info">
+                                        <h6>Plumbing Emergency</h6>
+                                        <p>24/7 Service • 5 min response</p>
+                                    </div>
+                                    <button class="btn btn-danger btn-small">Call Now</button>
+                                </div>
+                                <div class="emergency-contact-item">
+                                    <div class="contact-info">
+                                        <h6>Electrical Emergency</h6>
+                                        <p>24/7 Service • 10 min response</p>
+                                    </div>
+                                    <button class="btn btn-danger btn-small">Call Now</button>
+                                </div>
+                                <div class="emergency-contact-item">
+                                    <div class="contact-info">
+                                        <h6>HVAC Emergency</h6>
+                                        <p>24/7 Service • 15 min response</p>
+                                    </div>
+                                    <button class="btn btn-danger btn-small">Call Now</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="emergency-history-card">
+                            <div class="emergency-history-header">
+                                <h5>Emergency History</h5>
+                                <span class="history-count">2 incidents</span>
+                            </div>
+                            <div class="emergency-history-list">
+                                <div class="emergency-incident-item">
+                                    <div class="incident-info">
+                                        <h6>Water Leak Emergency</h6>
+                                        <p>Dec 10, 2024 • Resolved in 45 min</p>
+                                    </div>
+                                    <div class="incident-status resolved">Resolved</div>
+                                </div>
+                                <div class="emergency-incident-item">
+                                    <div class="incident-info">
+                                        <h6>Power Outage</h6>
+                                        <p>Nov 28, 2024 • Resolved in 2 hours</p>
+                                    </div>
+                                    <div class="incident-status resolved">Resolved</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Product Orders Section -->
+                <div class="content-section" id="team-orders">
+                    <div class="section-header">
+                        <h4 class="section-title">🛍️ Team Product Orders</h4>
+                        <div class="header-actions">
+                            <button type="button" class="btn btn-primary btn-small" onclick="createTeamOrder()">
+                                <i class="fas fa-plus"></i> Create Team Order
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="team-orders-grid">
+                        <div class="team-orders-card">
+                            <div class="team-orders-header">
+                                <h5>Active Team Orders</h5>
+                                <span class="orders-count">3 orders</span>
+                            </div>
+                            <div class="team-orders-list">
+                                <div class="team-order-item">
+                                    <div class="order-info">
+                                        <h6>Smart Home Security Kit</h6>
+                                        <p>Requested by: Sarah Smith</p>
+                                        <p>Team approval: 2/3 votes</p>
+                                    </div>
+                                    <div class="order-actions">
+                                        <button class="btn btn-primary btn-small">Approve</button>
+                                        <button class="btn btn-outline btn-small">View Details</button>
+                                    </div>
+                                </div>
+                                <div class="team-order-item">
+                                    <div class="order-info">
+                                        <h6>Energy Efficient Appliances</h6>
+                                        <p>Requested by: Mike Smith</p>
+                                        <p>Team approval: 3/3 votes ✓</p>
+                                    </div>
+                                    <div class="order-actions">
+                                        <button class="btn btn-primary btn-small">Order Now</button>
+                                        <button class="btn btn-outline btn-small">View Details</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="team-budget-card">
+                            <div class="team-budget-header">
+                                <h5>Team Budget</h5>
+                                <span class="budget-amount">$2,500</span>
+                            </div>
+                            <div class="budget-breakdown">
+                                <div class="budget-item">
+                                    <span class="budget-category">Used this month</span>
+                                    <span class="budget-value">$1,200</span>
+                                </div>
+                                <div class="budget-item">
+                                    <span class="budget-category">Available</span>
+                                    <span class="budget-value">$1,300</span>
+                                </div>
+                                <div class="budget-item">
+                                    <span class="budget-category">Pending orders</span>
+                                    <span class="budget-value">$450</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Family Dashboard Section -->
+                <div class="content-section" id="family-dashboard">
+                    <div class="section-header">
+                        <h4 class="section-title">📊 Family Dashboard</h4>
+                        <div class="header-actions">
+                            <button type="button" class="btn btn-primary btn-small" onclick="refreshFamilyDashboard()">
+                                <i class="fas fa-sync"></i> Refresh
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="family-dashboard-grid">
+                        <div class="family-activity-card">
+                            <div class="family-activity-header">
+                                <h5>Family Activity</h5>
+                                <span class="activity-count">12 activities</span>
+                            </div>
+                            <div class="family-activity-list">
+                                <div class="activity-item">
+                                    <div class="activity-icon">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <div class="activity-details">
+                                        <h6>Sarah completed "Garden Maintenance"</h6>
+                                        <p>2 hours ago</p>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon">
+                                        <i class="fas fa-shopping-cart"></i>
+                                    </div>
+                                    <div class="activity-details">
+                                        <h6>Mike requested "Smart Thermostat"</h6>
+                                        <p>4 hours ago</p>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon">
+                                        <i class="fas fa-tools"></i>
+                                    </div>
+                                    <div class="activity-details">
+                                        <h6>John scheduled "HVAC Service"</h6>
+                                        <p>1 day ago</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="family-stats-card">
+                            <div class="family-stats-header">
+                                <h5>Family Statistics</h5>
+                            </div>
+                            <div class="family-stats-grid">
+                                <div class="stat-item">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-tasks"></i>
+                                    </div>
+                                    <div class="stat-info">
+                                        <span class="stat-number">24</span>
+                                        <span class="stat-label">Tasks Completed</span>
+                                    </div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-dollar-sign"></i>
+                                    </div>
+                                    <div class="stat-info">
+                                        <span class="stat-number">$1,200</span>
+                                        <span class="stat-label">Money Saved</span>
+                                    </div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-home"></i>
+                                    </div>
+                                    <div class="stat-info">
+                                        <span class="stat-number">87</span>
+                                        <span class="stat-label">Home Health Score</span>
+                                    </div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <div class="stat-info">
+                                        <span class="stat-number">3</span>
+                                        <span class="stat-label">Active Members</span>
                                     </div>
                                 </div>
                             </div>
@@ -7359,6 +7892,23 @@
 
         function updateHealthScore() {
             alert('Update Health Score feature coming soon! This will recalculate your home\'s health score based on recent maintenance and inspections.');
+        }
+
+        // Advanced Pro Features Functions
+        function inviteFamilyMember() {
+            alert('Invite Family Member feature coming soon! This will allow you to invite up to 5 family members to collaborate on your home management.');
+        }
+
+        function callEmergency() {
+            alert('Emergency Services feature coming soon! This will connect you with 24/7 emergency contractors for plumbing, electrical, and HVAC emergencies.');
+        }
+
+        function createTeamOrder() {
+            alert('Create Team Order feature coming soon! This will allow family members to collaborate on product purchases and share the cost.');
+        }
+
+        function refreshFamilyDashboard() {
+            alert('Family Dashboard refreshed! This will update all family activity, statistics, and shared tasks.');
         }
 
         // Google Places API Integration
