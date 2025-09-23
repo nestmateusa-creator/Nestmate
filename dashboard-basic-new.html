@@ -3247,10 +3247,10 @@
                     </div>
                     
                     <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="toggleEditMode('bedrooms')" id="cancelBedroomsBtn" style="display: none;">
+                        <button type="button" class="btn btn-secondary" onclick="toggleEditMode('bedrooms')" id="cancelBedroomsBtn">
                             Cancel
                         </button>
-                        <button type="button" class="btn btn-primary" onclick="saveBedroomsData()" id="saveBedroomsBtn" style="display: none;">
+                        <button type="button" class="btn btn-primary" onclick="saveBedroomsData()" id="saveBedroomsBtn">
                             Save Changes
                         </button>
                     </div>
@@ -3297,10 +3297,10 @@
                     </div>
                     
                     <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="toggleEditMode('bathrooms')" id="cancelBathroomsBtn" style="display: none;">
+                        <button type="button" class="btn btn-secondary" onclick="toggleEditMode('bathrooms')" id="cancelBathroomsBtn">
                             Cancel
                         </button>
-                        <button type="button" class="btn btn-primary" onclick="saveBathroomsData()" id="saveBathroomsBtn" style="display: none;">
+                        <button type="button" class="btn btn-primary" onclick="saveBathroomsData()" id="saveBathroomsBtn">
                             Save Changes
                         </button>
                     </div>
@@ -3463,10 +3463,10 @@
                     </div>
                     
                     <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="toggleEditMode('living')" id="cancelLivingBtn" style="display: none;">
+                        <button type="button" class="btn btn-secondary" onclick="toggleEditMode('living')" id="cancelLivingBtn">
                             Cancel
                         </button>
-                        <button type="button" class="btn btn-primary" onclick="saveLivingData()" id="saveLivingBtn" style="display: none;">
+                        <button type="button" class="btn btn-primary" onclick="saveLivingData()" id="saveLivingBtn">
                             Save Changes
                         </button>
                     </div>
@@ -5828,18 +5828,6 @@
                 </div>
             `;
             bedroomsList.appendChild(bedroomDiv);
-            
-            // Show save buttons when a bedroom is added
-            const formActions = document.querySelector('#bedroomsForm .form-actions');
-            if (formActions) {
-                formActions.style.display = 'block';
-            }
-            
-            // Update edit button text to show we're in edit mode
-            const editButton = document.querySelector('button[onclick="toggleEditMode(\'bedrooms\')"]');
-            if (editButton) {
-                editButton.innerHTML = '<i class="fas fa-times"></i> Cancel';
-            }
         }
 
         function addBedroomToDOM(bedroomData, index) {
@@ -6176,18 +6164,6 @@
                 </div>
             `;
             bathroomsList.appendChild(bathroomDiv);
-            
-            // Show save buttons when a bathroom is added
-            const formActions = document.querySelector('#bathroomsForm .form-actions');
-            if (formActions) {
-                formActions.style.display = 'block';
-            }
-            
-            // Update edit button text to show we're in edit mode
-            const editButton = document.querySelector('button[onclick="toggleEditMode(\'bathrooms\')"]');
-            if (editButton) {
-                editButton.innerHTML = '<i class="fas fa-times"></i> Cancel';
-            }
         }
 
         function addBathroomToDOM(bathroomData, index) {
@@ -6458,18 +6434,6 @@
                 </div>
             `;
             livingAreasList.appendChild(livingDiv);
-            
-            // Show save buttons when a living area is added
-            const formActions = document.querySelector('#livingForm .form-actions');
-            if (formActions) {
-                formActions.style.display = 'block';
-            }
-            
-            // Update edit button text to show we're in edit mode
-            const editButton = document.querySelector('button[onclick="toggleEditMode(\'living\')"]');
-            if (editButton) {
-                editButton.innerHTML = '<i class="fas fa-times"></i> Cancel';
-            }
         }
 
         function addLivingAreaToDOM(livingAreaData, index) {
