@@ -11,26 +11,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBs9-LoO6vGlmhzC3zRjJYWR8XrJoJNGas&libraries=places&callback=initGooglePlaces" async defer></script>
     
-    <!-- Firebase Configuration -->
-    <script>
-        // Firebase configuration - Production NestMate Project
-        const firebaseConfig = {
-            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
-            authDomain: "nestmate-167ed.firebaseapp.com",
-            projectId: "nestmate-167ed",
-            storageBucket: "nestmate-167ed.appspot.com",
-            messagingSenderId: "865171535257",
-            appId: "1:865171535257:web:nextmate-web-app",
-            measurementId: "G-NEXTMATE-ANALYTICS"
-        };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        
-        // Initialize Firebase services
-        const db = firebase.firestore();
-        const auth = firebase.auth();
-    </script>
+    <!-- Firebase Configuration moved to main JavaScript section -->
     <style>
         * {
             margin: 0;
@@ -3027,14 +3008,21 @@
 
         // Setup event listeners
         function setupEventListeners() {
-            // Home form submission
-            document.getElementById('homeForm').addEventListener('submit', handleHomeFormSubmit);
+            // Only add event listeners to elements that exist
+            const homeForm = document.getElementById('homeForm');
+            if (homeForm) {
+                homeForm.addEventListener('submit', handleHomeFormSubmit);
+            }
             
-            // Task form submission
-            document.getElementById('addTaskForm').addEventListener('submit', handleTaskFormSubmit);
+            const addTaskForm = document.getElementById('addTaskForm');
+            if (addTaskForm) {
+                addTaskForm.addEventListener('submit', handleTaskFormSubmit);
+            }
             
-            // Contact form submission
-            document.getElementById('addContactForm').addEventListener('submit', handleContactFormSubmit);
+            const addContactForm = document.getElementById('addContactForm');
+            if (addContactForm) {
+                addContactForm.addEventListener('submit', handleContactFormSubmit);
+            }
         }
 
         // Sidebar Navigation Functions
@@ -5452,81 +5440,17 @@
             }
         }
 
-        // Modal Functions
-        function openTasksCalendar() {
-            const modal = document.getElementById('tasksModal');
-            if (modal) {
-                modal.style.display = 'block';
-            } else {
-                alert('Tasks & Calendar feature coming soon!');
-            }
-        }
+        // Modal Functions (duplicates removed - using original functions)
 
-        function openProductRecommendations() {
-            const modal = document.getElementById('productsModal');
-            if (modal) {
-                modal.style.display = 'block';
-            } else {
-                alert('Product Recommendations feature coming soon!');
-            }
-        }
+        // Dashboard Widget Functions (duplicates removed - using complete functions)
 
-        function openEmergencyServices() {
-            const modal = document.getElementById('emergencyModal');
-            if (modal) {
-                modal.style.display = 'block';
-            } else {
-                alert('Emergency Services feature coming soon!');
-            }
-        }
+        // showHealthDetails function moved to complete functions section
 
-        function closeModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) {
-                modal.style.display = 'none';
-            }
-        }
+        // showSavingsDetails function moved to complete functions section
 
-        // Dashboard Widget Functions
-        function refreshWeather() {
-            const weatherIcon = document.querySelector('.weather-icon');
-            if (weatherIcon) {
-                weatherIcon.style.animation = 'spin 1s linear infinite';
-                setTimeout(() => {
-                    weatherIcon.style.animation = '';
-                    alert('Weather refreshed!');
-                }, 1000);
-            }
-        }
+        // showAllActivity function moved to complete functions section
 
-        function showHealthDetails() {
-            alert('Home Health Score: 85/100\n\nBreakdown:\n• Structure: 90/100\n• Systems: 80/100\n• Maintenance: 85/100\n\nYour home is in excellent condition!');
-        }
-
-        function showSavingsDetails() {
-            alert('Energy & Cost Savings:\n\n• Monthly Energy Savings: $45\n• Annual Savings: $540\n• Maintenance Cost Avoidance: $1,200\n• Total Annual Savings: $1,740\n\nKeep up the great maintenance!');
-        }
-
-        function showAllActivity() {
-            alert('Recent Activity:\n\n• HVAC Service - 2 days ago\n• Roof Inspection - 1 week ago\n• Plumbing Check - 2 weeks ago\n• Electrical Update - 1 month ago\n\nAll systems running smoothly!');
-        }
-
-        function exportHomeData() {
-            if (!currentUser) {
-                alert('Please sign in to export data.');
-                return;
-            }
-            
-            const dataStr = JSON.stringify(homeData, null, 2);
-            const dataBlob = new Blob([dataStr], {type: 'application/json'});
-            const url = URL.createObjectURL(dataBlob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `home-data-${new Date().toISOString().split('T')[0]}.json`;
-            link.click();
-            URL.revokeObjectURL(url);
-            alert('Home data exported successfully!');
-        }
+        // exportHomeData function moved to complete functions section
 
         function loadHomeDataFromFirebase() {
             if (!currentUser) return;
