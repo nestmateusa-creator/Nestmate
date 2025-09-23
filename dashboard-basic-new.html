@@ -10,6 +10,27 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBs9-LoO6vGlmhzC3zRjJYWR8XrJoJNGas&libraries=places&callback=initGooglePlaces" async defer></script>
+    
+    <!-- Firebase Configuration -->
+    <script>
+        // Firebase configuration - Production NestMate Project
+        const firebaseConfig = {
+            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
+            authDomain: "nestmate-167ed.firebaseapp.com",
+            projectId: "nestmate-167ed",
+            storageBucket: "nestmate-167ed.appspot.com",
+            messagingSenderId: "865171535257",
+            appId: "1:865171535257:web:nextmate-web-app",
+            measurementId: "G-NEXTMATE-ANALYTICS"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        
+        // Initialize Firebase services
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+    </script>
     <style>
         * {
             margin: 0;
@@ -6861,22 +6882,7 @@
             // Existing initialization code...
             console.log('Dashboard loading...');
             
-            // Initialize Firebase and authentication
-            const firebaseConfig = {
-                apiKey: "AIzaSyBs9-LoO6vGlmhzC3zRjJYWR8XrJoJNGas",
-                authDomain: "nestmate-a8f2e.firebaseapp.com",
-                projectId: "nestmate-a8f2e",
-                storageBucket: "nestmate-a8f2e.appspot.com",
-                messagingSenderId: "1095892005315",
-                appId: "1:1095892005315:web:b7f4b5b5b7f4b5b5b7f4b5"
-            };
-
-            if (!firebase.apps.length) {
-                firebase.initializeApp(firebaseConfig);
-            }
-
-            const auth = firebase.auth();
-            const db = firebase.firestore();
+            // Firebase already initialized at the top of the file
 
             auth.onAuthStateChanged(function(user) {
                 if (user) {
