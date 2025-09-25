@@ -10,6 +10,13 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBs9-LoO6vGlmhzC3zRjJYWR8XrJoJNGas&libraries=places&callback=initGooglePlaces" async defer></script>
+    <script>
+        // Error handler for Google Maps API loading
+        window.gm_authFailure = function() {
+            console.error('Google Maps API authentication failed. Please check the API key.');
+            alert('Google Maps API authentication failed. Please check the API key.');
+        };
+    </script>
     
     <!-- Firebase Configuration moved to main JavaScript section -->
     <style>
@@ -6752,6 +6759,8 @@
 
         function initGooglePlaces() {
             console.log('Google Places API loaded successfully');
+            console.log('Google Maps object:', typeof google !== 'undefined' ? 'Available' : 'Not Available');
+            console.log('Google Maps Places:', typeof google !== 'undefined' && google.maps && google.maps.places ? 'Available' : 'Not Available');
             googlePlacesInitialized = true;
             initializeAddressAutocomplete();
         }
@@ -6779,13 +6788,19 @@
             
             addressFields.forEach((field, index) => {
                 console.log(`Initializing autocomplete for field ${index + 1}:`, field.id || field.placeholder);
+                console.log('Field element:', field);
+                console.log('Field value:', field.value);
                 
                 try {
                     // Check if Google Maps is available
                     if (typeof google === 'undefined' || !google.maps || !google.maps.places) {
                         console.error('Google Maps Places API not available');
+                        console.error('Google object:', typeof google);
+                        console.error('Google maps:', typeof google !== 'undefined' ? google.maps : 'undefined');
                         return;
                     }
+                    
+                    console.log('Creating autocomplete instance for field:', field.id || field.placeholder);
                     
                     // Create autocomplete instance
                     const autocomplete = new google.maps.places.Autocomplete(field, {
@@ -6793,16 +6808,20 @@
                         componentRestrictions: { country: 'us' }, // Restrict to US addresses
                         fields: ['address_components', 'formatted_address', 'geometry', 'place_id']
                     });
+                    
+                    console.log('Autocomplete instance created successfully:', autocomplete);
 
                 // Store the instance
                 autocompleteInstances.push(autocomplete);
 
                 // Add event listener for place selection
                 autocomplete.addListener('place_changed', function() {
+                    console.log('Place changed event triggered');
                     const place = autocomplete.getPlace();
+                    console.log('Place object:', place);
                     
                     if (!place.geometry || !place.geometry.location) {
-                        console.log('No details available for input: ' + place.name);
+                        console.log('No details available for input: ' + (place.name || 'unknown'));
                         return;
                     }
 
@@ -6906,6 +6925,62 @@
                 addAutocompleteToField(addressField);
             }
         }
+
+        // Test function for Google Places API (can be called from browser console)
+        window.testGooglePlaces = function() {
+            console.log('=== GOOGLE PLACES API TEST ===');
+            console.log('Google object available:', typeof google !== 'undefined');
+            console.log('Google Maps available:', typeof google !== 'undefined' && google.maps ? 'Yes' : 'No');
+            console.log('Google Places available:', typeof google !== 'undefined' && google.maps && google.maps.places ? 'Yes' : 'No');
+            
+            if (typeof google !== 'undefined' && google.maps && google.maps.places) {
+                const testField = document.getElementById('homeAddress');
+                if (testField) {
+                    console.log('Testing autocomplete on homeAddress field');
+                    console.log('Field current value:', testField.value);
+                    console.log('Field disabled:', testField.disabled);
+                    
+                    try {
+                        const testAutocomplete = new google.maps.places.Autocomplete(testField, {
+                            types: ['address'],
+                            componentRestrictions: { country: 'us' }
+                        });
+                        console.log('Test autocomplete created successfully:', testAutocomplete);
+                        
+                        // Test if autocomplete is working by triggering a search
+                        testField.focus();
+                        testField.value = '123 Main Street';
+                        testField.dispatchEvent(new Event('input', { bubbles: true }));
+                        
+                        return testAutocomplete;
+                    } catch (error) {
+                        console.error('Error creating test autocomplete:', error);
+                    }
+                } else {
+                    console.error('homeAddress field not found');
+                }
+            } else {
+                console.error('Google Places API not available');
+            }
+        };
+
+        // Function to force reinitialize autocomplete
+        window.forceReinitAutocomplete = function() {
+            console.log('=== FORCE REINITIALIZE AUTOCOMPLETE ===');
+            const addressField = document.getElementById('homeAddress');
+            if (addressField) {
+                // Remove existing autocomplete
+                addressField.removeAttribute('data-autocomplete-initialized');
+                
+                // Clear any existing autocomplete instances
+                autocompleteInstances = [];
+                
+                // Reinitialize
+                setTimeout(() => {
+                    initializeAddressAutocomplete();
+                }, 100);
+            }
+        };
 
         // Set up MutationObserver to watch for new address fields
         function setupAddressFieldObserver() {
