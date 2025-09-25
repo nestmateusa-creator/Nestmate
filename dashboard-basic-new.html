@@ -9,14 +9,13 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
-    <!-- Google Maps API removed - using fallback address autocomplete -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC_dBBCQ9R3n0KiZ6RodccRsUHoBov7GSA&libraries=places&callback=initGooglePlaces" async defer></script>
     <script>
-        // Fallback address autocomplete without Google Maps API
-        function initGooglePlaces() {
-            console.log('Using fallback address autocomplete (no Google Maps API)');
-            googlePlacesInitialized = true;
-            initializeAddressAutocomplete();
-        }
+        // Error handler for Google Maps API loading
+        window.gm_authFailure = function() {
+            console.error('Google Maps API authentication failed. Please check the API key.');
+            alert('Google Maps API authentication failed. Please check the API key.');
+        };
     </script>
     
     <!-- Firebase Configuration moved to main JavaScript section -->
@@ -6779,123 +6778,88 @@
 
         function initializeAddressAutocomplete() {
             if (!googlePlacesInitialized) {
-                console.log('Address autocomplete not yet initialized, retrying...');
+                console.log('Google Places API not yet loaded, retrying...');
                 setTimeout(initializeAddressAutocomplete, 500);
+                return;
+            }
+
+            // Check if Google Maps is available
+            if (typeof google === 'undefined' || !google.maps || !google.maps.places) {
+                console.error('Google Maps Places API not available');
                 return;
             }
 
             // Find all address input fields
             const addressFields = document.querySelectorAll('input[id*="Address"], input[placeholder*="address"], input[placeholder*="Address"]');
-            console.log(`Found ${addressFields.length} address fields to initialize with fallback autocomplete`);
+            console.log(`Found ${addressFields.length} address fields to initialize with Google Places API`);
             
             addressFields.forEach((field, index) => {
-                console.log(`Initializing fallback autocomplete for field ${index + 1}:`, field.id || field.placeholder);
+                console.log(`Initializing Google Places autocomplete for field ${index + 1}:`, field.id || field.placeholder);
                 
                 try {
-                    // Create a simple address autocomplete using a basic suggestion system
-                    createFallbackAutocomplete(field);
+                    // Create autocomplete instance
+                    const autocomplete = new google.maps.places.Autocomplete(field, {
+                        types: ['address'],
+                        componentRestrictions: { country: 'us' }, // Restrict to US addresses
+                        fields: ['address_components', 'formatted_address', 'geometry', 'place_id']
+                    });
+                    
+                    console.log('Google Places autocomplete instance created successfully:', autocomplete);
+
+                    // Store the instance
+                    autocompleteInstances.push(autocomplete);
+
+                    // Add event listener for place selection
+                    autocomplete.addListener('place_changed', function() {
+                        console.log('Place changed event triggered');
+                        const place = autocomplete.getPlace();
+                        console.log('Place object:', place);
+                        
+                        if (!place.geometry || !place.geometry.location) {
+                            console.log('No details available for input: ' + (place.name || 'unknown'));
+                            return;
+                        }
+
+                        // Fill the address field with the formatted address
+                        field.value = place.formatted_address;
+                        
+                        // Log the selected place for debugging
+                        console.log('Address selected:', {
+                            formatted_address: place.formatted_address,
+                            place_id: place.place_id,
+                            geometry: place.geometry.location.toJSON()
+                        });
+
+                        // Trigger change event to notify other parts of the app
+                        field.dispatchEvent(new Event('change', { bubbles: true }));
+                    });
+
+                    // Add visual indicator that autocomplete is active
+                    field.style.backgroundImage = 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'20\' height=\'20\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2310b981\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpath d=\'M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\'/%3E%3Ccircle cx=\'12\' cy=\'10\' r=\'3\'/%3E%3C/svg%3E")';
+                    field.style.backgroundRepeat = 'no-repeat';
+                    field.style.backgroundPosition = 'right 12px center';
+                    field.style.backgroundSize = '16px 16px';
+                    field.style.paddingRight = '40px';
                     
                     // Mark field as initialized
                     field.setAttribute('data-autocomplete-initialized', 'true');
-                    console.log(`Successfully initialized fallback autocomplete for field: ${field.id || field.placeholder}`);
+                    console.log(`Successfully initialized Google Places autocomplete for field: ${field.id || field.placeholder}`);
                     
                 } catch (error) {
-                    console.error(`Error initializing fallback autocomplete for field ${field.id || field.placeholder}:`, error);
+                    console.error(`Error initializing Google Places autocomplete for field ${field.id || field.placeholder}:`, error);
                 }
             });
 
-            console.log(`Initialized ${addressFields.length} address fields with fallback autocomplete`);
+            console.log(`Initialized ${autocompleteInstances.length} address fields with Google Places API`);
         }
 
-        // Fallback autocomplete function
-        function createFallbackAutocomplete(field) {
-            // Create a simple dropdown for address suggestions
-            const dropdown = document.createElement('div');
-            dropdown.className = 'address-suggestions';
-            dropdown.style.cssText = `
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background: white;
-                border: 1px solid #ccc;
-                border-top: none;
-                max-height: 200px;
-                overflow-y: auto;
-                z-index: 1000;
-                display: none;
-                box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            `;
-            
-            // Make field container relative positioned
-            const fieldContainer = field.parentElement;
-            if (fieldContainer && fieldContainer.style.position !== 'relative') {
-                fieldContainer.style.position = 'relative';
-            }
-            fieldContainer.appendChild(dropdown);
-            
-            // Sample address suggestions (you can expand this)
-            const sampleAddresses = [
-                '123 Main Street, New York, NY 10001',
-                '456 Oak Avenue, Los Angeles, CA 90210',
-                '789 Pine Road, Chicago, IL 60601',
-                '321 Elm Street, Houston, TX 77001',
-                '654 Maple Drive, Phoenix, AZ 85001',
-                '987 Cedar Lane, Philadelphia, PA 19101',
-                '147 Birch Boulevard, San Antonio, TX 78201',
-                '258 Spruce Street, San Diego, CA 92101',
-                '369 Willow Way, Dallas, TX 75201',
-                '741 Poplar Place, San Jose, CA 95101'
-            ];
-            
-            // Add input event listener
-            field.addEventListener('input', function() {
-                const value = field.value.toLowerCase();
-                if (value.length < 2) {
-                    dropdown.style.display = 'none';
-                    return;
-                }
-                
-                // Filter addresses based on input
-                const matches = sampleAddresses.filter(addr => 
-                    addr.toLowerCase().includes(value)
-                );
-                
-                if (matches.length > 0) {
-                    dropdown.innerHTML = matches.map(addr => 
-                        `<div class="suggestion-item" style="padding: 8px 12px; cursor: pointer; border-bottom: 1px solid #eee;" onmouseover="this.style.backgroundColor='#f0f0f0'" onmouseout="this.style.backgroundColor='white'" onclick="selectAddress('${addr}')">${addr}</div>`
-                    ).join('');
-                    dropdown.style.display = 'block';
-                } else {
-                    dropdown.style.display = 'none';
-                }
-            });
-            
-            // Hide dropdown when clicking outside
-            document.addEventListener('click', function(e) {
-                if (!fieldContainer.contains(e.target)) {
-                    dropdown.style.display = 'none';
-                }
-            });
-            
-            // Function to select an address
-            window.selectAddress = function(address) {
-                field.value = address;
-                dropdown.style.display = 'none';
-                field.dispatchEvent(new Event('change', { bubbles: true }));
-            };
-            
-            // Add visual indicator
-            field.style.backgroundImage = 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'20\' height=\'20\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2310b981\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpath d=\'M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\'/%3E%3Ccircle cx=\'12\' cy=\'10\' r=\'3\'/%3E%3C/svg%3E")';
-            field.style.backgroundRepeat = 'no-repeat';
-            field.style.backgroundPosition = 'right 12px center';
-            field.style.backgroundSize = '16px 16px';
-            field.style.paddingRight = '40px';
-        }
 
         // Function to reinitialize autocomplete for dynamically added fields
         function reinitializeAddressAutocomplete() {
-            console.log('Reinitializing fallback address autocomplete');
+            console.log('Reinitializing Google Places address autocomplete');
+            
+            // Clear existing instances
+            autocompleteInstances = [];
             
             // Reinitialize
             setTimeout(() => {
@@ -6906,60 +6870,105 @@
         // Function to add autocomplete to a specific field
         function addAutocompleteToField(field) {
             if (!googlePlacesInitialized) {
-                console.log('Address autocomplete not initialized yet');
+                console.log('Google Places API not loaded yet');
                 return;
             }
             
-            console.log('Adding fallback autocomplete to field:', field.id || field.placeholder);
-            createFallbackAutocomplete(field);
-            field.setAttribute('data-autocomplete-initialized', 'true');
+            console.log('Adding Google Places autocomplete to field:', field.id || field.placeholder);
+            
+            try {
+                const autocomplete = new google.maps.places.Autocomplete(field, {
+                    types: ['address'],
+                    componentRestrictions: { country: 'us' },
+                    fields: ['address_components', 'formatted_address', 'geometry', 'place_id']
+                });
+
+                autocomplete.addListener('place_changed', function() {
+                    const place = autocomplete.getPlace();
+                    
+                    if (!place.geometry || !place.geometry.location) {
+                        return;
+                    }
+
+                    field.value = place.formatted_address;
+                    field.dispatchEvent(new Event('change', { bubbles: true }));
+                });
+
+                // Add visual indicator
+                field.style.backgroundImage = 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'20\' height=\'20\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2310b981\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpath d=\'M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\'/%3E%3Ccircle cx=\'12\' cy=\'10\' r=\'3\'/%3E%3C/svg%3E")';
+                field.style.backgroundRepeat = 'no-repeat';
+                field.style.backgroundPosition = 'right 12px center';
+                field.style.backgroundSize = '16px 16px';
+                field.style.paddingRight = '40px';
+
+                autocompleteInstances.push(autocomplete);
+                
+                // Mark field as initialized
+                field.setAttribute('data-autocomplete-initialized', 'true');
+                console.log(`Successfully added Google Places autocomplete to field: ${field.id || field.placeholder}`);
+            } catch (error) {
+                console.error(`Error adding Google Places autocomplete to field ${field.id || field.placeholder}:`, error);
+            }
         }
 
         // Function to manually trigger autocomplete for address field
         function enableAddressAutocomplete() {
             const addressField = document.getElementById('homeAddress');
             if (addressField) {
-                console.log('Manually enabling fallback autocomplete for homeAddress field');
+                console.log('Manually enabling Google Places autocomplete for homeAddress field');
                 addAutocompleteToField(addressField);
             }
         }
 
-        // Test function for fallback address autocomplete (can be called from browser console)
-        window.testFallbackAutocomplete = function() {
-            console.log('=== FALLBACK ADDRESS AUTOCOMPLETE TEST ===');
-            console.log('Fallback autocomplete initialized:', googlePlacesInitialized);
+        // Test function for Google Places API (can be called from browser console)
+        window.testGooglePlaces = function() {
+            console.log('=== GOOGLE PLACES API TEST ===');
+            console.log('Google object available:', typeof google !== 'undefined');
+            console.log('Google Maps available:', typeof google !== 'undefined' && google.maps ? 'Yes' : 'No');
+            console.log('Google Places available:', typeof google !== 'undefined' && google.maps && google.maps.places ? 'Yes' : 'No');
             
-            const testField = document.getElementById('homeAddress');
-            if (testField) {
-                console.log('Testing fallback autocomplete on homeAddress field');
-                console.log('Field current value:', testField.value);
-                console.log('Field disabled:', testField.disabled);
-                console.log('Field has autocomplete:', testField.hasAttribute('data-autocomplete-initialized'));
-                
-                // Test if autocomplete is working by triggering a search
-                testField.focus();
-                testField.value = '123 Main';
-                testField.dispatchEvent(new Event('input', { bubbles: true }));
-                
-                console.log('Test completed - check for dropdown suggestions');
+            if (typeof google !== 'undefined' && google.maps && google.maps.places) {
+                const testField = document.getElementById('homeAddress');
+                if (testField) {
+                    console.log('Testing Google Places autocomplete on homeAddress field');
+                    console.log('Field current value:', testField.value);
+                    console.log('Field disabled:', testField.disabled);
+                    console.log('Field has autocomplete:', testField.hasAttribute('data-autocomplete-initialized'));
+                    
+                    try {
+                        const testAutocomplete = new google.maps.places.Autocomplete(testField, {
+                            types: ['address'],
+                            componentRestrictions: { country: 'us' }
+                        });
+                        console.log('Test autocomplete created successfully:', testAutocomplete);
+                        
+                        // Test if autocomplete is working by triggering a search
+                        testField.focus();
+                        testField.value = '123 Main Street';
+                        testField.dispatchEvent(new Event('input', { bubbles: true }));
+                        
+                        return testAutocomplete;
+                    } catch (error) {
+                        console.error('Error creating test autocomplete:', error);
+                    }
+                } else {
+                    console.error('homeAddress field not found');
+                }
             } else {
-                console.error('homeAddress field not found');
+                console.error('Google Places API not available');
             }
         };
 
-        // Function to force reinitialize fallback autocomplete
+        // Function to force reinitialize autocomplete
         window.forceReinitAutocomplete = function() {
-            console.log('=== FORCE REINITIALIZE FALLBACK AUTOCOMPLETE ===');
+            console.log('=== FORCE REINITIALIZE GOOGLE PLACES AUTOCOMPLETE ===');
             const addressField = document.getElementById('homeAddress');
             if (addressField) {
                 // Remove existing autocomplete
                 addressField.removeAttribute('data-autocomplete-initialized');
                 
-                // Remove existing dropdown if it exists
-                const existingDropdown = addressField.parentElement.querySelector('.address-suggestions');
-                if (existingDropdown) {
-                    existingDropdown.remove();
-                }
+                // Clear any existing autocomplete instances
+                autocompleteInstances = [];
                 
                 // Reinitialize
                 setTimeout(() => {
