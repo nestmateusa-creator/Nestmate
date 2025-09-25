@@ -291,6 +291,245 @@
         padding: 18px 2vw 0 2vw;
       }
     }
+
+    /* Comparison Table Styles */
+    .comparison-section {
+      padding: 80px 8vw;
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .comparison-title {
+      text-align: center;
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 1rem;
+      letter-spacing: -1px;
+    }
+
+    .comparison-subtitle {
+      text-align: center;
+      font-size: 1.2rem;
+      color: #64748b;
+      margin-bottom: 3rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .comparison-table-container {
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 3rem;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 1rem;
+    }
+
+    .comparison-table th {
+      padding: 0;
+      border: none;
+    }
+
+    .feature-column {
+      background: #f8fafc;
+      text-align: left;
+      font-weight: 700;
+      color: #1e293b;
+      padding: 1.5rem;
+      width: 30%;
+    }
+
+    .plan-column {
+      text-align: center;
+      padding: 0;
+      width: 23.33%;
+    }
+
+    .plan-column.basic {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+
+    .plan-column.pro {
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    }
+
+    .plan-column.advanced {
+      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    }
+
+    .plan-header {
+      padding: 2rem 1rem;
+      color: white;
+    }
+
+    .plan-name {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+
+    .plan-price {
+      font-size: 2rem;
+      font-weight: 800;
+    }
+
+    .plan-price span {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+
+    .comparison-table td {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid #e2e8f0;
+      vertical-align: middle;
+    }
+
+    .category-row td {
+      background: #f1f5f9;
+      font-weight: 700;
+      color: var(--primary);
+      font-size: 1.1rem;
+      padding: 1.5rem;
+    }
+
+    .category-title {
+      text-align: left !important;
+    }
+
+    .feature-name {
+      font-weight: 600;
+      color: #374151;
+      text-align: left;
+    }
+
+    .feature-basic, .feature-pro, .feature-advanced {
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .feature-basic {
+      color: #6b7280;
+    }
+
+    .feature-pro {
+      color: #1d4ed8;
+    }
+
+    .feature-advanced {
+      color: #7c3aed;
+    }
+
+    .comparison-cta {
+      text-align: center;
+      background: white;
+      padding: 3rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .comparison-cta h3 {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+
+    .comparison-cta p {
+      font-size: 1.1rem;
+      color: #64748b;
+      margin-bottom: 2rem;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-cta {
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .btn-cta.basic {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+    }
+
+    .btn-cta.basic:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-cta.pro {
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      color: white;
+    }
+
+    .btn-cta.pro:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-cta.advanced {
+      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+      color: white;
+    }
+
+    .btn-cta.advanced:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+    }
+
+    /* Mobile Responsive for Comparison Table */
+    @media (max-width: 768px) {
+      .comparison-section {
+        padding: 40px 4vw;
+      }
+
+      .comparison-title {
+        font-size: 2rem;
+      }
+
+      .comparison-subtitle {
+        font-size: 1rem;
+      }
+
+      .comparison-table-container {
+        overflow-x: auto;
+      }
+
+      .comparison-table {
+        min-width: 600px;
+      }
+
+      .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .btn-cta {
+        width: 100%;
+        max-width: 300px;
+      }
+    }
   </style>
   <script>
     // Pricing toggle logic
@@ -422,6 +661,227 @@
       <div class="plan-note plan-note-advanced">Billed monthly. Cancel anytime.</div>
     </div>
   </section>
+
+  <!-- Subscription Tier Comparison Table -->
+  <section class="comparison-section">
+    <div class="container">
+      <h2 class="comparison-title">Complete Feature Comparison</h2>
+      <p class="comparison-subtitle">See exactly what each plan includes and choose the perfect fit for your home management needs</p>
+      
+      <div class="comparison-table-container">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th class="feature-column">Features</th>
+              <th class="plan-column basic">
+                <div class="plan-header">
+                  <div class="plan-name">Basic</div>
+                  <div class="plan-price">$5<span>/month</span></div>
+                </div>
+              </th>
+              <th class="plan-column pro">
+                <div class="plan-header">
+                  <div class="plan-name">Pro</div>
+                  <div class="plan-price">$10<span>/month</span></div>
+                </div>
+              </th>
+              <th class="plan-column advanced">
+                <div class="plan-header">
+                  <div class="plan-name">Advanced Pro</div>
+                  <div class="plan-price">$16<span>/month</span></div>
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Home Management -->
+            <tr class="category-row">
+              <td colspan="4" class="category-title">🏠 Home Management</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Number of Homes</td>
+              <td class="feature-basic">1 Home</td>
+              <td class="feature-pro">✅ Unlimited Homes</td>
+              <td class="feature-advanced">✅ Unlimited Homes</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Home Details & Organization</td>
+              <td class="feature-basic">✅ Basic Details</td>
+              <td class="feature-pro">✅ Advanced Details</td>
+              <td class="feature-advanced">✅ Advanced Details</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Room Management</td>
+              <td class="feature-basic">✅ Basic Rooms</td>
+              <td class="feature-pro">✅ All Rooms</td>
+              <td class="feature-advanced">✅ All Rooms</td>
+            </tr>
+
+            <!-- Tasks & Reminders -->
+            <tr class="category-row">
+              <td colspan="4" class="category-title">📋 Tasks & Reminders</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Task Limit</td>
+              <td class="feature-basic">10 Tasks</td>
+              <td class="feature-pro">✅ Unlimited Tasks</td>
+              <td class="feature-advanced">✅ Unlimited Tasks</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Shared Tasks</td>
+              <td class="feature-basic">❌</td>
+              <td class="feature-pro">❌</td>
+              <td class="feature-advanced">✅ Family Sharing</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Task Assignment</td>
+              <td class="feature-basic">❌</td>
+              <td class="feature-pro">❌</td>
+              <td class="feature-advanced">✅ Assign to Family</td>
+            </tr>
+
+            <!-- Product Features -->
+            <tr class="category-row">
+              <td colspan="4" class="category-title">🛒 Product Features</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Product Recommendations</td>
+              <td class="feature-basic">✅ Basic Picks</td>
+              <td class="feature-pro">✅ AI-Powered</td>
+              <td class="feature-advanced">✅ AI-Powered</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Direct Product Orders</td>
+              <td class="feature-basic">❌</td>
+              <td class="feature-pro">✅ Order Directly</td>
+              <td class="feature-advanced">✅ Team Orders</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Price Tracking & Alerts</td>
+              <td class="feature-basic">❌</td>
+              <td class="feature-pro">✅ Real-time Alerts</td>
+              <td class="feature-advanced">✅ Real-time Alerts</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Team Product Lists</td>
+              <td class="feature-basic">❌</td>
+              <td class="feature-pro">❌</td>
+              <td class="feature-advanced">✅ Collaborative Lists</td>
+            </tr>
+
+            <!-- Analytics & Health -->
+            <tr class="category-row">
+              <td colspan="4" class="category-title">📊 Analytics & Health</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Home Health Score</td>
+              <td class="feature-basic">❌</td>
+              <td class="feature-pro">✅ Detailed Score</td>
+              <td class="feature-advanced">✅ Detailed Score</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Maintenance Analytics</td>
+              <td class="feature-basic">✅ Basic</td>
+              <td class="feature-pro">✅ Advanced</td>
+              <td class="feature-advanced">✅ Advanced</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Cost Savings Tracking</td>
+              <td class="feature-basic">✅ Basic</td>
+              <td class="feature-pro">✅ Detailed</td>
+              <td class="feature-advanced">✅ Family Savings</td>
+            </tr>
+
+            <!-- Family Features -->
+            <tr class="category-row">
+              <td colspan="4" class="category-title">👨‍👩‍👧‍👦 Family Features</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Family Members</td>
+              <td class="feature-basic">1 User</td>
+              <td class="feature-pro">1 User</td>
+              <td class="feature-advanced">✅ Up to 5 Members</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Family Dashboard</td>
+              <td class="feature-basic">❌</td>
+              <td class="feature-pro">❌</td>
+              <td class="feature-advanced">✅ Collaboration Hub</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Shared Budget Management</td>
+              <td class="feature-basic">❌</td>
+              <td class="feature-pro">❌</td>
+              <td class="feature-advanced">✅ Team Budget</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Family Activity Tracking</td>
+              <td class="feature-basic">❌</td>
+              <td class="feature-pro">❌</td>
+              <td class="feature-advanced">✅ Real-time Activity</td>
+            </tr>
+
+            <!-- Emergency Services -->
+            <tr class="category-row">
+              <td colspan="4" class="category-title">🚨 Emergency Services</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Emergency Contacts</td>
+              <td class="feature-basic">✅ Basic</td>
+              <td class="feature-pro">✅ Basic</td>
+              <td class="feature-advanced">✅ 24/7 Premium</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Contractor Services</td>
+              <td class="feature-basic">❌</td>
+              <td class="feature-pro">❌</td>
+              <td class="feature-advanced">✅ Hand-picked Experts</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Emergency Response Time</td>
+              <td class="feature-basic">Standard</td>
+              <td class="feature-pro">Standard</td>
+              <td class="feature-advanced">✅ Priority Response</td>
+            </tr>
+
+            <!-- Support -->
+            <tr class="category-row">
+              <td colspan="4" class="category-title">🎧 Support</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Support Level</td>
+              <td class="feature-basic">Standard</td>
+              <td class="feature-pro">✅ VIP Priority</td>
+              <td class="feature-advanced">✅ Family-First</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Data Export</td>
+              <td class="feature-basic">✅ Basic</td>
+              <td class="feature-pro">✅ Advanced</td>
+              <td class="feature-advanced">✅ Advanced</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Cloud Backup</td>
+              <td class="feature-basic">✅ Standard</td>
+              <td class="feature-pro">✅ Premium</td>
+              <td class="feature-advanced">✅ Premium</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="comparison-cta">
+        <h3>Ready to Get Started?</h3>
+        <p>Choose the plan that fits your home and lifestyle. All plans include a 30-day free trial!</p>
+        <div class="cta-buttons">
+          <a href="upgrade-basic.html" class="btn-cta basic">Start Basic Free</a>
+          <a href="upgrade-pro.html" class="btn-cta pro">Start Pro Free</a>
+          <a href="upgrade-advanced.html" class="btn-cta advanced">Start Advanced Pro Free</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <footer>
     &copy; 2025 NestMate. Your home, organized.
   </footer>
