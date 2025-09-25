@@ -1904,6 +1904,19 @@
             border-color: rgba(255, 255, 255, 0.1);
         }
 
+        /* Address field specific styles */
+        .form-input[data-autocomplete-initialized="true"] {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2310b981' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'/%3E%3Ccircle cx='12' cy='10' r='3'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px 16px;
+            padding-right: 40px;
+        }
+
+        .form-input[data-autocomplete-initialized="true"]:focus {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2310b981' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'/%3E%3Ccircle cx='12' cy='10' r='3'/%3E%3C/svg%3E");
+        }
+
         .form-textarea {
             min-height: 100px;
             resize: vertical;
@@ -5524,6 +5537,11 @@
                 inputs.forEach(input => input.disabled = false);
                 if (formActions) formActions.style.display = 'block';
                 if (editButton) editButton.innerHTML = '<i class="fas fa-times"></i> Cancel';
+                
+                // Reinitialize autocomplete for address fields when entering edit mode
+                setTimeout(() => {
+                    reinitializeAddressAutocomplete();
+                }, 100);
             }
         }
 
@@ -6738,6 +6756,17 @@
             initializeAddressAutocomplete();
         }
 
+        // Fallback initialization if Google Places API fails to load
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                if (!googlePlacesInitialized) {
+                    console.warn('Google Places API failed to load, attempting fallback initialization');
+                    googlePlacesInitialized = true;
+                    initializeAddressAutocomplete();
+                }
+            }, 5000);
+        });
+
         function initializeAddressAutocomplete() {
             if (!googlePlacesInitialized) {
                 console.log('Google Places API not yet loaded, retrying...');
@@ -6751,12 +6780,19 @@
             addressFields.forEach((field, index) => {
                 console.log(`Initializing autocomplete for field ${index + 1}:`, field.id || field.placeholder);
                 
-                // Create autocomplete instance
-                const autocomplete = new google.maps.places.Autocomplete(field, {
-                    types: ['address'],
-                    componentRestrictions: { country: 'us' }, // Restrict to US addresses
-                    fields: ['address_components', 'formatted_address', 'geometry', 'place_id']
-                });
+                try {
+                    // Check if Google Maps is available
+                    if (typeof google === 'undefined' || !google.maps || !google.maps.places) {
+                        console.error('Google Maps Places API not available');
+                        return;
+                    }
+                    
+                    // Create autocomplete instance
+                    const autocomplete = new google.maps.places.Autocomplete(field, {
+                        types: ['address'],
+                        componentRestrictions: { country: 'us' }, // Restrict to US addresses
+                        fields: ['address_components', 'formatted_address', 'geometry', 'place_id']
+                    });
 
                 // Store the instance
                 autocompleteInstances.push(autocomplete);
@@ -6800,6 +6836,14 @@
                 field.style.backgroundPosition = 'right 12px center';
                 field.style.backgroundSize = '16px 16px';
                 field.style.paddingRight = '40px';
+                
+                // Mark field as initialized
+                field.setAttribute('data-autocomplete-initialized', 'true');
+                console.log(`Successfully initialized autocomplete for field: ${field.id || field.placeholder}`);
+                
+                } catch (error) {
+                    console.error(`Error initializing autocomplete for field ${field.id || field.placeholder}:`, error);
+                }
             });
 
             console.log(`Initialized ${autocompleteInstances.length} address autocomplete fields`);
@@ -6848,6 +6892,19 @@
             field.style.paddingRight = '40px';
 
             autocompleteInstances.push(autocomplete);
+            
+            // Mark field as initialized
+            field.setAttribute('data-autocomplete-initialized', 'true');
+            console.log(`Successfully added autocomplete to field: ${field.id || field.placeholder}`);
+        }
+
+        // Function to manually trigger autocomplete for address field
+        function enableAddressAutocomplete() {
+            const addressField = document.getElementById('homeAddress');
+            if (addressField) {
+                console.log('Manually enabling autocomplete for homeAddress field');
+                addAutocompleteToField(addressField);
+            }
         }
 
         // Set up MutationObserver to watch for new address fields
@@ -6909,6 +6966,18 @@
                     setTimeout(() => {
                         initializeAddressAutocomplete();
                         setupAddressFieldObserver();
+                        
+                        // Add click event listener to address field for manual trigger
+                        const addressField = document.getElementById('homeAddress');
+                        if (addressField) {
+                            addressField.addEventListener('click', function() {
+                                console.log('Address field clicked, checking autocomplete status');
+                                if (!addressField.hasAttribute('data-autocomplete-initialized')) {
+                                    console.log('Autocomplete not initialized, triggering manually');
+                                    enableAddressAutocomplete();
+                                }
+                            });
+                        }
                     }, 2000);
                 } else {
                     console.log('No user authenticated, redirecting to signin');
