@@ -321,15 +321,6 @@
             color: white;
         }
 
-        .action-btn.delete {
-            background: var(--light);
-            color: var(--danger);
-        }
-
-        .action-btn.delete:hover {
-            background: var(--danger);
-            color: white;
-        }
 
         .record-details {
             margin-bottom: 16px;
@@ -641,6 +632,9 @@
         <div class="header">
             <h1><i class="fas fa-clipboard-list"></i> Service Records</h1>
             <p>View, manage, and download your home service records</p>
+            <p style="font-size: 0.9rem; color: var(--secondary); margin-top: 8px;">
+                <i class="fas fa-shield-alt"></i> Records are permanent to protect your home's value and history
+            </p>
             <div class="header-actions">
                 <a href="dashboard-basic-new.html" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i>
@@ -857,9 +851,6 @@
                             <button class="action-btn download" onclick="downloadPDF('${record.id}')" title="Download PDF">
                                 <i class="fas fa-download"></i>
                             </button>
-                            <button class="action-btn delete" onclick="deleteRecord('${record.id}')" title="Delete Record">
-                                <i class="fas fa-trash"></i>
-                            </button>
                         </div>
                     </div>
                     <div class="record-details">
@@ -1023,25 +1014,6 @@
             document.getElementById('recordModal').style.display = 'none';
         }
 
-        function deleteRecord(recordId) {
-            if (!confirm('Are you sure you want to delete this service record? This action cannot be undone.')) {
-                return;
-            }
-
-            // Remove from localStorage
-            const records = JSON.parse(localStorage.getItem('serviceRecords') || '[]');
-            const drafts = JSON.parse(localStorage.getItem('serviceDrafts') || '[]');
-            
-            const updatedRecords = records.filter(r => r.id != recordId);
-            const updatedDrafts = drafts.filter(d => d.id != recordId);
-            
-            localStorage.setItem('serviceRecords', JSON.stringify(updatedRecords));
-            localStorage.setItem('serviceDrafts', JSON.stringify(updatedDrafts));
-            
-            // Reload records
-            loadRecords();
-            showToast('Service record deleted successfully');
-        }
 
         function downloadPDF(recordId) {
             const record = allRecords.find(r => r.id == recordId);
