@@ -7140,16 +7140,19 @@
                                 roomSection.classList.contains('living-area-item') ? 'livingAreas' : null;
                 
                 if (roomType) {
-                    // Remove from DOM first
+                    // Get the index of the room being removed BEFORE removing from DOM
+                    const roomIndex = Array.from(roomSection.parentNode.children).indexOf(roomSection);
+                    
+                    // Remove from DOM
                     roomSection.remove();
                     
-                    // Update Firebase
-                    updateFirebaseAfterRoomRemoval(roomType);
+                    // Update Firebase with the specific room index removed
+                    updateFirebaseAfterRoomRemoval(roomType, roomIndex);
                 }
             }
         }
 
-        function updateFirebaseAfterRoomRemoval(roomType) {
+        function updateFirebaseAfterRoomRemoval(roomType, removedIndex) {
             if (!currentUser) return;
             
             const db = firebase.firestore();
@@ -7158,28 +7161,35 @@
                     if (doc.exists) {
                         const data = doc.data();
                         if (data[roomType] && Array.isArray(data[roomType])) {
-                            // Get current rooms from DOM
-                            const currentRooms = [];
-                            const roomElements = document.querySelectorAll(`.${roomType.slice(0, -1)}-item`);
+                            // Remove the specific room from the array
+                            const updatedRooms = [...data[roomType]];
+                            updatedRooms.splice(removedIndex, 1);
                             
-                            roomElements.forEach(element => {
-                                const roomData = extractRoomDataFromElement(element, roomType);
-                                if (roomData) {
-                                    currentRooms.push(roomData);
-                                }
-                            });
-                            
-                            // Update Firebase with current rooms
-                            const updateData = { [roomType]: currentRooms };
+                            // Update Firebase with the new array
+                            const updateData = { [roomType]: updatedRooms };
                             db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).update(updateData)
                                 .then(() => {
-                                    console.log(`${roomType} updated in Firebase after removal`);
+                                    console.log(`${roomType} updated in Firebase after removal. Removed index ${removedIndex}. New count: ${updatedRooms.length}`);
+                                    // Reload the data to ensure UI is in sync
+                                    if (roomType === 'bedrooms') {
+                                        loadBedroomsData();
+                                    } else if (roomType === 'bathrooms') {
+                                        loadBathroomsData();
+                                    } else if (roomType === 'livingAreas') {
+                                        loadLivingAreasData();
+                                    }
                                 })
-                                .catch(error => console.error('Error updating Firebase after room removal:', error));
+                                .catch(error => {
+                                    console.error('Error updating Firebase after room removal:', error);
+                                    alert('Error removing room. Please try again.');
+                                });
                         }
                     }
                 })
-                .catch(error => console.error('Error loading data for room removal:', error));
+                .catch(error => {
+                    console.error('Error loading data for room removal:', error);
+                    alert('Error removing room. Please try again.');
+                });
         }
 
         function extractRoomDataFromElement(element, roomType) {
