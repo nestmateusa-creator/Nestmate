@@ -7317,20 +7317,191 @@
         function loadDashboardData() {
             if (!currentUser) return;
             
-            // Load service records count
             const db = firebase.firestore();
-            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).collection('serviceHistory').get()
-                .then(querySnapshot => {
-                    document.getElementById('serviceRecords').textContent = querySnapshot.size;
-                })
-                .catch(error => console.error('Error loading service records:', error));
             
-            // Simulate other data
-            document.getElementById('maintenanceAlerts').textContent = '2';
-            document.getElementById('monthlySavings').textContent = '$165';
+            // Load home data for age and square footage
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
+                .then(doc => {
+                    if (doc.exists) {
+                        const homeData = doc.data();
+                        
+                        // Calculate home age
+                        if (homeData.yearBuilt) {
+                            const currentYear = new Date().getFullYear();
+                            const homeAge = currentYear - parseInt(homeData.yearBuilt);
+                            document.getElementById('homeAge').textContent = homeAge;
+                        }
+                        
+                        // Calculate total square footage
+                        let totalSqft = 0;
+                        if (homeData.totalArea) totalSqft += parseInt(homeData.totalArea) || 0;
+                        if (homeData.bedrooms) {
+                            homeData.bedrooms.forEach(bedroom => {
+                                if (bedroom.squareFootage) totalSqft += parseInt(bedroom.squareFootage) || 0;
+                            });
+                        }
+                        if (homeData.bathrooms) {
+                            homeData.bathrooms.forEach(bathroom => {
+                                if (bathroom.squareFootage) totalSqft += parseInt(bathroom.squareFootage) || 0;
+                            });
+                        }
+                        if (homeData.livingAreas) {
+                            homeData.livingAreas.forEach(area => {
+                                if (area.squareFootage) totalSqft += parseInt(area.squareFootage) || 0;
+                            });
+                        }
+                        document.getElementById('homeSqft').textContent = totalSqft > 0 ? totalSqft.toLocaleString() : '--';
+                    }
+                })
+                .catch(error => console.error('Error loading home data:', error));
+            
+            // Load service records count from localStorage (since we're using localStorage for service records)
+            const serviceRecords = JSON.parse(localStorage.getItem('serviceRecords') || '[]');
+            const currentYear = new Date().getFullYear();
+            const thisYearServices = serviceRecords.filter(record => {
+                const recordYear = new Date(record.createdAt || record.savedAt).getFullYear();
+                return recordYear === currentYear;
+            });
+            document.getElementById('serviceRecords').textContent = thisYearServices.length;
+            
+            // Load tasks completed this month
+            const tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+            const currentMonth = new Date().getMonth();
+            const currentYearForTasks = new Date().getFullYear();
+            const thisMonthTasks = tasks.filter(task => {
+                if (!task.completedDate) return false;
+                const taskDate = new Date(task.completedDate);
+                return taskDate.getMonth() === currentMonth && taskDate.getFullYear() === currentYearForTasks;
+            });
+            document.getElementById('tasksCompleted').textContent = thisMonthTasks.length;
+            
+            // Calculate monthly savings from service records
+            const thisMonthServices = serviceRecords.filter(record => {
+                const recordDate = new Date(record.createdAt || record.savedAt);
+                const recordMonth = recordDate.getMonth();
+                const recordYear = recordDate.getFullYear();
+                return recordMonth === currentMonth && recordYear === currentYearForTasks;
+            });
+            
+            let monthlySavings = 0;
+            thisMonthServices.forEach(record => {
+                // Estimate savings based on service type and cost
+                if (record.minCost) {
+                    const cost = parseInt(record.minCost);
+                    // Assume 10-20% savings from proper maintenance
+                    const estimatedSavings = cost * 0.15;
+                    monthlySavings += estimatedSavings;
+                }
+            });
+            document.getElementById('monthlySavings').textContent = `$${Math.round(monthlySavings)}`;
+            
+            // Calculate maintenance alerts based on service records and home age
+            let alerts = 0;
+            
+            // Check for overdue maintenance based on service records
+            const overdueServices = serviceRecords.filter(record => {
+                if (!record.serviceDate) return false;
+                const serviceDate = new Date(record.serviceDate);
+                const daysSinceService = (new Date() - serviceDate) / (1000 * 60 * 60 * 24);
+                
+                // Different maintenance intervals based on service type
+                const maintenanceIntervals = {
+                    'hvac': 365, // Annual
+                    'plumbing': 180, // 6 months
+                    'electrical': 365, // Annual
+                    'roof': 1095, // 3 years
+                    'exterior': 730, // 2 years
+                    'appliance': 180, // 6 months
+                    'maintenance': 90 // 3 months
+                };
+                
+                const serviceType = (record.serviceType || '').toLowerCase();
+                const interval = maintenanceIntervals[serviceType] || 180; // Default 6 months
+                
+                return daysSinceService > interval;
+            });
+            
+            alerts += overdueServices.length;
+            
+            // Add alerts for high priority services
+            const urgentServices = serviceRecords.filter(record => 
+                record.priority === 'urgent' && record.serviceStatus !== 'completed'
+            );
+            alerts += urgentServices.length;
+            
+            document.getElementById('maintenanceAlerts').textContent = alerts;
+            
+            // Calculate home health score
+            updateHomeHealthScore();
             
             // Update weather (placeholder)
             document.getElementById('currentWeather').textContent = '72°F Sunny';
+        }
+
+        function updateHomeHealthScore() {
+            const serviceRecords = JSON.parse(localStorage.getItem('serviceRecords') || '[]');
+            const tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+            
+            let healthScore = 100; // Start with perfect score
+            
+            // Deduct points for overdue maintenance
+            const overdueServices = serviceRecords.filter(record => {
+                if (!record.serviceDate) return false;
+                const serviceDate = new Date(record.serviceDate);
+                const daysSinceService = (new Date() - serviceDate) / (1000 * 60 * 60 * 24);
+                
+                const maintenanceIntervals = {
+                    'hvac': 365,
+                    'plumbing': 180,
+                    'electrical': 365,
+                    'roof': 1095,
+                    'exterior': 730,
+                    'appliance': 180,
+                    'maintenance': 90
+                };
+                
+                const serviceType = (record.serviceType || '').toLowerCase();
+                const interval = maintenanceIntervals[serviceType] || 180;
+                
+                return daysSinceService > interval;
+            });
+            
+            // Deduct 5 points for each overdue service
+            healthScore -= overdueServices.length * 5;
+            
+            // Deduct points for urgent incomplete services
+            const urgentIncomplete = serviceRecords.filter(record => 
+                record.priority === 'urgent' && record.serviceStatus !== 'completed'
+            );
+            healthScore -= urgentIncomplete.length * 10;
+            
+            // Deduct points for incomplete tasks
+            const incompleteTasks = tasks.filter(task => !task.completed);
+            healthScore -= incompleteTasks.length * 2;
+            
+            // Add points for recent completed services
+            const recentServices = serviceRecords.filter(record => {
+                if (!record.serviceDate) return false;
+                const serviceDate = new Date(record.serviceDate);
+                const daysSinceService = (new Date() - serviceDate) / (1000 * 60 * 60 * 24);
+                return daysSinceService <= 30 && record.serviceStatus === 'completed';
+            });
+            healthScore += Math.min(recentServices.length * 3, 15); // Max 15 bonus points
+            
+            // Ensure score is between 0 and 100
+            healthScore = Math.max(0, Math.min(100, healthScore));
+            
+            document.getElementById('homeHealthScore').textContent = Math.round(healthScore);
+            
+            // Update health score color based on value
+            const scoreElement = document.getElementById('homeHealthScore');
+            if (healthScore >= 80) {
+                scoreElement.style.color = '#10b981'; // Green
+            } else if (healthScore >= 60) {
+                scoreElement.style.color = '#f59e0b'; // Yellow
+            } else {
+                scoreElement.style.color = '#ef4444'; // Red
+            }
         }
 
         function refreshWeather() {
