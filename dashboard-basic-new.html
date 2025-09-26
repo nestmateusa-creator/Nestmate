@@ -4571,21 +4571,36 @@
         }
 
         function loadBedroomsData() {
-            if (!currentUser) return;
+            console.log('loadBedroomsData() called');
+            if (!currentUser) {
+                console.log('No current user, returning');
+                return;
+            }
             
+            console.log('Loading bedrooms data for user:', currentUser.uid);
             const db = firebase.firestore();
             db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
                 .then(doc => {
+                    console.log('Firebase document exists:', doc.exists);
                     if (doc.exists) {
                         const data = doc.data();
+                        console.log('Document data:', data);
+                        console.log('Bedrooms data:', data.bedrooms);
                         // Load bedrooms data if it exists
                         if (data.bedrooms && Array.isArray(data.bedrooms)) {
+                            console.log('Found bedrooms array with', data.bedrooms.length, 'bedrooms');
                             const bedroomsList = document.getElementById('bedroomsList');
+                            console.log('Bedrooms list element:', bedroomsList);
                             bedroomsList.innerHTML = '';
                             data.bedrooms.forEach((bedroom, index) => {
+                                console.log('Adding bedroom to DOM:', bedroom, 'at index:', index);
                                 addBedroomToDOM(bedroom, index);
                             });
+                        } else {
+                            console.log('No bedrooms data found or not an array');
                         }
+                    } else {
+                        console.log('Document does not exist');
                     }
                 })
                 .catch(error => console.error('Error loading bedrooms data:', error));
@@ -5891,7 +5906,9 @@
         }
 
         function addBedroomToDOM(bedroomData, index) {
+            console.log('addBedroomToDOM() called with data:', bedroomData, 'index:', index);
             const bedroomsList = document.getElementById('bedroomsList');
+            console.log('bedroomsList element:', bedroomsList);
             const bedroomDiv = document.createElement('div');
             bedroomDiv.className = 'room-section bedroom-item';
             bedroomDiv.innerHTML = `
@@ -6033,7 +6050,9 @@
                     </div>
                 </div>
             `;
+            console.log('About to append bedroom div to bedroomsList');
             bedroomsList.appendChild(bedroomDiv);
+            console.log('Successfully appended bedroom div. bedroomsList children count:', bedroomsList.children.length);
         }
 
         function addBathroom() {
@@ -6922,6 +6941,14 @@
                 addAutocompleteToField(addressField);
             }
         }
+
+        // Test function for bedrooms data (can be called from browser console)
+        window.testBedroomsData = function() {
+            console.log('=== TESTING BEDROOMS DATA ===');
+            console.log('Current user:', currentUser);
+            console.log('Calling loadBedroomsData()...');
+            loadBedroomsData();
+        };
 
         // Test function for Google Places API (can be called from browser console)
         window.testGooglePlaces = function() {
