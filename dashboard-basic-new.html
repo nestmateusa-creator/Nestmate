@@ -3455,10 +3455,7 @@
                 <div class="section-header">
                     <h3 class="section-title">Bedroom Details</h3>
                     <div class="header-actions">
-                        <button type="button" class="btn btn-secondary btn-small" onclick="toggleEditMode('bedrooms')" id="editBedroomsBtn">
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-                        <button type="button" class="btn btn-primary btn-small" onclick="toggleEditMode('bedrooms'); addBedroom();">
+                        <button type="button" class="btn btn-primary btn-small" onclick="addBedroom()">
                             <i class="fas fa-plus"></i> Add Bedroom
                         </button>
                         <button type="button" class="btn btn-primary btn-small" onclick="showAddServiceModal()">
@@ -3479,7 +3476,7 @@
                     </div>
                     
                     <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="toggleEditMode('bedrooms')" id="cancelBedroomsBtn">
+                        <button type="button" class="btn btn-secondary" onclick="showBedroomsView()" id="cancelBedroomsBtn">
                             Cancel
                         </button>
                         <button type="button" class="btn btn-primary" onclick="saveBedroomsData()" id="saveBedroomsBtn">
@@ -3510,10 +3507,7 @@
                 <div class="section-header">
                     <h3 class="section-title">Bathroom Details</h3>
                     <div class="header-actions">
-                        <button type="button" class="btn btn-secondary btn-small" onclick="toggleEditMode('bathrooms')" id="editBathroomsBtn">
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-                        <button type="button" class="btn btn-primary btn-small" onclick="toggleEditMode('bathrooms'); addBathroom();">
+                        <button type="button" class="btn btn-primary btn-small" onclick="addBathroom()">
                             <i class="fas fa-plus"></i> Add Bathroom
                         </button>
                         <button type="button" class="btn btn-primary btn-small" onclick="showAddServiceModal()">
@@ -3534,7 +3528,7 @@
                     </div>
                     
                     <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="toggleEditMode('bathrooms')" id="cancelBathroomsBtn">
+                        <button type="button" class="btn btn-secondary" onclick="showBathroomsView()" id="cancelBathroomsBtn">
                             Cancel
                         </button>
                         <button type="button" class="btn btn-primary" onclick="saveBathroomsData()" id="saveBathroomsBtn">
@@ -5338,7 +5332,7 @@
                     homeData = { ...homeData, ...formData };
                     alert('Bedrooms information saved successfully!');
                     // Switch back to view mode and reload data
-                    toggleEditMode('bedrooms');
+                    showBedroomsView();
                 })
                 .catch(error => {
                     console.error('Error saving bedrooms data:', error);
@@ -5389,7 +5383,7 @@
                     homeData = { ...homeData, ...formData };
                     alert('Bathrooms information saved successfully!');
                     // Switch back to view mode and reload data
-                    toggleEditMode('bathrooms');
+                    showBathroomsView();
                 })
                 .catch(error => {
                     console.error('Error saving bathrooms data:', error);
@@ -5541,6 +5535,58 @@
         // Simple function to reload bedrooms data
         function reloadBedrooms() {
             loadBedroomsData();
+        }
+
+        // Function to edit a specific bedroom
+        function editBedroom(index) {
+            // Show the edit form
+            const bedroomsForm = document.getElementById('bedroomsForm');
+            const bedroomsDisplayList = document.getElementById('bedroomsDisplayList');
+            if (bedroomsForm && bedroomsDisplayList) {
+                bedroomsForm.style.display = 'block';
+                bedroomsDisplayList.style.display = 'none';
+            }
+            
+            // Load the bedroom data into the form for editing
+            // This would need to be implemented to load specific bedroom data
+            console.log('Editing bedroom at index:', index);
+        }
+
+        // Function to edit a specific bathroom
+        function editBathroom(index) {
+            // Show the edit form
+            const bathroomsForm = document.getElementById('bathroomsForm');
+            const bathroomsDisplayList = document.getElementById('bathroomsDisplayList');
+            if (bathroomsForm && bathroomsDisplayList) {
+                bathroomsForm.style.display = 'block';
+                bathroomsDisplayList.style.display = 'none';
+            }
+            
+            // Load the bathroom data into the form for editing
+            // This would need to be implemented to load specific bathroom data
+            console.log('Editing bathroom at index:', index);
+        }
+
+        // Function to show bedrooms view mode
+        function showBedroomsView() {
+            const bedroomsForm = document.getElementById('bedroomsForm');
+            const bedroomsDisplayList = document.getElementById('bedroomsDisplayList');
+            if (bedroomsForm && bedroomsDisplayList) {
+                bedroomsForm.style.display = 'none';
+                bedroomsDisplayList.style.display = 'block';
+                loadBedroomsData();
+            }
+        }
+
+        // Function to show bathrooms view mode
+        function showBathroomsView() {
+            const bathroomsForm = document.getElementById('bathroomsForm');
+            const bathroomsDisplayList = document.getElementById('bathroomsDisplayList');
+            if (bathroomsForm && bathroomsDisplayList) {
+                bathroomsForm.style.display = 'none';
+                bathroomsDisplayList.style.display = 'block';
+                loadBathroomsData();
+            }
         }
 
         function toggleEditMode(section) {
@@ -5810,6 +5856,14 @@
         let livingAreaCount = 0;
 
         function addBedroom() {
+            // Show the edit form
+            const bedroomsForm = document.getElementById('bedroomsForm');
+            const bedroomsDisplayList = document.getElementById('bedroomsDisplayList');
+            if (bedroomsForm && bedroomsDisplayList) {
+                bedroomsForm.style.display = 'block';
+                bedroomsDisplayList.style.display = 'none';
+            }
+            
             bedroomCount++;
             const bedroomsList = document.getElementById('bedroomsList');
             const bedroomDiv = document.createElement('div');
@@ -5973,9 +6027,14 @@
             bedroomDiv.innerHTML = `
                 <div class="room-header">
                     <h5>${bedroomData.name || `Bedroom ${index + 1}`}</h5>
-                    <button type="button" class="btn btn-danger btn-small" onclick="removeRoom(this)">
-                        <i class="fas fa-trash"></i> Remove
-                    </button>
+                    <div class="room-actions">
+                        <button type="button" class="btn btn-secondary btn-small" onclick="editBedroom(${index})">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button type="button" class="btn btn-danger btn-small" onclick="removeRoom(this)">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                    </div>
                 </div>
                 <div class="form-grid">
                     <div class="form-group">
@@ -6113,6 +6172,14 @@
         }
 
         function addBathroom() {
+            // Show the edit form
+            const bathroomsForm = document.getElementById('bathroomsForm');
+            const bathroomsDisplayList = document.getElementById('bathroomsDisplayList');
+            if (bathroomsForm && bathroomsDisplayList) {
+                bathroomsForm.style.display = 'block';
+                bathroomsDisplayList.style.display = 'none';
+            }
+            
             bathroomCount++;
             const bathroomsList = document.getElementById('bathroomsList');
             const bathroomDiv = document.createElement('div');
@@ -6309,9 +6376,14 @@
             bathroomDiv.innerHTML = `
                 <div class="room-header">
                     <h5>${bathroomData.name || `Bathroom ${index + 1}`}</h5>
-                    <button type="button" class="btn btn-danger btn-small" onclick="removeRoom(this)">
-                        <i class="fas fa-trash"></i> Remove
-                    </button>
+                    <div class="room-actions">
+                        <button type="button" class="btn btn-secondary btn-small" onclick="editBathroom(${index})">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button type="button" class="btn btn-danger btn-small" onclick="removeRoom(this)">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                    </div>
                 </div>
                 <div class="form-grid">
                     <div class="form-group">
