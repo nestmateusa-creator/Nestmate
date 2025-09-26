@@ -3467,8 +3467,13 @@
                     </div>
                 </div>
                 
-                <!-- Bedrooms Form -->
-                <form id="bedroomsForm">
+                <!-- Bedrooms Display List (for viewing saved bedrooms) -->
+                <div id="bedroomsDisplayList">
+                    <!-- Saved bedrooms will be displayed here -->
+                </div>
+                
+                <!-- Bedrooms Form (for editing) -->
+                <form id="bedroomsForm" style="display: none;">
                     <div id="bedroomsList">
                         <!-- Bedrooms will be dynamically added here -->
                     </div>
@@ -3517,8 +3522,13 @@
                     </div>
                 </div>
                 
-                <!-- Bathrooms Form -->
-                <form id="bathroomsForm">
+                <!-- Bathrooms Display List (for viewing saved bathrooms) -->
+                <div id="bathroomsDisplayList">
+                    <!-- Saved bathrooms will be displayed here -->
+                </div>
+                
+                <!-- Bathrooms Form (for editing) -->
+                <form id="bathroomsForm" style="display: none;">
                     <div id="bathroomsList">
                         <!-- Bathrooms will be dynamically added here -->
                     </div>
@@ -5327,8 +5337,8 @@
                     backupRef.set(formData, { merge: true });
                     homeData = { ...homeData, ...formData };
                     alert('Bedrooms information saved successfully!');
-                    // Simply reload the bedrooms data
-                    loadBedroomsData();
+                    // Switch back to view mode and reload data
+                    toggleEditMode('bedrooms');
                 })
                 .catch(error => {
                     console.error('Error saving bedrooms data:', error);
@@ -5378,8 +5388,8 @@
                     backupRef.set(formData, { merge: true });
                     homeData = { ...homeData, ...formData };
                     alert('Bathrooms information saved successfully!');
-                    // Simply reload the bathrooms data
-                    loadBathroomsData();
+                    // Switch back to view mode and reload data
+                    toggleEditMode('bathrooms');
                 })
                 .catch(error => {
                     console.error('Error saving bathrooms data:', error);
@@ -5536,6 +5546,38 @@
         function toggleEditMode(section) {
             console.log('Toggling edit mode for section:', section);
             
+            // Handle bedrooms and bathrooms specially
+            if (section === 'bedrooms' || section === 'bathrooms') {
+                const displayList = document.getElementById(section + 'DisplayList');
+                const form = document.getElementById(section + 'Form');
+                const editButton = document.querySelector(`button[onclick="toggleEditMode('${section}')"]`);
+                
+                if (displayList && form) {
+                    // Check if currently in edit mode (form is visible)
+                    const isEditMode = form.style.display !== 'none';
+                    
+                    if (isEditMode) {
+                        // Switch to view mode
+                        form.style.display = 'none';
+                        displayList.style.display = 'block';
+                        if (editButton) editButton.innerHTML = '<i class="fas fa-edit"></i> Edit';
+                        // Load and display saved data
+                        if (section === 'bedrooms') {
+                            loadBedroomsData();
+                        } else if (section === 'bathrooms') {
+                            loadBathroomsData();
+                        }
+                    } else {
+                        // Switch to edit mode
+                        form.style.display = 'block';
+                        displayList.style.display = 'none';
+                        if (editButton) editButton.innerHTML = '<i class="fas fa-times"></i> Cancel';
+                    }
+                }
+                return;
+            }
+            
+            // Handle other sections normally
             let formId;
             if (section === 'basic') {
                 formId = 'basicInfoForm';
