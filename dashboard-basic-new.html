@@ -5548,8 +5548,7 @@
             }
             
             // Load the bedroom data into the form for editing
-            // This would need to be implemented to load specific bedroom data
-            console.log('Editing bedroom at index:', index);
+            loadBedroomDataForEditing(index);
         }
 
         // Function to edit a specific bathroom
@@ -5563,8 +5562,7 @@
             }
             
             // Load the bathroom data into the form for editing
-            // This would need to be implemented to load specific bathroom data
-            console.log('Editing bathroom at index:', index);
+            loadBathroomDataForEditing(index);
         }
 
         // Function to show bedrooms view mode
@@ -5587,6 +5585,368 @@
                 bathroomsDisplayList.style.display = 'block';
                 loadBathroomsData();
             }
+        }
+
+        function loadBedroomDataForEditing(index) {
+            if (!currentUser) return;
+            
+            const db = firebase.firestore();
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
+                .then(doc => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        if (data.bedrooms && data.bedrooms[index]) {
+                            const bedroomData = data.bedrooms[index];
+                            
+                            // Clear existing form
+                            const bedroomsList = document.getElementById('bedroomsList');
+                            bedroomsList.innerHTML = '';
+                            
+                            // Create bedroom form with loaded data
+                            const bedroomDiv = document.createElement('div');
+                            bedroomDiv.className = 'room-section bedroom-item';
+                            bedroomDiv.innerHTML = `
+                                <div class="room-header">
+                                    <h5>Bedroom ${index + 1}</h5>
+                                    <button type="button" class="btn btn-danger btn-small" onclick="removeRoom(this)">
+                                        <i class="fas fa-trash"></i> Remove
+                                    </button>
+                                </div>
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label class="form-label">Room Name</label>
+                                        <input type="text" class="form-input bedroom-name" value="${bedroomData.name || ''}" placeholder="e.g., Master Bedroom, Guest Room">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Room Size (sq ft)</label>
+                                        <input type="number" class="form-input bedroom-size" value="${bedroomData.size || ''}" placeholder="e.g., 120">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Flooring Type</label>
+                                        <select class="form-input bedroom-flooring">
+                                            <option value="">Select Flooring</option>
+                                            <option value="Hardwood" ${bedroomData.flooring === 'Hardwood' ? 'selected' : ''}>Hardwood</option>
+                                            <option value="Carpet" ${bedroomData.flooring === 'Carpet' ? 'selected' : ''}>Carpet</option>
+                                            <option value="Tile" ${bedroomData.flooring === 'Tile' ? 'selected' : ''}>Tile</option>
+                                            <option value="Laminate" ${bedroomData.flooring === 'Laminate' ? 'selected' : ''}>Laminate</option>
+                                            <option value="Vinyl" ${bedroomData.flooring === 'Vinyl' ? 'selected' : ''}>Vinyl</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Flooring Color</label>
+                                        <input type="text" class="form-input bedroom-flooring-color" value="${bedroomData.flooringColor || ''}" placeholder="e.g., Oak, Gray, White">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Closet Type</label>
+                                        <select class="form-input bedroom-closet">
+                                            <option value="">Select Closet</option>
+                                            <option value="Walk-in" ${bedroomData.closet === 'Walk-in' ? 'selected' : ''}>Walk-in</option>
+                                            <option value="Reach-in" ${bedroomData.closet === 'Reach-in' ? 'selected' : ''}>Reach-in</option>
+                                            <option value="Built-in" ${bedroomData.closet === 'Built-in' ? 'selected' : ''}>Built-in</option>
+                                            <option value="None" ${bedroomData.closet === 'None' ? 'selected' : ''}>None</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Closet Size</label>
+                                        <input type="text" class="form-input bedroom-closet-size" value="${bedroomData.closetSize || ''}" placeholder="e.g., 6x8, 4x6">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Number of Windows</label>
+                                        <select class="form-input bedroom-windows">
+                                            <option value="">Select Windows</option>
+                                            <option value="0" ${bedroomData.windows === '0' ? 'selected' : ''}>0</option>
+                                            <option value="1" ${bedroomData.windows === '1' ? 'selected' : ''}>1</option>
+                                            <option value="2" ${bedroomData.windows === '2' ? 'selected' : ''}>2</option>
+                                            <option value="3" ${bedroomData.windows === '3' ? 'selected' : ''}>3</option>
+                                            <option value="4+" ${bedroomData.windows === '4+' ? 'selected' : ''}>4+</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Window 1 Size</label>
+                                        <input type="text" class="form-input bedroom-window1-size" value="${bedroomData.window1Size || ''}" placeholder="e.g., 3x4, 2x3">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Window 2 Size</label>
+                                        <input type="text" class="form-input bedroom-window2-size" value="${bedroomData.window2Size || ''}" placeholder="e.g., 3x4, 2x3">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Window Treatments</label>
+                                        <select class="form-input bedroom-window-treatments">
+                                            <option value="">Select Treatments</option>
+                                            <option value="Blinds" ${bedroomData.windowTreatments === 'Blinds' ? 'selected' : ''}>Blinds</option>
+                                            <option value="Curtains" ${bedroomData.windowTreatments === 'Curtains' ? 'selected' : ''}>Curtains</option>
+                                            <option value="Shades" ${bedroomData.windowTreatments === 'Shades' ? 'selected' : ''}>Shades</option>
+                                            <option value="Shutters" ${bedroomData.windowTreatments === 'Shutters' ? 'selected' : ''}>Shutters</option>
+                                            <option value="None" ${bedroomData.windowTreatments === 'None' ? 'selected' : ''}>None</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Treatment Sizes</label>
+                                        <input type="text" class="form-input bedroom-treatment-sizes" value="${bedroomData.treatmentSizes || ''}" placeholder="e.g., 3x4, 2x3">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Trim Style</label>
+                                        <select class="form-input bedroom-trim-style">
+                                            <option value="">Select Trim Style</option>
+                                            <option value="Colonial" ${bedroomData.trimStyle === 'Colonial' ? 'selected' : ''}>Colonial</option>
+                                            <option value="Modern" ${bedroomData.trimStyle === 'Modern' ? 'selected' : ''}>Modern</option>
+                                            <option value="Craftsman" ${bedroomData.trimStyle === 'Craftsman' ? 'selected' : ''}>Craftsman</option>
+                                            <option value="Traditional" ${bedroomData.trimStyle === 'Traditional' ? 'selected' : ''}>Traditional</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Trim Material</label>
+                                        <select class="form-input bedroom-trim-material">
+                                            <option value="">Select Material</option>
+                                            <option value="Wood" ${bedroomData.trimMaterial === 'Wood' ? 'selected' : ''}>Wood</option>
+                                            <option value="MDF" ${bedroomData.trimMaterial === 'MDF' ? 'selected' : ''}>MDF</option>
+                                            <option value="PVC" ${bedroomData.trimMaterial === 'PVC' ? 'selected' : ''}>PVC</option>
+                                            <option value="Composite" ${bedroomData.trimMaterial === 'Composite' ? 'selected' : ''}>Composite</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Trim Color</label>
+                                        <input type="text" class="form-input bedroom-trim-color" value="${bedroomData.trimColor || ''}" placeholder="e.g., White, Cream, Natural">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Ceiling Height (ft)</label>
+                                        <input type="number" class="form-input bedroom-ceiling-height" value="${bedroomData.ceilingHeight || ''}" placeholder="e.g., 8, 9, 10">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Ceiling Type</label>
+                                        <select class="form-input bedroom-ceiling-type">
+                                            <option value="">Select Ceiling Type</option>
+                                            <option value="Flat" ${bedroomData.ceilingType === 'Flat' ? 'selected' : ''}>Flat</option>
+                                            <option value="Vaulted" ${bedroomData.ceilingType === 'Vaulted' ? 'selected' : ''}>Vaulted</option>
+                                            <option value="Tray" ${bedroomData.ceilingType === 'Tray' ? 'selected' : ''}>Tray</option>
+                                            <option value="Coffered" ${bedroomData.ceilingType === 'Coffered' ? 'selected' : ''}>Coffered</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Lighting</label>
+                                        <select class="form-input bedroom-lighting">
+                                            <option value="">Select Lighting</option>
+                                            <option value="Overhead" ${bedroomData.lighting === 'Overhead' ? 'selected' : ''}>Overhead</option>
+                                            <option value="Table Lamps" ${bedroomData.lighting === 'Table Lamps' ? 'selected' : ''}>Table Lamps</option>
+                                            <option value="Wall Sconces" ${bedroomData.lighting === 'Wall Sconces' ? 'selected' : ''}>Wall Sconces</option>
+                                            <option value="Ceiling Fan" ${bedroomData.lighting === 'Ceiling Fan' ? 'selected' : ''}>Ceiling Fan</option>
+                                            <option value="Recessed" ${bedroomData.lighting === 'Recessed' ? 'selected' : ''}>Recessed</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Number of Outlets</label>
+                                        <input type="number" class="form-input bedroom-outlets" value="${bedroomData.outlets || ''}" placeholder="e.g., 4, 6, 8">
+                                    </div>
+                                    <div class="form-group full-width">
+                                        <label class="form-label">Additional Notes</label>
+                                        <textarea class="form-input bedroom-notes" rows="3" placeholder="Any additional details about this bedroom...">${bedroomData.notes || ''}</textarea>
+                                    </div>
+                                </div>
+                            `;
+                            bedroomsList.appendChild(bedroomDiv);
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading bedroom data for editing:', error);
+                    alert('Error loading bedroom data. Please try again.');
+                });
+        }
+
+        function loadBathroomDataForEditing(index) {
+            if (!currentUser) return;
+            
+            const db = firebase.firestore();
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
+                .then(doc => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        if (data.bathrooms && data.bathrooms[index]) {
+                            const bathroomData = data.bathrooms[index];
+                            
+                            // Clear existing form
+                            const bathroomsList = document.getElementById('bathroomsList');
+                            bathroomsList.innerHTML = '';
+                            
+                            // Create bathroom form with loaded data
+                            const bathroomDiv = document.createElement('div');
+                            bathroomDiv.className = 'room-section bathroom-item';
+                            bathroomDiv.innerHTML = `
+                                <div class="room-header">
+                                    <h5>Bathroom ${index + 1}</h5>
+                                    <button type="button" class="btn btn-danger btn-small" onclick="removeRoom(this)">
+                                        <i class="fas fa-trash"></i> Remove
+                                    </button>
+                                </div>
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label class="form-label">Room Name</label>
+                                        <input type="text" class="form-input bathroom-name" value="${bathroomData.name || ''}" placeholder="e.g., Master Bath, Guest Bath">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Bathroom Type</label>
+                                        <select class="form-input bathroom-type">
+                                            <option value="">Select Type</option>
+                                            <option value="Full Bath" ${bathroomData.type === 'Full Bath' ? 'selected' : ''}>Full Bath</option>
+                                            <option value="Half Bath" ${bathroomData.type === 'Half Bath' ? 'selected' : ''}>Half Bath</option>
+                                            <option value="Master Bath" ${bathroomData.type === 'Master Bath' ? 'selected' : ''}>Master Bath</option>
+                                            <option value="Guest Bath" ${bathroomData.type === 'Guest Bath' ? 'selected' : ''}>Guest Bath</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Room Size (sq ft)</label>
+                                        <input type="number" class="form-input bathroom-size" value="${bathroomData.size || ''}" placeholder="e.g., 50, 75">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Flooring Type</label>
+                                        <select class="form-input bathroom-flooring">
+                                            <option value="">Select Flooring</option>
+                                            <option value="Tile" ${bathroomData.flooring === 'Tile' ? 'selected' : ''}>Tile</option>
+                                            <option value="Vinyl" ${bathroomData.flooring === 'Vinyl' ? 'selected' : ''}>Vinyl</option>
+                                            <option value="Laminate" ${bathroomData.flooring === 'Laminate' ? 'selected' : ''}>Laminate</option>
+                                            <option value="Hardwood" ${bathroomData.flooring === 'Hardwood' ? 'selected' : ''}>Hardwood</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Flooring Color</label>
+                                        <input type="text" class="form-input bathroom-flooring-color" value="${bathroomData.flooringColor || ''}" placeholder="e.g., White, Gray, Beige">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Toilet Type</label>
+                                        <select class="form-input bathroom-toilet-type">
+                                            <option value="">Select Toilet</option>
+                                            <option value="Standard" ${bathroomData.toiletType === 'Standard' ? 'selected' : ''}>Standard</option>
+                                            <option value="Elongated" ${bathroomData.toiletType === 'Elongated' ? 'selected' : ''}>Elongated</option>
+                                            <option value="Compact" ${bathroomData.toiletType === 'Compact' ? 'selected' : ''}>Compact</option>
+                                            <option value="Wall-Mounted" ${bathroomData.toiletType === 'Wall-Mounted' ? 'selected' : ''}>Wall-Mounted</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Toilet Brand</label>
+                                        <input type="text" class="form-input bathroom-toilet-brand" value="${bathroomData.toiletBrand || ''}" placeholder="e.g., Kohler, Toto, American Standard">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Sink Type</label>
+                                        <select class="form-input bathroom-sink-type">
+                                            <option value="">Select Sink</option>
+                                            <option value="Undermount" ${bathroomData.sinkType === 'Undermount' ? 'selected' : ''}>Undermount</option>
+                                            <option value="Drop-in" ${bathroomData.sinkType === 'Drop-in' ? 'selected' : ''}>Drop-in</option>
+                                            <option value="Vessel" ${bathroomData.sinkType === 'Vessel' ? 'selected' : ''}>Vessel</option>
+                                            <option value="Wall-Mounted" ${bathroomData.sinkType === 'Wall-Mounted' ? 'selected' : ''}>Wall-Mounted</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Sink Material</label>
+                                        <select class="form-input bathroom-sink-material">
+                                            <option value="">Select Material</option>
+                                            <option value="Porcelain" ${bathroomData.sinkMaterial === 'Porcelain' ? 'selected' : ''}>Porcelain</option>
+                                            <option value="Ceramic" ${bathroomData.sinkMaterial === 'Ceramic' ? 'selected' : ''}>Ceramic</option>
+                                            <option value="Glass" ${bathroomData.sinkMaterial === 'Glass' ? 'selected' : ''}>Glass</option>
+                                            <option value="Stone" ${bathroomData.sinkMaterial === 'Stone' ? 'selected' : ''}>Stone</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Shower Type</label>
+                                        <select class="form-input bathroom-shower-type">
+                                            <option value="">Select Shower</option>
+                                            <option value="Standard" ${bathroomData.showerType === 'Standard' ? 'selected' : ''}>Standard</option>
+                                            <option value="Walk-in" ${bathroomData.showerType === 'Walk-in' ? 'selected' : ''}>Walk-in</option>
+                                            <option value="Corner" ${bathroomData.showerType === 'Corner' ? 'selected' : ''}>Corner</option>
+                                            <option value="None" ${bathroomData.showerType === 'None' ? 'selected' : ''}>None</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Tub Type</label>
+                                        <select class="form-input bathroom-tub-type">
+                                            <option value="">Select Tub</option>
+                                            <option value="Standard" ${bathroomData.tubType === 'Standard' ? 'selected' : ''}>Standard</option>
+                                            <option value="Garden" ${bathroomData.tubType === 'Garden' ? 'selected' : ''}>Garden</option>
+                                            <option value="Whirlpool" ${bathroomData.tubType === 'Whirlpool' ? 'selected' : ''}>Whirlpool</option>
+                                            <option value="None" ${bathroomData.tubType === 'None' ? 'selected' : ''}>None</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Countertop Material</label>
+                                        <select class="form-input bathroom-countertop">
+                                            <option value="">Select Countertop</option>
+                                            <option value="Granite" ${bathroomData.countertop === 'Granite' ? 'selected' : ''}>Granite</option>
+                                            <option value="Quartz" ${bathroomData.countertop === 'Quartz' ? 'selected' : ''}>Quartz</option>
+                                            <option value="Marble" ${bathroomData.countertop === 'Marble' ? 'selected' : ''}>Marble</option>
+                                            <option value="Laminate" ${bathroomData.countertop === 'Laminate' ? 'selected' : ''}>Laminate</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Vanity Style</label>
+                                        <select class="form-input bathroom-vanity-style">
+                                            <option value="">Select Vanity</option>
+                                            <option value="Traditional" ${bathroomData.vanityStyle === 'Traditional' ? 'selected' : ''}>Traditional</option>
+                                            <option value="Modern" ${bathroomData.vanityStyle === 'Modern' ? 'selected' : ''}>Modern</option>
+                                            <option value="Floating" ${bathroomData.vanityStyle === 'Floating' ? 'selected' : ''}>Floating</option>
+                                            <option value="Built-in" ${bathroomData.vanityStyle === 'Built-in' ? 'selected' : ''}>Built-in</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Mirror Type</label>
+                                        <select class="form-input bathroom-mirror-type">
+                                            <option value="">Select Mirror</option>
+                                            <option value="Standard" ${bathroomData.mirrorType === 'Standard' ? 'selected' : ''}>Standard</option>
+                                            <option value="Framed" ${bathroomData.mirrorType === 'Framed' ? 'selected' : ''}>Framed</option>
+                                            <option value="Medicine Cabinet" ${bathroomData.mirrorType === 'Medicine Cabinet' ? 'selected' : ''}>Medicine Cabinet</option>
+                                            <option value="None" ${bathroomData.mirrorType === 'None' ? 'selected' : ''}>None</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Lighting</label>
+                                        <select class="form-input bathroom-lighting">
+                                            <option value="">Select Lighting</option>
+                                            <option value="Overhead" ${bathroomData.lighting === 'Overhead' ? 'selected' : ''}>Overhead</option>
+                                            <option value="Vanity Lights" ${bathroomData.lighting === 'Vanity Lights' ? 'selected' : ''}>Vanity Lights</option>
+                                            <option value="Recessed" ${bathroomData.lighting === 'Recessed' ? 'selected' : ''}>Recessed</option>
+                                            <option value="Sconces" ${bathroomData.lighting === 'Sconces' ? 'selected' : ''}>Sconces</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Ventilation</label>
+                                        <select class="form-input bathroom-ventilation">
+                                            <option value="">Select Ventilation</option>
+                                            <option value="Exhaust Fan" ${bathroomData.ventilation === 'Exhaust Fan' ? 'selected' : ''}>Exhaust Fan</option>
+                                            <option value="Window" ${bathroomData.ventilation === 'Window' ? 'selected' : ''}>Window</option>
+                                            <option value="Both" ${bathroomData.ventilation === 'Both' ? 'selected' : ''}>Both</option>
+                                            <option value="None" ${bathroomData.ventilation === 'None' ? 'selected' : ''}>None</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Window Size</label>
+                                        <input type="text" class="form-input bathroom-window-size" value="${bathroomData.windowSize || ''}" placeholder="e.g., 2x3, 3x4">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Window Treatments</label>
+                                        <select class="form-input bathroom-window-treatments">
+                                            <option value="">Select Treatments</option>
+                                            <option value="Blinds" ${bathroomData.windowTreatments === 'Blinds' ? 'selected' : ''}>Blinds</option>
+                                            <option value="Shades" ${bathroomData.windowTreatments === 'Shades' ? 'selected' : ''}>Shades</option>
+                                            <option value="Frosted Glass" ${bathroomData.windowTreatments === 'Frosted Glass' ? 'selected' : ''}>Frosted Glass</option>
+                                            <option value="None" ${bathroomData.windowTreatments === 'None' ? 'selected' : ''}>None</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Number of Outlets</label>
+                                        <input type="number" class="form-input bathroom-outlets" value="${bathroomData.outlets || ''}" placeholder="e.g., 2, 4, 6">
+                                    </div>
+                                    <div class="form-group full-width">
+                                        <label class="form-label">Additional Notes</label>
+                                        <textarea class="form-input bathroom-notes" rows="3" placeholder="Any additional details about this bathroom...">${bathroomData.notes || ''}</textarea>
+                                    </div>
+                                </div>
+                            `;
+                            bathroomsList.appendChild(bathroomDiv);
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading bathroom data for editing:', error);
+                    alert('Error loading bathroom data. Please try again.');
+                });
         }
 
         function toggleEditMode(section) {
@@ -5864,13 +6224,16 @@
                 bedroomsDisplayList.style.display = 'none';
             }
             
-            bedroomCount++;
+            // Get actual count of existing bedrooms in the form
             const bedroomsList = document.getElementById('bedroomsList');
+            const existingBedrooms = bedroomsList.querySelectorAll('.bedroom-item');
+            const actualCount = existingBedrooms.length + 1;
+            
             const bedroomDiv = document.createElement('div');
             bedroomDiv.className = 'room-section bedroom-item';
             bedroomDiv.innerHTML = `
                 <div class="room-header">
-                    <h5>Bedroom ${bedroomCount}</h5>
+                    <h5>Bedroom ${actualCount}</h5>
                     <button type="button" class="btn btn-danger btn-small" onclick="removeRoom(this)">
                         <i class="fas fa-trash"></i> Remove
                     </button>
@@ -6180,13 +6543,16 @@
                 bathroomsDisplayList.style.display = 'none';
             }
             
-            bathroomCount++;
+            // Get actual count of existing bathrooms in the form
             const bathroomsList = document.getElementById('bathroomsList');
+            const existingBathrooms = bathroomsList.querySelectorAll('.bathroom-item');
+            const actualCount = existingBathrooms.length + 1;
+            
             const bathroomDiv = document.createElement('div');
             bathroomDiv.className = 'room-section bathroom-item';
             bathroomDiv.innerHTML = `
                 <div class="room-header">
-                    <h5>Bathroom ${bathroomCount}</h5>
+                    <h5>Bathroom ${actualCount}</h5>
                     <button type="button" class="btn btn-danger btn-small" onclick="removeRoom(this)">
                         <i class="fas fa-trash"></i> Remove
                     </button>
@@ -6702,8 +7068,101 @@
 
         function removeRoom(button) {
             if (confirm('Are you sure you want to remove this room?')) {
-                button.closest('.room-section').remove();
+                const roomSection = button.closest('.room-section');
+                const roomType = roomSection.classList.contains('bedroom-item') ? 'bedrooms' : 
+                                roomSection.classList.contains('bathroom-item') ? 'bathrooms' : 
+                                roomSection.classList.contains('living-area-item') ? 'livingAreas' : null;
+                
+                if (roomType) {
+                    // Remove from DOM first
+                    roomSection.remove();
+                    
+                    // Update Firebase
+                    updateFirebaseAfterRoomRemoval(roomType);
+                }
             }
+        }
+
+        function updateFirebaseAfterRoomRemoval(roomType) {
+            if (!currentUser) return;
+            
+            const db = firebase.firestore();
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
+                .then(doc => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        if (data[roomType] && Array.isArray(data[roomType])) {
+                            // Get current rooms from DOM
+                            const currentRooms = [];
+                            const roomElements = document.querySelectorAll(`.${roomType.slice(0, -1)}-item`);
+                            
+                            roomElements.forEach(element => {
+                                const roomData = extractRoomDataFromElement(element, roomType);
+                                if (roomData) {
+                                    currentRooms.push(roomData);
+                                }
+                            });
+                            
+                            // Update Firebase with current rooms
+                            const updateData = { [roomType]: currentRooms };
+                            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).update(updateData)
+                                .then(() => {
+                                    console.log(`${roomType} updated in Firebase after removal`);
+                                })
+                                .catch(error => console.error('Error updating Firebase after room removal:', error));
+                        }
+                    }
+                })
+                .catch(error => console.error('Error loading data for room removal:', error));
+        }
+
+        function extractRoomDataFromElement(element, roomType) {
+            const roomData = {};
+            
+            if (roomType === 'bedrooms') {
+                roomData.name = element.querySelector('.bedroom-name')?.value || '';
+                roomData.size = element.querySelector('.bedroom-size')?.value || '';
+                roomData.flooring = element.querySelector('.bedroom-flooring')?.value || '';
+                roomData.flooringColor = element.querySelector('.bedroom-flooring-color')?.value || '';
+                roomData.closet = element.querySelector('.bedroom-closet')?.value || '';
+                roomData.closetSize = element.querySelector('.bedroom-closet-size')?.value || '';
+                roomData.windows = element.querySelector('.bedroom-windows')?.value || '';
+                roomData.window1Size = element.querySelector('.bedroom-window1-size')?.value || '';
+                roomData.window2Size = element.querySelector('.bedroom-window2-size')?.value || '';
+                roomData.windowTreatments = element.querySelector('.bedroom-window-treatments')?.value || '';
+                roomData.treatmentSizes = element.querySelector('.bedroom-treatment-sizes')?.value || '';
+                roomData.trimStyle = element.querySelector('.bedroom-trim-style')?.value || '';
+                roomData.trimMaterial = element.querySelector('.bedroom-trim-material')?.value || '';
+                roomData.trimColor = element.querySelector('.bedroom-trim-color')?.value || '';
+                roomData.ceilingHeight = element.querySelector('.bedroom-ceiling-height')?.value || '';
+                roomData.ceilingType = element.querySelector('.bedroom-ceiling-type')?.value || '';
+                roomData.lighting = element.querySelector('.bedroom-lighting')?.value || '';
+                roomData.outlets = element.querySelector('.bedroom-outlets')?.value || '';
+                roomData.notes = element.querySelector('.bedroom-notes')?.value || '';
+            } else if (roomType === 'bathrooms') {
+                roomData.name = element.querySelector('.bathroom-name')?.value || '';
+                roomData.type = element.querySelector('.bathroom-type')?.value || '';
+                roomData.size = element.querySelector('.bathroom-size')?.value || '';
+                roomData.flooring = element.querySelector('.bathroom-flooring')?.value || '';
+                roomData.flooringColor = element.querySelector('.bathroom-flooring-color')?.value || '';
+                roomData.toiletType = element.querySelector('.bathroom-toilet-type')?.value || '';
+                roomData.toiletBrand = element.querySelector('.bathroom-toilet-brand')?.value || '';
+                roomData.sinkType = element.querySelector('.bathroom-sink-type')?.value || '';
+                roomData.sinkMaterial = element.querySelector('.bathroom-sink-material')?.value || '';
+                roomData.showerType = element.querySelector('.bathroom-shower-type')?.value || '';
+                roomData.tubType = element.querySelector('.bathroom-tub-type')?.value || '';
+                roomData.countertop = element.querySelector('.bathroom-countertop')?.value || '';
+                roomData.vanityStyle = element.querySelector('.bathroom-vanity-style')?.value || '';
+                roomData.mirrorType = element.querySelector('.bathroom-mirror-type')?.value || '';
+                roomData.lighting = element.querySelector('.bathroom-lighting')?.value || '';
+                roomData.ventilation = element.querySelector('.bathroom-ventilation')?.value || '';
+                roomData.windowSize = element.querySelector('.bathroom-window-size')?.value || '';
+                roomData.windowTreatments = element.querySelector('.bathroom-window-treatments')?.value || '';
+                roomData.outlets = element.querySelector('.bathroom-outlets')?.value || '';
+                roomData.notes = element.querySelector('.bathroom-notes')?.value || '';
+            }
+            
+            return roomData;
         }
 
         // Enhanced Dashboard Functions

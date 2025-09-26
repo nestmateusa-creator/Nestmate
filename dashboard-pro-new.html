@@ -7134,8 +7134,101 @@
 
         function removeRoom(button) {
             if (confirm('Are you sure you want to remove this room?')) {
-                button.closest('.room-section').remove();
+                const roomSection = button.closest('.room-section');
+                const roomType = roomSection.classList.contains('bedroom-item') ? 'bedrooms' : 
+                                roomSection.classList.contains('bathroom-item') ? 'bathrooms' : 
+                                roomSection.classList.contains('living-area-item') ? 'livingAreas' : null;
+                
+                if (roomType) {
+                    // Remove from DOM first
+                    roomSection.remove();
+                    
+                    // Update Firebase
+                    updateFirebaseAfterRoomRemoval(roomType);
+                }
             }
+        }
+
+        function updateFirebaseAfterRoomRemoval(roomType) {
+            if (!currentUser) return;
+            
+            const db = firebase.firestore();
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
+                .then(doc => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        if (data[roomType] && Array.isArray(data[roomType])) {
+                            // Get current rooms from DOM
+                            const currentRooms = [];
+                            const roomElements = document.querySelectorAll(`.${roomType.slice(0, -1)}-item`);
+                            
+                            roomElements.forEach(element => {
+                                const roomData = extractRoomDataFromElement(element, roomType);
+                                if (roomData) {
+                                    currentRooms.push(roomData);
+                                }
+                            });
+                            
+                            // Update Firebase with current rooms
+                            const updateData = { [roomType]: currentRooms };
+                            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).update(updateData)
+                                .then(() => {
+                                    console.log(`${roomType} updated in Firebase after removal`);
+                                })
+                                .catch(error => console.error('Error updating Firebase after room removal:', error));
+                        }
+                    }
+                })
+                .catch(error => console.error('Error loading data for room removal:', error));
+        }
+
+        function extractRoomDataFromElement(element, roomType) {
+            const roomData = {};
+            
+            if (roomType === 'bedrooms') {
+                roomData.name = element.querySelector('.bedroom-name')?.value || '';
+                roomData.size = element.querySelector('.bedroom-size')?.value || '';
+                roomData.flooring = element.querySelector('.bedroom-flooring')?.value || '';
+                roomData.flooringColor = element.querySelector('.bedroom-flooring-color')?.value || '';
+                roomData.closet = element.querySelector('.bedroom-closet')?.value || '';
+                roomData.closetSize = element.querySelector('.bedroom-closet-size')?.value || '';
+                roomData.windows = element.querySelector('.bedroom-windows')?.value || '';
+                roomData.window1Size = element.querySelector('.bedroom-window1-size')?.value || '';
+                roomData.window2Size = element.querySelector('.bedroom-window2-size')?.value || '';
+                roomData.windowTreatments = element.querySelector('.bedroom-window-treatments')?.value || '';
+                roomData.treatmentSizes = element.querySelector('.bedroom-treatment-sizes')?.value || '';
+                roomData.trimStyle = element.querySelector('.bedroom-trim-style')?.value || '';
+                roomData.trimMaterial = element.querySelector('.bedroom-trim-material')?.value || '';
+                roomData.trimColor = element.querySelector('.bedroom-trim-color')?.value || '';
+                roomData.ceilingHeight = element.querySelector('.bedroom-ceiling-height')?.value || '';
+                roomData.ceilingType = element.querySelector('.bedroom-ceiling-type')?.value || '';
+                roomData.lighting = element.querySelector('.bedroom-lighting')?.value || '';
+                roomData.outlets = element.querySelector('.bedroom-outlets')?.value || '';
+                roomData.notes = element.querySelector('.bedroom-notes')?.value || '';
+            } else if (roomType === 'bathrooms') {
+                roomData.name = element.querySelector('.bathroom-name')?.value || '';
+                roomData.type = element.querySelector('.bathroom-type')?.value || '';
+                roomData.size = element.querySelector('.bathroom-size')?.value || '';
+                roomData.flooring = element.querySelector('.bathroom-flooring')?.value || '';
+                roomData.flooringColor = element.querySelector('.bathroom-flooring-color')?.value || '';
+                roomData.toiletType = element.querySelector('.bathroom-toilet-type')?.value || '';
+                roomData.toiletBrand = element.querySelector('.bathroom-toilet-brand')?.value || '';
+                roomData.sinkType = element.querySelector('.bathroom-sink-type')?.value || '';
+                roomData.sinkMaterial = element.querySelector('.bathroom-sink-material')?.value || '';
+                roomData.showerType = element.querySelector('.bathroom-shower-type')?.value || '';
+                roomData.tubType = element.querySelector('.bathroom-tub-type')?.value || '';
+                roomData.countertop = element.querySelector('.bathroom-countertop')?.value || '';
+                roomData.vanityStyle = element.querySelector('.bathroom-vanity-style')?.value || '';
+                roomData.mirrorType = element.querySelector('.bathroom-mirror-type')?.value || '';
+                roomData.lighting = element.querySelector('.bathroom-lighting')?.value || '';
+                roomData.ventilation = element.querySelector('.bathroom-ventilation')?.value || '';
+                roomData.windowSize = element.querySelector('.bathroom-window-size')?.value || '';
+                roomData.windowTreatments = element.querySelector('.bathroom-window-treatments')?.value || '';
+                roomData.outlets = element.querySelector('.bathroom-outlets')?.value || '';
+                roomData.notes = element.querySelector('.bathroom-notes')?.value || '';
+            }
+            
+            return roomData;
         }
 
         // Enhanced Dashboard Functions
