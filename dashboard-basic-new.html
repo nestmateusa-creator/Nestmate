@@ -1233,6 +1233,51 @@
             background: rgba(255, 255, 255, 0.1);
         }
 
+        .task-actions {
+            display: flex;
+            gap: 8px;
+            margin-left: auto;
+        }
+
+        .task-action-btn {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .task-action-btn.edit {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+        }
+
+        .task-action-btn.edit:hover {
+            background: rgba(59, 130, 246, 0.3);
+            color: #93c5fd;
+        }
+
+        .task-action-btn.delete {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+        }
+
+        .task-action-btn.delete:hover {
+            background: rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+        }
+
+        .task-description {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 4px;
+            font-style: italic;
+        }
+
         .task-icon {
             font-size: 1.2rem;
             width: 24px;
@@ -5134,6 +5179,15 @@
                     <div class="task-content">
                         <div class="task-title">${task.title}</div>
                         <div class="task-due">Due: ${task.dueDate} - ${task.category} (${task.priority} priority)</div>
+                        ${task.description ? `<div class="task-description">${task.description}</div>` : ''}
+                    </div>
+                    <div class="task-actions">
+                        <button class="task-action-btn edit" onclick="editTask('${task.id}')" title="Edit Task">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="task-action-btn delete" onclick="deleteTask('${task.id}')" title="Delete Task">
+                            <i class="fas fa-trash"></i>
+                        </button>
                     </div>
                 </div>
             `).join('');
@@ -5145,6 +5199,11 @@
             const task = tasks.find(t => t.id === taskId);
             if (task) {
                 task.completed = !task.completed;
+                if (task.completed) {
+                    task.completedDate = new Date().toISOString();
+                } else {
+                    delete task.completedDate;
+                }
                 displayTasks();
                 saveTasksToFirebase();
             }
@@ -5158,6 +5217,46 @@
         function updateTaskStats() {
             const completedTasks = tasks.filter(task => task.completed).length;
             document.getElementById('tasksCompleted').textContent = completedTasks;
+        }
+
+        function editTask(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (!task) return;
+
+            // Populate the form with existing task data
+            document.getElementById('taskTitle').value = task.title;
+            document.getElementById('taskPriority').value = task.priority;
+            document.getElementById('taskDueDate').value = task.dueDate;
+            document.getElementById('taskCategory').value = task.category;
+            document.getElementById('taskDescription').value = task.description || '';
+
+            // Store the task ID for updating
+            window.editingTaskId = taskId;
+
+            // Switch to Add Task tab
+            document.getElementById('addTaskTab').style.display = 'block';
+            document.getElementById('allTasksTab').style.display = 'none';
+
+            // Update the form title
+            const formTitle = document.querySelector('#addTaskTab .section-title');
+            formTitle.textContent = 'Edit Task';
+
+            // Scroll to the form
+            document.getElementById('addTaskTab').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function deleteTask(taskId) {
+            if (!confirm('Are you sure you want to delete this task?')) {
+                return;
+            }
+
+            const taskIndex = tasks.findIndex(t => t.id === taskId);
+            if (taskIndex !== -1) {
+                tasks.splice(taskIndex, 1);
+                displayTasks();
+                saveTasksToFirebase();
+                alert('Task deleted successfully!');
+            }
         }
 
         // Form handlers
@@ -5181,23 +5280,53 @@
         function handleTaskFormSubmit(e) {
             e.preventDefault();
             
-            const newTask = {
-                id: Date.now().toString(),
+            const taskData = {
                 title: document.getElementById('taskTitle').value,
                 priority: document.getElementById('taskPriority').value,
                 dueDate: document.getElementById('taskDueDate').value,
                 category: document.getElementById('taskCategory').value,
-                description: document.getElementById('taskDescription').value,
-                completed: false
+                description: document.getElementById('taskDescription').value
             };
+
+            // Validate required fields
+            if (!taskData.title || !taskData.dueDate) {
+                alert('Please fill in the task title and due date.');
+                return;
+            }
+
+            if (window.editingTaskId) {
+                // Editing existing task
+                const taskIndex = tasks.findIndex(t => t.id === window.editingTaskId);
+                if (taskIndex !== -1) {
+                    tasks[taskIndex] = {
+                        ...tasks[taskIndex],
+                        ...taskData
+                    };
+                    alert('Task updated successfully!');
+                }
+                window.editingTaskId = null;
+            } else {
+                // Adding new task
+                const newTask = {
+                    id: Date.now().toString(),
+                    ...taskData,
+                    completed: false
+                };
+                tasks.push(newTask);
+                alert('Task added successfully!');
+            }
             
-            tasks.push(newTask);
             displayTasks();
             saveTasksToFirebase();
             
-            // Reset form
+            // Reset form and switch back to tasks list
             e.target.reset();
-            alert('Task added successfully!');
+            document.getElementById('addTaskTab').style.display = 'none';
+            document.getElementById('allTasksTab').style.display = 'block';
+            
+            // Reset form title
+            const formTitle = document.querySelector('#addTaskTab .section-title');
+            formTitle.textContent = 'Add New Task';
         }
 
         function handleContactFormSubmit(e) {
