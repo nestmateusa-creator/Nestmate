@@ -2627,7 +2627,7 @@
                                 <i class="fas fa-plus"></i> Add Bedroom
                             </button>
                         </div>
-                        <div id="bedroomsList">
+                        <div id="bedroomsDisplayList">
                             <!-- Bedrooms will be dynamically added here -->
                         </div>
                     </div>
@@ -2640,7 +2640,7 @@
                                 <i class="fas fa-plus"></i> Add Bathroom
                             </button>
                         </div>
-                        <div id="bathroomsList">
+                        <div id="bathroomsDisplayList">
                             <!-- Bathrooms will be dynamically added here -->
                         </div>
                     </div>
@@ -2734,7 +2734,7 @@
                                 <i class="fas fa-plus"></i> Add Living Area
                             </button>
                         </div>
-                        <div id="livingAreasList">
+                        <div id="livingAreasDisplayList">
                             <!-- Living areas will be dynamically added here -->
                         </div>
                     </div>
@@ -4571,36 +4571,31 @@
         }
 
         function loadBedroomsData() {
-            console.log('loadBedroomsData() called');
-            if (!currentUser) {
-                console.log('No current user, returning');
-                return;
-            }
+            if (!currentUser) return;
             
-            console.log('Loading bedrooms data for user:', currentUser.uid);
             const db = firebase.firestore();
             db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
                 .then(doc => {
-                    console.log('Firebase document exists:', doc.exists);
                     if (doc.exists) {
                         const data = doc.data();
-                        console.log('Document data:', data);
-                        console.log('Bedrooms data:', data.bedrooms);
-                        // Load bedrooms data if it exists
                         if (data.bedrooms && Array.isArray(data.bedrooms)) {
-                            console.log('Found bedrooms array with', data.bedrooms.length, 'bedrooms');
-                            const bedroomsList = document.getElementById('bedroomsList');
-                            console.log('Bedrooms list element:', bedroomsList);
-                            bedroomsList.innerHTML = '';
-                            data.bedrooms.forEach((bedroom, index) => {
-                                console.log('Adding bedroom to DOM:', bedroom, 'at index:', index);
-                                addBedroomToDOM(bedroom, index);
-                            });
-                        } else {
-                            console.log('No bedrooms data found or not an array');
+                            // Find the bedrooms display area
+                            let bedroomsList = document.getElementById('bedroomsDisplayList');
+                            if (!bedroomsList) {
+                                // If not found, try to find it in the current active section
+                                const activeSection = document.querySelector('.content-section.active');
+                                if (activeSection) {
+                                    bedroomsList = activeSection.querySelector('#bedroomsDisplayList');
+                                }
+                            }
+                            
+                            if (bedroomsList) {
+                                bedroomsList.innerHTML = '';
+                                data.bedrooms.forEach((bedroom, index) => {
+                                    addBedroomToDOM(bedroom, index);
+                                });
+                            }
                         }
-                    } else {
-                        console.log('Document does not exist');
                     }
                 })
                 .catch(error => console.error('Error loading bedrooms data:', error));
@@ -4616,11 +4611,13 @@
                         const data = doc.data();
                         // Load bathrooms data if it exists
                         if (data.bathrooms && Array.isArray(data.bathrooms)) {
-                            const bathroomsList = document.getElementById('bathroomsList');
-                            bathroomsList.innerHTML = '';
-                            data.bathrooms.forEach((bathroom, index) => {
-                                addBathroomToDOM(bathroom, index);
-                            });
+                            const bathroomsList = document.getElementById('bathroomsDisplayList');
+                            if (bathroomsList) {
+                                bathroomsList.innerHTML = '';
+                                data.bathrooms.forEach((bathroom, index) => {
+                                    addBathroomToDOM(bathroom, index);
+                                });
+                            }
                         }
                     }
                 })
@@ -4659,11 +4656,13 @@
                         const data = doc.data();
                         // Load living areas data if it exists
                         if (data.livingAreas && Array.isArray(data.livingAreas)) {
-                            const livingAreasList = document.getElementById('livingAreasList');
-                            livingAreasList.innerHTML = '';
-                            data.livingAreas.forEach((livingArea, index) => {
-                                addLivingAreaToDOM(livingArea, index);
-                            });
+                            const livingAreasList = document.getElementById('livingAreasDisplayList');
+                            if (livingAreasList) {
+                                livingAreasList.innerHTML = '';
+                                data.livingAreas.forEach((livingArea, index) => {
+                                    addLivingAreaToDOM(livingArea, index);
+                                });
+                            }
                         }
                     }
                 })
@@ -5328,8 +5327,8 @@
                     backupRef.set(formData, { merge: true });
                     homeData = { ...homeData, ...formData };
                     alert('Bedrooms information saved successfully!');
-                    toggleEditMode('bedrooms'); // Switch back to view mode
-                    loadBedroomsData(); // Reload the data to display saved bedrooms
+                    // Simply reload the bedrooms data
+                    loadBedroomsData();
                 })
                 .catch(error => {
                     console.error('Error saving bedrooms data:', error);
@@ -5379,8 +5378,8 @@
                     backupRef.set(formData, { merge: true });
                     homeData = { ...homeData, ...formData };
                     alert('Bathrooms information saved successfully!');
-                    toggleEditMode('bathrooms'); // Switch back to view mode
-                    loadBathroomsData(); // Reload the data to display saved bathrooms
+                    // Simply reload the bathrooms data
+                    loadBathroomsData();
                 })
                 .catch(error => {
                     console.error('Error saving bathrooms data:', error);
@@ -5529,6 +5528,11 @@
             alert('Add Service Record feature coming soon! This will allow you to add maintenance records, service calls, and other important home service history.');
         }
 
+        // Simple function to reload bedrooms data
+        function reloadBedrooms() {
+            loadBedroomsData();
+        }
+
         function toggleEditMode(section) {
             console.log('Toggling edit mode for section:', section);
             
@@ -5605,6 +5609,11 @@
                 }
             });
             updateQuickStats();
+            
+            // Load room data
+            loadBedroomsData();
+            loadBathroomsData();
+            loadLivingData();
         }
 
         function saveTasksToFirebase() {
@@ -5762,7 +5771,7 @@
             bedroomCount++;
             const bedroomsList = document.getElementById('bedroomsList');
             const bedroomDiv = document.createElement('div');
-            bedroomDiv.className = 'room-section';
+            bedroomDiv.className = 'room-section bedroom-item';
             bedroomDiv.innerHTML = `
                 <div class="room-header">
                     <h5>Bedroom ${bedroomCount}</h5>
@@ -5773,15 +5782,15 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label class="form-label">Room Name</label>
-                        <input type="text" class="form-input" id="bedroom${bedroomCount}Name" placeholder="e.g., Master Bedroom, Guest Room">
+                        <input type="text" class="form-input bedroom-name" placeholder="e.g., Master Bedroom, Guest Room">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Square Footage</label>
-                        <input type="number" class="form-input" id="bedroom${bedroomCount}Sqft" placeholder="Room size in sq ft">
+                        <input type="number" class="form-input bedroom-size" placeholder="Room size in sq ft">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Flooring Type</label>
-                        <select class="form-input" id="bedroom${bedroomCount}Flooring">
+                        <select class="form-input bedroom-flooring">
                             <option value="">Select flooring</option>
                             <option value="hardwood">Hardwood</option>
                             <option value="carpet">Carpet</option>
@@ -5795,11 +5804,11 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Flooring Color/Finish</label>
-                        <input type="text" class="form-input" id="bedroom${bedroomCount}FlooringColor" placeholder="e.g., Oak Natural, Gray Carpet">
+                        <input type="text" class="form-input bedroom-flooring-color" placeholder="e.g., Oak Natural, Gray Carpet">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Closet Type</label>
-                        <select class="form-input" id="bedroom${bedroomCount}Closet">
+                        <select class="form-input bedroom-closet">
                             <option value="">Select closet type</option>
                             <option value="walk-in">Walk-in Closet</option>
                             <option value="reach-in">Reach-in Closet</option>
@@ -5809,23 +5818,23 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Closet Size (sq ft)</label>
-                        <input type="number" class="form-input" id="bedroom${bedroomCount}ClosetSize" placeholder="Closet square footage">
+                        <input type="number" class="form-input bedroom-closet-size" placeholder="Closet square footage">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Window Count</label>
-                        <input type="number" class="form-input" id="bedroom${bedroomCount}Windows" placeholder="Number of windows">
+                        <input type="number" class="form-input bedroom-windows" placeholder="Number of windows">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Window 1 Size (W x H)</label>
-                        <input type="text" class="form-input" id="bedroom${bedroomCount}Window1Size" placeholder="e.g., 36x48 inches">
+                        <input type="text" class="form-input bedroom-window1-size" placeholder="e.g., 36x48 inches">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Window 2 Size (W x H)</label>
-                        <input type="text" class="form-input" id="bedroom${bedroomCount}Window2Size" placeholder="e.g., 24x36 inches">
+                        <input type="text" class="form-input bedroom-window2-size" placeholder="e.g., 24x36 inches">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Window Treatments</label>
-                        <select class="form-input" id="bedroom${bedroomCount}WindowTreatments">
+                        <select class="form-input bedroom-window-treatments">
                             <option value="">Select treatments</option>
                             <option value="blinds">Blinds</option>
                             <option value="curtains">Curtains</option>
@@ -5836,11 +5845,11 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Blind/Curtain Sizes</label>
-                        <input type="text" class="form-input" id="bedroom${bedroomCount}TreatmentSizes" placeholder="e.g., 36x48 blinds, 84x96 curtains">
+                        <input type="text" class="form-input bedroom-treatment-sizes" placeholder="e.g., 36x48 blinds, 84x96 curtains">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Trim Style</label>
-                        <select class="form-input" id="bedroom${bedroomCount}TrimStyle">
+                        <select class="form-input bedroom-trim-style">
                             <option value="">Select trim style</option>
                             <option value="colonial">Colonial</option>
                             <option value="craftsman">Craftsman</option>
@@ -5852,7 +5861,7 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Trim Material</label>
-                        <select class="form-input" id="bedroom${bedroomCount}TrimMaterial">
+                        <select class="form-input bedroom-trim-material">
                             <option value="">Select trim material</option>
                             <option value="wood">Wood</option>
                             <option value="mdf">MDF</option>
@@ -5863,15 +5872,15 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Trim Color</label>
-                        <input type="text" class="form-input" id="bedroom${bedroomCount}TrimColor" placeholder="e.g., White, Natural Oak, Gray">
+                        <input type="text" class="form-input bedroom-trim-color" placeholder="e.g., White, Natural Oak, Gray">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Ceiling Height (ft)</label>
-                        <input type="number" class="form-input" id="bedroom${bedroomCount}CeilingHeight" placeholder="e.g., 9, 10, 12" step="0.5">
+                        <input type="number" class="form-input bedroom-ceiling-height" placeholder="e.g., 9, 10, 12" step="0.5">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Ceiling Type</label>
-                        <select class="form-input" id="bedroom${bedroomCount}CeilingType">
+                        <select class="form-input bedroom-ceiling-type">
                             <option value="">Select ceiling type</option>
                             <option value="flat">Flat</option>
                             <option value="vaulted">Vaulted</option>
@@ -5882,7 +5891,7 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Lighting Type</label>
-                        <select class="form-input" id="bedroom${bedroomCount}Lighting">
+                        <select class="form-input bedroom-lighting">
                             <option value="">Select lighting</option>
                             <option value="ceiling-fan">Ceiling Fan</option>
                             <option value="chandelier">Chandelier</option>
@@ -5894,11 +5903,11 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Electrical Outlets</label>
-                        <input type="number" class="form-input" id="bedroom${bedroomCount}Outlets" placeholder="Number of outlets" min="0">
+                        <input type="number" class="form-input bedroom-outlets" placeholder="Number of outlets" min="0">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Notes</label>
-                        <textarea class="form-input form-textarea" id="bedroom${bedroomCount}Notes" placeholder="Additional notes about this bedroom"></textarea>
+                        <textarea class="form-input form-textarea bedroom-notes" placeholder="Additional notes about this bedroom"></textarea>
                     </div>
                 </div>
             `;
@@ -5906,9 +5915,17 @@
         }
 
         function addBedroomToDOM(bedroomData, index) {
-            console.log('addBedroomToDOM() called with data:', bedroomData, 'index:', index);
-            const bedroomsList = document.getElementById('bedroomsList');
-            console.log('bedroomsList element:', bedroomsList);
+            // Find the bedrooms display area
+            let bedroomsList = document.getElementById('bedroomsDisplayList');
+            if (!bedroomsList) {
+                const activeSection = document.querySelector('.content-section.active');
+                if (activeSection) {
+                    bedroomsList = activeSection.querySelector('#bedroomsDisplayList');
+                }
+            }
+            
+            if (!bedroomsList) return;
+            
             const bedroomDiv = document.createElement('div');
             bedroomDiv.className = 'room-section bedroom-item';
             bedroomDiv.innerHTML = `
@@ -6050,16 +6067,14 @@
                     </div>
                 </div>
             `;
-            console.log('About to append bedroom div to bedroomsList');
             bedroomsList.appendChild(bedroomDiv);
-            console.log('Successfully appended bedroom div. bedroomsList children count:', bedroomsList.children.length);
         }
 
         function addBathroom() {
             bathroomCount++;
             const bathroomsList = document.getElementById('bathroomsList');
             const bathroomDiv = document.createElement('div');
-            bathroomDiv.className = 'room-section';
+            bathroomDiv.className = 'room-section bathroom-item';
             bathroomDiv.innerHTML = `
                 <div class="room-header">
                     <h5>Bathroom ${bathroomCount}</h5>
@@ -6070,11 +6085,11 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label class="form-label">Room Name</label>
-                        <input type="text" class="form-input" id="bathroom${bathroomCount}Name" placeholder="e.g., Master Bath, Guest Bath, Powder Room">
+                        <input type="text" class="form-input bathroom-name" placeholder="e.g., Master Bath, Guest Bath, Powder Room">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Bathroom Type</label>
-                        <select class="form-input" id="bathroom${bathroomCount}Type">
+                        <select class="form-input bathroom-type">
                             <option value="">Select type</option>
                             <option value="full">Full Bathroom</option>
                             <option value="half">Half Bathroom</option>
@@ -6084,11 +6099,11 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Square Footage</label>
-                        <input type="number" class="form-input" id="bathroom${bathroomCount}Sqft" placeholder="Room size in sq ft">
+                        <input type="number" class="form-input bathroom-size" placeholder="Room size in sq ft">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Flooring Type</label>
-                        <select class="form-input" id="bathroom${bathroomCount}Flooring">
+                        <select class="form-input bathroom-flooring">
                             <option value="">Select flooring</option>
                             <option value="tile">Tile</option>
                             <option value="vinyl">Vinyl</option>
@@ -6101,11 +6116,11 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Flooring Color/Finish</label>
-                        <input type="text" class="form-input" id="bathroom${bathroomCount}FlooringColor" placeholder="e.g., White Ceramic, Gray Marble">
+                        <input type="text" class="form-input bathroom-flooring-color" placeholder="e.g., White Ceramic, Gray Marble">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Toilet Type</label>
-                        <select class="form-input" id="bathroom${bathroomCount}ToiletType">
+                        <select class="form-input bathroom-toilet-type">
                             <option value="">Select toilet type</option>
                             <option value="standard">Standard</option>
                             <option value="comfort-height">Comfort Height</option>
@@ -6115,11 +6130,11 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Toilet Brand</label>
-                        <input type="text" class="form-input" id="bathroom${bathroomCount}ToiletBrand" placeholder="e.g., Kohler, Toto, American Standard">
+                        <input type="text" class="form-input bathroom-toilet-brand" placeholder="e.g., Kohler, Toto, American Standard">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Sink Type</label>
-                        <select class="form-input" id="bathroom${bathroomCount}SinkType">
+                        <select class="form-input bathroom-sink-type">
                             <option value="">Select sink type</option>
                             <option value="pedestal">Pedestal</option>
                             <option value="vanity">Vanity</option>
@@ -6130,7 +6145,7 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Sink Material</label>
-                        <select class="form-input" id="bathroom${bathroomCount}SinkMaterial">
+                        <select class="form-input bathroom-sink-material">
                             <option value="">Select sink material</option>
                             <option value="porcelain">Porcelain</option>
                             <option value="ceramic">Ceramic</option>
@@ -6141,7 +6156,7 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Shower Type</label>
-                        <select class="form-input" id="bathroom${bathroomCount}ShowerType">
+                        <select class="form-input bathroom-shower-type">
                             <option value="">Select shower type</option>
                             <option value="none">No Shower</option>
                             <option value="tub-shower">Tub/Shower Combo</option>
@@ -6152,7 +6167,7 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Tub Type</label>
-                        <select class="form-input" id="bathroom${bathroomCount}TubType">
+                        <select class="form-input bathroom-tub-type">
                             <option value="">Select tub type</option>
                             <option value="none">No Tub</option>
                             <option value="standard">Standard Tub</option>
@@ -6164,7 +6179,7 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Countertop Material</label>
-                        <select class="form-input" id="bathroom${bathroomCount}Countertop">
+                        <select class="form-input bathroom-countertop">
                             <option value="">Select countertop</option>
                             <option value="granite">Granite</option>
                             <option value="marble">Marble</option>
@@ -6176,7 +6191,7 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Vanity/Cabinet Style</label>
-                        <select class="form-input" id="bathroom${bathroomCount}VanityStyle">
+                        <select class="form-input bathroom-vanity-style">
                             <option value="">Select vanity style</option>
                             <option value="traditional">Traditional</option>
                             <option value="modern">Modern</option>
@@ -6187,7 +6202,7 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Mirror Type</label>
-                        <select class="form-input" id="bathroom${bathroomCount}MirrorType">
+                        <select class="form-input bathroom-mirror-type">
                             <option value="">Select mirror type</option>
                             <option value="wall-mounted">Wall Mounted</option>
                             <option value="medicine-cabinet">Medicine Cabinet</option>
@@ -6198,7 +6213,7 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Lighting Type</label>
-                        <select class="form-input" id="bathroom${bathroomCount}Lighting">
+                        <select class="form-input bathroom-lighting">
                             <option value="">Select lighting</option>
                             <option value="vanity-lights">Vanity Lights</option>
                             <option value="recessed">Recessed Lighting</option>
@@ -6209,7 +6224,7 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Ventilation</label>
-                        <select class="form-input" id="bathroom${bathroomCount}Ventilation">
+                        <select class="form-input bathroom-ventilation">
                             <option value="">Select ventilation</option>
                             <option value="exhaust-fan">Exhaust Fan</option>
                             <option value="window">Window</option>
@@ -6219,11 +6234,11 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Window Size (W x H)</label>
-                        <input type="text" class="form-input" id="bathroom${bathroomCount}WindowSize" placeholder="e.g., 24x36 inches">
+                        <input type="text" class="form-input bathroom-window-size" placeholder="e.g., 24x36 inches">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Window Treatments</label>
-                        <select class="form-input" id="bathroom${bathroomCount}WindowTreatments">
+                        <select class="form-input bathroom-window-treatments">
                             <option value="">Select treatments</option>
                             <option value="blinds">Blinds</option>
                             <option value="curtains">Curtains</option>
@@ -6234,11 +6249,11 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Electrical Outlets</label>
-                        <input type="number" class="form-input" id="bathroom${bathroomCount}Outlets" placeholder="Number of outlets" min="0">
+                        <input type="number" class="form-input bathroom-outlets" placeholder="Number of outlets" min="0">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Notes</label>
-                        <textarea class="form-input form-textarea" id="bathroom${bathroomCount}Notes" placeholder="Additional notes about this bathroom"></textarea>
+                        <textarea class="form-input form-textarea bathroom-notes" placeholder="Additional notes about this bathroom"></textarea>
                     </div>
                 </div>
             `;
@@ -6246,7 +6261,7 @@
         }
 
         function addBathroomToDOM(bathroomData, index) {
-            const bathroomsList = document.getElementById('bathroomsList');
+            const bathroomsList = document.getElementById('bathroomsDisplayList');
             const bathroomDiv = document.createElement('div');
             bathroomDiv.className = 'room-section bathroom-item';
             bathroomDiv.innerHTML = `
@@ -6438,7 +6453,7 @@
             livingAreaCount++;
             const livingAreasList = document.getElementById('livingAreasList');
             const livingDiv = document.createElement('div');
-            livingDiv.className = 'room-section';
+            livingDiv.className = 'room-section living-area-item';
             livingDiv.innerHTML = `
                 <div class="room-header">
                     <h5>Living Area ${livingAreaCount}</h5>
@@ -6516,7 +6531,7 @@
         }
 
         function addLivingAreaToDOM(livingAreaData, index) {
-            const livingAreasList = document.getElementById('livingAreasList');
+            const livingAreasList = document.getElementById('livingAreasDisplayList');
             const livingDiv = document.createElement('div');
             livingDiv.className = 'room-section living-area-item';
             livingDiv.innerHTML = `
@@ -6942,12 +6957,50 @@
             }
         }
 
-        // Test function for bedrooms data (can be called from browser console)
-        window.testBedroomsData = function() {
-            console.log('=== TESTING BEDROOMS DATA ===');
-            console.log('Current user:', currentUser);
-            console.log('Calling loadBedroomsData()...');
-            loadBedroomsData();
+
+        // Test function to force display a bedroom
+        window.testDisplayBedroom = function() {
+            console.log('=== TESTING BEDROOM DISPLAY ===');
+            const bedroomsList = document.getElementById('bedroomsDisplayList');
+            console.log('bedroomsDisplayList element:', bedroomsList);
+            
+            if (bedroomsList) {
+                const testBedroom = {
+                    name: 'Test Bedroom',
+                    size: '200',
+                    flooring: 'hardwood',
+                    flooringColor: 'Oak Natural'
+                };
+                console.log('Adding test bedroom to DOM...');
+                addBedroomToDOM(testBedroom, 0);
+                console.log('Test bedroom added!');
+            } else {
+                console.log('ERROR: bedroomsDisplayList element not found!');
+            }
+        };
+
+        // Test function to check Firebase data
+        window.checkFirebaseData = function() {
+            console.log('=== CHECKING FIREBASE DATA ===');
+            if (!currentUser) {
+                console.log('No current user logged in');
+                return;
+            }
+            
+            const db = firebase.firestore();
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
+                .then(doc => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        console.log('Full Firebase document:', data);
+                        console.log('Bedrooms data:', data.bedrooms);
+                        console.log('Bathrooms data:', data.bathrooms);
+                        console.log('Living areas data:', data.livingAreas);
+                    } else {
+                        console.log('No document found in Firebase');
+                    }
+                })
+                .catch(error => console.error('Error reading Firebase:', error));
         };
 
         // Test function for Google Places API (can be called from browser console)
