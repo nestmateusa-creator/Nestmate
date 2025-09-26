@@ -5172,7 +5172,12 @@
         }
 
         function displayTasks() {
+            console.log('displayTasks called with tasks:', tasks);
             const tasksList = document.getElementById('allTasksList');
+            if (!tasksList) {
+                console.error('allTasksList element not found!');
+                return;
+            }
             tasksList.innerHTML = tasks.map(task => `
                 <div class="task-item">
                     <div class="task-checkbox ${task.completed ? 'checked' : ''}" onclick="toggleTask('${task.id}')"></div>
@@ -5279,6 +5284,7 @@
 
         function handleTaskFormSubmit(e) {
             e.preventDefault();
+            console.log('Task form submitted!');
             
             const taskData = {
                 title: document.getElementById('taskTitle').value,
@@ -5287,6 +5293,8 @@
                 category: document.getElementById('taskCategory').value,
                 description: document.getElementById('taskDescription').value
             };
+
+            console.log('Task data:', taskData);
 
             // Validate required fields
             if (!taskData.title || !taskData.dueDate) {
@@ -5312,7 +5320,10 @@
                     ...taskData,
                     completed: false
                 };
+                console.log('Adding new task:', newTask);
+                console.log('Tasks array before push:', tasks);
                 tasks.push(newTask);
+                console.log('Tasks array after push:', tasks);
                 alert('Task added successfully!');
             }
             
@@ -5327,6 +5338,11 @@
             // Reset form title
             const formTitle = document.querySelector('#addTaskTab .section-title');
             formTitle.textContent = 'Add New Task';
+            
+            // Ensure the tasks list is visible and scroll to it
+            setTimeout(() => {
+                document.getElementById('allTasksTab').scrollIntoView({ behavior: 'smooth' });
+            }, 100);
         }
 
         function handleContactFormSubmit(e) {
@@ -6234,8 +6250,11 @@
         function saveTasksToFirebase() {
             if (!currentUser) return;
             
+            console.log('Saving tasks to Firebase:', tasks);
             db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).update({
                 tasks: tasks
+            }).then(() => {
+                console.log('Tasks saved successfully to Firebase');
             }).catch(error => {
                 console.error('Error saving tasks:', error);
             });
@@ -6244,15 +6263,21 @@
         function loadTasksFromFirebase() {
             if (!currentUser) return;
             
+            console.log('Loading tasks from Firebase...');
             db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
                 .then(doc => {
                     if (doc.exists && doc.data().tasks) {
+                        console.log('Tasks loaded from Firebase:', doc.data().tasks);
                         tasks = doc.data().tasks;
                         displayTasks();
+                    } else {
+                        console.log('No tasks found in Firebase, using default tasks');
+                        loadDefaultTasks();
                     }
                 })
                 .catch(error => {
                     console.error('Error loading tasks:', error);
+                    loadDefaultTasks();
                 });
         }
 
