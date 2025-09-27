@@ -789,8 +789,29 @@
                     // Restore the original page structure
                     restorePageStructure();
                     setupEventListeners();
-                    loadRecordsIfAuthenticated();
-                }, 1500);
+                    
+                    // Try multiple times to get auth state
+                    let attempts = 0;
+                    const maxAttempts = 10;
+                    
+                    function tryLoadRecords() {
+                        attempts++;
+                        const user = auth.currentUser;
+                        console.log('Auth attempt', attempts, 'User:', user);
+                        
+                        if (user) {
+                            currentUser = user;
+                            loadRecords();
+                        } else if (attempts < maxAttempts) {
+                            setTimeout(tryLoadRecords, 500);
+                        } else {
+                            // After max attempts, show sign in prompt
+                            showSignInPrompt();
+                        }
+                    }
+                    
+                    tryLoadRecords();
+                }, 2000);
                 return;
             }
             
@@ -802,16 +823,27 @@
         });
         
         function loadRecordsIfAuthenticated() {
-            // Use auth state listener to ensure we get the current user
-            auth.onAuthStateChanged((user) => {
+            // Try multiple times to get auth state
+            let attempts = 0;
+            const maxAttempts = 10;
+            
+            function tryLoadRecords() {
+                attempts++;
+                const user = auth.currentUser;
+                console.log('Auth attempt', attempts, 'User:', user);
+                
                 if (user) {
                     currentUser = user;
                     loadRecords();
+                } else if (attempts < maxAttempts) {
+                    setTimeout(tryLoadRecords, 500);
                 } else {
-                    // Show a message that user needs to sign in
+                    // After max attempts, show sign in prompt
                     showSignInPrompt();
                 }
-            });
+            }
+            
+            tryLoadRecords();
         }
         
         function showSignInPrompt() {
