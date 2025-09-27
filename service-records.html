@@ -767,51 +767,46 @@
             const urlParams = new URLSearchParams(window.location.search);
             const fromSignin = urlParams.get('fromSignin') === 'true';
             
-            // If we came from signin, clear the parameter and don't redirect
+            // If we came from signin, clear the parameter
             if (fromSignin) {
-                // Clear the URL parameter
                 const newUrl = window.location.pathname;
                 window.history.replaceState({}, document.title, newUrl);
-                
-                // Wait a bit for auth to settle, then load content
-                setTimeout(() => {
-                    const user = auth.currentUser;
-                    if (user) {
-                        currentUser = user;
-                        loadRecords();
-                        setupEventListeners();
-                    }
-                }, 500);
-                return;
             }
             
-            // Normal auth check for direct access - wait longer for Firebase to initialize
-            let authCheckAttempts = 0;
-            const maxAttempts = 10;
+            // Always set up event listeners first
+            setupEventListeners();
             
-            function checkAuth() {
-                authCheckAttempts++;
-                const user = auth.currentUser;
-                
-                if (user) {
-                    currentUser = user;
-                    loadRecords();
-                    setupEventListeners();
-                } else if (authCheckAttempts < maxAttempts) {
-                    // Wait a bit more for Firebase to initialize
-                    setTimeout(checkAuth, 300);
-                } else {
-                    // After max attempts, redirect to signin
-                    if (!window.location.href.includes('signin.html')) {
-                        const returnUrl = encodeURIComponent(window.location.href);
-                        window.location.href = `signin.html?returnUrl=${returnUrl}`;
-                    }
-                }
-            }
-            
-            // Start checking auth
-            checkAuth();
+            // Try to load records without forcing auth check
+            loadRecordsIfAuthenticated();
         });
+        
+        function loadRecordsIfAuthenticated() {
+            // Check auth state without redirecting
+            const user = auth.currentUser;
+            if (user) {
+                currentUser = user;
+                loadRecords();
+            } else {
+                // Show a message that user needs to sign in
+                showSignInPrompt();
+            }
+        }
+        
+        function showSignInPrompt() {
+            const container = document.querySelector('.container');
+            if (container) {
+                container.innerHTML = `
+                    <div class="header">
+                        <h1><i class="fas fa-tools"></i> Service Records</h1>
+                        <p>Please sign in to view your service records</p>
+                        <a href="signin.html?returnUrl=${encodeURIComponent(window.location.href)}" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt"></i>
+                            Sign In
+                        </a>
+                    </div>
+                `;
+            }
+        }
 
         function setupEventListeners() {
             // Search functionality
