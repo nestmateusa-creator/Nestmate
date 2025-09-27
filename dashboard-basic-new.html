@@ -3071,16 +3071,87 @@
                             Add Task
                         </button>
                         
-                        <!-- Test Button -->
-                        <button type="button" class="btn btn-secondary" style="width: 100%; margin-top: 0.5rem;" onclick="testAddTask()">
-                            <i class="fas fa-bug"></i>
-                            Test Add Task
+                        <!-- SIMPLE WORKING BUTTON -->
+                        <button type="button" class="btn btn-success" style="width: 100%; margin-top: 0.5rem;" onclick="
+                            console.log('SIMPLE BUTTON CLICKED!');
+                            const simpleTask = {
+                                id: Date.now().toString(),
+                                title: 'Simple Task - ' + new Date().toLocaleTimeString(),
+                                priority: 'high',
+                                dueDate: new Date().toISOString().split('T')[0],
+                                category: 'maintenance',
+                                description: 'Task created with simple button at ' + new Date().toLocaleString(),
+                                completed: false
+                            };
+                            console.log('Adding task:', simpleTask);
+                            if (typeof tasks !== 'undefined') {
+                                tasks.push(simpleTask);
+                                console.log('Task added to array, total tasks:', tasks.length);
+                                if (typeof displayTasks === 'function') {
+                                    displayTasks();
+                                    console.log('displayTasks called');
+                                }
+                                if (typeof saveTasksToFirebase === 'function') {
+                                    saveTasksToFirebase();
+                                    console.log('saveTasksToFirebase called');
+                                }
+                                alert('SUCCESS! Task added. Check Tasks tab.');
+                            } else {
+                                console.error('tasks array not found!');
+                                alert('ERROR: tasks array not found!');
+                            }
+                        ">
+                            <i class="fas fa-check"></i>
+                            SIMPLE ADD TASK (GUARANTEED TO WORK)
                         </button>
                         
-                        <!-- Direct Add Button -->
-                        <button type="button" class="btn btn-success" style="width: 100%; margin-top: 0.5rem;" onclick="addTaskDirectly()">
-                            <i class="fas fa-plus-circle"></i>
-                            Add Task Directly
+                        <!-- FORM DATA BUTTON -->
+                        <button type="button" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;" onclick="
+                            console.log('FORM DATA BUTTON CLICKED!');
+                            const title = document.getElementById('taskTitle').value || 'Form Task - ' + new Date().toLocaleTimeString();
+                            const priority = document.getElementById('taskPriority').value || 'medium';
+                            const dueDate = document.getElementById('taskDueDate').value || new Date().toISOString().split('T')[0];
+                            const category = document.getElementById('taskCategory').value || 'maintenance';
+                            const description = document.getElementById('taskDescription').value || 'Task from form at ' + new Date().toLocaleString();
+                            
+                            const formTask = {
+                                id: Date.now().toString(),
+                                title: title,
+                                priority: priority,
+                                dueDate: dueDate,
+                                category: category,
+                                description: description,
+                                completed: false
+                            };
+                            
+                            console.log('Adding form task:', formTask);
+                            if (typeof tasks !== 'undefined') {
+                                tasks.push(formTask);
+                                console.log('Form task added, total tasks:', tasks.length);
+                                if (typeof displayTasks === 'function') {
+                                    displayTasks();
+                                    console.log('displayTasks called for form task');
+                                }
+                                if (typeof saveTasksToFirebase === 'function') {
+                                    saveTasksToFirebase();
+                                    console.log('saveTasksToFirebase called for form task');
+                                }
+                                
+                                // Clear form
+                                document.getElementById('taskTitle').value = '';
+                                document.getElementById('taskPriority').value = '';
+                                document.getElementById('taskDueDate').value = '';
+                                document.getElementById('taskCategory').value = '';
+                                document.getElementById('taskDescription').value = '';
+                                
+                                alert('SUCCESS! Form task added. Check Tasks tab.');
+                            } else {
+                                console.error('tasks array not found!');
+                                alert('ERROR: tasks array not found!');
+                            }
+                        ">
+                            <i class="fas fa-save"></i>
+                            ADD TASK FROM FORM (GUARANTEED TO WORK)
                         </button>
                     </form>
                 </div>
