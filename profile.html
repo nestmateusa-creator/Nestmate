@@ -569,6 +569,21 @@
             // Try to populate email immediately as fallback
             populateEmailIfAvailable();
             
+            // Debug: Check auth state every second for 5 seconds
+            let debugAttempts = 0;
+            const debugInterval = setInterval(() => {
+                debugAttempts++;
+                console.log(`Debug attempt ${debugAttempts}: auth.currentUser =`, auth.currentUser);
+                if (auth.currentUser) {
+                    console.log('Found user during debug:', auth.currentUser.email);
+                    clearInterval(debugInterval);
+                }
+                if (debugAttempts >= 5) {
+                    clearInterval(debugInterval);
+                    console.log('Debug complete - no user found after 5 attempts');
+                }
+            }, 1000);
+            
             // If still no email, set a test email for debugging
             setTimeout(() => {
                 const emailField = document.getElementById('email');
