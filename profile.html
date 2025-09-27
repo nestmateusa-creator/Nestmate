@@ -722,10 +722,24 @@
             }
         }
 
-        // Upgrade to specific plan
+        // Upgrade to specific plan - Direct Stripe links
         function upgradeToPlan(planId) {
             if (confirm(`Are you sure you want to upgrade to the ${planId} plan?`)) {
-                window.location.href = `upgrade-${planId}.html`;
+                // Direct Stripe payment links - Replace with your actual payment links
+                const stripeLinks = {
+                    'basic': 'https://buy.stripe.com/basic-plan-link', // Replace with actual Basic plan link
+                    'pro': 'https://buy.stripe.com/pro-plan-link',     // Replace with actual Pro plan link
+                    'advanced': 'https://buy.stripe.com/advanced-plan-link' // Replace with actual Advanced plan link
+                };
+                
+                const stripeLink = stripeLinks[planId];
+                if (stripeLink) {
+                    // Open in new tab
+                    window.open(stripeLink, '_blank');
+                    showToast(`Redirecting to ${planId} plan upgrade...`, 'info');
+                } else {
+                    alert('Upgrade link not found for this plan.');
+                }
             }
         }
 
