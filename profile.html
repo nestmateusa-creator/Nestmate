@@ -600,44 +600,41 @@
                 }
             }, 1000);
             
-            // If still no email, set a test email for debugging
-            setTimeout(() => {
-                const emailField = document.getElementById('email');
-                if (!emailField.value || emailField.value === 'test@example.com') {
-                    console.log('No email found, setting test email for debugging');
-                    emailField.value = 'test@example.com';
-                    emailField.placeholder = 'No email found - this is a test email';
-                    
-                    // Add a click handler to allow manual email entry
-                    emailField.addEventListener('click', function() {
-                        if (this.value === 'test@example.com') {
-                            this.value = '';
-                            this.placeholder = 'Enter your email address';
+            // Don't set test email - let the user detection handle it
+            
+            // Check for current user immediately with retry
+            let attempts = 0;
+            const maxAttempts = 10;
+            
+            const checkUser = () => {
+                attempts++;
+                const user = auth.currentUser;
+                console.log(`Attempt ${attempts}: auth.currentUser =`, user);
+                
+                if (user) {
+                    console.log('Current user found:', user.email);
+                    currentUser = user;
+                    loadUserProfile();
+                } else if (attempts < maxAttempts) {
+                    console.log(`No user found, retrying in 500ms... (${attempts}/${maxAttempts})`);
+                    setTimeout(checkUser, 500);
+                } else {
+                    console.log('No user found after all attempts, setting up auth listener');
+                    // Set up auth state listener - NO REDIRECTS, just load data
+                    auth.onAuthStateChanged(async (user) => {
+                        if (user) {
+                            console.log('User detected via listener:', user.email);
+                            currentUser = user;
+                            await loadUserProfile();
+                        } else {
+                            console.log('No user detected, showing default profile');
+                            loadProfileWithoutAuth();
                         }
                     });
                 }
-            }, 1000);
+            };
             
-            // Check for current user immediately
-            const user = auth.currentUser;
-            if (user) {
-                console.log('Current user found:', user.email);
-                currentUser = user;
-                loadUserProfile();
-            } else {
-                console.log('No current user, setting up auth listener');
-                // Set up auth state listener - NO REDIRECTS, just load data
-                auth.onAuthStateChanged(async (user) => {
-                    if (user) {
-                        console.log('User detected via listener:', user.email);
-                        currentUser = user;
-                        await loadUserProfile();
-                    } else {
-                        console.log('No user detected, showing default profile');
-                        loadProfileWithoutAuth();
-                    }
-                });
-            }
+            checkUser();
         });
 
         // Load profile without authentication
