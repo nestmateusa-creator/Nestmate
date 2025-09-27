@@ -32,218 +32,283 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             color: var(--dark);
-            padding: 20px;
+            padding: 0;
+            margin: 0;
         }
 
         .confirmation-container {
             background: white;
-            border-radius: var(--radius);
-            padding: 48px;
-            box-shadow: var(--shadow-lg);
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-section {
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        .content-section {
+            flex: 1;
+            padding: 60px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
             width: 100%;
-            max-width: 1000px;
-            margin: 20px;
         }
 
         .success-header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 0;
         }
 
         .success-icon {
-            font-size: 64px;
-            color: var(--success);
-            margin-bottom: 20px;
+            font-size: 80px;
+            color: white;
+            margin-bottom: 30px;
+            opacity: 0.9;
         }
 
         .success-title {
-            font-size: 2.5rem;
+            font-size: 3rem;
             font-weight: 700;
-            color: var(--dark);
-            margin-bottom: 10px;
+            color: white;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .success-subtitle {
-            font-size: 1.2rem;
-            color: var(--secondary);
-            margin-bottom: 20px;
+            font-size: 1.3rem;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 30px;
+            font-weight: 400;
         }
 
         .user-info {
-            background: var(--light);
-            padding: 20px;
-            border-radius: var(--radius);
-            margin-bottom: 40px;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            padding: 25px 40px;
+            border-radius: 16px;
+            margin: 0 auto;
             text-align: center;
+            max-width: 500px;
+            border: 1px solid rgba(255,255,255,0.2);
         }
 
         .user-email {
             font-weight: 600;
-            color: var(--primary);
-            font-size: 1.1rem;
+            color: white;
+            font-size: 1.2rem;
         }
 
         .plans-section {
-            margin-bottom: 40px;
+            margin-bottom: 60px;
         }
 
         .section-title {
-            font-size: 2rem;
+            font-size: 2.5rem;
             font-weight: 700;
             color: var(--dark);
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+        }
+
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: var(--secondary);
+            text-align: center;
+            margin-bottom: 50px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .plans-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-bottom: 40px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 40px;
+            margin-bottom: 60px;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .plan-card {
             background: white;
-            border: 2px solid var(--border);
-            border-radius: var(--radius);
-            padding: 30px;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 40px 30px;
             text-align: center;
-            transition: var(--transition);
+            transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
 
         .plan-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
 
         .plan-card.basic {
-            border-color: var(--success);
+            border-color: #10b981;
+        }
+
+        .plan-card.basic:hover {
+            border-color: #059669;
         }
 
         .plan-card.pro {
-            border-color: var(--primary);
-            transform: scale(1.05);
+            border-color: #7c3aed;
+            transform: scale(1.02);
+            box-shadow: 0 10px 15px -3px rgba(124, 58, 237, 0.1);
+        }
+
+        .plan-card.pro:hover {
+            transform: scale(1.05) translateY(-8px);
+            box-shadow: 0 25px 50px -12px rgba(124, 58, 237, 0.25);
         }
 
         .plan-card.advanced {
-            border-color: var(--warning);
+            border-color: #f59e0b;
+        }
+
+        .plan-card.advanced:hover {
+            border-color: #d97706;
         }
 
         .plan-badge {
             position: absolute;
             top: 20px;
             right: 20px;
-            background: var(--primary);
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
             color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.8rem;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 0.85rem;
             font-weight: 600;
+            box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.3);
         }
 
         .plan-card.pro .plan-badge {
-            background: var(--primary);
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
         }
 
         .plan-card.advanced .plan-badge {
-            background: var(--warning);
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
         }
 
         .plan-icon {
-            font-size: 3rem;
-            margin-bottom: 20px;
+            font-size: 4rem;
+            margin-bottom: 25px;
+            opacity: 0.9;
         }
 
         .plan-card.basic .plan-icon {
-            color: var(--success);
+            color: #10b981;
         }
 
         .plan-card.pro .plan-icon {
-            color: var(--primary);
+            color: #7c3aed;
         }
 
         .plan-card.advanced .plan-icon {
-            color: var(--warning);
+            color: #f59e0b;
         }
 
         .plan-name {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             font-weight: 700;
             color: var(--dark);
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
 
         .plan-price {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--primary);
+            font-size: 3rem;
+            font-weight: 800;
             margin-bottom: 5px;
+        }
+
+        .plan-card.basic .plan-price {
+            color: #10b981;
+        }
+
+        .plan-card.pro .plan-price {
+            color: #7c3aed;
+        }
+
+        .plan-card.advanced .plan-price {
+            color: #f59e0b;
         }
 
         .plan-period {
             color: var(--secondary);
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
         }
 
         .plan-features {
             list-style: none;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
+            text-align: left;
         }
 
         .plan-features li {
-            padding: 8px 0;
+            padding: 12px 0;
             color: var(--dark);
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 10px;
+            gap: 12px;
+            font-size: 1rem;
         }
 
         .plan-features li i {
-            color: var(--success);
-            font-size: 1.1rem;
+            color: #10b981;
+            font-size: 1.2rem;
+            flex-shrink: 0;
         }
 
         .plan-button {
-            background: var(--primary);
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
             color: white;
             border: none;
-            padding: 15px 30px;
-            border-radius: var(--radius);
+            padding: 18px 40px;
+            border-radius: 12px;
             font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: var(--transition);
+            transition: all 0.3s ease;
             width: 100%;
+            box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.3);
         }
 
         .plan-button:hover {
-            background: var(--primary-hover);
             transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(124, 58, 237, 0.4);
         }
 
         .plan-card.basic .plan-button {
-            background: var(--success);
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);
         }
 
         .plan-card.basic .plan-button:hover {
-            background: #059669;
+            box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.4);
         }
 
         .plan-card.advanced .plan-button {
-            background: var(--warning);
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.3);
         }
 
         .plan-card.advanced .plan-button:hover {
-            background: #d97706;
+            box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.4);
         }
 
         .comparison-table {
@@ -341,22 +406,27 @@
 </head>
 <body>
     <div class="confirmation-container">
-        <!-- Success Header -->
-        <div class="success-header">
-            <div class="success-icon">
-                <i class="fas fa-check-circle"></i>
-            </div>
-            <h1 class="success-title">Account Created Successfully!</h1>
-            <p class="success-subtitle">Welcome to NestMate! Choose your plan to get started.</p>
-            
-            <div class="user-info">
-                <p>Account created for: <span class="user-email" id="userEmail">Loading...</span></p>
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="success-header">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h1 class="success-title">Account Created Successfully!</h1>
+                <p class="success-subtitle">Welcome to NestMate! Choose your plan to get started.</p>
+                
+                <div class="user-info">
+                    <p>Account created for: <span class="user-email" id="userEmail">Loading...</span></p>
+                </div>
             </div>
         </div>
 
-        <!-- Plans Section -->
-        <div class="plans-section">
-            <h2 class="section-title">Choose Your Plan</h2>
+        <!-- Content Section -->
+        <div class="content-section">
+            <!-- Plans Section -->
+            <div class="plans-section">
+                <h2 class="section-title">Choose Your Plan</h2>
+                <p class="section-subtitle">Select the perfect plan for your home management needs. All plans include a 30-day free trial!</p>
             
             <div class="plans-grid">
                 <!-- Basic Plan -->
@@ -505,11 +575,12 @@
             </div>
         </div>
 
-        <!-- Skip Option -->
-        <div class="skip-option">
-            <a href="dashboard-basic-new.html" class="skip-link">
-                <i class="fas fa-arrow-right"></i> Skip for now and use free trial
-            </a>
+            <!-- Skip Option -->
+            <div class="skip-option">
+                <a href="dashboard-basic-new.html" class="skip-link">
+                    <i class="fas fa-arrow-right"></i> Skip for now and use free trial
+                </a>
+            </div>
         </div>
     </div>
 
