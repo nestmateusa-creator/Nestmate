@@ -602,6 +602,9 @@
             showLoading(button);
             hideMessages();
             
+            // Set flag to prevent auto-redirect during signup
+            window.isSigningUp = true;
+            
             try {
                         console.log('Creating Firebase Auth account...');
                         const userCredential = await auth.createUserWithEmailAndPassword(email, password);
@@ -664,9 +667,13 @@
                         // Redirect new users to Stripe Basic plan checkout
                         console.log('🛒 Redirecting new user to Stripe Basic plan checkout...');
                         await new Promise(resolve => setTimeout(resolve, 2000));
+                        window.isSigningUp = false; // Clear flag before redirect
                         window.location.href = 'https://buy.stripe.com/9B600lc6u4oneY50Ch1sQ0M';
             } catch (error) {
                         console.error('Signup error:', error);
+                        
+                        // Clear the signup flag on error
+                        window.isSigningUp = false;
                         
                         let errorMessage = getErrorMessage(error.code);
                         if (error.code === 'auth/email-already-in-use') {
@@ -692,6 +699,12 @@
                 // Check if this is a forced signout
                 const urlParams = new URLSearchParams(window.location.search);
                 const isForcedSignout = urlParams.get('signout') === 'true';
+                
+                // Check if we're in the middle of a signup process
+                if (window.isSigningUp) {
+                    console.log('Signup in progress, skipping auto-redirect');
+                    return;
+                }
                 
                 if (user && !isForcedSignout) {
                     console.log('User is signed in:', user.email);
