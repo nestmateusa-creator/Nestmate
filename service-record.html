@@ -935,13 +935,13 @@
                         setupEventListeners();
                         updateProgress();
                     }
-                }, 1000);
+                }, 500);
                 return;
             }
             
-            // Normal auth check for direct access
+            // Normal auth check for direct access - wait longer for Firebase to initialize
             let authCheckAttempts = 0;
-            const maxAttempts = 5;
+            const maxAttempts = 10;
             
             function checkAuth() {
                 authCheckAttempts++;
@@ -954,7 +954,7 @@
                     updateProgress();
                 } else if (authCheckAttempts < maxAttempts) {
                     // Wait a bit more for Firebase to initialize
-                    setTimeout(checkAuth, 200);
+                    setTimeout(checkAuth, 300);
                 } else {
                     // After max attempts, redirect to signin
                     if (!window.location.href.includes('signin.html')) {
