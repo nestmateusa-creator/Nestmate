@@ -968,8 +968,11 @@
         function loadRecords() {
             if (!currentUser) {
                 console.error('No authenticated user');
+                showEmptyState();
                 return;
             }
+
+            console.log('Loading records for user:', currentUser.uid);
 
             // Load service records from Firebase
             const recordsPromise = db.collection('NESTMATE USER HOME SAVED DATA')
@@ -1011,8 +1014,16 @@
                 })
                 .catch(error => {
                     console.error('Error loading records:', error);
-                    showToast('Error loading service records', 'error');
+                    // Instead of showing error, just show empty state
+                    showEmptyState();
                 });
+        }
+        
+        function showEmptyState() {
+            allRecords = [];
+            filteredRecords = [];
+            updateStats();
+            displayRecords();
         }
 
         function updateStats() {
