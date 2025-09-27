@@ -572,10 +572,18 @@
             // If still no email, set a test email for debugging
             setTimeout(() => {
                 const emailField = document.getElementById('email');
-                if (!emailField.value) {
+                if (!emailField.value || emailField.value === 'test@example.com') {
                     console.log('No email found, setting test email for debugging');
                     emailField.value = 'test@example.com';
                     emailField.placeholder = 'No email found - this is a test email';
+                    
+                    // Add a click handler to allow manual email entry
+                    emailField.addEventListener('click', function() {
+                        if (this.value === 'test@example.com') {
+                            this.value = '';
+                            this.placeholder = 'Enter your email address';
+                        }
+                    });
                 }
             }, 1000);
             
