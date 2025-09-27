@@ -423,9 +423,18 @@
                 await verifySubscriptionAndRedirect();
             } catch (error) {
                 console.error('Error checking subscription:', error);
-                // If verification fails, redirect to payment page
-                console.log('Subscription verification failed, redirecting to plan selection:', user.email);
-                window.location.href = `signup-confirmation.html?email=${encodeURIComponent(user.email)}`;
+                // If verification fails, try one more time with a delay
+                console.log('Subscription verification failed, retrying in 2 seconds...');
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                try {
+                    await verifySubscriptionAndRedirect();
+                } catch (retryError) {
+                    console.error('Retry also failed:', retryError);
+                    // Only redirect to payment page if both attempts fail
+                    console.log('Both verification attempts failed, redirecting to plan selection:', user.email);
+                    window.location.href = `signup-confirmation.html?email=${encodeURIComponent(user.email)}`;
+                }
             }
         }
 

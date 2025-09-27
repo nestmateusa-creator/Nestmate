@@ -193,6 +193,33 @@ async function verifySubscriptionAndRedirect() {
         } catch (error) {
             console.log('⚠️ Error checking subscription, falling back to Firebase:', error);
         }
+        
+        // If Stripe check failed, try to manually sync the user
+        console.log('🔄 Attempting manual sync for user:', user.email);
+        try {
+            const manualSyncResponse = await fetch('/.netlify/functions/sync-user-collections', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: user.email
+                })
+            });
+            
+            if (manualSyncResponse.ok) {
+                const syncResult = await manualSyncResponse.json();
+                console.log('✅ Manual sync successful:', syncResult);
+                
+                // After manual sync, check collections again
+                await checkCollectionsAfterManualSync(user);
+                return;
+            } else {
+                console.log('❌ Manual sync failed');
+            }
+        } catch (syncError) {
+            console.log('⚠️ Manual sync error:', syncError);
+        }
 
         // Check specific subscription collections first (Pro, Advanced Pro, then Basic)
         console.log('🔍 Checking specific subscription collections...');
@@ -361,6 +388,34 @@ async function checkCollectionsAfterSync(user, accountType) {
         console.log('❌ User still not found in collection after sync');
         // Fall through to normal collection checking
     }
+}
+
+// Check collections after manual sync
+async function checkCollectionsAfterManualSync(user) {
+    console.log('🔍 Checking collections after manual sync for user:', user.email);
+    const db = firebase.firestore();
+    
+    // Check all collections to see where the user ended up
+    const collections = [
+        { name: 'Advanced Pro User Accounts', url: 'dashboard-advanced-pro-new.html' },
+        { name: 'Pro User Accounts', url: 'dashboard-pro-new.html' },
+        { name: 'Basic User Accounts', url: 'dashboard-basic-new.html' }
+    ];
+    
+    for (const collection of collections) {
+        console.log('🔍 Checking collection:', collection.name);
+        const doc = await db.collection(collection.name).doc(user.uid).get();
+        
+        if (doc.exists) {
+            console.log('✅ User found in collection after manual sync:', collection.name);
+            console.log('🔄 Redirecting to:', collection.url);
+            window.location.href = collection.url;
+            return;
+        }
+    }
+    
+    console.log('❌ User not found in any collection after manual sync');
+    // Fall through to normal collection checking
 }
 
 // Check if user should be on current dashboard
