@@ -3563,9 +3563,58 @@
                 </div>
                 
                 <div class="tab-navigation">
-                    <button class="tab-btn active" onclick="showTasksTab('calendar', this)">Calendar</button>
-                    <button class="tab-btn" onclick="showTasksTab('tasks', this)">Tasks</button>
-                    <button class="tab-btn" onclick="showTasksTab('add-task', this)">Add Task</button>
+                    <button class="tab-btn active" onclick="
+                        console.log('Calendar tab clicked directly!');
+                        // Hide all tabs
+                        document.getElementById('calendarTab').style.display = 'block';
+                        document.getElementById('tasksTab').style.display = 'none';
+                        document.getElementById('addTaskTab').style.display = 'none';
+                        
+                        // Remove active from all buttons
+                        document.querySelectorAll('#tasksModal .tab-btn').forEach(btn => btn.classList.remove('active'));
+                        // Add active to this button
+                        this.classList.add('active');
+                        
+                        // Generate calendar
+                        if (typeof generateCalendar === 'function') {
+                            generateCalendar();
+                        }
+                        
+                        console.log('Calendar tab should now be visible');
+                    ">Calendar</button>
+                    <button class="tab-btn" onclick="
+                        console.log('Tasks tab clicked directly!');
+                        // Hide all tabs
+                        document.getElementById('calendarTab').style.display = 'none';
+                        document.getElementById('tasksTab').style.display = 'block';
+                        document.getElementById('addTaskTab').style.display = 'none';
+                        
+                        // Remove active from all buttons
+                        document.querySelectorAll('#tasksModal .tab-btn').forEach(btn => btn.classList.remove('active'));
+                        // Add active to this button
+                        this.classList.add('active');
+                        
+                        // Display tasks
+                        if (typeof displayTasks === 'function') {
+                            displayTasks();
+                        }
+                        
+                        console.log('Tasks tab should now be visible');
+                    ">Tasks</button>
+                    <button class="tab-btn" onclick="
+                        console.log('Add Task tab clicked directly!');
+                        // Hide all tabs
+                        document.getElementById('calendarTab').style.display = 'none';
+                        document.getElementById('tasksTab').style.display = 'none';
+                        document.getElementById('addTaskTab').style.display = 'block';
+                        
+                        // Remove active from all buttons
+                        document.querySelectorAll('#tasksModal .tab-btn').forEach(btn => btn.classList.remove('active'));
+                        // Add active to this button
+                        this.classList.add('active');
+                        
+                        console.log('Add Task tab should now be visible');
+                    ">Add Task</button>
                 </div>
 
                 <!-- Calendar Tab -->
