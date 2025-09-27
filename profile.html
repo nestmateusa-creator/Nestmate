@@ -569,6 +569,16 @@
             // Try to populate email immediately as fallback
             populateEmailIfAvailable();
             
+            // If still no email, set a test email for debugging
+            setTimeout(() => {
+                const emailField = document.getElementById('email');
+                if (!emailField.value) {
+                    console.log('No email found, setting test email for debugging');
+                    emailField.value = 'test@example.com';
+                    emailField.placeholder = 'No email found - this is a test email';
+                }
+            }, 1000);
+            
             // Check for current user immediately
             const user = auth.currentUser;
             if (user) {
@@ -608,25 +618,47 @@
 
         // Fallback function to populate email if available
         function populateEmailIfAvailable() {
+            console.log('Trying to populate email...');
+            console.log('auth.currentUser:', auth.currentUser);
+            console.log('auth.currentUser?.email:', auth.currentUser?.email);
+            
             // Try to get email from various sources
             const emailSources = [
-                () => auth.currentUser?.email,
-                () => localStorage.getItem('userEmail'),
-                () => sessionStorage.getItem('userEmail'),
                 () => {
+                    console.log('Trying auth.currentUser.email...');
+                    return auth.currentUser?.email;
+                },
+                () => {
+                    console.log('Trying localStorage...');
+                    return localStorage.getItem('userEmail');
+                },
+                () => {
+                    console.log('Trying sessionStorage...');
+                    return sessionStorage.getItem('userEmail');
+                },
+                () => {
+                    console.log('Trying URL params...');
                     const urlParams = new URLSearchParams(window.location.search);
                     return urlParams.get('email');
+                },
+                () => {
+                    console.log('Trying localStorage with different keys...');
+                    return localStorage.getItem('email') || localStorage.getItem('user') || localStorage.getItem('currentUser');
                 }
             ];
             
-            for (const getEmail of emailSources) {
-                const email = getEmail();
+            for (let i = 0; i < emailSources.length; i++) {
+                const email = emailSources[i]();
+                console.log(`Email source ${i} returned:`, email);
                 if (email) {
                     document.getElementById('email').value = email;
                     console.log('Email populated from fallback:', email);
-                    break;
+                    return email;
                 }
             }
+            
+            console.log('No email found from any source');
+            return null;
         }
 
         // Load user profile data (for authenticated users)
