@@ -179,6 +179,45 @@ async function verifySubscriptionAndRedirect() {
             console.log('⚠️ Error checking subscription, falling back to Firebase:', error);
         }
 
+        // Check specific subscription collections first (Pro, Advanced Pro, then Basic)
+        console.log('🔍 Checking specific subscription collections...');
+        
+        // Check Advanced Pro User Accounts first
+        const advancedProDoc = await db.collection('Advanced Pro User Accounts').doc(user.uid).get();
+        if (advancedProDoc.exists) {
+            console.log('✅ User found in Advanced Pro User Accounts');
+            const currentPage = window.location.pathname;
+            if (!currentPage.includes('dashboard-advanced-pro-new.html')) {
+                console.log('🔄 Redirecting to Advanced Pro dashboard...');
+                window.location.href = 'dashboard-advanced-pro-new.html';
+            }
+            return;
+        }
+        
+        // Check Pro User Accounts
+        const proDoc = await db.collection('Pro User Accounts').doc(user.uid).get();
+        if (proDoc.exists) {
+            console.log('✅ User found in Pro User Accounts');
+            const currentPage = window.location.pathname;
+            if (!currentPage.includes('dashboard-pro-new.html')) {
+                console.log('🔄 Redirecting to Pro dashboard...');
+                window.location.href = 'dashboard-pro-new.html';
+            }
+            return;
+        }
+        
+        // Check Basic User Accounts
+        const basicDoc = await db.collection('Basic User Accounts').doc(user.uid).get();
+        if (basicDoc.exists) {
+            console.log('✅ User found in Basic User Accounts');
+            const currentPage = window.location.pathname;
+            if (!currentPage.includes('dashboard-basic-new.html')) {
+                console.log('🔄 Redirecting to Basic dashboard...');
+                window.location.href = 'dashboard-basic-new.html';
+            }
+            return;
+        }
+        
         // Fallback: Check userProfiles collection
         console.log('🔍 Checking userProfiles collection as fallback...');
         const userProfilesDoc = await db.collection('userProfiles').doc(user.uid).get();
@@ -235,10 +274,10 @@ async function verifySubscriptionAndRedirect() {
         let userDoc = await db.collection(collectionName).doc(user.uid).get();
         
         if (!userDoc.exists) {
-            console.log('❌ User not found in any collection, redirecting to trial dashboard');
+            console.log('❌ User not found in any collection, redirecting to signup confirmation');
             isRedirecting = true;
             await new Promise(resolve => setTimeout(resolve, 1500));
-                window.location.href = 'https://nestmateus.com/dashboard-basic-new.html';
+            window.location.href = `signup-confirmation.html?email=${encodeURIComponent(user.email)}`;
             return;
         }
 
@@ -257,13 +296,19 @@ async function verifySubscriptionAndRedirect() {
 
     } catch (error) {
         console.error('❌ Error verifying subscription:', error);
-        console.log('🔄 Fallback: redirecting to trial dashboard');
+        console.log('🔄 Fallback: redirecting to signup confirmation');
         isRedirecting = true;
         
         // Add a small delay to show loading screen
         await new Promise(resolve => setTimeout(resolve, 1500));
         
-                window.location.href = 'https://nestmateus.com/dashboard-basic-new.html';
+        // Get user email for redirect
+        const user = firebase.auth().currentUser;
+        if (user && user.email) {
+            window.location.href = `signup-confirmation.html?email=${encodeURIComponent(user.email)}`;
+        } else {
+            window.location.href = 'signup-confirmation.html';
+        }
     }
 }
 
