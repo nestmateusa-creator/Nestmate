@@ -692,8 +692,10 @@
                 // Check if this is a forced signout
                 const urlParams = new URLSearchParams(window.location.search);
                 const isForcedSignout = urlParams.get('signout') === 'true';
+                const isSignupTab = urlParams.get('tab') === 'signup';
                 
-                if (user && !isForcedSignout) {
+                // Don't auto-redirect if we're on the signup tab
+                if (user && !isForcedSignout && !isSignupTab) {
                     console.log('User is signed in:', user.email);
                     // Don't automatically redirect, show a message instead
                     showAlreadySignedInMessage(user);
