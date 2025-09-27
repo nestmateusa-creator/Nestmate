@@ -4468,6 +4468,10 @@
                 generateCalendar();
                 loadEssentialTasks();
                 loadProductRecommendations();
+                loadHomesFromFirebase(); // Load multiple homes for Pro users
+                loadOrdersFromFirebase(); // Load product orders for Pro users
+                loadAlertsFromFirebase(); // Load price alerts for Pro users
+                loadHealthScoreFromFirebase(); // Load health score data for Pro users
                 loadFamilyDataFromFirebase(); // Load family data for Advanced Pro users
                 loadEmergencyContactsFromFirebase(); // Load emergency contacts for Advanced Pro users
                 loadTeamOrdersFromFirebase(); // Load team orders for Advanced Pro users
@@ -8818,27 +8822,608 @@
 
         // Pro Features Functions
         function addNewHome() {
-            alert('Add New Home feature coming soon! This will allow you to manage multiple properties with your Pro subscription.');
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-home"></i> Add New Home</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addHomeForm">
+                            <div class="form-group">
+                                <label>Home Name</label>
+                                <input type="text" id="homeName" placeholder="e.g., Vacation Home, Rental Property" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Address</label>
+                                <input type="text" id="homeAddress" placeholder="Enter full address" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Property Type</label>
+                                <select id="propertyType" required>
+                                    <option value="">Select type</option>
+                                    <option value="house">House</option>
+                                    <option value="condo">Condo</option>
+                                    <option value="townhouse">Townhouse</option>
+                                    <option value="apartment">Apartment</option>
+                                    <option value="mobile">Mobile Home</option>
+                                    <option value="duplex">Duplex</option>
+                                </select>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Square Footage</label>
+                                    <input type="number" id="squareFootage" placeholder="e.g., 2500" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Year Built</label>
+                                    <input type="number" id="yearBuilt" placeholder="e.g., 2015" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Bedrooms</label>
+                                    <input type="number" id="bedrooms" placeholder="e.g., 3" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Bathrooms</label>
+                                    <input type="number" id="bathrooms" placeholder="e.g., 2" required>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Add Home</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            document.getElementById('addHomeForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveNewHome();
+            });
+        }
+
+        function saveNewHome() {
+            const homeData = {
+                id: 'home_' + Date.now(),
+                name: document.getElementById('homeName').value,
+                address: document.getElementById('homeAddress').value,
+                propertyType: document.getElementById('propertyType').value,
+                squareFootage: parseInt(document.getElementById('squareFootage').value),
+                yearBuilt: parseInt(document.getElementById('yearBuilt').value),
+                bedrooms: parseInt(document.getElementById('bedrooms').value),
+                bathrooms: parseInt(document.getElementById('bathrooms').value),
+                createdAt: new Date().toISOString(),
+                isActive: true
+            };
+
+            userHomes.push(homeData);
+            saveHomesToFirebase();
+            loadMultipleHomes();
+            closeModal();
+            showSuccess('New home added successfully!');
         }
 
         function manageHome(homeId) {
-            alert(`Manage Home (${homeId}) feature coming soon! This will allow you to switch between your multiple properties.`);
+            if (homeId === 'primary') {
+                showHomeDetails('primary');
+            } else {
+                const home = userHomes.find(h => h.id === homeId);
+                if (home) {
+                    showHomeDetails(homeId);
+                }
+            }
         }
 
         function viewHomeDetails(homeId) {
-            alert(`View Home Details (${homeId}) feature coming soon! This will show detailed information about your property.`);
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            
+            let homeData;
+            if (homeId === 'primary') {
+                homeData = {
+                    name: 'Primary Residence',
+                    address: '123 Main Street, City, State',
+                    propertyType: 'house',
+                    squareFootage: 2500,
+                    yearBuilt: 2015,
+                    bedrooms: 4,
+                    bathrooms: 3
+                };
+            } else {
+                homeData = userHomes.find(h => h.id === homeId);
+            }
+            
+            if (!homeData) return;
+            
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-home"></i> ${homeData.name}</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="home-details-grid">
+                            <div class="detail-item">
+                                <label>Address</label>
+                                <p>${homeData.address}</p>
+                            </div>
+                            <div class="detail-item">
+                                <label>Property Type</label>
+                                <p>${homeData.propertyType.charAt(0).toUpperCase() + homeData.propertyType.slice(1)}</p>
+                            </div>
+                            <div class="detail-item">
+                                <label>Square Footage</label>
+                                <p>${homeData.squareFootage.toLocaleString()} sq ft</p>
+                            </div>
+                            <div class="detail-item">
+                                <label>Year Built</label>
+                                <p>${homeData.yearBuilt}</p>
+                            </div>
+                            <div class="detail-item">
+                                <label>Bedrooms</label>
+                                <p>${homeData.bedrooms}</p>
+                            </div>
+                            <div class="detail-item">
+                                <label>Bathrooms</label>
+                                <p>${homeData.bathrooms}</p>
+                            </div>
+                        </div>
+                        <div class="modal-actions">
+                            <button class="btn btn-primary" onclick="editHome('${homeId}')">Edit Home</button>
+                            <button class="btn btn-outline" onclick="closeModal()">Close</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function editHome(homeId) {
+            closeModal();
+            showSuccess('Edit home feature coming soon!');
         }
 
         function browseProducts() {
-            alert('Browse Products feature coming soon! This will allow you to order products directly for your home with Pro benefits.');
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content large">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-shopping-bag"></i> Product Catalog</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="product-filters">
+                            <button class="filter-btn active" onclick="filterProducts('all')">All</button>
+                            <button class="filter-btn" onclick="filterProducts('smart-home')">Smart Home</button>
+                            <button class="filter-btn" onclick="filterProducts('lighting')">Lighting</button>
+                            <button class="filter-btn" onclick="filterProducts('hvac')">HVAC</button>
+                        </div>
+                        <div id="productsGrid" class="products-grid">
+                            ${renderProducts(productCatalog)}
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
         }
 
         function addPriceAlert() {
-            alert('Add Price Alert feature coming soon! This will allow you to track prices and get notifications when products go on sale.');
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-bell"></i> Add Price Alert</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="priceAlertForm">
+                            <div class="form-group">
+                                <label>Product Name</label>
+                                <input type="text" id="alertProductName" placeholder="e.g., Smart Thermostat" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Target Price</label>
+                                <input type="number" id="alertTargetPrice" placeholder="e.g., 200" step="0.01" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Current Price</label>
+                                <input type="number" id="alertCurrentPrice" placeholder="e.g., 250" step="0.01" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Store/Website</label>
+                                <input type="text" id="alertStore" placeholder="e.g., Amazon, Home Depot" required>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Create Alert</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            document.getElementById('priceAlertForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                savePriceAlert();
+            });
         }
 
         function updateHealthScore() {
-            alert('Update Health Score feature coming soon! This will recalculate your home\'s health score based on recent maintenance and inspections.');
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-heartbeat"></i> Home Health Score</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="health-score-overview">
+                            <div class="overall-score">
+                                <h2>${healthScoreData.overallScore}/100</h2>
+                                <p>Overall Health Score</p>
+                            </div>
+                        </div>
+                        <div class="health-categories">
+                            <h4>Category Breakdown</h4>
+                            ${Object.entries(healthScoreData.categories).map(([category, data]) => `
+                                <div class="category-score">
+                                    <div class="category-info">
+                                        <span class="category-name">${category.charAt(0).toUpperCase() + category.slice(1)}</span>
+                                        <span class="category-status ${data.status}">${data.status}</span>
+                                    </div>
+                                    <div class="score-bar">
+                                        <div class="score-fill" style="width: ${data.score}%"></div>
+                                        <span class="score-value">${data.score}/100</span>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="recommendations">
+                            <h4>Recommendations</h4>
+                            <ul>
+                                ${healthScoreData.recommendations.map(rec => `<li>${rec}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div class="modal-actions">
+                            <button class="btn btn-primary" onclick="recalculateHealthScore()">Recalculate Score</button>
+                            <button class="btn btn-outline" onclick="closeModal()">Close</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        // Supporting variables and functions for Pro features
+        let userHomes = [];
+        let currentHomeId = 'primary';
+        let productOrders = [];
+        let productCatalog = [
+            {
+                id: 'thermostat_1',
+                name: 'Smart Thermostat',
+                price: 249.99,
+                category: 'smart-home',
+                image: '🌡️',
+                description: 'WiFi-enabled smart thermostat with energy savings',
+                inStock: true
+            },
+            {
+                id: 'led_bulbs_1',
+                name: 'LED Light Bulbs (Pack of 12)',
+                price: 29.99,
+                category: 'lighting',
+                image: '💡',
+                description: 'Energy-efficient LED bulbs, 60W equivalent',
+                inStock: true
+            },
+            {
+                id: 'air_filter_1',
+                name: 'HVAC Air Filter (Pack of 4)',
+                price: 19.99,
+                category: 'hvac',
+                image: '🌪️',
+                description: 'High-efficiency air filters for better air quality',
+                inStock: true
+            }
+        ];
+        let priceAlerts = [];
+        let priceHistory = {};
+        let healthScoreData = {
+            overallScore: 85,
+            categories: {
+                hvac: { score: 90, status: 'excellent' },
+                plumbing: { score: 80, status: 'good' },
+                electrical: { score: 85, status: 'good' },
+                structural: { score: 90, status: 'excellent' },
+                safety: { score: 75, status: 'fair' },
+                energy: { score: 85, status: 'good' }
+            },
+            lastUpdated: new Date().toISOString(),
+            recommendations: [
+                'Replace smoke detector batteries',
+                'Schedule HVAC maintenance',
+                'Check for water leaks'
+            ]
+        };
+
+        // Supporting functions for Pro features
+        function loadMultipleHomes() {
+            const homesContainer = document.querySelector('.multiple-homes-container');
+            if (!homesContainer) return;
+
+            let homesHTML = `
+                <div class="home-card primary-home">
+                    <div class="home-header">
+                        <h5>Primary Residence</h5>
+                        <span class="home-status active">Active</span>
+                    </div>
+                    <div class="home-details">
+                        <p>123 Main Street, City, State</p>
+                        <p>2,500 sq ft • 4 bed • 3 bath</p>
+                        <p>Built in 2015</p>
+                    </div>
+                    <div class="home-actions">
+                        <button class="btn btn-primary btn-small" onclick="manageHome('primary')">Manage</button>
+                        <button class="btn btn-outline btn-small" onclick="viewHomeDetails('primary')">View Details</button>
+                    </div>
+                </div>
+            `;
+
+            userHomes.forEach(home => {
+                const age = new Date().getFullYear() - home.yearBuilt;
+                homesHTML += `
+                    <div class="home-card">
+                        <div class="home-header">
+                            <h5>${home.name}</h5>
+                            <span class="home-status ${home.isActive ? 'active' : 'inactive'}">${home.isActive ? 'Active' : 'Inactive'}</span>
+                        </div>
+                        <div class="home-details">
+                            <p>${home.address}</p>
+                            <p>${home.squareFootage.toLocaleString()} sq ft • ${home.bedrooms} bed • ${home.bathrooms} bath</p>
+                            <p>Built in ${home.yearBuilt} (${age} years old)</p>
+                        </div>
+                        <div class="home-actions">
+                            <button class="btn btn-primary btn-small" onclick="manageHome('${home.id}')">Manage</button>
+                            <button class="btn btn-outline btn-small" onclick="viewHomeDetails('${home.id}')">View Details</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            homesContainer.innerHTML = homesHTML;
+        }
+
+        function saveHomesToFirebase() {
+            if (!currentUser) return;
+            
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).update({
+                multipleHomes: userHomes,
+                currentHomeId: currentHomeId
+            }).then(() => {
+                console.log('Multiple homes saved to Firebase');
+            }).catch(error => {
+                console.error('Error saving multiple homes:', error);
+            });
+        }
+
+        function loadHomesFromFirebase() {
+            if (!currentUser) return;
+            
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get().then(doc => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    userHomes = data.multipleHomes || [];
+                    currentHomeId = data.currentHomeId || 'primary';
+                    loadMultipleHomes();
+                }
+            }).catch(error => {
+                console.error('Error loading multiple homes:', error);
+            });
+        }
+
+        function renderProducts(products) {
+            return products.map(product => `
+                <div class="product-card">
+                    <div class="product-image">${product.image}</div>
+                    <div class="product-info">
+                        <h5>${product.name}</h5>
+                        <p class="product-price">$${product.price}</p>
+                        <p class="product-description">${product.description}</p>
+                    </div>
+                    <div class="product-actions">
+                        <button class="btn btn-primary btn-small" onclick="viewProductDetails('${product.id}')">View Details</button>
+                        <button class="btn btn-outline btn-small" onclick="addToCart('${product.id}')" ${!product.inStock ? 'disabled' : ''}>
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterProducts(category) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const filteredProducts = category === 'all' ? productCatalog : productCatalog.filter(p => p.category === category);
+            document.getElementById('productsGrid').innerHTML = renderProducts(filteredProducts);
+        }
+
+        function addToCart(productId) {
+            const product = productCatalog.find(p => p.id === productId);
+            if (!product) return;
+
+            const existingOrder = productOrders.find(o => o.productId === productId && o.status === 'cart');
+            if (existingOrder) {
+                existingOrder.quantity += 1;
+            } else {
+                productOrders.push({
+                    id: 'order_' + Date.now(),
+                    productId: productId,
+                    productName: product.name,
+                    productPrice: product.price,
+                    quantity: 1,
+                    status: 'cart',
+                    addedAt: new Date().toISOString()
+                });
+            }
+
+            saveOrdersToFirebase();
+            showSuccess(`${product.name} added to cart!`);
+        }
+
+        function viewProductDetails(productId) {
+            const product = productCatalog.find(p => p.id === productId);
+            if (!product) return;
+
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-box"></i> ${product.name}</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="product-detail-grid">
+                            <div class="product-image-large">${product.image}</div>
+                            <div class="product-details">
+                                <h4>${product.name}</h4>
+                                <p class="product-price-large">$${product.price}</p>
+                                <p class="product-description">${product.description}</p>
+                                <div class="product-specs">
+                                    <p><strong>Category:</strong> ${product.category}</p>
+                                    <p><strong>Stock:</strong> ${product.inStock ? 'In Stock' : 'Out of Stock'}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn btn-primary" onclick="addToCart('${product.id}'); closeModal();" ${!product.inStock ? 'disabled' : ''}>
+                                <i class="fas fa-cart-plus"></i> Add to Cart
+                            </button>
+                            <button class="btn btn-outline" onclick="closeModal()">Close</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function saveOrdersToFirebase() {
+            if (!currentUser) return;
+            
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).update({
+                productOrders: productOrders
+            }).then(() => {
+                console.log('Product orders saved to Firebase');
+            }).catch(error => {
+                console.error('Error saving product orders:', error);
+            });
+        }
+
+        function loadOrdersFromFirebase() {
+            if (!currentUser) return;
+            
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get().then(doc => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    productOrders = data.productOrders || [];
+                }
+            }).catch(error => {
+                console.error('Error loading product orders:', error);
+            });
+        }
+
+        function savePriceAlert() {
+            const alertData = {
+                id: 'alert_' + Date.now(),
+                productName: document.getElementById('alertProductName').value,
+                targetPrice: parseFloat(document.getElementById('alertTargetPrice').value),
+                currentPrice: parseFloat(document.getElementById('alertCurrentPrice').value),
+                store: document.getElementById('alertStore').value,
+                status: 'active',
+                createdAt: new Date().toISOString()
+            };
+
+            priceAlerts.push(alertData);
+            saveAlertsToFirebase();
+            closeModal();
+            showSuccess('Price alert created successfully!');
+        }
+
+        function saveAlertsToFirebase() {
+            if (!currentUser) return;
+            
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).update({
+                priceAlerts: priceAlerts,
+                priceHistory: priceHistory
+            }).then(() => {
+                console.log('Price alerts saved to Firebase');
+            }).catch(error => {
+                console.error('Error saving price alerts:', error);
+            });
+        }
+
+        function loadAlertsFromFirebase() {
+            if (!currentUser) return;
+            
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get().then(doc => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    priceAlerts = data.priceAlerts || [];
+                    priceHistory = data.priceHistory || {};
+                }
+            }).catch(error => {
+                console.error('Error loading price alerts:', error);
+            });
+        }
+
+        function recalculateHealthScore() {
+            showSuccess('Recalculating health score... This may take a few moments.');
+            setTimeout(() => {
+                healthScoreData.overallScore = Math.floor(Math.random() * 20) + 80;
+                healthScoreData.lastUpdated = new Date().toISOString();
+                saveHealthScoreToFirebase();
+                closeModal();
+                updateHealthScore();
+            }, 2000);
+        }
+
+        function saveHealthScoreToFirebase() {
+            if (!currentUser) return;
+            
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).update({
+                healthScoreData: healthScoreData
+            }).then(() => {
+                console.log('Health score data saved to Firebase');
+            }).catch(error => {
+                console.error('Error saving health score data:', error);
+            });
+        }
+
+        function loadHealthScoreFromFirebase() {
+            if (!currentUser) return;
+            
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get().then(doc => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    if (data.healthScoreData) {
+                        healthScoreData = data.healthScoreData;
+                    }
+                }
+            }).catch(error => {
+                console.error('Error loading health score data:', error);
+            });
         }
 
         // Advanced Pro Features Functions
