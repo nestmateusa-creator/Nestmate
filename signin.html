@@ -650,14 +650,10 @@
                             status: 'active'
                         };
                         
-                        // Save to both collections
-                        await Promise.all([
-                            db.collection('userProfiles').doc(userCredential.user.uid).set(userProfileData),
-                            db.collection('accounts').doc(userCredential.user.uid).set(accountData),
-                            db.collection('Basic User Accounts').doc(userCredential.user.uid).set(accountData)
-                        ]);
+                        // Save to userProfiles only (most permissive collection)
+                        await db.collection('userProfiles').doc(userCredential.user.uid).set(userProfileData);
                         
-                        console.log('User profile and account documents created in both collections');
+                        console.log('User profile document created successfully');
                         
                         showSuccess('Account created successfully! Redirecting to checkout...');
                         
