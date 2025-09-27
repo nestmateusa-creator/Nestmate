@@ -1,35 +1,10 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow authenticated users to read and write their own data
+    // Allow all users to read and write all documents
+    // This is for development/testing - should be more restrictive in production
     match /{document=**} {
-      allow read, write: if request.auth != null;
-    }
-    
-    // Allow public read access to subscription collections for authentication
-    match /Advanced Pro User Accounts/{userId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null;
-    }
-    
-    match /Pro User Accounts/{userId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null;
-    }
-    
-    match /Basic User Accounts/{userId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null;
-    }
-    
-    match /userProfiles/{userId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null;
-    }
-    
-    match /Trial User Accounts/{userId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null;
+      allow read, write: if true;
     }
   }
 }
