@@ -476,6 +476,58 @@
             font-size: 1.2rem;
         }
 
+        .category-row {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .category-title {
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .plan-header {
+            text-align: center;
+        }
+
+        .plan-header .plan-name {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .plan-header .plan-price {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: white;
+        }
+
+        .plan-header .plan-price span {
+            font-size: 1rem;
+            font-weight: 500;
+            opacity: 0.8;
+        }
+
+        .feature-basic, .feature-pro, .feature-advanced {
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .plan-column.basic {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+        }
+
+        .plan-column.pro {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+        }
+
+        .plan-column.advanced {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+        }
+
         .skip-option {
             text-align: center;
             margin-top: 60px;
@@ -649,78 +701,205 @@
         <!-- Comparison Table -->
         <div class="comparison-table">
             <div class="table-header">
-                <i class="fas fa-table"></i> Plan Comparison
+                <h3>Complete Feature Comparison</h3>
             </div>
             <div class="table-content">
                 <table>
                     <thead>
                         <tr>
-                            <th class="feature-name">Features</th>
-                            <th>Basic</th>
-                            <th>Pro</th>
-                            <th>Advanced Pro</th>
+                            <th class="feature-column">Features</th>
+                            <th class="plan-column basic">
+                                <div class="plan-header">
+                                    <div class="plan-name">Basic</div>
+                                    <div class="plan-price">$5<span>/month</span></div>
+                                </div>
+                            </th>
+                            <th class="plan-column pro">
+                                <div class="plan-header">
+                                    <div class="plan-name">Pro</div>
+                                    <div class="plan-price">$10<span>/month</span></div>
+                                </div>
+                            </th>
+                            <th class="plan-column advanced">
+                                <div class="plan-header">
+                                    <div class="plan-name">Advanced Pro</div>
+                                    <div class="plan-price">$16<span>/month</span></div>
+                                </div>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td class="feature-name">Home Management</td>
-                            <td><i class="fas fa-check check"></i></td>
-                            <td><i class="fas fa-check check"></i></td>
-                            <td><i class="fas fa-check check"></i></td>
+                        <!-- Home Management -->
+                        <tr class="category-row">
+                            <td colspan="4" class="category-title">🏠 Home Management</td>
                         </tr>
                         <tr>
-                            <td class="feature-name">Tasks & Reminders</td>
-                            <td><i class="fas fa-check check"></i></td>
-                            <td><i class="fas fa-check check"></i></td>
-                            <td><i class="fas fa-check check"></i></td>
+                            <td class="feature-name">Number of Homes</td>
+                            <td class="feature-basic">1 Home</td>
+                            <td class="feature-pro">✅ Unlimited Homes</td>
+                            <td class="feature-advanced">✅ Unlimited Homes</td>
                         </tr>
                         <tr>
-                            <td class="feature-name">Service Records</td>
-                            <td><i class="fas fa-check check"></i></td>
-                            <td><i class="fas fa-check check"></i></td>
-                            <td><i class="fas fa-check check"></i></td>
+                            <td class="feature-name">Home Details & Organization</td>
+                            <td class="feature-basic">✅ Basic Details</td>
+                            <td class="feature-pro">✅ Advanced Details</td>
+                            <td class="feature-advanced">✅ Advanced Details</td>
                         </tr>
                         <tr>
-                            <td class="feature-name">Multiple Homes</td>
-                            <td><i class="fas fa-times cross"></i></td>
-                            <td><i class="fas fa-check check"></i></td>
-                            <td><i class="fas fa-check check"></i></td>
+                            <td class="feature-name">Room Management</td>
+                            <td class="feature-basic">✅ Basic Rooms</td>
+                            <td class="feature-pro">✅ All Rooms</td>
+                            <td class="feature-advanced">✅ All Rooms</td>
+                        </tr>
+
+                        <!-- Tasks & Reminders -->
+                        <tr class="category-row">
+                            <td colspan="4" class="category-title">📋 Tasks & Reminders</td>
                         </tr>
                         <tr>
-                            <td class="feature-name">Product Orders</td>
-                            <td><i class="fas fa-times cross"></i></td>
-                            <td><i class="fas fa-check check"></i></td>
-                            <td><i class="fas fa-check check"></i></td>
+                            <td class="feature-name">Task Limit</td>
+                            <td class="feature-basic">10 Tasks</td>
+                            <td class="feature-pro">✅ Unlimited Tasks</td>
+                            <td class="feature-advanced">✅ Unlimited Tasks</td>
                         </tr>
                         <tr>
-                            <td class="feature-name">Price Tracking</td>
-                            <td><i class="fas fa-times cross"></i></td>
-                            <td><i class="fas fa-check check"></i></td>
-                            <td><i class="fas fa-check check"></i></td>
+                            <td class="feature-name">Shared Tasks</td>
+                            <td class="feature-basic">❌</td>
+                            <td class="feature-pro">❌</td>
+                            <td class="feature-advanced">✅ Family Sharing</td>
                         </tr>
                         <tr>
-                            <td class="feature-name">Family Management</td>
-                            <td><i class="fas fa-times cross"></i></td>
-                            <td><i class="fas fa-times cross"></i></td>
-                            <td><i class="fas fa-check check"></i></td>
+                            <td class="feature-name">Task Assignment</td>
+                            <td class="feature-basic">❌</td>
+                            <td class="feature-pro">❌</td>
+                            <td class="feature-advanced">✅ Assign to Family</td>
+                        </tr>
+
+                        <!-- Product Features -->
+                        <tr class="category-row">
+                            <td colspan="4" class="category-title">🛒 Product Features</td>
                         </tr>
                         <tr>
-                            <td class="feature-name">Emergency Services</td>
-                            <td><i class="fas fa-times cross"></i></td>
-                            <td><i class="fas fa-times cross"></i></td>
-                            <td><i class="fas fa-check check"></i></td>
+                            <td class="feature-name">Product Recommendations</td>
+                            <td class="feature-basic">✅ Basic Picks</td>
+                            <td class="feature-pro">✅ AI-Powered</td>
+                            <td class="feature-advanced">✅ AI-Powered</td>
+                        </tr>
+                        <tr>
+                            <td class="feature-name">Direct Product Orders</td>
+                            <td class="feature-basic">❌</td>
+                            <td class="feature-pro">✅ Order Directly</td>
+                            <td class="feature-advanced">✅ Team Orders</td>
+                        </tr>
+                        <tr>
+                            <td class="feature-name">Price Tracking & Alerts</td>
+                            <td class="feature-basic">❌</td>
+                            <td class="feature-pro">✅ Real-time Alerts</td>
+                            <td class="feature-advanced">✅ Real-time Alerts</td>
+                        </tr>
+                        <tr>
+                            <td class="feature-name">Team Product Lists</td>
+                            <td class="feature-basic">❌</td>
+                            <td class="feature-pro">❌</td>
+                            <td class="feature-advanced">✅ Collaborative Lists</td>
+                        </tr>
+
+                        <!-- Analytics & Health -->
+                        <tr class="category-row">
+                            <td colspan="4" class="category-title">📊 Analytics & Health</td>
+                        </tr>
+                        <tr>
+                            <td class="feature-name">Home Health Score</td>
+                            <td class="feature-basic">❌</td>
+                            <td class="feature-pro">✅ Detailed Score</td>
+                            <td class="feature-advanced">✅ Detailed Score</td>
+                        </tr>
+                        <tr>
+                            <td class="feature-name">Maintenance Analytics</td>
+                            <td class="feature-basic">✅ Basic</td>
+                            <td class="feature-pro">✅ Advanced</td>
+                            <td class="feature-advanced">✅ Advanced</td>
+                        </tr>
+                        <tr>
+                            <td class="feature-name">Cost Savings Tracking</td>
+                            <td class="feature-basic">✅ Basic</td>
+                            <td class="feature-pro">✅ Detailed</td>
+                            <td class="feature-advanced">✅ Family Savings</td>
+                        </tr>
+
+                        <!-- Family Features -->
+                        <tr class="category-row">
+                            <td colspan="4" class="category-title">👨‍👩‍👧‍👦 Family Features</td>
                         </tr>
                         <tr>
                             <td class="feature-name">Family Members</td>
-                            <td>2</td>
-                            <td>3</td>
-                            <td>5</td>
+                            <td class="feature-basic">1 User</td>
+                            <td class="feature-pro">1 User</td>
+                            <td class="feature-advanced">✅ Up to 5 Members</td>
                         </tr>
                         <tr>
-                            <td class="feature-name">Support</td>
-                            <td>Basic</td>
-                            <td>Priority</td>
-                            <td>24/7</td>
+                            <td class="feature-name">Family Dashboard</td>
+                            <td class="feature-basic">❌</td>
+                            <td class="feature-pro">❌</td>
+                            <td class="feature-advanced">✅ Collaboration Hub</td>
+                        </tr>
+                        <tr>
+                            <td class="feature-name">Shared Budget Management</td>
+                            <td class="feature-basic">❌</td>
+                            <td class="feature-pro">❌</td>
+                            <td class="feature-advanced">✅ Team Budget</td>
+                        </tr>
+                        <tr>
+                            <td class="feature-name">Family Activity Tracking</td>
+                            <td class="feature-basic">❌</td>
+                            <td class="feature-pro">❌</td>
+                            <td class="feature-advanced">✅ Real-time Activity</td>
+                        </tr>
+
+                        <!-- Emergency Services -->
+                        <tr class="category-row">
+                            <td colspan="4" class="category-title">🚨 Emergency Services</td>
+                        </tr>
+                        <tr>
+                            <td class="feature-name">Emergency Contacts</td>
+                            <td class="feature-basic">✅ Basic</td>
+                            <td class="feature-pro">✅ Basic</td>
+                            <td class="feature-advanced">✅ 24/7 Premium</td>
+                        </tr>
+                        <tr>
+                            <td class="feature-name">Contractor Services</td>
+                            <td class="feature-basic">❌</td>
+                            <td class="feature-pro">❌</td>
+                            <td class="feature-advanced">✅ Hand-picked Experts</td>
+                        </tr>
+                        <tr>
+                            <td class="feature-name">Emergency Response Time</td>
+                            <td class="feature-basic">Standard</td>
+                            <td class="feature-pro">Standard</td>
+                            <td class="feature-advanced">✅ Priority Response</td>
+                        </tr>
+
+                        <!-- Support -->
+                        <tr class="category-row">
+                            <td colspan="4" class="category-title">🎧 Support</td>
+                        </tr>
+                        <tr>
+                            <td class="feature-name">Support Level</td>
+                            <td class="feature-basic">Standard</td>
+                            <td class="feature-pro">✅ VIP Priority</td>
+                            <td class="feature-advanced">✅ Family-First</td>
+                        </tr>
+                        <tr>
+                            <td class="feature-name">Data Export</td>
+                            <td class="feature-basic">✅ Basic</td>
+                            <td class="feature-pro">✅ Advanced</td>
+                            <td class="feature-advanced">✅ Advanced</td>
+                        </tr>
+                        <tr>
+                            <td class="feature-name">Cloud Backup</td>
+                            <td class="feature-basic">✅ Standard</td>
+                            <td class="feature-pro">✅ Premium</td>
+                            <td class="feature-advanced">✅ Premium</td>
                         </tr>
                     </tbody>
                 </table>
