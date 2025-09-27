@@ -610,8 +610,15 @@
                         const userCredential = await auth.createUserWithEmailAndPassword(email, password);
                         console.log('Auth account created:', userCredential.user.uid);
                         
-                        // Skip seller check during signup to avoid permission issues
-                        // This will be handled by the payment confirmation system
+                        // Check if this email is already registered as a seller
+                        const sellerSnapshot = await db.collection('SELLER USER ACCOUNTS').where('email', '==', email).get();
+                        if (!sellerSnapshot.empty) {
+                            // User is already a seller, sign them out and show error
+                            await auth.signOut();
+                            showError('This email is already registered as a seller. Please use the seller login page.');
+                            hideLoading(button);
+                            return;
+                        }
                         
                         console.log('Updating user profile...');
                         await userCredential.user.updateProfile({
@@ -646,10 +653,14 @@
                             status: 'active'
                         };
                         
-                        // Save to userProfiles collection only (minimal permissions needed)
-                        await db.collection('userProfiles').doc(userCredential.user.uid).set(userProfileData);
+                        // Save to both collections
+                        await Promise.all([
+                            db.collection('userProfiles').doc(userCredential.user.uid).set(userProfileData),
+                            db.collection('accounts').doc(userCredential.user.uid).set(accountData),
+                            db.collection('Basic User Accounts').doc(userCredential.user.uid).set(accountData)
+                        ]);
                         
-                        console.log('User profile document created successfully');
+                        console.log('User profile and account documents created in both collections');
                         
                         showSuccess('Account created successfully! Redirecting to checkout...');
                         
