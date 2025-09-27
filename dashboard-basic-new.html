@@ -3066,9 +3066,21 @@
                             <textarea class="form-input form-textarea" id="taskDescription" placeholder="Enter task description"></textarea>
                         </div>
 
-                        <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        <button type="submit" class="btn btn-primary" style="width: 100%;" onclick="console.log('Add Task form submit button clicked')">
                             <i class="fas fa-plus"></i>
                             Add Task
+                        </button>
+                        
+                        <!-- Test Button -->
+                        <button type="button" class="btn btn-secondary" style="width: 100%; margin-top: 0.5rem;" onclick="testAddTask()">
+                            <i class="fas fa-bug"></i>
+                            Test Add Task
+                        </button>
+                        
+                        <!-- Direct Add Button -->
+                        <button type="button" class="btn btn-success" style="width: 100%; margin-top: 0.5rem;" onclick="addTaskDirectly()">
+                            <i class="fas fa-plus-circle"></i>
+                            Add Task Directly
                         </button>
                     </form>
                 </div>
@@ -3299,7 +3311,10 @@
             
             const addTaskForm = document.getElementById('addTaskForm');
             if (addTaskForm) {
+                console.log('Adding event listener to addTaskForm');
                 addTaskForm.addEventListener('submit', handleTaskFormSubmit);
+            } else {
+                console.error('addTaskForm element not found!');
             }
             
             const addContactForm = document.getElementById('addContactForm');
@@ -5375,6 +5390,68 @@
             });
             
             saveHomeDataToFirebase(homeData);
+        }
+
+        // Test function to manually add a task
+        function testAddTask() {
+            console.log('testAddTask called');
+            const testTask = {
+                id: Date.now().toString(),
+                title: 'Test Task - ' + new Date().toLocaleTimeString(),
+                priority: 'medium',
+                dueDate: new Date().toISOString().split('T')[0],
+                category: 'maintenance',
+                description: 'This is a test task created at ' + new Date().toLocaleString(),
+                completed: false
+            };
+            
+            console.log('Adding test task:', testTask);
+            console.log('Tasks array before:', tasks);
+            tasks.push(testTask);
+            console.log('Tasks array after:', tasks);
+            
+            displayTasks();
+            saveTasksToFirebase();
+            
+            alert('Test task added! Check the Tasks tab to see it.');
+        }
+
+        // Direct add function that reads form data
+        function addTaskDirectly() {
+            console.log('addTaskDirectly called');
+            
+            const taskData = {
+                title: document.getElementById('taskTitle').value || 'Direct Task - ' + new Date().toLocaleTimeString(),
+                priority: document.getElementById('taskPriority').value || 'medium',
+                dueDate: document.getElementById('taskDueDate').value || new Date().toISOString().split('T')[0],
+                category: document.getElementById('taskCategory').value || 'maintenance',
+                description: document.getElementById('taskDescription').value || 'Task created directly at ' + new Date().toLocaleString()
+            };
+
+            console.log('Task data from form:', taskData);
+
+            const newTask = {
+                id: Date.now().toString(),
+                ...taskData,
+                completed: false
+            };
+            
+            console.log('Adding new task:', newTask);
+            console.log('Tasks array before:', tasks);
+            tasks.push(newTask);
+            console.log('Tasks array after:', tasks);
+            
+            displayTasks();
+            saveTasksToFirebase();
+            
+            // Clear form
+            document.getElementById('taskTitle').value = '';
+            document.getElementById('taskPriority').value = '';
+            document.getElementById('taskDueDate').value = '';
+            document.getElementById('taskCategory').value = '';
+            document.getElementById('taskDescription').value = '';
+            
+            alert('Task added directly! Check the Tasks tab to see it.');
         }
 
         function handleTaskFormSubmit(e) {
