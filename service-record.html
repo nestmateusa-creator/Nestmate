@@ -915,30 +915,34 @@
         let authChecked = false;
 
         // Initialize the form
-        document.addEventListener('DOMContentLoaded', async function() {
-            // Check current authentication state immediately
-            try {
+        document.addEventListener('DOMContentLoaded', function() {
+            // Wait for Firebase to initialize, then check auth
+            let authCheckAttempts = 0;
+            const maxAttempts = 10;
+            
+            function checkAuth() {
+                authCheckAttempts++;
                 const user = auth.currentUser;
+                
                 if (user) {
                     currentUser = user;
                     initializeForm();
                     setupEventListeners();
                     updateProgress();
+                } else if (authCheckAttempts < maxAttempts) {
+                    // Wait a bit more for Firebase to initialize
+                    setTimeout(checkAuth, 100);
                 } else {
-                    // Only redirect if we're not already on the signin page
+                    // After max attempts, redirect to signin
                     if (!window.location.href.includes('signin.html')) {
                         const returnUrl = encodeURIComponent(window.location.href);
                         window.location.href = `signin.html?returnUrl=${returnUrl}`;
                     }
                 }
-            } catch (error) {
-                console.error('Error checking auth state:', error);
-                // Fallback: redirect to signin
-                if (!window.location.href.includes('signin.html')) {
-                    const returnUrl = encodeURIComponent(window.location.href);
-                    window.location.href = `signin.html?returnUrl=${returnUrl}`;
-                }
             }
+            
+            // Start checking auth
+            checkAuth();
         });
 
         function initializeForm() {
