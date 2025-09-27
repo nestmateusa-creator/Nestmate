@@ -743,12 +743,11 @@
                 const isForcedSignout = urlParams.get('signout') === 'true';
                 const isSignupTab = urlParams.get('tab') === 'signup';
                 
-                // Check if user is signed in and redirect appropriately - DISABLED AUTO REDIRECT
+                // Check if user is signed in and redirect appropriately
                 if (user && !isForcedSignout && !isSignupTab) {
-                    console.log('User is signed in, but NOT auto-redirecting to fix profile page issue');
-                    // Don't auto-redirect - let user manually sign in
-                    showAuthForms();
-                    showError('You are already signed in. Click "Sign In" to go to your dashboard.');
+                    console.log('User is signed in, redirecting to dashboard:', user.email);
+                    // Redirect to appropriate dashboard
+                    checkUserSubscriptionAndRedirect(user);
                 } else if (user && isForcedSignout) {
                     console.log('Forced signout detected, signing out user:', user.email);
                     // Force sign out the user
