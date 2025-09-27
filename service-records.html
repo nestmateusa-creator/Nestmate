@@ -786,6 +786,8 @@
                 
                 // Wait for auth to settle, then load content
                 setTimeout(() => {
+                    // Restore the original page structure
+                    restorePageStructure();
                     setupEventListeners();
                     loadRecordsIfAuthenticated();
                 }, 1500);
@@ -822,6 +824,100 @@
                             <i class="fas fa-sign-in-alt"></i>
                             Sign In
                         </a>
+                    </div>
+                `;
+            }
+        }
+        
+        function restorePageStructure() {
+            const container = document.querySelector('.container');
+            if (container) {
+                container.innerHTML = `
+                    <!-- Header -->
+                    <div class="header">
+                        <h1><i class="fas fa-clipboard-list"></i> Service Records</h1>
+                        <p>View, manage, and download your home service records</p>
+                        <p style="font-size: 0.9rem; color: var(--secondary); margin-top: 8px;">
+                            <i class="fas fa-shield-alt"></i> Records are permanent to protect your home's value and history
+                        </p>
+                        <div class="header-actions">
+                            <a href="dashboard-basic-new.html" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i>
+                                Back to Dashboard
+                            </a>
+                            <a href="service-record.html" class="btn btn-primary" target="_blank">
+                                <i class="fas fa-plus"></i>
+                                Add New Service
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="stats" id="stats">
+                        <div class="stat-card">
+                            <div class="stat-icon" style="color: var(--primary);">
+                                <i class="fas fa-clipboard-list"></i>
+                            </div>
+                            <div class="stat-number" id="totalRecords">0</div>
+                            <div class="stat-label">Total Records</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="color: var(--success);">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="stat-number" id="completedRecords">0</div>
+                            <div class="stat-label">Completed</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="color: var(--warning);">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-number" id="pendingRecords">0</div>
+                            <div class="stat-label">Pending</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="color: var(--danger);">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="stat-number" id="urgentRecords">0</div>
+                            <div class="stat-label">Urgent</div>
+                        </div>
+                    </div>
+
+                    <!-- Controls -->
+                    <div class="controls">
+                        <div class="controls-row">
+                            <div class="search-box">
+                                <i class="fas fa-search search-icon"></i>
+                                <input type="text" class="search-input" id="searchInput" placeholder="Search service records...">
+                            </div>
+                            <select class="filter-select" id="statusFilter">
+                                <option value="">All Status</option>
+                                <option value="completed">Completed</option>
+                                <option value="in-progress">In Progress</option>
+                                <option value="scheduled">Scheduled</option>
+                                <option value="cancelled">Cancelled</option>
+                                <option value="needs-follow-up">Needs Follow-up</option>
+                            </select>
+                            <select class="filter-select" id="priorityFilter">
+                                <option value="">All Priority</option>
+                                <option value="low">Low</option>
+                                <option value="medium">Medium</option>
+                                <option value="high">High</option>
+                                <option value="urgent">Urgent</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Records Container -->
+                    <div class="records-container">
+                        <div class="records-header">
+                            <div class="records-title">Service Records</div>
+                            <div class="records-count" id="recordsCount">0 records</div>
+                        </div>
+                        <div class="records-grid" id="recordsGrid">
+                            <!-- Records will be populated here -->
+                        </div>
                     </div>
                 `;
             }
