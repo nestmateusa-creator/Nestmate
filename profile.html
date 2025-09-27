@@ -566,17 +566,29 @@
             document.getElementById('loading').style.display = 'none';
             document.getElementById('profileContent').style.display = 'block';
             
-            // Set up auth state listener - NO REDIRECTS, just load data
-            auth.onAuthStateChanged(async (user) => {
-                if (user) {
-                    console.log('User detected:', user.email);
-                    currentUser = user;
-                    await loadUserProfile();
-                } else {
-                    console.log('No user detected, showing default profile');
-                    loadProfileWithoutAuth();
-                }
-            });
+            // Try to populate email immediately as fallback
+            populateEmailIfAvailable();
+            
+            // Check for current user immediately
+            const user = auth.currentUser;
+            if (user) {
+                console.log('Current user found:', user.email);
+                currentUser = user;
+                loadUserProfile();
+            } else {
+                console.log('No current user, setting up auth listener');
+                // Set up auth state listener - NO REDIRECTS, just load data
+                auth.onAuthStateChanged(async (user) => {
+                    if (user) {
+                        console.log('User detected via listener:', user.email);
+                        currentUser = user;
+                        await loadUserProfile();
+                    } else {
+                        console.log('No user detected, showing default profile');
+                        loadProfileWithoutAuth();
+                    }
+                });
+            }
         });
 
         // Load profile without authentication
@@ -592,6 +604,29 @@
             // Set default userData for trial plan
             userData = { accountType: 'trial' };
             updateSubscriptionInfo();
+        }
+
+        // Fallback function to populate email if available
+        function populateEmailIfAvailable() {
+            // Try to get email from various sources
+            const emailSources = [
+                () => auth.currentUser?.email,
+                () => localStorage.getItem('userEmail'),
+                () => sessionStorage.getItem('userEmail'),
+                () => {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    return urlParams.get('email');
+                }
+            ];
+            
+            for (const getEmail of emailSources) {
+                const email = getEmail();
+                if (email) {
+                    document.getElementById('email').value = email;
+                    console.log('Email populated from fallback:', email);
+                    break;
+                }
+            }
         }
 
         // Load user profile data (for authenticated users)
