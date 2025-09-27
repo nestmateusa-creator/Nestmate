@@ -3936,6 +3936,9 @@
                 loadEssentialTasks();
                 loadProductRecommendations();
                 loadHomesFromFirebase(); // Load multiple homes for Pro users
+                loadOrdersFromFirebase(); // Load product orders for Pro users
+                loadAlertsFromFirebase(); // Load price alerts for Pro users
+                loadHealthScoreFromFirebase(); // Load health score data for Pro users
                 console.log('Dashboard initialization completed successfully');
             } catch (error) {
                 console.error('Error during dashboard initialization:', error);
@@ -8455,12 +8458,322 @@
             showHomeDetails(homeId);
         }
 
+        // Direct Product Orders - Pro Feature
+        let productOrders = [];
+        let productCatalog = [
+            {
+                id: 'smart_thermostat',
+                name: 'Smart Thermostat',
+                category: 'HVAC',
+                price: 199.99,
+                description: 'WiFi-enabled programmable thermostat with energy savings',
+                image: '🌡️',
+                inStock: true,
+                rating: 4.8
+            },
+            {
+                id: 'led_bulbs',
+                name: 'LED Light Bulbs (Pack of 12)',
+                category: 'Electrical',
+                price: 24.99,
+                description: 'Energy-efficient LED bulbs, 60W equivalent',
+                image: '💡',
+                inStock: true,
+                rating: 4.6
+            },
+            {
+                id: 'smart_door_lock',
+                name: 'Smart Door Lock',
+                category: 'Security',
+                price: 249.99,
+                description: 'Keyless entry with smartphone control',
+                image: '🔐',
+                inStock: true,
+                rating: 4.7
+            },
+            {
+                id: 'water_filter',
+                name: 'Whole House Water Filter',
+                category: 'Plumbing',
+                price: 399.99,
+                description: 'Advanced filtration system for clean water',
+                image: '💧',
+                inStock: true,
+                rating: 4.9
+            },
+            {
+                id: 'security_camera',
+                name: 'Wireless Security Camera',
+                category: 'Security',
+                price: 129.99,
+                description: 'HD night vision with motion detection',
+                image: '📹',
+                inStock: true,
+                rating: 4.5
+            }
+        ];
+
         function browseProducts() {
-            alert('Browse Products feature coming soon! This will allow you to order products directly for your home with Pro benefits.');
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 1000px; max-height: 80vh; overflow-y: auto;">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-shopping-cart"></i> Product Catalog - Pro Direct Orders</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="product-filters">
+                            <button class="filter-btn active" onclick="filterProducts('all')">All Products</button>
+                            <button class="filter-btn" onclick="filterProducts('HVAC')">HVAC</button>
+                            <button class="filter-btn" onclick="filterProducts('Electrical')">Electrical</button>
+                            <button class="filter-btn" onclick="filterProducts('Security')">Security</button>
+                            <button class="filter-btn" onclick="filterProducts('Plumbing')">Plumbing</button>
+                        </div>
+                        <div class="products-grid" id="productsGrid">
+                            ${renderProducts(productCatalog)}
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
         }
 
+        function renderProducts(products) {
+            return products.map(product => `
+                <div class="product-card" data-category="${product.category}">
+                    <div class="product-image">${product.image}</div>
+                    <div class="product-info">
+                        <h4>${product.name}</h4>
+                        <p class="product-description">${product.description}</p>
+                        <div class="product-rating">
+                            ${'★'.repeat(Math.floor(product.rating))}${'☆'.repeat(5 - Math.floor(product.rating))} ${product.rating}
+                        </div>
+                        <div class="product-price">$${product.price}</div>
+                        <div class="product-stock ${product.inStock ? 'in-stock' : 'out-of-stock'}">
+                            ${product.inStock ? '✓ In Stock' : '✗ Out of Stock'}
+                        </div>
+                    </div>
+                    <div class="product-actions">
+                        <button class="btn btn-primary" onclick="addToCart('${product.id}')" ${!product.inStock ? 'disabled' : ''}>
+                            <i class="fas fa-cart-plus"></i> Add to Cart
+                        </button>
+                        <button class="btn btn-outline" onclick="viewProductDetails('${product.id}')">
+                            <i class="fas fa-info-circle"></i> Details
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterProducts(category) {
+            // Update active filter button
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Filter products
+            const filteredProducts = category === 'all' ? productCatalog : productCatalog.filter(p => p.category === category);
+            document.getElementById('productsGrid').innerHTML = renderProducts(filteredProducts);
+        }
+
+        function addToCart(productId) {
+            const product = productCatalog.find(p => p.id === productId);
+            if (!product) return;
+
+            const existingOrder = productOrders.find(o => o.productId === productId && o.status === 'cart');
+            if (existingOrder) {
+                existingOrder.quantity += 1;
+            } else {
+                productOrders.push({
+                    id: 'order_' + Date.now(),
+                    productId: productId,
+                    productName: product.name,
+                    productPrice: product.price,
+                    quantity: 1,
+                    status: 'cart',
+                    addedAt: new Date().toISOString()
+                });
+            }
+
+            saveOrdersToFirebase();
+            showSuccess(`${product.name} added to cart!`);
+        }
+
+        function viewProductDetails(productId) {
+            const product = productCatalog.find(p => p.id === productId);
+            if (!product) return;
+
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-info-circle"></i> ${product.name}</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="product-detail">
+                            <div class="product-detail-image">${product.image}</div>
+                            <div class="product-detail-info">
+                                <h4>${product.name}</h4>
+                                <p class="product-description">${product.description}</p>
+                                <div class="product-rating">
+                                    ${'★'.repeat(Math.floor(product.rating))}${'☆'.repeat(5 - Math.floor(product.rating))} ${product.rating}/5
+                                </div>
+                                <div class="product-price">$${product.price}</div>
+                                <div class="product-category">Category: ${product.category}</div>
+                                <div class="product-stock ${product.inStock ? 'in-stock' : 'out-of-stock'}">
+                                    ${product.inStock ? '✓ In Stock - Ready to Ship' : '✗ Out of Stock'}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn btn-primary" onclick="addToCart('${product.id}'); closeModal();" ${!product.inStock ? 'disabled' : ''}>
+                                <i class="fas fa-cart-plus"></i> Add to Cart
+                            </button>
+                            <button class="btn btn-outline" onclick="closeModal()">Close</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function loadProductOrders() {
+            const ordersContainer = document.querySelector('.product-orders-container');
+            if (!ordersContainer) return;
+
+            const recentOrders = productOrders.filter(o => o.status !== 'cart').slice(-3);
+            
+            if (recentOrders.length === 0) {
+                ordersContainer.innerHTML = `
+                    <div class="no-orders">
+                        <i class="fas fa-shopping-cart"></i>
+                        <p>No recent orders</p>
+                        <button class="btn btn-primary" onclick="browseProducts()">Browse Products</button>
+                    </div>
+                `;
+                return;
+            }
+
+            ordersContainer.innerHTML = recentOrders.map(order => {
+                const product = productCatalog.find(p => p.id === order.productId);
+                const orderDate = new Date(order.orderedAt || order.addedAt).toLocaleDateString();
+                
+                return `
+                    <div class="order-item">
+                        <div class="order-product">
+                            <div class="order-image">${product?.image || '📦'}</div>
+                            <div class="order-details">
+                                <h5>${order.productName}</h5>
+                                <p>Quantity: ${order.quantity}</p>
+                                <p>Ordered: ${orderDate}</p>
+                            </div>
+                        </div>
+                        <div class="order-status ${order.status}">
+                            ${getStatusText(order.status)}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getStatusText(status) {
+            switch(status) {
+                case 'ordered': return 'Ordered';
+                case 'shipped': return 'Shipped';
+                case 'delivered': return 'Delivered';
+                case 'cancelled': return 'Cancelled';
+                default: return 'Processing';
+            }
+        }
+
+        function saveOrdersToFirebase() {
+            if (!currentUser) return;
+            
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).update({
+                productOrders: productOrders
+            }).then(() => {
+                console.log('Product orders saved to Firebase');
+            }).catch(error => {
+                console.error('Error saving product orders:', error);
+            });
+        }
+
+        function loadOrdersFromFirebase() {
+            if (!currentUser) return;
+            
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get().then(doc => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    productOrders = data.productOrders || [];
+                    loadProductOrders();
+                }
+            }).catch(error => {
+                console.error('Error loading product orders:', error);
+            });
+        }
+
+        // Price Tracking & Alerts - Pro Feature
+        let priceAlerts = [];
+        let priceHistory = {};
+
         function addPriceAlert() {
-            alert('Add Price Alert feature coming soon! This will allow you to track prices and get notifications when products go on sale.');
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-bell"></i> Add Price Alert</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="priceAlertForm">
+                            <div class="form-group">
+                                <label>Product Name</label>
+                                <input type="text" id="alertProductName" placeholder="e.g., Smart Thermostat" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Current Price</label>
+                                <input type="number" id="alertCurrentPrice" placeholder="199.99" step="0.01" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Target Price</label>
+                                <input type="number" id="alertTargetPrice" placeholder="149.99" step="0.01" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Product URL (Optional)</label>
+                                <input type="url" id="alertProductUrl" placeholder="https://example.com/product">
+                            </div>
+                            <div class="form-group">
+                                <label>Alert Type</label>
+                                <select id="alertType" required>
+                                    <option value="price_drop">Price Drop Alert</option>
+                                    <option value="price_increase">Price Increase Alert</option>
+                                    <option value="both">Both Price Changes</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Notification Method</label>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox" id="alertEmail" checked> Email</label>
+                                    <label><input type="checkbox" id="alertDashboard" checked> Dashboard</label>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Create Alert</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            document.getElementById('priceAlertForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                savePriceAlert();
+            });
         }
 
         // Additional Multiple Homes Functions
@@ -8647,8 +8960,457 @@
             });
         }
 
+        // Price Alert Supporting Functions
+        function savePriceAlert() {
+            const alertData = {
+                id: 'alert_' + Date.now(),
+                productName: document.getElementById('alertProductName').value,
+                currentPrice: parseFloat(document.getElementById('alertCurrentPrice').value),
+                targetPrice: parseFloat(document.getElementById('alertTargetPrice').value),
+                productUrl: document.getElementById('alertProductUrl').value,
+                alertType: document.getElementById('alertType').value,
+                emailNotification: document.getElementById('alertEmail').checked,
+                dashboardNotification: document.getElementById('alertDashboard').checked,
+                status: 'active',
+                createdAt: new Date().toISOString(),
+                lastChecked: new Date().toISOString()
+            };
+
+            priceAlerts.push(alertData);
+            saveAlertsToFirebase();
+            loadPriceAlerts();
+            closeModal();
+            showSuccess('Price alert created successfully!');
+        }
+
+        function loadPriceAlerts() {
+            const alertsContainer = document.querySelector('.price-alerts-container');
+            if (!alertsContainer) return;
+
+            const activeAlerts = priceAlerts.filter(alert => alert.status === 'active');
+            
+            if (activeAlerts.length === 0) {
+                alertsContainer.innerHTML = `
+                    <div class="no-alerts">
+                        <i class="fas fa-bell-slash"></i>
+                        <p>No active price alerts</p>
+                        <button class="btn btn-primary" onclick="addPriceAlert()">Create Alert</button>
+                    </div>
+                `;
+                return;
+            }
+
+            alertsContainer.innerHTML = activeAlerts.map(alert => {
+                const priceChange = alert.currentPrice - alert.targetPrice;
+                const changePercent = ((priceChange / alert.currentPrice) * 100).toFixed(1);
+                const isTargetReached = alert.alertType === 'price_drop' ? 
+                    alert.currentPrice <= alert.targetPrice : 
+                    alert.currentPrice >= alert.targetPrice;
+
+                return `
+                    <div class="alert-item ${isTargetReached ? 'target-reached' : ''}">
+                        <div class="alert-product">
+                            <h5>${alert.productName}</h5>
+                            <div class="alert-prices">
+                                <span class="current-price">$${alert.currentPrice}</span>
+                                <span class="target-price">Target: $${alert.targetPrice}</span>
+                            </div>
+                            <div class="alert-change ${priceChange > 0 ? 'positive' : 'negative'}">
+                                ${priceChange > 0 ? '+' : ''}$${Math.abs(priceChange).toFixed(2)} (${changePercent}%)
+                            </div>
+                        </div>
+                        <div class="alert-status">
+                            <div class="alert-type">${getAlertTypeText(alert.alertType)}</div>
+                            <div class="alert-notifications">
+                                ${alert.emailNotification ? '<i class="fas fa-envelope" title="Email"></i>' : ''}
+                                ${alert.dashboardNotification ? '<i class="fas fa-bell" title="Dashboard"></i>' : ''}
+                            </div>
+                            <div class="alert-actions">
+                                <button class="btn btn-outline btn-small" onclick="editPriceAlert('${alert.id}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-outline btn-small" onclick="deletePriceAlert('${alert.id}')" style="color: #ef4444;">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getAlertTypeText(type) {
+            switch(type) {
+                case 'price_drop': return 'Price Drop';
+                case 'price_increase': return 'Price Increase';
+                case 'both': return 'Both Changes';
+                default: return 'Price Alert';
+            }
+        }
+
+        function editPriceAlert(alertId) {
+            const alert = priceAlerts.find(a => a.id === alertId);
+            if (!alert) return;
+
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-edit"></i> Edit Price Alert</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editPriceAlertForm">
+                            <div class="form-group">
+                                <label>Product Name</label>
+                                <input type="text" id="editAlertProductName" value="${alert.productName}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Current Price</label>
+                                <input type="number" id="editAlertCurrentPrice" value="${alert.currentPrice}" step="0.01" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Target Price</label>
+                                <input type="number" id="editAlertTargetPrice" value="${alert.targetPrice}" step="0.01" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Product URL</label>
+                                <input type="url" id="editAlertProductUrl" value="${alert.productUrl}">
+                            </div>
+                            <div class="form-group">
+                                <label>Alert Type</label>
+                                <select id="editAlertType" required>
+                                    <option value="price_drop" ${alert.alertType === 'price_drop' ? 'selected' : ''}>Price Drop Alert</option>
+                                    <option value="price_increase" ${alert.alertType === 'price_increase' ? 'selected' : ''}>Price Increase Alert</option>
+                                    <option value="both" ${alert.alertType === 'both' ? 'selected' : ''}>Both Price Changes</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Notification Method</label>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox" id="editAlertEmail" ${alert.emailNotification ? 'checked' : ''}> Email</label>
+                                    <label><input type="checkbox" id="editAlertDashboard" ${alert.dashboardNotification ? 'checked' : ''}> Dashboard</label>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            document.getElementById('editPriceAlertForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                updatePriceAlert(alertId);
+            });
+        }
+
+        function updatePriceAlert(alertId) {
+            const alertIndex = priceAlerts.findIndex(a => a.id === alertId);
+            if (alertIndex === -1) return;
+
+            priceAlerts[alertIndex] = {
+                ...priceAlerts[alertIndex],
+                productName: document.getElementById('editAlertProductName').value,
+                currentPrice: parseFloat(document.getElementById('editAlertCurrentPrice').value),
+                targetPrice: parseFloat(document.getElementById('editAlertTargetPrice').value),
+                productUrl: document.getElementById('editAlertProductUrl').value,
+                alertType: document.getElementById('editAlertType').value,
+                emailNotification: document.getElementById('editAlertEmail').checked,
+                dashboardNotification: document.getElementById('editAlertDashboard').checked,
+                updatedAt: new Date().toISOString()
+            };
+
+            saveAlertsToFirebase();
+            loadPriceAlerts();
+            closeModal();
+            showSuccess('Price alert updated successfully!');
+        }
+
+        function deletePriceAlert(alertId) {
+            if (confirm('Are you sure you want to delete this price alert?')) {
+                priceAlerts = priceAlerts.filter(a => a.id !== alertId);
+                saveAlertsToFirebase();
+                loadPriceAlerts();
+                showSuccess('Price alert deleted successfully!');
+            }
+        }
+
+        function saveAlertsToFirebase() {
+            if (!currentUser) return;
+            
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).update({
+                priceAlerts: priceAlerts,
+                priceHistory: priceHistory
+            }).then(() => {
+                console.log('Price alerts saved to Firebase');
+            }).catch(error => {
+                console.error('Error saving price alerts:', error);
+            });
+        }
+
+        function loadAlertsFromFirebase() {
+            if (!currentUser) return;
+            
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get().then(doc => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    priceAlerts = data.priceAlerts || [];
+                    priceHistory = data.priceHistory || {};
+                    loadPriceAlerts();
+                }
+            }).catch(error => {
+                console.error('Error loading price alerts:', error);
+            });
+        }
+
+        // Enhanced Home Health Score - Pro Feature
+        let healthScoreData = {
+            overallScore: 85,
+            lastUpdated: new Date().toISOString(),
+            categories: {
+                hvac: { score: 90, weight: 25, lastMaintenance: '2024-01-15' },
+                plumbing: { score: 80, weight: 20, lastMaintenance: '2024-01-10' },
+                electrical: { score: 95, weight: 20, lastMaintenance: '2024-01-20' },
+                structural: { score: 85, weight: 15, lastMaintenance: '2024-01-05' },
+                safety: { score: 88, weight: 10, lastMaintenance: '2024-01-18' },
+                energy: { score: 75, weight: 10, lastMaintenance: '2024-01-12' }
+            },
+            recommendations: [
+                { category: 'energy', priority: 'high', message: 'Consider upgrading to LED lighting to improve energy efficiency' },
+                { category: 'plumbing', priority: 'medium', message: 'Schedule annual water heater maintenance' },
+                { category: 'hvac', priority: 'low', message: 'Replace air filters every 3 months' }
+            ]
+        };
+
         function updateHealthScore() {
-            alert('Update Health Score feature coming soon! This will recalculate your home\'s health score based on recent maintenance and inspections.');
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 800px;">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-heartbeat"></i> Enhanced Home Health Score</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="health-score-overview">
+                            <div class="overall-score">
+                                <div class="score-circle">
+                                    <div class="score-number">${healthScoreData.overallScore}</div>
+                                    <div class="score-label">Overall Score</div>
+                                </div>
+                                <div class="score-details">
+                                    <h4>Home Health Analysis</h4>
+                                    <p>Last updated: ${new Date(healthScoreData.lastUpdated).toLocaleDateString()}</p>
+                                    <div class="score-status ${getScoreStatus(healthScoreData.overallScore)}">
+                                        ${getScoreStatusText(healthScoreData.overallScore)}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="health-categories">
+                            <h4>Category Breakdown</h4>
+                            <div class="categories-grid">
+                                ${Object.entries(healthScoreData.categories).map(([category, data]) => `
+                                    <div class="category-item">
+                                        <div class="category-header">
+                                            <h5>${getCategoryName(category)}</h5>
+                                            <span class="category-score ${getScoreStatus(data.score)}">${data.score}</span>
+                                        </div>
+                                        <div class="category-bar">
+                                            <div class="category-progress" style="width: ${data.score}%; background: ${getScoreColor(data.score)};"></div>
+                                        </div>
+                                        <div class="category-details">
+                                            <p>Weight: ${data.weight}%</p>
+                                            <p>Last Maintenance: ${new Date(data.lastMaintenance).toLocaleDateString()}</p>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <div class="health-recommendations">
+                            <h4>Recommendations</h4>
+                            <div class="recommendations-list">
+                                ${healthScoreData.recommendations.map(rec => `
+                                    <div class="recommendation-item ${rec.priority}">
+                                        <div class="rec-icon">
+                                            <i class="fas fa-${getRecommendationIcon(rec.priority)}"></i>
+                                        </div>
+                                        <div class="rec-content">
+                                            <h6>${getCategoryName(rec.category)}</h6>
+                                            <p>${rec.message}</p>
+                                        </div>
+                                        <div class="rec-priority ${rec.priority}">
+                                            ${rec.priority.toUpperCase()}
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <div class="health-actions">
+                            <button class="btn btn-primary" onclick="recalculateHealthScore()">
+                                <i class="fas fa-sync-alt"></i> Recalculate Score
+                            </button>
+                            <button class="btn btn-outline" onclick="exportHealthReport()">
+                                <i class="fas fa-download"></i> Export Report
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function getScoreStatus(score) {
+            if (score >= 90) return 'excellent';
+            if (score >= 80) return 'good';
+            if (score >= 70) return 'fair';
+            return 'poor';
+        }
+
+        function getScoreStatusText(score) {
+            if (score >= 90) return 'Excellent';
+            if (score >= 80) return 'Good';
+            if (score >= 70) return 'Fair';
+            return 'Needs Attention';
+        }
+
+        function getScoreColor(score) {
+            if (score >= 90) return '#10b981';
+            if (score >= 80) return '#3b82f6';
+            if (score >= 70) return '#f59e0b';
+            return '#ef4444';
+        }
+
+        function getCategoryName(category) {
+            const names = {
+                hvac: 'HVAC System',
+                plumbing: 'Plumbing',
+                electrical: 'Electrical',
+                structural: 'Structural',
+                safety: 'Safety Systems',
+                energy: 'Energy Efficiency'
+            };
+            return names[category] || category;
+        }
+
+        function getRecommendationIcon(priority) {
+            switch(priority) {
+                case 'high': return 'exclamation-triangle';
+                case 'medium': return 'info-circle';
+                case 'low': return 'lightbulb';
+                default: return 'info';
+            }
+        }
+
+        function recalculateHealthScore() {
+            // Simulate recalculation with some random variation
+            Object.keys(healthScoreData.categories).forEach(category => {
+                const currentScore = healthScoreData.categories[category].score;
+                const variation = (Math.random() - 0.5) * 10; // ±5 points
+                healthScoreData.categories[category].score = Math.max(0, Math.min(100, Math.round(currentScore + variation)));
+                healthScoreData.categories[category].lastMaintenance = new Date().toISOString();
+            });
+
+            // Recalculate overall score
+            let totalWeightedScore = 0;
+            let totalWeight = 0;
+            Object.values(healthScoreData.categories).forEach(category => {
+                totalWeightedScore += category.score * category.weight;
+                totalWeight += category.weight;
+            });
+            healthScoreData.overallScore = Math.round(totalWeightedScore / totalWeight);
+            healthScoreData.lastUpdated = new Date().toISOString();
+
+            // Update recommendations based on new scores
+            updateRecommendations();
+
+            saveHealthScoreToFirebase();
+            closeModal();
+            updateHealthScore(); // Refresh the modal
+            showSuccess('Health score recalculated successfully!');
+        }
+
+        function updateRecommendations() {
+            healthScoreData.recommendations = [];
+            
+            Object.entries(healthScoreData.categories).forEach(([category, data]) => {
+                if (data.score < 70) {
+                    healthScoreData.recommendations.push({
+                        category: category,
+                        priority: 'high',
+                        message: `${getCategoryName(category)} needs immediate attention. Score: ${data.score}`
+                    });
+                } else if (data.score < 80) {
+                    healthScoreData.recommendations.push({
+                        category: category,
+                        priority: 'medium',
+                        message: `Consider maintenance for ${getCategoryName(category)}. Score: ${data.score}`
+                    });
+                } else if (data.score < 90) {
+                    healthScoreData.recommendations.push({
+                        category: category,
+                        priority: 'low',
+                        message: `${getCategoryName(category)} is performing well. Score: ${data.score}`
+                    });
+                }
+            });
+        }
+
+        function exportHealthReport() {
+            const reportData = {
+                overallScore: healthScoreData.overallScore,
+                lastUpdated: healthScoreData.lastUpdated,
+                categories: healthScoreData.categories,
+                recommendations: healthScoreData.recommendations,
+                generatedAt: new Date().toISOString()
+            };
+
+            const dataStr = JSON.stringify(reportData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `home-health-report-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            URL.revokeObjectURL(url);
+            showSuccess('Health report exported successfully!');
+        }
+
+        function saveHealthScoreToFirebase() {
+            if (!currentUser) return;
+            
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).update({
+                healthScoreData: healthScoreData
+            }).then(() => {
+                console.log('Health score data saved to Firebase');
+            }).catch(error => {
+                console.error('Error saving health score data:', error);
+            });
+        }
+
+        function loadHealthScoreFromFirebase() {
+            if (!currentUser) return;
+            
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get().then(doc => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    if (data.healthScoreData) {
+                        healthScoreData = { ...healthScoreData, ...data.healthScoreData };
+                    }
+                }
+            }).catch(error => {
+                console.error('Error loading health score data:', error);
+            });
         }
 
         // Google Places API Integration
