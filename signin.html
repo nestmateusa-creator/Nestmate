@@ -414,6 +414,12 @@
         }
 
 
+        async function showPaymentRequiredMessage(user) {
+            // Redirect to plan selection page instead of dashboard
+            console.log('User signed in but needs to complete payment, redirecting to plan selection:', user.email);
+            window.location.href = `signup-confirmation.html?email=${encodeURIComponent(user.email)}`;
+        }
+
         async function showAlreadySignedInMessage(user) {
             // Automatically redirect to dashboard instead of showing message
             console.log('User already signed in, redirecting to dashboard:', user.email);
@@ -563,8 +569,10 @@
                 
                 showSuccess('Signing in...');
                 
-                        // Redirect to appropriate dashboard using subscription verification
-                        await redirectToUserDashboard();
+                        // Redirect to plan selection page (users must complete payment)
+                        console.log('🛒 Redirecting user to plan selection page...');
+                        await new Promise(resolve => setTimeout(resolve, 1500));
+                        window.location.href = `signup-confirmation.html?email=${encodeURIComponent(email)}`;
             } catch (error) {
                         console.error('Signin error:', error);
                         console.error('Error code:', error.code);
@@ -684,11 +692,11 @@
                 const isForcedSignout = urlParams.get('signout') === 'true';
                 const isSignupTab = urlParams.get('tab') === 'signup';
                 
-                // DON'T AUTO-REDIRECT IF WE'RE ON SIGNUP TAB
+                // DON'T AUTO-REDIRECT - Users must complete payment first
                 if (user && !isForcedSignout && !isSignupTab) {
-                    console.log('User is signed in:', user.email);
-                    // Don't automatically redirect, show a message instead
-                    showAlreadySignedInMessage(user);
+                    console.log('User is signed in but needs to complete payment:', user.email);
+                    // Redirect to plan selection instead of dashboard
+                    showPaymentRequiredMessage(user);
                 } else if (user && isForcedSignout) {
                     console.log('Forced signout detected, signing out user:', user.email);
                     // Force sign out the user
