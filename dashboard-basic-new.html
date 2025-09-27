@@ -2975,9 +2975,9 @@
                 </div>
                 
                 <div class="tab-navigation">
-                    <button class="tab-btn active" onclick="showTasksTab('calendar')">Calendar</button>
-                    <button class="tab-btn" onclick="showTasksTab('tasks')">Tasks</button>
-                    <button class="tab-btn" onclick="showTasksTab('add-task')">Add Task</button>
+                    <button class="tab-btn active" onclick="showTasksTab('calendar', this)">Calendar</button>
+                    <button class="tab-btn" onclick="showTasksTab('tasks', this)">Tasks</button>
+                    <button class="tab-btn" onclick="showTasksTab('add-task', this)">Add Task</button>
                 </div>
 
                 <!-- Calendar Tab -->
@@ -4973,7 +4973,14 @@
         }
 
         function openTasksCalendar() {
-            document.getElementById('tasksModal').style.display = 'block';
+            console.log('openTasksCalendar called');
+            const modal = document.getElementById('tasksModal');
+            if (!modal) {
+                console.error('tasksModal element not found!');
+                return;
+            }
+            modal.style.display = 'block';
+            console.log('Modal displayed, generating calendar...');
             generateCalendar();
         }
 
@@ -5008,7 +5015,7 @@
             event.target.classList.add('active');
         }
 
-        function showTasksTab(tabName) {
+        function showTasksTab(tabName, clickedButton) {
             // Hide all tab contents
             const tabContents = document.querySelectorAll('#tasksModal .tab-content');
             tabContents.forEach(tab => tab.classList.remove('active'));
@@ -5018,10 +5025,20 @@
             tabButtons.forEach(btn => btn.classList.remove('active'));
             
             // Show selected tab content
-            document.getElementById(tabName + 'Tab').classList.add('active');
+            const targetTab = document.getElementById(tabName + 'Tab');
+            if (targetTab) {
+                targetTab.classList.add('active');
+            }
             
             // Add active class to clicked button
-            event.target.classList.add('active');
+            if (clickedButton) {
+                clickedButton.classList.add('active');
+            }
+            
+            // If switching to calendar tab, generate calendar
+            if (tabName === 'calendar') {
+                generateCalendar();
+            }
         }
 
         function showProductsTab(tabName) {
@@ -5058,11 +5075,20 @@
 
         // Calendar functions
         function generateCalendar() {
+            console.log('generateCalendar called');
             const calendarGrid = document.getElementById('calendarGrid');
+            if (!calendarGrid) {
+                console.error('calendarGrid element not found!');
+                return;
+            }
+            
             const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
                 'July', 'August', 'September', 'October', 'November', 'December'];
             
-            document.getElementById('currentMonth').textContent = monthNames[currentMonth] + ' ' + currentYear;
+            const currentMonthElement = document.getElementById('currentMonth');
+            if (currentMonthElement) {
+                currentMonthElement.textContent = monthNames[currentMonth] + ' ' + currentYear;
+            }
             
             const firstDay = new Date(currentYear, currentMonth, 1).getDay();
             const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
@@ -5107,6 +5133,9 @@
                 dayElement.onclick = () => showDayTasks(day);
                 calendarGrid.appendChild(dayElement);
             }
+            
+            console.log('Calendar generated successfully with', daysInMonth, 'days');
+            console.log('Calendar grid children count:', calendarGrid.children.length);
         }
 
         function previousMonth() {

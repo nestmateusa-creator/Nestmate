@@ -3563,9 +3563,9 @@
                 </div>
                 
                 <div class="tab-navigation">
-                    <button class="tab-btn active" onclick="showTasksTab('calendar')">Calendar</button>
-                    <button class="tab-btn" onclick="showTasksTab('tasks')">Tasks</button>
-                    <button class="tab-btn" onclick="showTasksTab('add-task')">Add Task</button>
+                    <button class="tab-btn active" onclick="showTasksTab('calendar', this)">Calendar</button>
+                    <button class="tab-btn" onclick="showTasksTab('tasks', this)">Tasks</button>
+                    <button class="tab-btn" onclick="showTasksTab('add-task', this)">Add Task</button>
                 </div>
 
                 <!-- Calendar Tab -->
@@ -5578,7 +5578,7 @@
             event.target.classList.add('active');
         }
 
-        function showTasksTab(tabName) {
+        function showTasksTab(tabName, clickedButton) {
             // Hide all tab contents
             const tabContents = document.querySelectorAll('#tasksModal .tab-content');
             tabContents.forEach(tab => tab.classList.remove('active'));
@@ -5588,10 +5588,20 @@
             tabButtons.forEach(btn => btn.classList.remove('active'));
             
             // Show selected tab content
-            document.getElementById(tabName + 'Tab').classList.add('active');
+            const targetTab = document.getElementById(tabName + 'Tab');
+            if (targetTab) {
+                targetTab.classList.add('active');
+            }
             
             // Add active class to clicked button
-            event.target.classList.add('active');
+            if (clickedButton) {
+                clickedButton.classList.add('active');
+            }
+            
+            // If switching to calendar tab, generate calendar
+            if (tabName === 'calendar') {
+                generateCalendar();
+            }
         }
 
         function showProductsTab(tabName) {
