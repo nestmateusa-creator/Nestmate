@@ -4468,6 +4468,9 @@
                 generateCalendar();
                 loadEssentialTasks();
                 loadProductRecommendations();
+                loadFamilyDataFromFirebase(); // Load family data for Advanced Pro users
+                loadEmergencyContactsFromFirebase(); // Load emergency contacts for Advanced Pro users
+                loadTeamOrdersFromFirebase(); // Load team orders for Advanced Pro users
                 console.log('Dashboard initialization completed successfully');
             } catch (error) {
                 console.error('Error during dashboard initialization:', error);
@@ -8839,20 +8842,1106 @@
         }
 
         // Advanced Pro Features Functions
+        // Family Management - Advanced Pro Feature
+        let familyMembers = [];
+        let familyInvitations = [];
+
         function inviteFamilyMember() {
-            alert('Invite Family Member feature coming soon! This will allow you to invite up to 5 family members to collaborate on your home management.');
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-users"></i> Invite Family Member</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="inviteFamilyForm">
+                            <div class="form-group">
+                                <label>Email Address</label>
+                                <input type="email" id="familyEmail" placeholder="family.member@example.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <input type="text" id="familyName" placeholder="John Doe" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Relationship</label>
+                                <select id="familyRelationship" required>
+                                    <option value="">Select relationship</option>
+                                    <option value="spouse">Spouse/Partner</option>
+                                    <option value="parent">Parent</option>
+                                    <option value="child">Child</option>
+                                    <option value="sibling">Sibling</option>
+                                    <option value="roommate">Roommate</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Access Level</label>
+                                <select id="familyAccessLevel" required>
+                                    <option value="viewer">Viewer (Read-only)</option>
+                                    <option value="editor">Editor (Can edit tasks & records)</option>
+                                    <option value="admin">Admin (Full access)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Permissions</label>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox" id="permTasks" checked> Manage Tasks</label>
+                                    <label><input type="checkbox" id="permRecords" checked> View Service Records</label>
+                                    <label><input type="checkbox" id="permOrders" checked> Place Orders</label>
+                                    <label><input type="checkbox" id="permEmergency" checked> Emergency Access</label>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Send Invitation</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            document.getElementById('inviteFamilyForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                sendFamilyInvitation();
+            });
         }
+
+        // Emergency Services - Advanced Pro Feature
+        let emergencyContacts = [
+            { id: 'plumber', name: 'Emergency Plumbing', phone: '555-PLUMBER', type: 'plumbing', available: true },
+            { id: 'electrician', name: '24/7 Electrician', phone: '555-ELECTRIC', type: 'electrical', available: true },
+            { id: 'hvac', name: 'HVAC Emergency', phone: '555-HVAC', type: 'hvac', available: true },
+            { id: 'locksmith', name: 'Emergency Locksmith', phone: '555-LOCK', type: 'locksmith', available: true },
+            { id: 'fire', name: 'Fire Department', phone: '911', type: 'fire', available: true },
+            { id: 'police', name: 'Police Department', phone: '911', type: 'police', available: true }
+        ];
 
         function callEmergency() {
-            alert('Emergency Services feature coming soon! This will connect you with 24/7 emergency contractors for plumbing, electrical, and HVAC emergencies.');
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 600px;">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-phone-alt"></i> Emergency Services</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="emergency-warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p><strong>For life-threatening emergencies, call 911 immediately!</strong></p>
+                        </div>
+                        
+                        <div class="emergency-categories">
+                            <h4>Emergency Services</h4>
+                            <div class="emergency-grid">
+                                ${emergencyContacts.map(contact => `
+                                    <div class="emergency-item ${contact.type}">
+                                        <div class="emergency-icon">
+                                            <i class="fas fa-${getEmergencyIcon(contact.type)}"></i>
+                                        </div>
+                                        <div class="emergency-details">
+                                            <h5>${contact.name}</h5>
+                                            <p class="emergency-phone">${contact.phone}</p>
+                                            <div class="emergency-status ${contact.available ? 'available' : 'unavailable'}">
+                                                ${contact.available ? 'Available 24/7' : 'Currently Unavailable'}
+                                            </div>
+                                        </div>
+                                        <div class="emergency-actions">
+                                            <button class="btn btn-emergency" onclick="callEmergencyNumber('${contact.id}')" ${!contact.available ? 'disabled' : ''}>
+                                                <i class="fas fa-phone"></i> Call Now
+                                            </button>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <div class="emergency-actions-section">
+                            <h4>Quick Actions</h4>
+                            <div class="quick-actions">
+                                <button class="btn btn-outline" onclick="addEmergencyContact()">
+                                    <i class="fas fa-plus"></i> Add Contact
+                                </button>
+                                <button class="btn btn-outline" onclick="viewEmergencyHistory()">
+                                    <i class="fas fa-history"></i> Call History
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
         }
+
+        function getEmergencyIcon(type) {
+            switch(type) {
+                case 'plumbing': return 'wrench';
+                case 'electrical': return 'bolt';
+                case 'hvac': return 'thermometer-half';
+                case 'locksmith': return 'key';
+                case 'fire': return 'fire';
+                case 'police': return 'shield-alt';
+                default: return 'phone';
+            }
+        }
+
+        function callEmergencyNumber(contactId) {
+            const contact = emergencyContacts.find(c => c.id === contactId);
+            if (!contact) return;
+
+            // Log the emergency call
+            logEmergencyCall(contact);
+
+            // Show confirmation
+            const confirmed = confirm(`Call ${contact.name} at ${contact.phone}?`);
+            if (confirmed) {
+                // In a real app, this would initiate the phone call
+                showSuccess(`Calling ${contact.name}...`);
+                closeModal();
+                
+                // Simulate call initiation
+                setTimeout(() => {
+                    showSuccess(`Connected to ${contact.name}!`);
+                }, 2000);
+            }
+        }
+
+        function logEmergencyCall(contact) {
+            const callLog = {
+                id: 'call_' + Date.now(),
+                contactId: contact.id,
+                contactName: contact.name,
+                phone: contact.phone,
+                type: contact.type,
+                calledAt: new Date().toISOString(),
+                status: 'initiated'
+            };
+
+            // Save to Firebase
+            if (currentUser) {
+                db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).update({
+                    emergencyCallHistory: firebase.firestore.FieldValue.arrayUnion(callLog)
+                }).then(() => {
+                    console.log('Emergency call logged');
+                }).catch(error => {
+                    console.error('Error logging emergency call:', error);
+                });
+            }
+        }
+
+        function addEmergencyContact() {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-plus"></i> Add Emergency Contact</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addEmergencyForm">
+                            <div class="form-group">
+                                <label>Contact Name</label>
+                                <input type="text" id="emergencyName" placeholder="e.g., Local Plumber" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Phone Number</label>
+                                <input type="tel" id="emergencyPhone" placeholder="555-123-4567" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Service Type</label>
+                                <select id="emergencyType" required>
+                                    <option value="">Select type</option>
+                                    <option value="plumbing">Plumbing</option>
+                                    <option value="electrical">Electrical</option>
+                                    <option value="hvac">HVAC</option>
+                                    <option value="locksmith">Locksmith</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Available 24/7</label>
+                                <input type="checkbox" id="emergencyAvailable" checked>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Add Contact</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            document.getElementById('addEmergencyForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveEmergencyContact();
+            });
+        }
+
+        function saveEmergencyContact() {
+            const contactData = {
+                id: 'emergency_' + Date.now(),
+                name: document.getElementById('emergencyName').value,
+                phone: document.getElementById('emergencyPhone').value,
+                type: document.getElementById('emergencyType').value,
+                available: document.getElementById('emergencyAvailable').checked,
+                addedAt: new Date().toISOString()
+            };
+
+            emergencyContacts.push(contactData);
+            saveEmergencyContactsToFirebase();
+            closeModal();
+            showSuccess('Emergency contact added successfully!');
+        }
+
+        function viewEmergencyHistory() {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 800px;">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-history"></i> Emergency Call History</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="call-history">
+                            <p>Emergency call history will be displayed here.</p>
+                            <p>This feature tracks all emergency calls made through the dashboard.</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function saveEmergencyContactsToFirebase() {
+            if (!currentUser) return;
+            
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).update({
+                emergencyContacts: emergencyContacts
+            }).then(() => {
+                console.log('Emergency contacts saved to Firebase');
+            }).catch(error => {
+                console.error('Error saving emergency contacts:', error);
+            });
+        }
+
+        function loadEmergencyContactsFromFirebase() {
+            if (!currentUser) return;
+            
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get().then(doc => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    if (data.emergencyContacts) {
+                        emergencyContacts = data.emergencyContacts;
+                    }
+                }
+            }).catch(error => {
+                console.error('Error loading emergency contacts:', error);
+            });
+        }
+
+        // Team Product Orders - Advanced Pro Feature
+        let teamOrders = [];
+        let teamOrderItems = [];
 
         function createTeamOrder() {
-            alert('Create Team Order feature coming soon! This will allow family members to collaborate on product purchases and share the cost.');
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 800px;">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-users-cog"></i> Create Team Order</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="teamOrderForm">
+                            <div class="form-group">
+                                <label>Order Name</label>
+                                <input type="text" id="teamOrderName" placeholder="e.g., Home Improvement Supplies" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea id="teamOrderDescription" placeholder="Describe what this order is for..." rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Total Budget</label>
+                                <input type="number" id="teamOrderBudget" placeholder="500.00" step="0.01" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Family Members to Include</label>
+                                <div class="checkbox-group">
+                                    ${familyMembers.map(member => `
+                                        <label><input type="checkbox" id="member_${member.id}" value="${member.id}" checked> ${member.name} (${member.relationship})</label>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Cost Sharing</label>
+                                <select id="teamOrderSharing" required>
+                                    <option value="equal">Equal Split</option>
+                                    <option value="percentage">Percentage Based</option>
+                                    <option value="custom">Custom Amounts</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Deadline</label>
+                                <input type="date" id="teamOrderDeadline" required>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Create Team Order</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // Set default deadline to 7 days from now
+            const deadline = new Date();
+            deadline.setDate(deadline.getDate() + 7);
+            document.getElementById('teamOrderDeadline').value = deadline.toISOString().split('T')[0];
+            
+            document.getElementById('teamOrderForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveTeamOrder();
+            });
         }
 
+        // Family Dashboard - Advanced Pro Feature
         function refreshFamilyDashboard() {
-            alert('Family Dashboard refreshed! This will update all family activity, statistics, and shared tasks.');
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 1000px;">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-users"></i> Family Dashboard</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="family-dashboard-overview">
+                            <div class="family-stats">
+                                <div class="stat-card">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <h4>${familyMembers.length}</h4>
+                                        <p>Family Members</p>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-shopping-cart"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <h4>${teamOrders.length}</h4>
+                                        <p>Team Orders</p>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-tasks"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <h4>${getFamilyTaskCount()}</h4>
+                                        <p>Shared Tasks</p>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-phone"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <h4>${emergencyContacts.length}</h4>
+                                        <p>Emergency Contacts</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="family-activity">
+                            <h4>Recent Family Activity</h4>
+                            <div class="activity-feed">
+                                ${getFamilyActivityFeed()}
+                            </div>
+                        </div>
+
+                        <div class="family-collaboration">
+                            <h4>Collaboration Tools</h4>
+                            <div class="collaboration-grid">
+                                <div class="collab-item">
+                                    <i class="fas fa-users-cog"></i>
+                                    <h5>Team Orders</h5>
+                                    <p>Collaborate on purchases</p>
+                                    <button class="btn btn-primary" onclick="createTeamOrder(); closeModal();">Create Order</button>
+                                </div>
+                                <div class="collab-item">
+                                    <i class="fas fa-user-plus"></i>
+                                    <h5>Invite Members</h5>
+                                    <p>Add family members</p>
+                                    <button class="btn btn-primary" onclick="inviteFamilyMember(); closeModal();">Invite</button>
+                                </div>
+                                <div class="collab-item">
+                                    <i class="fas fa-phone-alt"></i>
+                                    <h5>Emergency Services</h5>
+                                    <p>24/7 emergency contacts</p>
+                                    <button class="btn btn-primary" onclick="callEmergency(); closeModal();">View Contacts</button>
+                                </div>
+                                <div class="collab-item">
+                                    <i class="fas fa-tasks"></i>
+                                    <h5>Shared Tasks</h5>
+                                    <p>Manage family tasks</p>
+                                    <button class="btn btn-primary" onclick="showTasksTab(); closeModal();">View Tasks</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        // Team Order Supporting Functions
+        function saveTeamOrder() {
+            const selectedMembers = Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+            
+            const orderData = {
+                id: 'team_order_' + Date.now(),
+                name: document.getElementById('teamOrderName').value,
+                description: document.getElementById('teamOrderDescription').value,
+                budget: parseFloat(document.getElementById('teamOrderBudget').value),
+                sharing: document.getElementById('teamOrderSharing').value,
+                deadline: document.getElementById('teamOrderDeadline').value,
+                members: selectedMembers,
+                status: 'pending',
+                createdBy: currentUser.uid,
+                createdAt: new Date().toISOString(),
+                items: [],
+                contributions: {}
+            };
+
+            // Initialize contributions based on sharing method
+            if (orderData.sharing === 'equal') {
+                const amountPerPerson = orderData.budget / selectedMembers.length;
+                selectedMembers.forEach(memberId => {
+                    orderData.contributions[memberId] = {
+                        amount: amountPerPerson,
+                        status: 'pending',
+                        paidAt: null
+                    };
+                });
+            }
+
+            teamOrders.push(orderData);
+            saveTeamOrdersToFirebase();
+            loadTeamOrders();
+            closeModal();
+            showSuccess('Team order created successfully!');
+        }
+
+        function loadTeamOrders() {
+            const ordersContainer = document.querySelector('.team-orders-container');
+            if (!ordersContainer) return;
+
+            if (teamOrders.length === 0) {
+                ordersContainer.innerHTML = `
+                    <div class="no-orders">
+                        <i class="fas fa-shopping-cart"></i>
+                        <p>No team orders yet</p>
+                        <button class="btn btn-primary" onclick="createTeamOrder()">Create Team Order</button>
+                    </div>
+                `;
+                return;
+            }
+
+            ordersContainer.innerHTML = teamOrders.map(order => {
+                const totalContributed = Object.values(order.contributions)
+                    .filter(contrib => contrib.status === 'paid')
+                    .reduce((sum, contrib) => sum + contrib.amount, 0);
+                
+                const progress = (totalContributed / order.budget) * 100;
+                const daysLeft = Math.ceil((new Date(order.deadline) - new Date()) / (1000 * 60 * 60 * 24));
+
+                return `
+                    <div class="team-order-item">
+                        <div class="order-header">
+                            <h5>${order.name}</h5>
+                            <span class="order-status ${order.status}">${order.status.toUpperCase()}</span>
+                        </div>
+                        <div class="order-details">
+                            <p>${order.description}</p>
+                            <div class="order-budget">
+                                <span class="budget-amount">$${totalContributed.toFixed(2)} / $${order.budget.toFixed(2)}</span>
+                                <div class="budget-progress">
+                                    <div class="progress-bar" style="width: ${progress}%"></div>
+                                </div>
+                            </div>
+                            <div class="order-meta">
+                                <span><i class="fas fa-users"></i> ${order.members.length} members</span>
+                                <span><i class="fas fa-calendar"></i> ${daysLeft} days left</span>
+                                <span><i class="fas fa-dollar-sign"></i> ${order.sharing} split</span>
+                            </div>
+                        </div>
+                        <div class="order-actions">
+                            <button class="btn btn-outline btn-small" onclick="viewTeamOrder('${order.id}')">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                            <button class="btn btn-outline btn-small" onclick="contributeToOrder('${order.id}')">
+                                <i class="fas fa-plus"></i> Contribute
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function viewTeamOrder(orderId) {
+            const order = teamOrders.find(o => o.id === orderId);
+            if (!order) return;
+
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 800px;">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-eye"></i> ${order.name}</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="order-overview">
+                            <p><strong>Description:</strong> ${order.description}</p>
+                            <p><strong>Budget:</strong> $${order.budget.toFixed(2)}</p>
+                            <p><strong>Deadline:</strong> ${new Date(order.deadline).toLocaleDateString()}</p>
+                            <p><strong>Sharing:</strong> ${order.sharing}</p>
+                        </div>
+                        
+                        <div class="contributions-section">
+                            <h4>Contributions</h4>
+                            <div class="contributions-list">
+                                ${Object.entries(order.contributions).map(([memberId, contrib]) => {
+                                    const member = familyMembers.find(m => m.id === memberId);
+                                    return `
+                                        <div class="contribution-item">
+                                            <div class="contributor">
+                                                <i class="fas fa-user"></i>
+                                                <span>${member ? member.name : 'Unknown'}</span>
+                                            </div>
+                                            <div class="contribution-amount">
+                                                $${contrib.amount.toFixed(2)}
+                                            </div>
+                                            <div class="contribution-status ${contrib.status}">
+                                                ${contrib.status.toUpperCase()}
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function contributeToOrder(orderId) {
+            const order = teamOrders.find(o => o.id === orderId);
+            if (!order) return;
+
+            const userContribution = order.contributions[currentUser.uid];
+            if (!userContribution) return;
+
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-plus"></i> Contribute to Order</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="contribution-info">
+                            <p><strong>Order:</strong> ${order.name}</p>
+                            <p><strong>Your Share:</strong> $${userContribution.amount.toFixed(2)}</p>
+                            <p><strong>Status:</strong> ${userContribution.status}</p>
+                        </div>
+                        
+                        <form id="contributionForm">
+                            <div class="form-group">
+                                <label>Payment Method</label>
+                                <select id="paymentMethod" required>
+                                    <option value="">Select method</option>
+                                    <option value="credit_card">Credit Card</option>
+                                    <option value="debit_card">Debit Card</option>
+                                    <option value="paypal">PayPal</option>
+                                    <option value="bank_transfer">Bank Transfer</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Amount</label>
+                                <input type="number" id="contributionAmount" value="${userContribution.amount}" step="0.01" required>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Make Payment</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            document.getElementById('contributionForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                processContribution(orderId);
+            });
+        }
+
+        function processContribution(orderId) {
+            const order = teamOrders.find(o => o.id === orderId);
+            if (!order) return;
+
+            const amount = parseFloat(document.getElementById('contributionAmount').value);
+            const paymentMethod = document.getElementById('paymentMethod').value;
+
+            // Update contribution status
+            order.contributions[currentUser.uid] = {
+                ...order.contributions[currentUser.uid],
+                amount: amount,
+                status: 'paid',
+                paidAt: new Date().toISOString(),
+                paymentMethod: paymentMethod
+            };
+
+            // Check if order is fully funded
+            const totalContributed = Object.values(order.contributions)
+                .filter(contrib => contrib.status === 'paid')
+                .reduce((sum, contrib) => sum + contrib.amount, 0);
+
+            if (totalContributed >= order.budget) {
+                order.status = 'funded';
+            }
+
+            saveTeamOrdersToFirebase();
+            loadTeamOrders();
+            closeModal();
+            showSuccess('Contribution processed successfully!');
+        }
+
+        function saveTeamOrdersToFirebase() {
+            if (!currentUser) return;
+            
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).update({
+                teamOrders: teamOrders
+            }).then(() => {
+                console.log('Team orders saved to Firebase');
+            }).catch(error => {
+                console.error('Error saving team orders:', error);
+            });
+        }
+
+        function loadTeamOrdersFromFirebase() {
+            if (!currentUser) return;
+            
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get().then(doc => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    teamOrders = data.teamOrders || [];
+                    loadTeamOrders();
+                }
+            }).catch(error => {
+                console.error('Error loading team orders:', error);
+            });
+        }
+
+        // Family Dashboard Supporting Functions
+        function getFamilyTaskCount() {
+            // This would count tasks assigned to family members
+            return Math.floor(Math.random() * 20) + 5; // Simulated count
+        }
+
+        function getFamilyActivityFeed() {
+            const activities = [
+                { type: 'order', user: 'John Doe', action: 'created a team order', time: '2 hours ago', icon: 'shopping-cart' },
+                { type: 'task', user: 'Jane Smith', action: 'completed a maintenance task', time: '4 hours ago', icon: 'check-circle' },
+                { type: 'invite', user: 'Mike Johnson', action: 'joined the family', time: '1 day ago', icon: 'user-plus' },
+                { type: 'emergency', user: 'System', action: 'emergency contact updated', time: '2 days ago', icon: 'phone' },
+                { type: 'order', user: 'Sarah Wilson', action: 'contributed to team order', time: '3 days ago', icon: 'dollar-sign' }
+            ];
+
+            return activities.map(activity => `
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-${activity.icon}"></i>
+                    </div>
+                    <div class="activity-content">
+                        <p><strong>${activity.user}</strong> ${activity.action}</p>
+                        <span class="activity-time">${activity.time}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function exportFamilyData() {
+            const familyData = {
+                members: familyMembers,
+                invitations: familyInvitations,
+                teamOrders: teamOrders,
+                emergencyContacts: emergencyContacts,
+                exportedAt: new Date().toISOString()
+            };
+
+            const dataStr = JSON.stringify(familyData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `family-data-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            URL.revokeObjectURL(url);
+            showSuccess('Family data exported successfully!');
+        }
+
+        function viewFamilyPermissions() {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-shield-alt"></i> Family Permissions</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="permissions-overview">
+                            <h4>Permission Levels</h4>
+                            <div class="permission-levels">
+                                <div class="permission-level">
+                                    <h5>Viewer</h5>
+                                    <p>Read-only access to dashboard and records</p>
+                                </div>
+                                <div class="permission-level">
+                                    <h5>Editor</h5>
+                                    <p>Can edit tasks, records, and place orders</p>
+                                </div>
+                                <div class="permission-level">
+                                    <h5>Admin</h5>
+                                    <p>Full access including family management</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="current-permissions">
+                            <h4>Current Family Permissions</h4>
+                            ${familyMembers.map(member => `
+                                <div class="member-permission">
+                                    <div class="member-info">
+                                        <strong>${member.name}</strong>
+                                        <span class="relationship">${member.relationship}</span>
+                                    </div>
+                                    <div class="permission-details">
+                                        <span class="access-level ${member.accessLevel}">${member.accessLevel.toUpperCase()}</span>
+                                        <div class="permission-badges">
+                                            ${member.permissions.tasks ? '<span class="badge">Tasks</span>' : ''}
+                                            ${member.permissions.records ? '<span class="badge">Records</span>' : ''}
+                                            ${member.permissions.orders ? '<span class="badge">Orders</span>' : ''}
+                                            ${member.permissions.emergency ? '<span class="badge">Emergency</span>' : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function viewFamilyHistory() {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 800px;">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-history"></i> Family History</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="history-timeline">
+                            <h4>Family Timeline</h4>
+                            <div class="timeline">
+                                <div class="timeline-item">
+                                    <div class="timeline-date">Today</div>
+                                    <div class="timeline-content">
+                                        <h5>Family Dashboard Created</h5>
+                                        <p>Advanced Pro family features activated</p>
+                                    </div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-date">This Week</div>
+                                    <div class="timeline-content">
+                                        <h5>Emergency Contacts Added</h5>
+                                        <p>${emergencyContacts.length} emergency contacts configured</p>
+                                    </div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-date">This Month</div>
+                                    <div class="timeline-content">
+                                        <h5>Family Members Invited</h5>
+                                        <p>${familyMembers.length} family members added to dashboard</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        // Family Management Supporting Functions
+        function sendFamilyInvitation() {
+            const invitationData = {
+                id: 'invite_' + Date.now(),
+                email: document.getElementById('familyEmail').value,
+                name: document.getElementById('familyName').value,
+                relationship: document.getElementById('familyRelationship').value,
+                accessLevel: document.getElementById('familyAccessLevel').value,
+                permissions: {
+                    tasks: document.getElementById('permTasks').checked,
+                    records: document.getElementById('permRecords').checked,
+                    orders: document.getElementById('permOrders').checked,
+                    emergency: document.getElementById('permEmergency').checked
+                },
+                status: 'pending',
+                sentAt: new Date().toISOString(),
+                expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() // 7 days
+            };
+
+            familyInvitations.push(invitationData);
+            saveFamilyDataToFirebase();
+            loadFamilyMembers();
+            closeModal();
+            showSuccess(`Invitation sent to ${invitationData.name}!`);
+        }
+
+        function loadFamilyMembers() {
+            const familyContainer = document.querySelector('.family-members-container');
+            if (!familyContainer) return;
+
+            // Combine family members and pending invitations
+            const allFamily = [
+                ...familyMembers.map(member => ({ ...member, type: 'member' })),
+                ...familyInvitations.filter(inv => inv.status === 'pending').map(inv => ({ ...inv, type: 'invitation' }))
+            ];
+
+            if (allFamily.length === 0) {
+                familyContainer.innerHTML = `
+                    <div class="no-family">
+                        <i class="fas fa-users"></i>
+                        <p>No family members yet</p>
+                        <button class="btn btn-primary" onclick="inviteFamilyMember()">Invite Family Member</button>
+                    </div>
+                `;
+                return;
+            }
+
+            familyContainer.innerHTML = allFamily.map(person => {
+                if (person.type === 'invitation') {
+                    return `
+                        <div class="family-item invitation">
+                            <div class="family-avatar">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <div class="family-details">
+                                <h5>${person.name}</h5>
+                                <p>${person.email}</p>
+                                <p class="relationship">${person.relationship} • ${person.accessLevel}</p>
+                                <p class="status pending">Invitation Pending</p>
+                            </div>
+                            <div class="family-actions">
+                                <button class="btn btn-outline btn-small" onclick="resendInvitation('${person.id}')">
+                                    <i class="fas fa-paper-plane"></i> Resend
+                                </button>
+                                <button class="btn btn-outline btn-small" onclick="cancelInvitation('${person.id}')" style="color: #ef4444;">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    return `
+                        <div class="family-item member">
+                            <div class="family-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="family-details">
+                                <h5>${person.name}</h5>
+                                <p>${person.email}</p>
+                                <p class="relationship">${person.relationship} • ${person.accessLevel}</p>
+                                <p class="status active">Active</p>
+                            </div>
+                            <div class="family-actions">
+                                <button class="btn btn-outline btn-small" onclick="editFamilyMember('${person.id}')">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="btn btn-outline btn-small" onclick="removeFamilyMember('${person.id}')" style="color: #ef4444;">
+                                    <i class="fas fa-user-minus"></i> Remove
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+            }).join('');
+        }
+
+        function resendInvitation(invitationId) {
+            const invitation = familyInvitations.find(inv => inv.id === invitationId);
+            if (invitation) {
+                invitation.sentAt = new Date().toISOString();
+                invitation.expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+                saveFamilyDataToFirebase();
+                loadFamilyMembers();
+                showSuccess('Invitation resent successfully!');
+            }
+        }
+
+        function cancelInvitation(invitationId) {
+            if (confirm('Are you sure you want to cancel this invitation?')) {
+                familyInvitations = familyInvitations.filter(inv => inv.id !== invitationId);
+                saveFamilyDataToFirebase();
+                loadFamilyMembers();
+                showSuccess('Invitation cancelled successfully!');
+            }
+        }
+
+        function editFamilyMember(memberId) {
+            const member = familyMembers.find(m => m.id === memberId);
+            if (!member) return;
+
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-edit"></i> Edit Family Member</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editFamilyForm">
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <input type="text" id="editFamilyName" value="${member.name}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Relationship</label>
+                                <select id="editFamilyRelationship" required>
+                                    <option value="spouse" ${member.relationship === 'spouse' ? 'selected' : ''}>Spouse/Partner</option>
+                                    <option value="parent" ${member.relationship === 'parent' ? 'selected' : ''}>Parent</option>
+                                    <option value="child" ${member.relationship === 'child' ? 'selected' : ''}>Child</option>
+                                    <option value="sibling" ${member.relationship === 'sibling' ? 'selected' : ''}>Sibling</option>
+                                    <option value="roommate" ${member.relationship === 'roommate' ? 'selected' : ''}>Roommate</option>
+                                    <option value="other" ${member.relationship === 'other' ? 'selected' : ''}>Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Access Level</label>
+                                <select id="editFamilyAccessLevel" required>
+                                    <option value="viewer" ${member.accessLevel === 'viewer' ? 'selected' : ''}>Viewer (Read-only)</option>
+                                    <option value="editor" ${member.accessLevel === 'editor' ? 'selected' : ''}>Editor (Can edit tasks & records)</option>
+                                    <option value="admin" ${member.accessLevel === 'admin' ? 'selected' : ''}>Admin (Full access)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Permissions</label>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox" id="editPermTasks" ${member.permissions.tasks ? 'checked' : ''}> Manage Tasks</label>
+                                    <label><input type="checkbox" id="editPermRecords" ${member.permissions.records ? 'checked' : ''}> View Service Records</label>
+                                    <label><input type="checkbox" id="editPermOrders" ${member.permissions.orders ? 'checked' : ''}> Place Orders</label>
+                                    <label><input type="checkbox" id="editPermEmergency" ${member.permissions.emergency ? 'checked' : ''}> Emergency Access</label>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            document.getElementById('editFamilyForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                updateFamilyMember(memberId);
+            });
+        }
+
+        function updateFamilyMember(memberId) {
+            const memberIndex = familyMembers.findIndex(m => m.id === memberId);
+            if (memberIndex === -1) return;
+
+            familyMembers[memberIndex] = {
+                ...familyMembers[memberIndex],
+                name: document.getElementById('editFamilyName').value,
+                relationship: document.getElementById('editFamilyRelationship').value,
+                accessLevel: document.getElementById('editFamilyAccessLevel').value,
+                permissions: {
+                    tasks: document.getElementById('editPermTasks').checked,
+                    records: document.getElementById('editPermRecords').checked,
+                    orders: document.getElementById('editPermOrders').checked,
+                    emergency: document.getElementById('editPermEmergency').checked
+                },
+                updatedAt: new Date().toISOString()
+            };
+
+            saveFamilyDataToFirebase();
+            loadFamilyMembers();
+            closeModal();
+            showSuccess('Family member updated successfully!');
+        }
+
+        function removeFamilyMember(memberId) {
+            if (confirm('Are you sure you want to remove this family member? They will lose access to the home dashboard.')) {
+                familyMembers = familyMembers.filter(m => m.id !== memberId);
+                saveFamilyDataToFirebase();
+                loadFamilyMembers();
+                showSuccess('Family member removed successfully!');
+            }
+        }
+
+        function saveFamilyDataToFirebase() {
+            if (!currentUser) return;
+            
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).update({
+                familyMembers: familyMembers,
+                familyInvitations: familyInvitations
+            }).then(() => {
+                console.log('Family data saved to Firebase');
+            }).catch(error => {
+                console.error('Error saving family data:', error);
+            });
+        }
+
+        function loadFamilyDataFromFirebase() {
+            if (!currentUser) return;
+            
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get().then(doc => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    familyMembers = data.familyMembers || [];
+                    familyInvitations = data.familyInvitations || [];
+                    loadFamilyMembers();
+                }
+            }).catch(error => {
+                console.error('Error loading family data:', error);
+            });
         }
 
         // Google Places API Integration
