@@ -415,9 +415,18 @@
 
 
         async function showPaymentRequiredMessage(user) {
-            // Redirect to plan selection page instead of dashboard
-            console.log('User signed in but needs to complete payment, redirecting to plan selection:', user.email);
-            window.location.href = `signup-confirmation.html?email=${encodeURIComponent(user.email)}`;
+            // First check if user has a valid subscription
+            console.log('User signed in, checking subscription status:', user.email);
+            
+            try {
+                // Use the subscription verification system to check if user has paid
+                await verifySubscriptionAndRedirect();
+            } catch (error) {
+                console.error('Error checking subscription:', error);
+                // If verification fails, redirect to payment page
+                console.log('Subscription verification failed, redirecting to plan selection:', user.email);
+                window.location.href = `signup-confirmation.html?email=${encodeURIComponent(user.email)}`;
+            }
         }
 
         async function showAlreadySignedInMessage(user) {
@@ -569,10 +578,10 @@
                 
                 showSuccess('Signing in...');
                 
-                        // Redirect to plan selection page (users must complete payment)
-                        console.log('🛒 Redirecting user to plan selection page...');
+                        // Check subscription status and redirect to appropriate dashboard
+                        console.log('🔍 Checking subscription status and redirecting...');
                         await new Promise(resolve => setTimeout(resolve, 1500));
-                        window.location.href = `signup-confirmation.html?email=${encodeURIComponent(email)}`;
+                        await verifySubscriptionAndRedirect();
             } catch (error) {
                         console.error('Signin error:', error);
                         console.error('Error code:', error.code);
