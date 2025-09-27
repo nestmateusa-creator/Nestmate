@@ -2686,6 +2686,11 @@
                         <i class="fas fa-tachometer-alt"></i>
                         <span>Family Dashboard</span>
                     </button>
+                    
+                    <button class="nav-item" onclick="showSection('emergency', this)">
+                        <i class="fas fa-phone-alt"></i>
+                        <span>Emergency</span>
+                    </button>
                 </nav>
             </div>
 
@@ -3552,6 +3557,57 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Emergency Services Section -->
+                <div class="content-section" id="emergency">
+                    <div class="section-header">
+                        <h4 class="section-title">🚨 Emergency Services</h4>
+                        <div class="header-actions">
+                            <button type="button" class="btn btn-primary btn-small" onclick="showAddContactModal()">
+                                <i class="fas fa-plus"></i> Add Contact
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="emergency-content">
+                        <div class="emergency-grid" id="emergencyContactsList">
+                            <div class="emergency-card critical" onclick="callEmergency('911')">
+                                <div class="emergency-icon">🚨</div>
+                                <h4>Emergency Services</h4>
+                                <p>Police, Fire, Medical</p>
+                                <div class="emergency-number">911</div>
+                            </div>
+                            <div class="emergency-card" onclick="callEmergency('poison-control')">
+                                <div class="emergency-icon">☠️</div>
+                                <h4>Poison Control</h4>
+                                <p>24/7 Poison Help</p>
+                                <div class="emergency-number">1-800-222-1222</div>
+                            </div>
+                            <div class="emergency-card" onclick="callEmergency('gas-emergency')">
+                                <div class="emergency-icon">⛽</div>
+                                <h4>Gas Emergency</h4>
+                                <p>Gas Leak Emergency</p>
+                                <div class="emergency-number">1-800-427-2200</div>
+                            </div>
+                            <div class="emergency-card" onclick="callEmergency('power-outage')">
+                                <div class="emergency-icon">⚡</div>
+                                <h4>Power Outage</h4>
+                                <p>Report Power Issues</p>
+                                <div class="emergency-number">1-800-555-0199</div>
+                            </div>
+                        </div>
+                        
+                        <div class="emergency-info">
+                            <h4>Emergency Tips</h4>
+                            <ul>
+                                <li>Call 911 for life-threatening emergencies</li>
+                                <li>Keep emergency contacts updated</li>
+                                <li>Know your home's main utility shut-offs</li>
+                                <li>Have a family emergency plan</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -4648,6 +4704,10 @@
                     case 'family-dashboard':
                         console.log('Loading family dashboard content');
                         loadFamilyDashboard();
+                        break;
+                    case 'emergency':
+                        console.log('Loading emergency content');
+                        loadEmergencyContacts();
                         break;
                     default:
                         console.log('No content loader for section:', sectionName);
