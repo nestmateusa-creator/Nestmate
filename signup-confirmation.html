@@ -32,35 +32,68 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
             min-height: 100vh;
-            color: var(--dark);
+            color: white;
             padding: 0;
             margin: 0;
+            overflow-x: hidden;
         }
 
         .confirmation-container {
-            background: white;
+            background: transparent;
             min-height: 100vh;
             padding: 0;
             margin: 0;
             display: flex;
             flex-direction: column;
+            position: relative;
+        }
+
+        .confirmation-container::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+            z-index: -1;
         }
 
         .header-section {
-            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.9) 0%, rgba(109, 40, 217, 0.9) 100%);
+            backdrop-filter: blur(20px);
             color: white;
-            padding: 60px 40px;
+            padding: 80px 40px;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+            z-index: 1;
         }
 
         .content-section {
             flex: 1;
-            padding: 60px 40px;
-            max-width: 1200px;
+            padding: 80px 40px;
+            max-width: 1400px;
             margin: 0 auto;
             width: 100%;
+            position: relative;
+            z-index: 2;
         }
 
         .success-header {
@@ -69,42 +102,53 @@
         }
 
         .success-icon {
-            font-size: 80px;
+            font-size: 100px;
             color: white;
-            margin-bottom: 30px;
-            opacity: 0.9;
+            margin-bottom: 40px;
+            opacity: 1;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
 
         .success-title {
-            font-size: 3rem;
-            font-weight: 700;
-            color: white;
-            margin-bottom: 15px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            font-size: 4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #e0e7ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            text-shadow: 0 4px 20px rgba(124, 58, 237, 0.3);
         }
 
         .success-subtitle {
-            font-size: 1.3rem;
-            color: rgba(255,255,255,0.9);
-            margin-bottom: 30px;
-            font-weight: 400;
+            font-size: 1.5rem;
+            color: rgba(255,255,255,0.95);
+            margin-bottom: 40px;
+            font-weight: 500;
         }
 
         .user-info {
             background: rgba(255,255,255,0.15);
-            backdrop-filter: blur(10px);
-            padding: 25px 40px;
-            border-radius: 16px;
+            backdrop-filter: blur(20px);
+            padding: 30px 50px;
+            border-radius: 25px;
             margin: 0 auto;
             text-align: center;
-            max-width: 500px;
+            max-width: 600px;
             border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
         }
 
         .user-email {
-            font-weight: 600;
+            font-weight: 700;
             color: white;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
         }
 
         .plans-section {
@@ -112,21 +156,26 @@
         }
 
         .section-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--dark);
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #e0e7ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 4px 20px rgba(124, 58, 237, 0.3);
         }
 
         .section-subtitle {
-            font-size: 1.2rem;
-            color: var(--secondary);
+            font-size: 1.4rem;
+            color: rgba(255, 255, 255, 0.8);
             text-align: center;
-            margin-bottom: 50px;
-            max-width: 600px;
+            margin-bottom: 4rem;
+            max-width: 700px;
             margin-left: auto;
             margin-right: auto;
+            font-weight: 500;
         }
 
         .plans-grid {
@@ -140,47 +189,70 @@
         }
 
         .plan-card {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 20px;
-            padding: 40px 30px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 50px 40px;
             text-align: center;
-            transition: all 0.3s ease;
+            transition: all 0.4s ease;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .plan-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
         .plan-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .plan-card:hover::before {
+            opacity: 1;
         }
 
         .plan-card.basic {
-            border-color: #10b981;
+            border-color: rgba(16, 185, 129, 0.5);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
         }
 
         .plan-card.basic:hover {
-            border-color: #059669;
+            border-color: rgba(16, 185, 129, 0.8);
+            box-shadow: 0 30px 60px rgba(16, 185, 129, 0.2);
         }
 
         .plan-card.pro {
-            border-color: #7c3aed;
-            transform: scale(1.02);
-            box-shadow: 0 10px 15px -3px rgba(124, 58, 237, 0.1);
+            border-color: rgba(124, 58, 237, 0.5);
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            transform: scale(1.05);
+            box-shadow: 0 25px 50px rgba(124, 58, 237, 0.2);
         }
 
         .plan-card.pro:hover {
-            transform: scale(1.05) translateY(-8px);
-            box-shadow: 0 25px 50px -12px rgba(124, 58, 237, 0.25);
+            transform: scale(1.08) translateY(-15px);
+            box-shadow: 0 35px 70px rgba(124, 58, 237, 0.3);
         }
 
         .plan-card.advanced {
-            border-color: #f59e0b;
+            border-color: rgba(245, 158, 11, 0.5);
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
         }
 
         .plan-card.advanced:hover {
-            border-color: #d97706;
+            border-color: rgba(245, 158, 11, 0.8);
+            box-shadow: 0 30px 60px rgba(245, 158, 11, 0.2);
         }
 
         .plan-badge {
@@ -223,16 +295,18 @@
         }
 
         .plan-name {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--dark);
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: white;
             margin-bottom: 15px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
         }
 
         .plan-price {
-            font-size: 3rem;
-            font-weight: 800;
+            font-size: 4rem;
+            font-weight: 900;
             margin-bottom: 5px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
         }
 
         .plan-card.basic .plan-price {
@@ -248,84 +322,106 @@
         }
 
         .plan-period {
-            color: var(--secondary);
-            margin-bottom: 30px;
-            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 35px;
+            font-size: 1.2rem;
+            font-weight: 500;
         }
 
         .plan-features {
             list-style: none;
-            margin-bottom: 40px;
+            margin-bottom: 45px;
             text-align: left;
         }
 
         .plan-features li {
-            padding: 12px 0;
-            color: var(--dark);
+            padding: 15px 0;
+            color: rgba(255, 255, 255, 0.8);
             display: flex;
             align-items: center;
-            gap: 12px;
-            font-size: 1rem;
+            gap: 15px;
+            font-size: 1.1rem;
+            font-weight: 500;
         }
 
         .plan-features li i {
             color: #10b981;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             flex-shrink: 0;
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
         }
 
         .plan-button {
             background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
             color: white;
             border: none;
-            padding: 18px 40px;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: 600;
+            padding: 20px 45px;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.4s ease;
             width: 100%;
-            box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.3);
+            box-shadow: 0 10px 30px rgba(124, 58, 237, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .plan-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
         }
 
         .plan-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(124, 58, 237, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(124, 58, 237, 0.4);
+        }
+
+        .plan-button:hover::before {
+            left: 100%;
         }
 
         .plan-card.basic .plan-button {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
         }
 
         .plan-card.basic .plan-button:hover {
-            box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.4);
+            box-shadow: 0 15px 40px rgba(16, 185, 129, 0.4);
         }
 
         .plan-card.advanced .plan-button {
             background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-            box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.3);
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.3);
         }
 
         .plan-card.advanced .plan-button:hover {
-            box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.4);
+            box-shadow: 0 15px 40px rgba(245, 158, 11, 0.4);
         }
 
         .comparison-table {
-            background: white;
-            border-radius: var(--radius);
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
             overflow: hidden;
-            box-shadow: var(--shadow);
-            margin-bottom: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            margin-bottom: 60px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .table-header {
-            background: var(--primary);
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
             color: white;
-            padding: 20px;
+            padding: 25px;
             text-align: center;
-            font-size: 1.3rem;
-            font-weight: 600;
+            font-size: 1.5rem;
+            font-weight: 700;
         }
 
         .table-content {
@@ -338,68 +434,99 @@
         }
 
         th, td {
-            padding: 15px;
+            padding: 20px;
             text-align: center;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         th {
-            background: var(--light);
-            font-weight: 600;
-            color: var(--dark);
+            background: rgba(255, 255, 255, 0.05);
+            font-weight: 700;
+            color: white;
+            font-size: 1.1rem;
         }
 
         .feature-name {
             text-align: left;
-            font-weight: 500;
+            font-weight: 600;
+            color: white;
         }
 
         .check {
-            color: var(--success);
-            font-size: 1.2rem;
+            color: #10b981;
+            font-size: 1.4rem;
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
         }
 
         .cross {
-            color: var(--danger);
+            color: #ef4444;
             font-size: 1.2rem;
         }
 
         .skip-option {
             text-align: center;
-            margin-top: 30px;
+            margin-top: 60px;
         }
 
         .skip-link {
-            color: var(--secondary);
+            color: rgba(255, 255, 255, 0.6);
             text-decoration: none;
-            font-size: 1rem;
-            transition: var(--transition);
+            font-size: 1.2rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 15px 30px;
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: inline-block;
         }
 
         .skip-link:hover {
-            color: var(--primary);
-            text-decoration: underline;
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+            text-decoration: none;
         }
 
         @media (max-width: 768px) {
             .confirmation-container {
-                padding: 30px 20px;
+                padding: 0;
+            }
+
+            .header-section {
+                padding: 60px 20px;
+            }
+
+            .content-section {
+                padding: 60px 20px;
             }
 
             .plans-grid {
                 grid-template-columns: 1fr;
+                gap: 40px;
             }
 
             .plan-card.pro {
-                transform: none;
+                transform: scale(1.02);
             }
 
             .success-title {
-                font-size: 2rem;
+                font-size: 2.5rem;
+            }
+
+            .section-title {
+                font-size: 2.5rem;
             }
 
             .plan-price {
-                font-size: 2rem;
+                font-size: 3rem;
+            }
+
+            .plan-name {
+                font-size: 1.8rem;
+            }
+
+            .plan-card {
+                padding: 40px 25px;
             }
         }
     </style>
