@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth Status Test</title>
+</head>
+<body>
+    <h1>Authentication Status Test</h1>
+    <div id="status"></div>
+    <button onclick="checkAuth()">Check Auth Status</button>
+    <button onclick="signIn()">Sign In</button>
+    
+    <!-- Firebase CDN -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBvOkBwJ1Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4",
+            authDomain: "nestmate-167ed.firebaseapp.com",
+            projectId: "nestmate-167ed",
+            storageBucket: "nestmate-167ed.appspot.com",
+            messagingSenderId: "123456789012",
+            appId: "1:123456789012:web:abcdefghijklmnopqrstuv"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        
+        function checkAuth() {
+            const user = auth.currentUser;
+            const statusDiv = document.getElementById('status');
+            
+            if (user) {
+                statusDiv.innerHTML = `
+                    <h2>✅ LOGGED IN</h2>
+                    <p><strong>Email:</strong> ${user.email}</p>
+                    <p><strong>UID:</strong> ${user.uid}</p>
+                    <p><strong>Display Name:</strong> ${user.displayName || 'Not set'}</p>
+                `;
+            } else {
+                statusDiv.innerHTML = `
+                    <h2>❌ NOT LOGGED IN</h2>
+                    <p>No user found in auth.currentUser</p>
+                `;
+            }
+        }
+        
+        function signIn() {
+            window.location.href = 'signin.html';
+        }
+        
+        // Check auth status on page load
+        window.addEventListener('load', function() {
+            setTimeout(checkAuth, 1000);
+        });
+    </script>
+</body>
+</html>
