@@ -538,6 +538,9 @@
     <div class="toast" id="toast"></div>
 
     <script>
+        console.log('=== SCRIPT STARTING ===');
+        console.log('Firebase object:', typeof firebase);
+        
         // Firebase configuration - CORRECTED PROJECT ID
         const firebaseConfig = {
             apiKey: "AIzaSyBvOkBwJ1Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4",
@@ -548,23 +551,34 @@
             appId: "1:123456789012:web:abcdefghijklmnopqrstuv"
         };
 
+        console.log('Firebase config:', firebaseConfig);
+
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
+        
+        console.log('Firebase initialized');
+        console.log('Auth object:', auth);
+        console.log('DB object:', db);
         
         let currentUser = null;
         let userData = null;
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('=== PROFILE PAGE LOADED ===');
+            console.log('DOM Content Loaded event fired');
+            
             // Clear any URL parameters to prevent redirect loops
             const newUrl = window.location.pathname;
             window.history.replaceState({}, document.title, newUrl);
+            console.log('URL cleared, new URL:', newUrl);
             
             // Show profile content immediately
             document.getElementById('loading').style.display = 'none';
             document.getElementById('profileContent').style.display = 'block';
+            console.log('Profile content shown');
             
             // Try to populate email immediately as fallback
             populateEmailIfAvailable();
@@ -641,7 +655,9 @@
 
         // Fallback function to populate email if available
         function populateEmailIfAvailable() {
+            console.log('=== POPULATE EMAIL FUNCTION CALLED ===');
             console.log('Trying to populate email...');
+            console.log('auth object:', auth);
             console.log('auth.currentUser:', auth.currentUser);
             console.log('auth.currentUser?.email:', auth.currentUser?.email);
             
