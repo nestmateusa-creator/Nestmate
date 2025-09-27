@@ -767,10 +767,29 @@
             const urlParams = new URLSearchParams(window.location.search);
             const fromSignin = urlParams.get('fromSignin') === 'true';
             
-            // If we came from signin, clear the parameter
+            // If we came from signin, clear the parameter and wait for auth to settle
             if (fromSignin) {
                 const newUrl = window.location.pathname;
                 window.history.replaceState({}, document.title, newUrl);
+                
+                // Show loading message
+                const container = document.querySelector('.container');
+                if (container) {
+                    container.innerHTML = `
+                        <div class="header">
+                            <h1><i class="fas fa-tools"></i> Service Records</h1>
+                            <p>Loading your service records...</p>
+                            <div class="spinner" style="margin: 20px auto;"></div>
+                        </div>
+                    `;
+                }
+                
+                // Wait for auth to settle, then load content
+                setTimeout(() => {
+                    setupEventListeners();
+                    loadRecordsIfAuthenticated();
+                }, 1500);
+                return;
             }
             
             // Always set up event listeners first
