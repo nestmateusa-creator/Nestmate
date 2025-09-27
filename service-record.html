@@ -915,26 +915,30 @@
         let authChecked = false;
 
         // Initialize the form
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check authentication first
-            auth.onAuthStateChanged((user) => {
-                if (authChecked) return; // Prevent multiple redirects
-                
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Check current authentication state immediately
+            try {
+                const user = auth.currentUser;
                 if (user) {
                     currentUser = user;
-                    authChecked = true;
                     initializeForm();
                     setupEventListeners();
                     updateProgress();
                 } else {
-                    authChecked = true;
                     // Only redirect if we're not already on the signin page
                     if (!window.location.href.includes('signin.html')) {
                         const returnUrl = encodeURIComponent(window.location.href);
                         window.location.href = `signin.html?returnUrl=${returnUrl}`;
                     }
                 }
-            });
+            } catch (error) {
+                console.error('Error checking auth state:', error);
+                // Fallback: redirect to signin
+                if (!window.location.href.includes('signin.html')) {
+                    const returnUrl = encodeURIComponent(window.location.href);
+                    window.location.href = `signin.html?returnUrl=${returnUrl}`;
+                }
+            }
         });
 
         function initializeForm() {
