@@ -105,6 +105,7 @@ async function verifySubscriptionAndRedirect() {
 
         // First, check with Stripe to get the most accurate subscription status
         console.log('🔍 Checking subscription status with Stripe...');
+        console.log('👤 User details:', { uid: user.uid, email: user.email });
         const db = firebase.firestore();
         
         try {
@@ -118,11 +119,15 @@ async function verifySubscriptionAndRedirect() {
                 })
             });
 
+            console.log('📡 Stripe check response status:', response.status);
+            
             if (response.ok) {
                 const result = await response.json();
                 const accountType = result.accountType || 'trial';
                 
                 console.log('📊 Subscription check result:', result);
+                console.log('🎯 Account type determined:', accountType);
+                console.log('💳 Has active subscription:', result.hasActiveSubscription);
                 
                 // If we have an active subscription, sync Firebase collections
                 if (result.hasActiveSubscription) {
@@ -138,9 +143,19 @@ async function verifySubscriptionAndRedirect() {
                             })
                         });
                         
+                        console.log('📡 Sync response status:', syncResponse.status);
+                        
                         if (syncResponse.ok) {
                             const syncResult = await syncResponse.json();
                             console.log('✅ Collection sync result:', syncResult);
+                            
+                            // After sync, check collections again
+                            console.log('🔄 Re-checking collections after sync...');
+                            await checkCollectionsAfterSync(user, accountType);
+                            return;
+                        } else {
+                            const syncError = await syncResponse.text();
+                            console.log('❌ Sync failed:', syncError);
                         }
                     } catch (syncError) {
                         console.log('⚠️ Collection sync failed:', syncError);
@@ -181,9 +196,12 @@ async function verifySubscriptionAndRedirect() {
 
         // Check specific subscription collections first (Pro, Advanced Pro, then Basic)
         console.log('🔍 Checking specific subscription collections...');
+        console.log('👤 Checking for user UID:', user.uid);
         
         // Check Advanced Pro User Accounts first
+        console.log('🔍 Checking Advanced Pro User Accounts collection...');
         const advancedProDoc = await db.collection('Advanced Pro User Accounts').doc(user.uid).get();
+        console.log('📊 Advanced Pro doc exists:', advancedProDoc.exists);
         if (advancedProDoc.exists) {
             console.log('✅ User found in Advanced Pro User Accounts');
             const currentPage = window.location.pathname;
@@ -195,7 +213,9 @@ async function verifySubscriptionAndRedirect() {
         }
         
         // Check Pro User Accounts
+        console.log('🔍 Checking Pro User Accounts collection...');
         const proDoc = await db.collection('Pro User Accounts').doc(user.uid).get();
+        console.log('📊 Pro doc exists:', proDoc.exists);
         if (proDoc.exists) {
             console.log('✅ User found in Pro User Accounts');
             const currentPage = window.location.pathname;
@@ -207,7 +227,9 @@ async function verifySubscriptionAndRedirect() {
         }
         
         // Check Basic User Accounts
+        console.log('🔍 Checking Basic User Accounts collection...');
         const basicDoc = await db.collection('Basic User Accounts').doc(user.uid).get();
+        console.log('📊 Basic doc exists:', basicDoc.exists);
         if (basicDoc.exists) {
             console.log('✅ User found in Basic User Accounts');
             const currentPage = window.location.pathname;
@@ -309,6 +331,35 @@ async function verifySubscriptionAndRedirect() {
         } else {
             window.location.href = 'signup-confirmation.html';
         }
+    }
+}
+
+// Check collections after sync
+async function checkCollectionsAfterSync(user, accountType) {
+    console.log('🔍 Checking collections after sync for account type:', accountType);
+    const db = firebase.firestore();
+    
+    // Check the appropriate collection based on account type
+    let collectionName = 'Basic User Accounts';
+    let dashboardUrl = 'dashboard-basic-new.html';
+    
+    if (accountType === 'pro' || accountType === 'Pro') {
+        collectionName = 'Pro User Accounts';
+        dashboardUrl = 'dashboard-pro-new.html';
+    } else if (accountType === 'advanced' || accountType === 'Advanced' || accountType === 'Advanced Pro') {
+        collectionName = 'Advanced Pro User Accounts';
+        dashboardUrl = 'dashboard-advanced-pro-new.html';
+    }
+    
+    console.log('🔍 Checking collection:', collectionName);
+    const doc = await db.collection(collectionName).doc(user.uid).get();
+    
+    if (doc.exists) {
+        console.log('✅ User found in correct collection after sync, redirecting to:', dashboardUrl);
+        window.location.href = dashboardUrl;
+    } else {
+        console.log('❌ User still not found in collection after sync');
+        // Fall through to normal collection checking
     }
 }
 
