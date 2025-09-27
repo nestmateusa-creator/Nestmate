@@ -942,6 +942,8 @@
         }
 
         function setupEventListeners() {
+            console.log('Setting up event listeners...');
+            
             // Service area selection
             document.querySelectorAll('.service-area').forEach(area => {
                 area.addEventListener('click', function() {
@@ -1089,23 +1091,27 @@
 
         function clearForm() {
             if (confirm('Are you sure you want to clear all form data?')) {
-                document.getElementById('serviceForm').reset();
-                selectedAreas = [];
-                selectedPriority = null;
-                uploadedFiles = [];
-                
-                document.querySelectorAll('.service-area').forEach(area => {
-                    area.classList.remove('selected');
-                });
-                
-                document.querySelectorAll('.priority-badge').forEach(badge => {
-                    badge.classList.remove('selected');
-                });
-                
-                document.getElementById('filePreview').innerHTML = '';
-                updateProgress();
-                showToast('Form cleared successfully');
+                clearFormWithoutConfirmation();
             }
+        }
+        
+        function clearFormWithoutConfirmation() {
+            document.getElementById('serviceForm').reset();
+            selectedAreas = [];
+            selectedPriority = null;
+            uploadedFiles = [];
+            
+            document.querySelectorAll('.service-area').forEach(area => {
+                area.classList.remove('selected');
+            });
+            
+            document.querySelectorAll('.priority-badge').forEach(badge => {
+                badge.classList.remove('selected');
+            });
+            
+            document.getElementById('filePreview').innerHTML = '';
+            updateProgress();
+            showToast('Form cleared successfully');
         }
 
         function saveDraft() {
@@ -1145,11 +1151,19 @@
         }
 
         // Form submission
-        document.getElementById('serviceForm').addEventListener('submit', function(e) {
+        console.log('Setting up form submission handler...');
+        const form = document.getElementById('serviceForm');
+        console.log('Form element found:', form);
+        
+        form.addEventListener('submit', function(e) {
             e.preventDefault();
+            
+            console.log('Form submitted!');
             
             const formData = collectFormData();
             formData.createdAt = new Date().toISOString();
+            
+            console.log('Form data collected:', formData);
             
             // Show loading
             document.getElementById('loading').style.display = 'block';
@@ -1160,15 +1174,17 @@
             records.push(formData);
             localStorage.setItem('serviceHistory', JSON.stringify(records));
             
+            console.log('Record saved to localStorage:', records);
+            
             // Hide loading
             document.getElementById('loading').style.display = 'none';
             document.querySelector('.form-container').style.display = 'block';
             
             showToast('Service record saved successfully!', 'success');
             
-            // Clear form after successful save
+            // Clear form after successful save (without confirmation)
             setTimeout(() => {
-                clearForm();
+                clearFormWithoutConfirmation();
             }, 2000);
         });
 
