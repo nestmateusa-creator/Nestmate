@@ -110,14 +110,18 @@ async function verifySubscriptionAndRedirect() {
         const db = firebase.firestore();
 
         // Check specific subscription collections first (Pro, Advanced Pro, then Basic)
-        console.log('🔍 Checking specific subscription collections...');
-        console.log('👤 Checking for user UID:', user.uid);
+        // Check by email since payment links add users by email, not UID
+        console.log('🔍 Checking specific subscription collections by email...');
+        console.log('👤 Checking for user email:', user.email);
         
         // Check Advanced Pro User Accounts first
-        console.log('🔍 Checking Advanced Pro User Accounts collection...');
-        const advancedProDoc = await db.collection('Advanced Pro User Accounts').doc(user.uid).get();
-        console.log('📊 Advanced Pro doc exists:', advancedProDoc.exists);
-        if (advancedProDoc.exists) {
+        console.log('🔍 Checking Advanced Pro User Accounts collection by email...');
+        const advancedProQuery = await db.collection('Advanced Pro User Accounts')
+            .where('email', '==', user.email)
+            .limit(1)
+            .get();
+        console.log('📊 Advanced Pro query results:', advancedProQuery.size);
+        if (!advancedProQuery.empty) {
             console.log('✅ User found in Advanced Pro User Accounts');
             const currentPage = window.location.pathname;
             if (!currentPage.includes('dashboard-advanced-pro-new.html')) {
@@ -128,10 +132,13 @@ async function verifySubscriptionAndRedirect() {
         }
         
         // Check Pro User Accounts
-        console.log('🔍 Checking Pro User Accounts collection...');
-        const proDoc = await db.collection('Pro User Accounts').doc(user.uid).get();
-        console.log('📊 Pro doc exists:', proDoc.exists);
-        if (proDoc.exists) {
+        console.log('🔍 Checking Pro User Accounts collection by email...');
+        const proQuery = await db.collection('Pro User Accounts')
+            .where('email', '==', user.email)
+            .limit(1)
+            .get();
+        console.log('📊 Pro query results:', proQuery.size);
+        if (!proQuery.empty) {
             console.log('✅ User found in Pro User Accounts');
             const currentPage = window.location.pathname;
             if (!currentPage.includes('dashboard-pro-new.html')) {
@@ -142,10 +149,13 @@ async function verifySubscriptionAndRedirect() {
         }
         
         // Check Basic User Accounts
-        console.log('🔍 Checking Basic User Accounts collection...');
-        const basicDoc = await db.collection('Basic User Accounts').doc(user.uid).get();
-        console.log('📊 Basic doc exists:', basicDoc.exists);
-        if (basicDoc.exists) {
+        console.log('🔍 Checking Basic User Accounts collection by email...');
+        const basicQuery = await db.collection('Basic User Accounts')
+            .where('email', '==', user.email)
+            .limit(1)
+            .get();
+        console.log('📊 Basic query results:', basicQuery.size);
+        if (!basicQuery.empty) {
             console.log('✅ User found in Basic User Accounts');
             const currentPage = window.location.pathname;
             if (!currentPage.includes('dashboard-basic-new.html')) {
