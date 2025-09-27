@@ -3985,18 +3985,26 @@
                 console.log('Found nav items:', navItems.length);
                 navItems.forEach(item => item.classList.remove('active'));
                 
-                // Show selected section
-                const targetSection = document.getElementById(sectionName + 'Section');
-                console.log('Looking for section:', sectionName + 'Section');
+                // Show selected section - handle both regular sections and Pro features
+                let targetSection = document.getElementById(sectionName + 'Section');
+                let sectionId = sectionName + 'Section';
+                
+                // If not found, try without 'Section' suffix (for Pro features)
+                if (!targetSection) {
+                    targetSection = document.getElementById(sectionName);
+                    sectionId = sectionName;
+                }
+                
+                console.log('Looking for section:', sectionId);
                 console.log('Target section found:', targetSection);
                 
                 if (targetSection) {
                     targetSection.classList.add('active');
-                    console.log('Section activated:', sectionName + 'Section');
+                    console.log('Section activated:', sectionId);
                     console.log('Section content:', targetSection.innerHTML);
                 } else {
-                    console.error('Section not found:', sectionName + 'Section');
-                    console.log('Available sections:', document.querySelectorAll('[id$="Section"]'));
+                    console.error('Section not found:', sectionId);
+                    console.log('Available sections:', document.querySelectorAll('.content-section'));
                 }
                 
                 // Add active class to clicked nav item
@@ -4014,10 +4022,17 @@
 
         function loadSectionContent(sectionName) {
             console.log('loadSectionContent called with:', sectionName);
-            const section = document.getElementById(sectionName + 'Section');
+            let section = document.getElementById(sectionName + 'Section');
+            let sectionId = sectionName + 'Section';
+            
+            // If not found, try without 'Section' suffix (for Pro features)
+            if (!section) {
+                section = document.getElementById(sectionName);
+                sectionId = sectionName;
+            }
             
             if (!section) {
-                console.error('Section element not found:', sectionName + 'Section');
+                console.error('Section element not found:', sectionId);
                 return;
             }
             
@@ -4065,6 +4080,22 @@
                     case 'appliances':
                         console.log('Loading appliances content');
                         loadAppliancesContent();
+                        break;
+                    case 'multiple-homes':
+                        console.log('Loading multiple homes content');
+                        loadMultipleHomes();
+                        break;
+                    case 'product-orders':
+                        console.log('Loading product orders content');
+                        loadProductOrders();
+                        break;
+                    case 'price-tracking':
+                        console.log('Loading price tracking content');
+                        loadPriceAlerts();
+                        break;
+                    case 'health-score':
+                        console.log('Loading health score content');
+                        // Health score content is already in the HTML
                         break;
                     default:
                         console.log('No content loader for section:', sectionName);
