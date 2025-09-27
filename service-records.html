@@ -763,6 +763,8 @@
 
         // Initialize the page
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('Service records page loaded!');
+            
             // Clear any URL parameters to prevent redirect loops
             const newUrl = window.location.pathname;
             window.history.replaceState({}, document.title, newUrl);
@@ -775,8 +777,8 @@
         });
         
         function loadRecordsWithoutAuth() {
-            // Just show empty state without any auth checks
-            showEmptyState();
+            // Load records from localStorage without any auth checks
+            loadRecords();
         }
         
         function showSignInPrompt() {
@@ -888,14 +890,21 @@
         }
 
         function loadRecords() {
+            console.log('Loading records from localStorage...');
+            
             // Load service records from localStorage instead of Firebase
             const records = JSON.parse(localStorage.getItem('serviceHistory') || '[]');
             const drafts = JSON.parse(localStorage.getItem('serviceDrafts') || '[]');
+
+            console.log('Records from localStorage:', records);
+            console.log('Drafts from localStorage:', drafts);
 
             // Add isDraft flag to drafts
             const draftsWithFlag = drafts.map(draft => ({ ...draft, isDraft: true }));
 
             allRecords = [...records, ...draftsWithFlag];
+            console.log('All records combined:', allRecords);
+            
             allRecords.sort((a, b) => {
                 const dateA = new Date(a.createdAt || a.savedAt);
                 const dateB = new Date(b.createdAt || b.savedAt);
@@ -903,6 +912,8 @@
             });
             
             filteredRecords = [...allRecords];
+            console.log('Final filtered records:', filteredRecords);
+            
             updateStats();
             displayRecords();
         }
@@ -948,12 +959,19 @@
         }
 
         function displayRecords() {
+            console.log('Displaying records...');
+            console.log('Filtered records count:', filteredRecords.length);
+            
             const grid = document.getElementById('recordsGrid');
             const count = document.getElementById('recordsCount');
+
+            console.log('Grid element:', grid);
+            console.log('Count element:', count);
 
             count.textContent = `${filteredRecords.length} record${filteredRecords.length !== 1 ? 's' : ''}`;
 
             if (filteredRecords.length === 0) {
+                console.log('No records to display, showing empty state');
                 grid.innerHTML = `
                     <div class="empty-state" style="grid-column: 1 / -1;">
                         <div class="empty-icon">
