@@ -424,7 +424,10 @@
                 
                 if (returnUrl) {
                     console.log('🔄 Return URL found, redirecting to:', returnUrl);
-                    window.location.href = decodeURIComponent(returnUrl);
+                    // Add small delay to ensure auth state is settled
+                    setTimeout(() => {
+                        window.location.href = decodeURIComponent(returnUrl);
+                    }, 500);
                     return;
                 }
                 

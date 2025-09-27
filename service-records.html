@@ -759,19 +759,26 @@
         let allRecords = [];
         let filteredRecords = [];
         let currentUser = null;
+        let authChecked = false;
 
         // Initialize the page
         document.addEventListener('DOMContentLoaded', function() {
             // Check authentication first
             auth.onAuthStateChanged((user) => {
+                if (authChecked) return; // Prevent multiple redirects
+                
                 if (user) {
                     currentUser = user;
+                    authChecked = true;
                     loadRecords();
                     setupEventListeners();
                 } else {
-                    // Redirect to sign-in with return URL
-                    const returnUrl = encodeURIComponent(window.location.href);
-                    window.location.href = `signin.html?returnUrl=${returnUrl}`;
+                    authChecked = true;
+                    // Only redirect if we're not already on the signin page
+                    if (!window.location.href.includes('signin.html')) {
+                        const returnUrl = encodeURIComponent(window.location.href);
+                        window.location.href = `signin.html?returnUrl=${returnUrl}`;
+                    }
                 }
             });
         });
