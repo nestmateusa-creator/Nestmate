@@ -2784,30 +2784,7 @@
                                 <div class="upcoming-tasks">
                                     <h4>Upcoming Tasks</h4>
                                     <div class="task-list" id="upcomingTasksList">
-                                        <div class="task-item">
-                                            <div class="task-icon">🔧</div>
-                                            <div class="task-details">
-                                                <div class="task-title">HVAC Filter Change</div>
-                                                <div class="task-date">Due: Tomorrow</div>
-                                            </div>
-                                            <div class="task-priority high">High</div>
-                                        </div>
-                                        <div class="task-item">
-                                            <div class="task-icon">🧽</div>
-                                            <div class="task-details">
-                                                <div class="task-title">Gutter Cleaning</div>
-                                                <div class="task-date">Due: Next Week</div>
-                                            </div>
-                                            <div class="task-priority medium">Medium</div>
-                                        </div>
-                                        <div class="task-item">
-                                            <div class="task-icon">🔍</div>
-                                            <div class="task-details">
-                                                <div class="task-title">Smoke Detector Test</div>
-                                                <div class="task-date">Due: Next Month</div>
-                                            </div>
-                                            <div class="task-priority low">Low</div>
-                                        </div>
+                                        <!-- Dynamic tasks will be loaded here -->
                                     </div>
                                 </div>
                             </div>
@@ -6453,6 +6430,9 @@
             `).join('');
             
             updateTaskStats();
+            // Update dashboard widgets when tasks are displayed
+            loadMiniCalendar();
+            loadUpcomingTasks();
         }
 
         function toggleTask(taskId) {
@@ -7045,6 +7025,11 @@
             
             db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).update({
                 tasks: tasks
+            }).then(() => {
+                console.log('Tasks saved successfully to Firebase');
+                // Update dashboard widgets after saving tasks
+                loadMiniCalendar();
+                loadUpcomingTasks();
             }).catch(error => {
                 console.error('Error saving tasks:', error);
             });
@@ -8261,7 +8246,7 @@
             document.getElementById('serviceRecords').textContent = thisYearServices.length;
             
             // Load tasks completed this month
-            const tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+            // Use global tasks variable instead of localStorage
             const currentMonth = new Date().getMonth();
             const currentYearForTasks = new Date().getFullYear();
             const thisMonthTasks = tasks.filter(task => {
@@ -8332,11 +8317,15 @@
             
             // Update weather (placeholder)
             document.getElementById('currentWeather').textContent = '72°F Sunny';
+            
+            // Load dynamic calendar and upcoming tasks
+            loadMiniCalendar();
+            loadUpcomingTasks();
         }
 
         function updateHomeHealthScore() {
             const serviceRecords = JSON.parse(localStorage.getItem('serviceRecords') || '[]');
-            const tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+            // Use global tasks variable instead of localStorage
             
             let healthScore = 100; // Start with perfect score
             
@@ -8397,6 +8386,352 @@
                 scoreElement.style.color = '#f59e0b'; // Yellow
             } else {
                 scoreElement.style.color = '#ef4444'; // Red
+            }
+        }
+
+        function loadMiniCalendar() {
+            const calendar = document.getElementById('miniCalendar');
+            if (!calendar) return;
+            
+            const now = new Date();
+            const monthNames = ["January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"];
+            
+            calendar.innerHTML = `
+                <h4>${monthNames[now.getMonth()]} ${now.getFullYear()}</h4>
+                <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.25rem; margin-top: 0.5rem;">
+                    <div style="font-size: 0.7rem; text-align: center; color: rgba(255,255,255,0.6);">S</div>
+                    <div style="font-size: 0.7rem; text-align: center; color: rgba(255,255,255,0.6);">M</div>
+                    <div style="font-size: 0.7rem; text-align: center; color: rgba(255,255,255,0.6);">T</div>
+                    <div style="font-size: 0.7rem; text-align: center; color: rgba(255,255,255,0.6);">W</div>
+                    <div style="font-size: 0.7rem; text-align: center; color: rgba(255,255,255,0.6);">T</div>
+                    <div style="font-size: 0.7rem; text-align: center; color: rgba(255,255,255,0.6);">F</div>
+                    <div style="font-size: 0.7rem; text-align: center; color: rgba(255,255,255,0.6);">S</div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.25rem; margin-top: 0.25rem;" id="miniCalendarDays">
+                    <!-- Days will be generated here -->
+                </div>
+            `;
+            
+            // Generate calendar days
+            const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+            const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            const startDate = new Date(firstDay);
+            startDate.setDate(startDate.getDate() - firstDay.getDay());
+            
+            const calendarDays = document.getElementById('miniCalendarDays');
+            // Use global tasks variable instead of localStorage
+            
+            for (let i = 0; i < 42; i++) {
+                const date = new Date(startDate);
+                date.setDate(startDate.getDate() + i);
+                
+                const dayElement = document.createElement('div');
+                dayElement.style.cssText = `
+                    font-size: 0.7rem; 
+                    text-align: center; 
+                    padding: 0.25rem; 
+                    border-radius: 4px; 
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                `;
+                
+                if (date.getMonth() === now.getMonth()) {
+                    dayElement.style.color = 'white';
+                    if (date.getDate() === now.getDate()) {
+                        dayElement.style.background = 'rgba(16, 185, 129, 0.8)';
+                        dayElement.style.fontWeight = 'bold';
+                    }
+                } else {
+                    dayElement.style.color = 'rgba(255,255,255,0.3)';
+                }
+                
+                // Check if this day has tasks
+                const dayTasks = getTasksForDate(date.getFullYear(), date.getMonth(), date.getDate());
+                if (dayTasks.length > 0) {
+                    dayElement.style.background = dayElement.style.background || 'rgba(99, 102, 241, 0.3)';
+                    dayElement.style.border = '1px solid rgba(99, 102, 241, 0.5)';
+                }
+                
+                dayElement.textContent = date.getDate();
+                dayElement.onmouseover = () => {
+                    if (date.getMonth() === now.getMonth()) {
+                        dayElement.style.background = 'rgba(255,255,255,0.1)';
+                    }
+                };
+                dayElement.onmouseout = () => {
+                    if (date.getDate() !== now.getDate() || date.getMonth() !== now.getMonth()) {
+                        if (dayTasks.length === 0) {
+                            dayElement.style.background = 'transparent';
+                        } else {
+                            dayElement.style.background = 'rgba(99, 102, 241, 0.3)';
+                        }
+                    }
+                };
+                
+                // Add click handler to show tasks for this day
+                dayElement.onclick = () => {
+                    showDayTasks(date.getFullYear(), date.getMonth(), date.getDate());
+                };
+                
+                calendarDays.appendChild(dayElement);
+            }
+        }
+
+        function loadUpcomingTasks() {
+            const upcomingTasksList = document.getElementById('upcomingTasksList');
+            if (!upcomingTasksList) return;
+            
+            // Use global tasks variable instead of localStorage
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            
+            // Get upcoming tasks (next 2 weeks, not completed)
+            const upcomingTasks = tasks.filter(task => {
+                if (task.completed) return false;
+                if (!task.dueDate) return false;
+                
+                const dueDate = new Date(task.dueDate);
+                const daysUntilDue = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
+                
+                return daysUntilDue >= 0 && daysUntilDue <= 14;
+            }).sort((a, b) => {
+                const dateA = new Date(a.dueDate);
+                const dateB = new Date(b.dueDate);
+                return dateA - dateB;
+            }).slice(0, 5); // Show only next 5 tasks
+            
+            if (upcomingTasks.length === 0) {
+                upcomingTasksList.innerHTML = `
+                    <div class="task-item">
+                        <div class="task-icon">✅</div>
+                        <div class="task-details">
+                            <div class="task-title">No upcoming tasks</div>
+                            <div class="task-date">All caught up!</div>
+                        </div>
+                        <div class="task-priority low">Great!</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            upcomingTasksList.innerHTML = upcomingTasks.map(task => {
+                const dueDate = new Date(task.dueDate);
+                const daysUntilDue = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
+                
+                let dueText = '';
+                if (daysUntilDue === 0) {
+                    dueText = 'Due: Today';
+                } else if (daysUntilDue === 1) {
+                    dueText = 'Due: Tomorrow';
+                } else if (daysUntilDue <= 7) {
+                    dueText = `Due: ${daysUntilDue} days`;
+                } else {
+                    dueText = `Due: ${dueDate.toLocaleDateString()}`;
+                }
+                
+                const priorityClass = task.priority === 'high' ? 'high' : 
+                                    task.priority === 'medium' ? 'medium' : 'low';
+                
+                const priorityText = task.priority === 'high' ? 'High' : 
+                                   task.priority === 'medium' ? 'Medium' : 'Low';
+                
+                const iconMap = {
+                    'maintenance': '🔧',
+                    'safety': '🔍',
+                    'cleaning': '🧽',
+                    'inspection': '🔍',
+                    'repair': '🛠️',
+                    'default': '📋'
+                };
+                
+                const icon = iconMap[task.category] || iconMap.default;
+                
+                return `
+                    <div class="task-item">
+                        <div class="task-icon">${icon}</div>
+                        <div class="task-details">
+                            <div class="task-title">${task.title}</div>
+                            <div class="task-date">${dueText}</div>
+                        </div>
+                        <div class="task-priority ${priorityClass}">${priorityText}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function showDayTasks(year, month, day) {
+            // Use global tasks variable instead of localStorage
+            const targetDate = new Date(year, month, day);
+            const targetDateString = targetDate.toISOString().split('T')[0];
+            
+            // Find tasks for this specific date
+            const dayTasks = tasks.filter(task => {
+                if (!task.dueDate) return false;
+                const taskDate = new Date(task.dueDate);
+                const taskDateString = taskDate.toISOString().split('T')[0];
+                return taskDateString === targetDateString;
+            });
+            
+            // Create modal content
+            const modalContent = `
+                <div class="day-tasks-modal" id="dayTasksModal" style="
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.8);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 10000;
+                ">
+                    <div style="
+                        background: var(--card-bg);
+                        border-radius: 12px;
+                        padding: 2rem;
+                        max-width: 500px;
+                        width: 90%;
+                        max-height: 80vh;
+                        overflow-y: auto;
+                        border: 1px solid var(--border-color);
+                    ">
+                        <div style="
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            margin-bottom: 1.5rem;
+                        ">
+                            <h3 style="margin: 0; color: var(--text-primary);">
+                                Tasks for ${targetDate.toLocaleDateString('en-US', { 
+                                    weekday: 'long', 
+                                    year: 'numeric', 
+                                    month: 'long', 
+                                    day: 'numeric' 
+                                })}
+                            </h3>
+                            <button onclick="closeDayTasksModal()" style="
+                                background: none;
+                                border: none;
+                                color: var(--text-secondary);
+                                font-size: 1.5rem;
+                                cursor: pointer;
+                                padding: 0.5rem;
+                                border-radius: 4px;
+                                transition: all 0.2s ease;
+                            " onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='none'">
+                                ×
+                            </button>
+                        </div>
+                        
+                        <div id="dayTasksList">
+                            ${dayTasks.length === 0 ? `
+                                <div style="
+                                    text-align: center;
+                                    padding: 2rem;
+                                    color: var(--text-secondary);
+                                ">
+                                    <div style="font-size: 3rem; margin-bottom: 1rem;">📅</div>
+                                    <p style="margin: 0; font-size: 1.1rem;">No tasks scheduled for this day</p>
+                                </div>
+                            ` : dayTasks.map(task => {
+                                const priorityClass = task.priority === 'high' ? 'high' : 
+                                                    task.priority === 'medium' ? 'medium' : 'low';
+                                
+                                const priorityText = task.priority === 'high' ? 'High' : 
+                                                   task.priority === 'medium' ? 'Medium' : 'Low';
+                                
+                                const iconMap = {
+                                    'maintenance': '🔧',
+                                    'safety': '🔍',
+                                    'cleaning': '🧽',
+                                    'inspection': '🔍',
+                                    'repair': '🛠️',
+                                    'default': '📋'
+                                };
+                                
+                                const icon = iconMap[task.category] || iconMap.default;
+                                
+                                return `
+                                    <div style="
+                                        background: var(--input-bg);
+                                        border: 1px solid var(--border-color);
+                                        border-radius: 8px;
+                                        padding: 1rem;
+                                        margin-bottom: 1rem;
+                                        display: flex;
+                                        align-items: center;
+                                        gap: 1rem;
+                                    ">
+                                        <div style="font-size: 1.5rem;">${icon}</div>
+                                        <div style="flex: 1;">
+                                            <div style="
+                                                font-weight: 600;
+                                                color: var(--text-primary);
+                                                margin-bottom: 0.25rem;
+                                            ">${task.title}</div>
+                                            <div style="
+                                                font-size: 0.9rem;
+                                                color: var(--text-secondary);
+                                                margin-bottom: 0.5rem;
+                                            ">${task.category} • ${task.priority} priority</div>
+                                            ${task.description ? `
+                                                <div style="
+                                                    font-size: 0.85rem;
+                                                    color: var(--text-secondary);
+                                                    line-height: 1.4;
+                                                ">${task.description}</div>
+                                            ` : ''}
+                                        </div>
+                                        <div style="
+                                            background: ${priorityClass === 'high' ? '#ef4444' : priorityClass === 'medium' ? '#f59e0b' : '#10b981'};
+                                            color: white;
+                                            padding: 0.25rem 0.75rem;
+                                            border-radius: 12px;
+                                            font-size: 0.8rem;
+                                            font-weight: 600;
+                                        ">${priorityText}</div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                        
+                        <div style="
+                            margin-top: 1.5rem;
+                            text-align: center;
+                        ">
+                            <button onclick="closeDayTasksModal()" style="
+                                background: var(--primary);
+                                color: white;
+                                border: none;
+                                padding: 0.75rem 2rem;
+                                border-radius: 8px;
+                                font-weight: 600;
+                                cursor: pointer;
+                                transition: all 0.2s ease;
+                            " onmouseover="this.style.background='var(--primary-hover)'" onmouseout="this.style.background='var(--primary)'">
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Remove existing modal if any
+            const existingModal = document.getElementById('dayTasksModal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+            
+            // Add modal to page
+            document.body.insertAdjacentHTML('beforeend', modalContent);
+        }
+
+        function closeDayTasksModal() {
+            const modal = document.getElementById('dayTasksModal');
+            if (modal) {
+                modal.remove();
             }
         }
 

@@ -64,7 +64,7 @@ async function checkDashboardAccess(expectedAccountType) {
                     window.location.href = 'dashboard-pro-new.html';
                     break;
                 case 'advanced':
-                    window.location.href = 'dashboard-advanced-new.html';
+                    window.location.href = 'dashboard-advanced-pro-new.html';
                     break;
                 default:
                     window.location.href = 'dashboard-basic-new.html';

@@ -151,7 +151,7 @@ async function verifySubscriptionAndRedirect() {
                 const currentPage = window.location.pathname;
                 const isCorrectDashboard = (currentPage.includes('dashboard-basic-new.html') && (accountType === 'basic' || accountType === 'Basic')) ||
                                          (currentPage.includes('dashboard-pro-new.html') && (accountType === 'pro' || accountType === 'Pro')) ||
-                                         (currentPage.includes('dashboard-advanced-new.html') && (accountType === 'advanced' || accountType === 'Advanced' || accountType === 'Advanced Pro')) ||
+                                         (currentPage.includes('dashboard-advanced-pro-new.html') && (accountType === 'advanced' || accountType === 'Advanced' || accountType === 'Advanced Pro')) ||
                                          (currentPage.includes('dashboard-basic-new.html') && (accountType === 'basic' || accountType === 'Basic'));
                 
                 if (isCorrectDashboard) {
@@ -166,7 +166,7 @@ async function verifySubscriptionAndRedirect() {
                     } else if (accountType === 'pro' || accountType === 'Pro') {
                         window.location.href = 'dashboard-pro-new.html';
                     } else if (accountType === 'advanced' || accountType === 'Advanced' || accountType === 'Advanced Pro') {
-                        window.location.href = 'dashboard-advanced-new.html';
+                        window.location.href = 'dashboard-advanced-pro-new.html';
                     } else {
                         window.location.href = 'dashboard-basic-new.html';
                     }
@@ -194,7 +194,7 @@ async function verifySubscriptionAndRedirect() {
             const currentPage = window.location.pathname;
             const isCorrectDashboard = (currentPage.includes('dashboard-basic-new.html') && (accountType === 'basic' || accountType === 'Basic')) ||
                                      (currentPage.includes('dashboard-pro-new.html') && (accountType === 'pro' || accountType === 'Pro')) ||
-                                     (currentPage.includes('dashboard-advanced-new.html') && (accountType === 'advanced' || accountType === 'Advanced' || accountType === 'Advanced Pro')) ||
+                                     (currentPage.includes('dashboard-advanced-pro-new.html') && (accountType === 'advanced' || accountType === 'Advanced' || accountType === 'Advanced Pro')) ||
                                      (currentPage.includes('dashboard-basic-new.html') && (accountType === 'basic' || accountType === 'Basic'));
             
             if (isCorrectDashboard) {
@@ -209,7 +209,7 @@ async function verifySubscriptionAndRedirect() {
                 } else if (accountType === 'pro' || accountType === 'Pro') {
                     window.location.href = 'dashboard-pro-new.html';
                 } else if (accountType === 'advanced' || accountType === 'Advanced' || accountType === 'Advanced Pro') {
-                    window.location.href = 'dashboard-advanced-new.html';
+                    window.location.href = 'dashboard-advanced-pro-new.html';
                 } else {
                     window.location.href = 'dashboard-basic-new.html';
                 }
@@ -225,7 +225,7 @@ async function verifySubscriptionAndRedirect() {
             collectionName = 'Basic User Accounts';
         } else if (currentPage.includes('dashboard-pro-new.html')) {
             collectionName = 'Pro User Accounts';
-        } else if (currentPage.includes('dashboard-advanced-new.html')) {
+        } else if (currentPage.includes('dashboard-advanced-pro-new.html')) {
             collectionName = 'Advanced Pro User Accounts';
         } else if (currentPage.includes('dashboard-basic-new.html')) {
             collectionName = 'Basic User Accounts';
