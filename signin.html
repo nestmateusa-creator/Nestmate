@@ -414,28 +414,49 @@
         }
 
 
-        async function showPaymentRequiredMessage(user) {
-            // First check if user has a valid subscription
-            console.log('User signed in, checking subscription status:', user.email);
+        async function checkUserSubscriptionAndRedirect(user) {
+            console.log('🔍 Checking user subscription status:', user.email);
             
             try {
-                // Use the subscription verification system to check if user has paid
-                await verifySubscriptionAndRedirect();
-            } catch (error) {
-                console.error('Error checking subscription:', error);
-                // If verification fails, try one more time with a delay
-                console.log('Subscription verification failed, retrying in 2 seconds...');
-                await new Promise(resolve => setTimeout(resolve, 2000));
+                const db = firebase.firestore();
                 
-                try {
-                    await verifySubscriptionAndRedirect();
-                } catch (retryError) {
-                    console.error('Retry also failed:', retryError);
-                    // Only redirect to payment page if both attempts fail
-                    console.log('Both verification attempts failed, redirecting to plan selection:', user.email);
-                    window.location.href = `signup-confirmation.html?email=${encodeURIComponent(user.email)}`;
+                // Check if user exists in any subscription collection
+                const collections = [
+                    { name: 'Advanced Pro User Accounts', url: 'dashboard-advanced-pro-new.html' },
+                    { name: 'Pro User Accounts', url: 'dashboard-pro-new.html' },
+                    { name: 'Basic User Accounts', url: 'dashboard-basic-new.html' }
+                ];
+                
+                for (const collection of collections) {
+                    console.log('🔍 Checking collection:', collection.name);
+                    const query = await db.collection(collection.name)
+                        .where('email', '==', user.email)
+                        .limit(1)
+                        .get();
+                    
+                    if (!query.empty) {
+                        console.log('✅ User found in collection:', collection.name);
+                        console.log('🔄 Redirecting to:', collection.url);
+                        window.location.href = collection.url;
+                        return;
+                    }
                 }
+                
+                // If user not found in any subscription collection, redirect to signup confirmation
+                console.log('❌ User not found in any subscription collection, redirecting to signup confirmation');
+                window.location.href = `signup-confirmation.html?email=${encodeURIComponent(user.email)}`;
+                
+            } catch (error) {
+                console.error('❌ Error checking subscription:', error);
+                // If there's an error, redirect to signup confirmation as fallback
+                window.location.href = `signup-confirmation.html?email=${encodeURIComponent(user.email)}`;
             }
+        }
+
+        async function showPaymentRequiredMessage(user) {
+            // This function is now deprecated - use checkUserSubscriptionAndRedirect instead
+            console.log('⚠️ showPaymentRequiredMessage is deprecated, redirecting to checkUserSubscriptionAndRedirect');
+            await checkUserSubscriptionAndRedirect(user);
         }
 
         async function showAlreadySignedInMessage(user) {
@@ -590,7 +611,7 @@
                         // Check subscription status and redirect to appropriate dashboard
                         console.log('🔍 Checking subscription status and redirecting...');
                         await new Promise(resolve => setTimeout(resolve, 1500));
-                        await verifySubscriptionAndRedirect();
+                        await checkUserSubscriptionAndRedirect(userCredential.user);
             } catch (error) {
                         console.error('Signin error:', error);
                         console.error('Error code:', error.code);
@@ -710,11 +731,11 @@
                 const isForcedSignout = urlParams.get('signout') === 'true';
                 const isSignupTab = urlParams.get('tab') === 'signup';
                 
-                // DON'T AUTO-REDIRECT - Users must complete payment first
+                // Check if user is signed in and redirect appropriately
                 if (user && !isForcedSignout && !isSignupTab) {
-                    console.log('User is signed in but needs to complete payment:', user.email);
-                    // Redirect to plan selection instead of dashboard
-                    showPaymentRequiredMessage(user);
+                    console.log('User is signed in, checking subscription status:', user.email);
+                    // Check subscription and redirect to appropriate dashboard
+                    checkUserSubscriptionAndRedirect(user);
                 } else if (user && isForcedSignout) {
                     console.log('Forced signout detected, signing out user:', user.email);
                     // Force sign out the user
