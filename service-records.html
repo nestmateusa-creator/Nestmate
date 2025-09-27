@@ -735,14 +735,44 @@
     <!-- Toast -->
     <div class="toast" id="toast"></div>
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
     <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBvOkBwJ1Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4",
+            authDomain: "nestmate-167ed.firebaseapp.com",
+            projectId: "nestmate-167ed",
+            storageBucket: "nestmate-167ed.appspot.com",
+            messagingSenderId: "123456789012",
+            appId: "1:123456789012:web:abcdefghijklmnopqrstuv"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
         let allRecords = [];
         let filteredRecords = [];
+        let currentUser = null;
 
         // Initialize the page
         document.addEventListener('DOMContentLoaded', function() {
-            loadRecords();
-            setupEventListeners();
+            // Check authentication first
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    currentUser = user;
+                    loadRecords();
+                    setupEventListeners();
+                } else {
+                    // Redirect to sign-in if not authenticated
+                    window.location.href = 'signin.html';
+                }
+            });
         });
 
         function setupEventListeners() {
@@ -755,16 +785,53 @@
         }
 
         function loadRecords() {
-            // Load from localStorage
-            const records = JSON.parse(localStorage.getItem('serviceRecords') || '[]');
-            const drafts = JSON.parse(localStorage.getItem('serviceDrafts') || '[]');
-            
-            allRecords = [...records, ...drafts.map(draft => ({ ...draft, isDraft: true }))];
-            allRecords.sort((a, b) => new Date(b.createdAt || b.savedAt) - new Date(a.createdAt || a.savedAt));
-            
-            filteredRecords = [...allRecords];
-            updateStats();
-            displayRecords();
+            if (!currentUser) {
+                console.error('No authenticated user');
+                return;
+            }
+
+            // Load service records from Firebase
+            const recordsPromise = db.collection('NESTMATE USER HOME SAVED DATA')
+                .doc(currentUser.uid)
+                .collection('serviceHistory')
+                .orderBy('createdAt', 'desc')
+                .get();
+
+            // Load drafts from Firebase
+            const draftsPromise = db.collection('NESTMATE USER HOME SAVED DATA')
+                .doc(currentUser.uid)
+                .collection('serviceDrafts')
+                .orderBy('savedAt', 'desc')
+                .get();
+
+            Promise.all([recordsPromise, draftsPromise])
+                .then(([recordsSnapshot, draftsSnapshot]) => {
+                    const records = [];
+                    const drafts = [];
+
+                    recordsSnapshot.forEach(doc => {
+                        records.push({ ...doc.data(), id: doc.id });
+                    });
+
+                    draftsSnapshot.forEach(doc => {
+                        drafts.push({ ...doc.data(), id: doc.id, isDraft: true });
+                    });
+
+                    allRecords = [...records, ...drafts];
+                    allRecords.sort((a, b) => {
+                        const dateA = new Date(a.createdAt || a.savedAt);
+                        const dateB = new Date(b.createdAt || b.savedAt);
+                        return dateB - dateA;
+                    });
+                    
+                    filteredRecords = [...allRecords];
+                    updateStats();
+                    displayRecords();
+                })
+                .catch(error => {
+                    console.error('Error loading records:', error);
+                    showToast('Error loading service records', 'error');
+                });
         }
 
         function updateStats() {
