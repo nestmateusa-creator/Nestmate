@@ -538,40 +538,37 @@
     <div class="toast" id="toast"></div>
 
     <script>
-        alert('JavaScript is working!');
-        try {
+        // Wait for Firebase to load
+        window.addEventListener('load', function() {
             console.log('=== SCRIPT STARTING ===');
             console.log('Firebase object:', typeof firebase);
-        } catch (error) {
-            console.error('Error in script start:', error);
-        }
-        
-        // Firebase configuration - CORRECTED PROJECT ID
-        const firebaseConfig = {
-            apiKey: "AIzaSyBvOkBwJ1Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4",
-            authDomain: "nestmate-167ed.firebaseapp.com",
-            projectId: "nestmate-167ed",
-            storageBucket: "nestmate-167ed.appspot.com",
-            messagingSenderId: "123456789012",
-            appId: "1:123456789012:web:abcdefghijklmnopqrstuv"
-        };
+            
+            // Firebase configuration - CORRECTED PROJECT ID
+            const firebaseConfig = {
+                apiKey: "AIzaSyBvOkBwJ1Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4",
+                authDomain: "nestmate-167ed.firebaseapp.com",
+                projectId: "nestmate-167ed",
+                storageBucket: "nestmate-167ed.appspot.com",
+                messagingSenderId: "123456789012",
+                appId: "1:123456789012:web:abcdefghijklmnopqrstuv"
+            };
 
-        console.log('Firebase config:', firebaseConfig);
+            console.log('Firebase config:', firebaseConfig);
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-        
-        console.log('Firebase initialized');
-        console.log('Auth object:', auth);
-        console.log('DB object:', db);
-        
-        let currentUser = null;
-        let userData = null;
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+            const auth = firebase.auth();
+            const db = firebase.firestore();
+            
+            console.log('Firebase initialized');
+            console.log('Auth object:', auth);
+            console.log('DB object:', db);
+            
+            let currentUser = null;
+            let userData = null;
 
-        // Initialize page
-        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize page
+            document.addEventListener('DOMContentLoaded', function() {
             console.log('=== PROFILE PAGE LOADED ===');
             console.log('DOM Content Loaded event fired');
             
@@ -1051,7 +1048,7 @@
                 toast.classList.remove('show');
             }, 3000);
         }
+        }); // Close window load event listener
     </script>
 </body>
-</html>
 </html>
