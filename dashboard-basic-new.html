@@ -2995,7 +2995,7 @@
                     
                     <!-- Add Task Button for Calendar -->
                     <div class="calendar-actions" style="margin-top: 1rem; text-align: center;">
-                        <button class="btn btn-primary" onclick="showTasksTab('add-task', this)">
+                        <button class="btn btn-primary" onclick="console.log('Add Task button clicked'); showTasksTab('add-task', this)">
                             <i class="fas fa-plus"></i>
                             Add New Task
                         </button>
@@ -3007,7 +3007,7 @@
                     <div class="section-header">
                         <h4 class="section-title">10 Essential Home Tasks</h4>
                         <p>Stay on top of important home maintenance</p>
-                        <button class="btn btn-primary btn-small" onclick="showTasksTab('add-task', this)" style="margin-top: 0.5rem;">
+                        <button class="btn btn-primary btn-small" onclick="console.log('Tasks tab Add Task button clicked'); showTasksTab('add-task', this)" style="margin-top: 0.5rem;">
                             <i class="fas fa-plus"></i>
                             Add New Task
                         </button>
@@ -3022,7 +3022,7 @@
                 <div id="addTaskTab" class="tab-content">
                     <div class="section-header">
                         <h4 class="section-title">Add New Task</h4>
-                        <button class="btn btn-secondary btn-small" onclick="showTasksTab('calendar', this)" style="margin-top: 0.5rem;">
+                        <button class="btn btn-secondary btn-small" onclick="console.log('Back to Calendar button clicked'); showTasksTab('calendar', this)" style="margin-top: 0.5rem;">
                             <i class="fas fa-calendar"></i>
                             Back to Calendar
                         </button>
@@ -5046,29 +5046,45 @@
         }
 
         function showTasksTab(tabName, clickedButton) {
+            console.log('showTasksTab called with:', tabName, clickedButton);
+            
             // Hide all tab contents
             const tabContents = document.querySelectorAll('#tasksModal .tab-content');
-            tabContents.forEach(tab => tab.classList.remove('active'));
+            console.log('Found tab contents:', tabContents.length);
+            tabContents.forEach(tab => {
+                tab.classList.remove('active');
+                tab.style.display = 'none';
+            });
             
             // Remove active class from all tab buttons
             const tabButtons = document.querySelectorAll('#tasksModal .tab-btn');
+            console.log('Found tab buttons:', tabButtons.length);
             tabButtons.forEach(btn => btn.classList.remove('active'));
             
             // Show selected tab content
             const targetTab = document.getElementById(tabName + 'Tab');
+            console.log('Target tab element:', targetTab);
             if (targetTab) {
                 targetTab.classList.add('active');
+                targetTab.style.display = 'block';
+                console.log('Tab activated:', tabName + 'Tab');
+            } else {
+                console.error('Target tab not found:', tabName + 'Tab');
             }
             
-            // Add active class to clicked button
-            if (clickedButton) {
+            // Add active class to clicked button (if it's a tab button)
+            if (clickedButton && clickedButton.classList.contains('tab-btn')) {
                 clickedButton.classList.add('active');
+                console.log('Tab button activated');
             }
             
             // If switching to calendar tab, generate calendar
             if (tabName === 'calendar') {
+                console.log('Generating calendar...');
                 generateCalendar();
             }
+            
+            console.log('Tab switching completed for:', tabName);
         }
 
         function showProductsTab(tabName) {
