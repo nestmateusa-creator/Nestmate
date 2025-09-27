@@ -3935,6 +3935,7 @@
                 generateCalendar();
                 loadEssentialTasks();
                 loadProductRecommendations();
+                loadHomesFromFirebase(); // Load multiple homes for Pro users
                 console.log('Dashboard initialization completed successfully');
             } catch (error) {
                 console.error('Error during dashboard initialization:', error);
@@ -8281,16 +8282,177 @@
         }
 
         // Pro Features Functions
+        // Multiple Homes Management - Pro Feature
+        let userHomes = [];
+        let currentHomeId = 'primary';
+
         function addNewHome() {
-            alert('Add New Home feature coming soon! This will allow you to manage multiple properties with your Pro subscription.');
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-home"></i> Add New Home</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addHomeForm">
+                            <div class="form-group">
+                                <label>Home Name</label>
+                                <input type="text" id="homeName" placeholder="e.g., Vacation Home, Rental Property" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Address</label>
+                                <input type="text" id="homeAddress" placeholder="Enter full address" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Property Type</label>
+                                <select id="propertyType" required>
+                                    <option value="">Select type</option>
+                                    <option value="house">House</option>
+                                    <option value="condo">Condo</option>
+                                    <option value="townhouse">Townhouse</option>
+                                    <option value="apartment">Apartment</option>
+                                    <option value="mobile">Mobile Home</option>
+                                    <option value="duplex">Duplex</option>
+                                </select>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Square Footage</label>
+                                    <input type="number" id="squareFootage" placeholder="e.g., 2500" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Year Built</label>
+                                    <input type="number" id="yearBuilt" placeholder="e.g., 2015" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Bedrooms</label>
+                                    <input type="number" id="bedrooms" placeholder="e.g., 3" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Bathrooms</label>
+                                    <input type="number" id="bathrooms" placeholder="e.g., 2" required>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Add Home</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            document.getElementById('addHomeForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveNewHome();
+            });
+        }
+
+        function saveNewHome() {
+            const homeData = {
+                id: 'home_' + Date.now(),
+                name: document.getElementById('homeName').value,
+                address: document.getElementById('homeAddress').value,
+                propertyType: document.getElementById('propertyType').value,
+                squareFootage: parseInt(document.getElementById('squareFootage').value),
+                yearBuilt: parseInt(document.getElementById('yearBuilt').value),
+                bedrooms: parseInt(document.getElementById('bedrooms').value),
+                bathrooms: parseInt(document.getElementById('bathrooms').value),
+                createdAt: new Date().toISOString(),
+                isActive: true
+            };
+
+            userHomes.push(homeData);
+            saveHomesToFirebase();
+            loadMultipleHomes();
+            closeModal();
+            showSuccess('New home added successfully!');
         }
 
         function manageHome(homeId) {
-            alert(`Manage Home (${homeId}) feature coming soon! This will allow you to switch between your multiple properties.`);
+            if (homeId === 'primary') {
+                showHomeDetails('primary');
+            } else {
+                const home = userHomes.find(h => h.id === homeId);
+                if (home) {
+                    showHomeDetails(homeId);
+                }
+            }
+        }
+
+        function showHomeDetails(homeId) {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            
+            let homeData;
+            if (homeId === 'primary') {
+                homeData = {
+                    id: 'primary',
+                    name: 'Primary Residence',
+                    address: '123 Main Street, City, State',
+                    propertyType: 'house',
+                    squareFootage: 2500,
+                    yearBuilt: 2015,
+                    bedrooms: 4,
+                    bathrooms: 3
+                };
+            } else {
+                homeData = userHomes.find(h => h.id === homeId);
+            }
+
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-home"></i> ${homeData.name}</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="home-details">
+                            <div class="detail-row">
+                                <strong>Address:</strong> ${homeData.address}
+                            </div>
+                            <div class="detail-row">
+                                <strong>Property Type:</strong> ${homeData.propertyType.charAt(0).toUpperCase() + homeData.propertyType.slice(1)}
+                            </div>
+                            <div class="detail-row">
+                                <strong>Square Footage:</strong> ${homeData.squareFootage.toLocaleString()} sq ft
+                            </div>
+                            <div class="detail-row">
+                                <strong>Year Built:</strong> ${homeData.yearBuilt}
+                            </div>
+                            <div class="detail-row">
+                                <strong>Bedrooms:</strong> ${homeData.bedrooms}
+                            </div>
+                            <div class="detail-row">
+                                <strong>Bathrooms:</strong> ${homeData.bathrooms}
+                            </div>
+                        </div>
+                        <div class="home-actions">
+                            <button class="btn btn-primary" onclick="switchToHome('${homeId}')">
+                                <i class="fas fa-exchange-alt"></i> Switch to This Home
+                            </button>
+                            ${homeId !== 'primary' ? `
+                                <button class="btn btn-outline" onclick="editHome('${homeId}')">
+                                    <i class="fas fa-edit"></i> Edit Details
+                                </button>
+                                <button class="btn btn-outline" onclick="deleteHome('${homeId}')" style="color: #ef4444;">
+                                    <i class="fas fa-trash"></i> Delete Home
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
         }
 
         function viewHomeDetails(homeId) {
-            alert(`View Home Details (${homeId}) feature coming soon! This will show detailed information about your property.`);
+            showHomeDetails(homeId);
         }
 
         function browseProducts() {
@@ -8299,6 +8461,190 @@
 
         function addPriceAlert() {
             alert('Add Price Alert feature coming soon! This will allow you to track prices and get notifications when products go on sale.');
+        }
+
+        // Additional Multiple Homes Functions
+        function switchToHome(homeId) {
+            currentHomeId = homeId;
+            closeModal();
+            showSuccess(`Switched to ${homeId === 'primary' ? 'Primary Residence' : userHomes.find(h => h.id === homeId)?.name}`);
+            // Reload dashboard data for the selected home
+            loadDashboardData();
+        }
+
+        function editHome(homeId) {
+            const home = userHomes.find(h => h.id === homeId);
+            if (!home) return;
+
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-edit"></i> Edit Home Details</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editHomeForm">
+                            <div class="form-group">
+                                <label>Home Name</label>
+                                <input type="text" id="editHomeName" value="${home.name}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Address</label>
+                                <input type="text" id="editHomeAddress" value="${home.address}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Property Type</label>
+                                <select id="editPropertyType" required>
+                                    <option value="house" ${home.propertyType === 'house' ? 'selected' : ''}>House</option>
+                                    <option value="condo" ${home.propertyType === 'condo' ? 'selected' : ''}>Condo</option>
+                                    <option value="townhouse" ${home.propertyType === 'townhouse' ? 'selected' : ''}>Townhouse</option>
+                                    <option value="apartment" ${home.propertyType === 'apartment' ? 'selected' : ''}>Apartment</option>
+                                    <option value="mobile" ${home.propertyType === 'mobile' ? 'selected' : ''}>Mobile Home</option>
+                                    <option value="duplex" ${home.propertyType === 'duplex' ? 'selected' : ''}>Duplex</option>
+                                </select>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Square Footage</label>
+                                    <input type="number" id="editSquareFootage" value="${home.squareFootage}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Year Built</label>
+                                    <input type="number" id="editYearBuilt" value="${home.yearBuilt}" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Bedrooms</label>
+                                    <input type="number" id="editBedrooms" value="${home.bedrooms}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Bathrooms</label>
+                                    <input type="number" id="editBathrooms" value="${home.bathrooms}" required>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            document.getElementById('editHomeForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                updateHome(homeId);
+            });
+        }
+
+        function updateHome(homeId) {
+            const homeIndex = userHomes.findIndex(h => h.id === homeId);
+            if (homeIndex === -1) return;
+
+            userHomes[homeIndex] = {
+                ...userHomes[homeIndex],
+                name: document.getElementById('editHomeName').value,
+                address: document.getElementById('editHomeAddress').value,
+                propertyType: document.getElementById('editPropertyType').value,
+                squareFootage: parseInt(document.getElementById('editSquareFootage').value),
+                yearBuilt: parseInt(document.getElementById('editYearBuilt').value),
+                bedrooms: parseInt(document.getElementById('editBedrooms').value),
+                bathrooms: parseInt(document.getElementById('editBathrooms').value),
+                updatedAt: new Date().toISOString()
+            };
+
+            saveHomesToFirebase();
+            loadMultipleHomes();
+            closeModal();
+            showSuccess('Home details updated successfully!');
+        }
+
+        function deleteHome(homeId) {
+            if (confirm('Are you sure you want to delete this home? This action cannot be undone.')) {
+                userHomes = userHomes.filter(h => h.id !== homeId);
+                saveHomesToFirebase();
+                loadMultipleHomes();
+                closeModal();
+                showSuccess('Home deleted successfully!');
+            }
+        }
+
+        function loadMultipleHomes() {
+            const homesContainer = document.querySelector('.multiple-homes-container');
+            if (!homesContainer) return;
+
+            let homesHTML = `
+                <div class="home-card primary-home">
+                    <div class="home-header">
+                        <h5>Primary Residence</h5>
+                        <span class="home-status active">Active</span>
+                    </div>
+                    <div class="home-details">
+                        <p>123 Main Street, City, State</p>
+                        <p>2,500 sq ft • 4 bed • 3 bath</p>
+                        <p>Built in 2015</p>
+                    </div>
+                    <div class="home-actions">
+                        <button class="btn btn-primary btn-small" onclick="manageHome('primary')">Manage</button>
+                        <button class="btn btn-outline btn-small" onclick="viewHomeDetails('primary')">View Details</button>
+                    </div>
+                </div>
+            `;
+
+            userHomes.forEach(home => {
+                const age = new Date().getFullYear() - home.yearBuilt;
+                homesHTML += `
+                    <div class="home-card">
+                        <div class="home-header">
+                            <h5>${home.name}</h5>
+                            <span class="home-status ${home.isActive ? 'active' : 'inactive'}">${home.isActive ? 'Active' : 'Inactive'}</span>
+                        </div>
+                        <div class="home-details">
+                            <p>${home.address}</p>
+                            <p>${home.squareFootage.toLocaleString()} sq ft • ${home.bedrooms} bed • ${home.bathrooms} bath</p>
+                            <p>Built in ${home.yearBuilt} (${age} years old)</p>
+                        </div>
+                        <div class="home-actions">
+                            <button class="btn btn-primary btn-small" onclick="manageHome('${home.id}')">Manage</button>
+                            <button class="btn btn-outline btn-small" onclick="viewHomeDetails('${home.id}')">View Details</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            homesContainer.innerHTML = homesHTML;
+        }
+
+        function saveHomesToFirebase() {
+            if (!currentUser) return;
+            
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).update({
+                multipleHomes: userHomes,
+                currentHomeId: currentHomeId
+            }).then(() => {
+                console.log('Multiple homes saved to Firebase');
+            }).catch(error => {
+                console.error('Error saving multiple homes:', error);
+            });
+        }
+
+        function loadHomesFromFirebase() {
+            if (!currentUser) return;
+            
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get().then(doc => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    userHomes = data.multipleHomes || [];
+                    currentHomeId = data.currentHomeId || 'primary';
+                    loadMultipleHomes();
+                }
+            }).catch(error => {
+                console.error('Error loading multiple homes:', error);
+            });
         }
 
         function updateHealthScore() {
