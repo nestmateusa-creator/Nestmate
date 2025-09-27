@@ -4981,7 +4981,21 @@
             }
             modal.style.display = 'block';
             console.log('Modal displayed, generating calendar...');
-            generateCalendar();
+            
+            // Ensure calendar tab is active
+            const calendarTab = document.getElementById('calendarTab');
+            if (calendarTab) {
+                calendarTab.style.display = 'block';
+                calendarTab.classList.add('active');
+                console.log('Calendar tab activated, display:', calendarTab.style.display, 'classes:', calendarTab.className);
+            } else {
+                console.error('calendarTab element not found!');
+            }
+            
+            // Small delay to ensure DOM is ready
+            setTimeout(() => {
+                generateCalendar();
+            }, 100);
         }
 
         function openProductRecommendations() {
@@ -5076,11 +5090,14 @@
         // Calendar functions
         function generateCalendar() {
             console.log('generateCalendar called');
+            console.log('Current month:', currentMonth, 'Current year:', currentYear);
+            
             const calendarGrid = document.getElementById('calendarGrid');
             if (!calendarGrid) {
                 console.error('calendarGrid element not found!');
                 return;
             }
+            console.log('Calendar grid element found:', calendarGrid);
             
             const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
                 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -5088,15 +5105,26 @@
             const currentMonthElement = document.getElementById('currentMonth');
             if (currentMonthElement) {
                 currentMonthElement.textContent = monthNames[currentMonth] + ' ' + currentYear;
+                console.log('Month header updated to:', monthNames[currentMonth] + ' ' + currentYear);
+            } else {
+                console.error('currentMonth element not found!');
             }
             
             const firstDay = new Date(currentYear, currentMonth, 1).getDay();
             const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            console.log('First day of month:', firstDay, 'Days in month:', daysInMonth);
             
             calendarGrid.innerHTML = '';
+            console.log('Calendar grid cleared');
+            
+            // Ensure calendar grid is visible
+            calendarGrid.style.display = 'grid';
+            calendarGrid.style.visibility = 'visible';
+            calendarGrid.style.opacity = '1';
             
             // Add day headers
             const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            console.log('Adding day headers:', dayHeaders);
             dayHeaders.forEach(day => {
                 const dayHeader = document.createElement('div');
                 dayHeader.textContent = day;
@@ -5105,14 +5133,18 @@
                 dayHeader.style.padding = '0.5rem';
                 calendarGrid.appendChild(dayHeader);
             });
+            console.log('Day headers added, grid children count:', calendarGrid.children.length);
             
             // Add empty cells for days before the first day of the month
+            console.log('Adding', firstDay, 'empty cells for days before first day');
             for (let i = 0; i < firstDay; i++) {
                 const emptyDay = document.createElement('div');
                 calendarGrid.appendChild(emptyDay);
             }
+            console.log('Empty cells added, grid children count:', calendarGrid.children.length);
             
             // Add days of the month
+            console.log('Adding', daysInMonth, 'days of the month');
             for (let day = 1; day <= daysInMonth; day++) {
                 const dayElement = document.createElement('div');
                 dayElement.textContent = day;
@@ -5122,12 +5154,14 @@
                 const today = new Date();
                 if (currentYear === today.getFullYear() && currentMonth === today.getMonth() && day === today.getDate()) {
                     dayElement.classList.add('today');
+                    console.log('Today marked for day:', day);
                 }
                 
                 // Check if has tasks
                 const dayTasks = getTasksForDate(currentYear, currentMonth, day);
                 if (dayTasks.length > 0) {
                     dayElement.classList.add('has-tasks');
+                    console.log('Tasks found for day:', day, 'Tasks:', dayTasks);
                 }
                 
                 dayElement.onclick = () => showDayTasks(day);

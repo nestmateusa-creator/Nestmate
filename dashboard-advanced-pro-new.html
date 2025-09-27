@@ -6076,8 +6076,29 @@
         }
 
         function openTasksCalendar() {
-            document.getElementById('tasksModal').style.display = 'block';
-            generateCalendar();
+            console.log('openTasksCalendar called');
+            const modal = document.getElementById('tasksModal');
+            if (!modal) {
+                console.error('tasksModal element not found!');
+                return;
+            }
+            modal.style.display = 'block';
+            console.log('Modal displayed, generating calendar...');
+            
+            // Ensure calendar tab is active
+            const calendarTab = document.getElementById('calendarTab');
+            if (calendarTab) {
+                calendarTab.style.display = 'block';
+                calendarTab.classList.add('active');
+                console.log('Calendar tab activated, display:', calendarTab.style.display, 'classes:', calendarTab.className);
+            } else {
+                console.error('calendarTab element not found!');
+            }
+            
+            // Small delay to ensure DOM is ready
+            setTimeout(() => {
+                generateCalendar();
+            }, 100);
         }
 
         function openProductRecommendations() {
