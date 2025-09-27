@@ -4,18 +4,35 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>NestMate — Your Home's Digital Command Center</title>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;500&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
       --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-light: #3b82f6;
       --accent: #facc15;
+      --accent-dark: #eab308;
       --success: #10b981;
       --warning: #f59e0b;
+      --danger: #ef4444;
       --bg: #f8fafc;
+      --bg-dark: #0f172a;
       --card: #fff;
+      --card-dark: #1e293b;
+      --text-primary: #0f172a;
+      --text-secondary: #64748b;
+      --text-light: #94a3b8;
+      --border: #e2e8f0;
+      --border-dark: #334155;
       --radius: 16px;
+      --radius-lg: 24px;
       --shadow: 0 4px 32px rgba(37,99,235,0.08);
       --shadow-lg: 0 8px 48px rgba(37,99,235,0.12);
+      --shadow-xl: 0 20px 60px rgba(37,99,235,0.15);
+      --gradient-primary: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+      --gradient-accent: linear-gradient(135deg, #facc15 0%, #f59e0b 100%);
+      --gradient-bg: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 50%, #f1f5f9 100%);
     }
     
     * {
@@ -25,19 +42,26 @@
     body {
       margin: 0;
       font-family: 'Inter', 'Plus Jakarta Sans', sans-serif;
-      background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
-      color: #1e293b;
+      background: var(--gradient-bg);
+      color: var(--text-primary);
       line-height: 1.6;
+      overflow-x: hidden;
     }
     
     /* Header */
     header {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(20px);
       border-bottom: 1px solid rgba(37, 99, 235, 0.1);
       position: sticky;
       top: 0;
       z-index: 100;
+      transition: all 0.3s ease;
+    }
+    
+    header.scrolled {
+      background: rgba(255, 255, 255, 0.95);
+      box-shadow: 0 4px 20px rgba(37, 99, 235, 0.1);
     }
     
     .header-container {
@@ -105,14 +129,31 @@
     }
     
     .btn-primary {
-      background: var(--primary);
+      background: var(--gradient-primary);
       color: white;
+      border: none;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+    
+    .btn-primary:hover::before {
+      left: 100%;
     }
     
     .btn-primary:hover {
-      background: #1d4ed8;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
     }
     
     .btn-secondary {
@@ -128,39 +169,72 @@
     
     /* Hero Section */
     .hero {
-      padding: 4rem 2rem;
+      padding: 6rem 2rem 4rem;
       max-width: 1200px;
       margin: 0 auto;
       text-align: center;
+      position: relative;
+    }
+    
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100vw;
+      height: 100%;
+      background: radial-gradient(circle at center, rgba(37, 99, 235, 0.05) 0%, transparent 70%);
+      z-index: -1;
     }
     
     .hero-badge {
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
-      background: rgba(37, 99, 235, 0.1);
-      color: var(--primary);
-      padding: 0.5rem 1rem;
+      background: var(--gradient-primary);
+      color: white;
+      padding: 0.75rem 1.5rem;
       border-radius: 50px;
       font-size: 0.875rem;
       font-weight: 600;
-      margin-bottom: 1rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 20px rgba(37, 99, 235, 0.3);
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
     }
     
     .hero-title {
-      font-size: 3.5rem;
+      font-size: 4rem;
       font-weight: 900;
-      color: #1e293b;
-      margin-bottom: 1.5rem;
+      color: var(--text-primary);
+      margin-bottom: 2rem;
       line-height: 1.1;
       letter-spacing: -0.02em;
+      animation: fadeInUp 1s ease-out;
     }
     
     .hero-title .highlight {
-      background: linear-gradient(135deg, var(--primary), #7c3aed);
+      background: var(--gradient-primary);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+      position: relative;
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
     
     .hero-subtitle {
@@ -186,14 +260,31 @@
     }
     
     .btn-accent {
-      background: var(--accent);
-      color: #1e293b;
+      background: var(--gradient-accent);
+      color: var(--text-primary);
+      border: none;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn-accent::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.5s;
+    }
+    
+    .btn-accent:hover::before {
+      left: 100%;
     }
     
     .btn-accent:hover {
-      background: #fde047;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(250, 204, 21, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(250, 204, 21, 0.4);
     }
     
     /* Stats Section */
@@ -201,27 +292,57 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 2rem;
-      margin: 3rem 0;
+      margin: 4rem 0;
     }
     
     .stat {
       text-align: center;
-      padding: 1.5rem;
+      padding: 2rem 1.5rem;
       background: white;
-      border-radius: var(--radius);
+      border-radius: var(--radius-lg);
       box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .stat::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--gradient-primary);
+    }
+    
+    .stat:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-xl);
+      border-color: var(--primary);
     }
     
     .stat-number {
-      font-size: 2.5rem;
+      font-size: 3rem;
       font-weight: 900;
-      color: var(--primary);
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
       margin-bottom: 0.5rem;
+      animation: countUp 2s ease-out;
     }
     
     .stat-label {
-      color: #64748b;
-      font-weight: 500;
+      color: var(--text-secondary);
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+    
+    @keyframes countUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     
     /* Features Grid */
@@ -258,29 +379,53 @@
     
     .feature-card {
       background: white;
-      padding: 2rem;
-      border-radius: var(--radius);
+      padding: 2.5rem 2rem;
+      border-radius: var(--radius-lg);
       box-shadow: var(--shadow);
-      transition: all 0.3s;
-      border: 1px solid rgba(37, 99, 235, 0.1);
+      transition: all 0.4s ease;
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--gradient-primary);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+    
+    .feature-card:hover::before {
+      transform: scaleX(1);
     }
     
     .feature-card:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-lg);
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-xl);
       border-color: var(--primary);
     }
     
     .feature-icon {
-      width: 60px;
-      height: 60px;
-      background: linear-gradient(135deg, var(--primary), #7c3aed);
-      border-radius: 12px;
+      width: 70px;
+      height: 70px;
+      background: var(--gradient-primary);
+      border-radius: 16px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.5rem;
+      font-size: 1.8rem;
       margin-bottom: 1.5rem;
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+      transition: all 0.3s ease;
+    }
+    
+    .feature-card:hover .feature-icon {
+      transform: scale(1.1) rotate(5deg);
     }
     
     .feature-title {
@@ -495,24 +640,28 @@
     <!-- Hero Section -->
     <section class="hero">
       <div class="hero-badge">
-        🏆 Trusted by 10,000+ homeowners
+        <i class="fas fa-star"></i>
+        Trusted by 10,000+ homeowners • 4.9/5 rating
       </div>
       <h1 class="hero-title">
         Your Home's <span class="highlight">Digital Command Center</span>
       </h1>
       <p class="hero-subtitle">
-        Transform your home management with the ultimate digital hub. Track every detail, 
-        get smart reminders, order products, and boost your home's value—all in one place.
+        The only platform that transforms your home into a smart, organized, and valuable asset. 
+        Track everything, get intelligent reminders, order products, and increase your home's value by up to 15%.
       </p>
       <div class="hero-actions">
         <a href="signin.html?tab=signup" class="btn btn-primary btn-lg">
-          🚀 Start Free Trial
+          <i class="fas fa-rocket"></i>
+          Start Free Trial - No Credit Card
         </a>
         <a href="NestMate.html" class="btn btn-secondary btn-lg">
-          👀 View Demo
+          <i class="fas fa-play"></i>
+          Watch 2-Min Demo
         </a>
         <a href="pricing.html" class="btn btn-accent btn-lg">
-          💰 See Pricing
+          <i class="fas fa-dollar-sign"></i>
+          View Plans & Pricing
         </a>
       </div>
       
@@ -520,82 +669,82 @@
       <div class="stats">
         <div class="stat">
           <div class="stat-number">10K+</div>
-          <div class="stat-label">Happy Homeowners</div>
+          <div class="stat-label">Active Homeowners</div>
         </div>
         <div class="stat">
           <div class="stat-number">$15K</div>
-          <div class="stat-label">Avg. Home Value Increase</div>
+          <div class="stat-label">Average Value Increase</div>
         </div>
         <div class="stat">
           <div class="stat-number">4.9★</div>
-          <div class="stat-label">Customer Rating</div>
+          <div class="stat-label">Customer Satisfaction</div>
         </div>
         <div class="stat">
-          <div class="stat-number">24/7</div>
-          <div class="stat-label">Support Available</div>
+          <div class="stat-number">99.9%</div>
+          <div class="stat-label">Uptime Guarantee</div>
         </div>
       </div>
     </section>
 
     <!-- Features -->
     <section class="features">
-      <h2 class="section-title">Everything Your Home Needs</h2>
+      <h2 class="section-title">Why 10,000+ Homeowners Choose NestMate</h2>
       <p class="section-subtitle">
-        From room-by-room details to smart reminders, NestMate has everything to keep your home organized and valuable.
+        The complete home management platform that saves you time, money, and stress while increasing your property value.
       </p>
       
       <div class="features-grid">
         <div class="feature-card">
-          <div class="feature-icon">🏡</div>
+          <div class="feature-icon"><i class="fas fa-home"></i></div>
           <h3 class="feature-title">Complete Home Inventory</h3>
           <p class="feature-desc">
-            Store every detail about your home—paint colors, appliance models, 
-            room dimensions, and more. Never lose important information again.
+            Document every detail—paint colors, appliance models, room dimensions, warranties, and more. 
+            Create a comprehensive digital record that increases your home's value.
           </p>
         </div>
         
         <div class="feature-card">
-          <div class="feature-icon">⏰</div>
-          <h3 class="feature-title">Smart Reminders</h3>
+          <div class="feature-icon"><i class="fas fa-bell"></i></div>
+          <h3 class="feature-title">Smart Maintenance Alerts</h3>
           <p class="feature-desc">
-            Get notified about maintenance tasks, filter changes, warranty renewals, 
-            and important home events. Stay on top of everything automatically.
+            Never miss important maintenance again. Get intelligent reminders for filter changes, 
+            warranty renewals, and seasonal tasks. Save thousands in emergency repairs.
           </p>
         </div>
         
         <div class="feature-card">
-          <div class="feature-icon">📊</div>
+          <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
           <h3 class="feature-title">Home Health Score</h3>
           <p class="feature-desc">
-            Monitor your home's condition with our intelligent scoring system. 
-            Know exactly what needs attention and when.
+            Monitor your home's condition with our AI-powered scoring system. 
+            Know exactly what needs attention and when to maximize your property value.
           </p>
         </div>
         
         <div class="feature-card">
-          <div class="feature-icon">🛒</div>
-          <h3 class="feature-title">Direct Shopping</h3>
+          <div class="feature-icon"><i class="fas fa-shopping-cart"></i></div>
+          <h3 class="feature-title">Direct Product Shopping</h3>
           <p class="feature-desc">
-            Order any home product directly from your dashboard. From appliances 
-            to paint, get recommendations and shop trusted brands.
+            Order home products directly from your dashboard. Get personalized recommendations 
+            and exclusive deals on appliances, paint, tools, and more.
           </p>
         </div>
         
         <div class="feature-card">
-          <div class="feature-icon">📈</div>
-          <h3 class="feature-title">Value Tracking</h3>
+          <div class="feature-icon"><i class="fas fa-dollar-sign"></i></div>
+          <h3 class="feature-title">Value Tracking & ROI</h3>
           <p class="feature-desc">
-            Track how improvements affect your home's value. Build a complete 
-            history that increases resale value and buyer confidence.
+            Track how improvements affect your home's value. Build a complete history 
+            that increases resale value by up to 15% and gives buyers confidence.
           </p>
         </div>
         
         <div class="feature-card">
-          <div class="feature-icon">🔒</div>
-          <h3 class="feature-title">Secure & Private</h3>
+          <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+          <h3 class="feature-title">Bank-Level Security</h3>
           <p class="feature-desc">
-            Your data is encrypted and protected. Only you control access to 
-            your home's information. Complete privacy guaranteed.
+            Your data is encrypted with military-grade security. Complete privacy guaranteed. 
+            Only you control access to your home's information.
           </p>
         </div>
       </div>
@@ -608,14 +757,15 @@
           <h2>Like Carfax, But for Your Home</h2>
           <p>
             NestMate creates a comprehensive digital record of your home that increases 
-            its value and makes it easier to sell, maintain, and improve.
+            its value by up to 15% and makes it easier to sell, maintain, and improve.
           </p>
           <ul class="benefits-list">
-            <li>Increase resale value by 5-15% with complete home history</li>
-            <li>Give realtors powerful marketing tools for your property</li>
-            <li>Help contractors understand your home's needs instantly</li>
-            <li>Track upgrades, warranties, and repairs in one place</li>
-            <li>Stand out in the market with transparent, trusted records</li>
+            <li><strong>Increase resale value by 5-15%</strong> with complete home history</li>
+            <li><strong>Give realtors powerful marketing tools</strong> for your property</li>
+            <li><strong>Help contractors understand your home's needs</strong> instantly</li>
+            <li><strong>Track upgrades, warranties, and repairs</strong> in one place</li>
+            <li><strong>Stand out in the market</strong> with transparent, trusted records</li>
+            <li><strong>Save thousands on insurance</strong> with detailed maintenance records</li>
           </ul>
         </div>
         <div class="value-visual">
@@ -651,25 +801,29 @@
     <!-- CTA Section -->
     <section class="cta-section">
       <div class="cta-content">
-        <h2 class="cta-title">Ready to Transform Your Home?</h2>
+        <h2 class="cta-title">Ready to Increase Your Home's Value?</h2>
         <p class="cta-subtitle">
-          Join thousands of homeowners who are already saving time, money, and stress 
-          with NestMate. Start your free trial today.
+          Join 10,000+ homeowners who are already saving time, money, and stress while 
+          increasing their property value by up to 15%. Start your free trial today—no credit card required.
         </p>
         <div class="cta-actions">
           <a href="signin.html?tab=signup" class="btn btn-white btn-lg">
-            🚀 Start Free Trial
+            <i class="fas fa-rocket"></i>
+            Start Free Trial - No Credit Card
           </a>
-          <a href="about.html" class="btn btn-outline btn-lg">
-            ℹ️ Learn More
+          <a href="NestMate.html" class="btn btn-outline btn-lg">
+            <i class="fas fa-play"></i>
+            Watch Demo
           </a>
-          <a href="contact.html" class="btn btn-outline btn-lg">
-            📧 Contact Us
-          </a>
-          <a href="faq.html" class="btn btn-outline btn-lg">
-            ❓ FAQ
+          <a href="pricing.html" class="btn btn-outline btn-lg">
+            <i class="fas fa-dollar-sign"></i>
+            View Pricing
           </a>
         </div>
+        <p style="margin-top: 1.5rem; font-size: 0.9rem; opacity: 0.8;">
+          <i class="fas fa-shield-alt"></i>
+          30-day money-back guarantee • Cancel anytime • Bank-level security
+        </p>
       </div>
     </section>
   </main>
@@ -677,5 +831,79 @@
   <footer>
     <p>&copy; 2025 NestMate. Built for your peace of mind.</p>
   </footer>
+
+  <script>
+    // Header scroll effect
+    window.addEventListener('scroll', function() {
+      const header = document.querySelector('header');
+      if (window.scrollY > 100) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+
+    // Animate stats on scroll
+    const observerOptions = {
+      threshold: 0.5,
+      rootMargin: '0px 0px -100px 0px'
+    };
+
+    const observer = new IntersectionObserver(function(entries) {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.animation = 'countUp 2s ease-out';
+        }
+      });
+    }, observerOptions);
+
+    // Observe all stat numbers
+    document.querySelectorAll('.stat-number').forEach(stat => {
+      observer.observe(stat);
+    });
+
+    // Add hover effects to feature cards
+    document.querySelectorAll('.feature-card').forEach(card => {
+      card.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-8px) scale(1.02)';
+      });
+      
+      card.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0) scale(1)';
+      });
+    });
+
+    // Add click tracking for analytics
+    document.querySelectorAll('.btn').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        const action = this.textContent.trim();
+        console.log('Button clicked:', action);
+        // Add your analytics tracking here
+      });
+    });
+
+    // Add loading animation
+    window.addEventListener('load', function() {
+      document.body.style.opacity = '0';
+      document.body.style.transition = 'opacity 0.5s ease-in-out';
+      setTimeout(() => {
+        document.body.style.opacity = '1';
+      }, 100);
+    });
+  </script>
 </body>
 </html>
