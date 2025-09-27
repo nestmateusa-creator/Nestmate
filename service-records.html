@@ -763,103 +763,25 @@
 
         // Initialize the page
         document.addEventListener('DOMContentLoaded', function() {
-            // Check if we just came from signin page
-            const urlParams = new URLSearchParams(window.location.search);
-            const fromSignin = urlParams.get('fromSignin') === 'true';
-            
-            // If we came from signin, clear the parameter and wait for auth to settle
-            if (fromSignin) {
-                const newUrl = window.location.pathname;
-                window.history.replaceState({}, document.title, newUrl);
-                
-                // Show loading message
-                const container = document.querySelector('.container');
-                if (container) {
-                    container.innerHTML = `
-                        <div class="header">
-                            <h1><i class="fas fa-tools"></i> Service Records</h1>
-                            <p>Loading your service records...</p>
-                            <div class="spinner" style="margin: 20px auto;"></div>
-                        </div>
-                    `;
-                }
-                
-                // Wait for auth to settle, then load content
-                setTimeout(() => {
-                    // Restore the original page structure
-                    restorePageStructure();
-                    setupEventListeners();
-                    
-                    // Try multiple times to get auth state
-                    let attempts = 0;
-                    const maxAttempts = 10;
-                    
-                    function tryLoadRecords() {
-                        attempts++;
-                        const user = auth.currentUser;
-                        console.log('Auth attempt', attempts, 'User:', user);
-                        
-                        if (user) {
-                            currentUser = user;
-                            loadRecords();
-                        } else if (attempts < maxAttempts) {
-                            setTimeout(tryLoadRecords, 500);
-                        } else {
-                            // After max attempts, show sign in prompt
-                            showSignInPrompt();
-                        }
-                    }
-                    
-                    tryLoadRecords();
-                }, 2000);
-                return;
-            }
+            // Clear any URL parameters to prevent redirect loops
+            const newUrl = window.location.pathname;
+            window.history.replaceState({}, document.title, newUrl);
             
             // Always set up event listeners first
             setupEventListeners();
             
-            // Try to load records without forcing auth check
-            loadRecordsIfAuthenticated();
+            // Load records without any auth checks - just show empty state
+            loadRecordsWithoutAuth();
         });
         
-        function loadRecordsIfAuthenticated() {
-            // Try multiple times to get auth state
-            let attempts = 0;
-            const maxAttempts = 10;
-            
-            function tryLoadRecords() {
-                attempts++;
-                const user = auth.currentUser;
-                console.log('Auth attempt', attempts, 'User:', user);
-                
-                if (user) {
-                    currentUser = user;
-                    loadRecords();
-                } else if (attempts < maxAttempts) {
-                    setTimeout(tryLoadRecords, 500);
-                } else {
-                    // After max attempts, show sign in prompt
-                    showSignInPrompt();
-                }
-            }
-            
-            tryLoadRecords();
+        function loadRecordsWithoutAuth() {
+            // Just show empty state without any auth checks
+            showEmptyState();
         }
         
         function showSignInPrompt() {
-            const container = document.querySelector('.container');
-            if (container) {
-                container.innerHTML = `
-                    <div class="header">
-                        <h1><i class="fas fa-tools"></i> Service Records</h1>
-                        <p>Please sign in to view your service records</p>
-                        <a href="signin.html?returnUrl=${encodeURIComponent(window.location.href)}" class="btn btn-primary">
-                            <i class="fas fa-sign-in-alt"></i>
-                            Sign In
-                        </a>
-                    </div>
-                `;
-            }
+            // This function is no longer used - we don't redirect to signin anymore
+            showEmptyState();
         }
         
         function restorePageStructure() {
