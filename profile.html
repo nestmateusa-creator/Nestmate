@@ -50,112 +50,35 @@
         }
 
         .header {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: var(--radius);
-            padding: 24px;
-            margin-bottom: 24px;
-            box-shadow: var(--shadow-lg);
+            padding: 20px;
+            margin-bottom: 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .header h1 {
-            color: var(--primary);
-            font-size: 28px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .back-btn {
-            background: var(--primary);
             color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: var(--radius);
+            font-size: 24px;
             font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .back-btn:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-        }
-
-        .profile-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            margin-bottom: 24px;
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: var(--radius);
-            padding: 24px;
-            box-shadow: var(--shadow-lg);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: var(--transition);
-        }
-
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        }
-
-        .card h2 {
-            color: var(--primary);
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 20px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .form-label {
-            display: block;
-            font-weight: 500;
-            color: var(--dark);
-            margin-bottom: 6px;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid var(--border);
-            border-radius: var(--radius);
-            font-size: 14px;
-            transition: var(--transition);
-            background: rgba(255, 255, 255, 0.8);
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: white;
-            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+        .header i {
+            font-size: 28px;
         }
 
         .btn {
             padding: 12px 24px;
             border: none;
             border-radius: var(--radius);
-            font-weight: 600;
+            font-weight: 500;
             cursor: pointer;
             transition: var(--transition);
             text-decoration: none;
@@ -163,10 +86,6 @@
             align-items: center;
             gap: 8px;
             font-size: 14px;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
         }
 
         .btn-primary {
@@ -176,6 +95,116 @@
 
         .btn-primary:hover {
             background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius);
+            padding: 30px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .card-header h2 {
+            color: var(--primary);
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .card-header i {
+            font-size: 24px;
+            color: var(--primary);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 14px;
+            transition: var(--transition);
+            background: white;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+        }
+
+        .subscription-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius);
+            padding: 30px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .subscription-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: var(--radius);
+            color: white;
+        }
+
+        .subscription-info h3 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .subscription-info .status {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .subscription-actions {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
         }
 
         .btn-danger {
@@ -185,212 +214,59 @@
 
         .btn-danger:hover {
             background: #dc2626;
-        }
-
-        .btn-success {
-            background: var(--success);
-            color: white;
-        }
-
-        .btn-success:hover {
-            background: #059669;
-        }
-
-        .btn-outline {
-            background: transparent;
-            color: var(--primary);
-            border: 2px solid var(--primary);
-        }
-
-        .btn-outline:hover {
-            background: var(--primary);
-            color: white;
-        }
-
-        .subscription-card {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            border-radius: var(--radius);
-            padding: 24px;
-            margin-bottom: 20px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .subscription-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 100px;
-            height: 100px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            transform: translate(30px, -30px);
-        }
-
-        .subscription-plan {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .subscription-status {
-            font-size: 16px;
-            opacity: 0.9;
-            margin-bottom: 16px;
-        }
-
-        .stripe-portal-btn {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            padding: 12px 24px;
-            border-radius: var(--radius);
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            margin-right: 12px;
-        }
-
-        .stripe-portal-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            border-color: rgba(255, 255, 255, 0.5);
             transform: translateY(-2px);
         }
 
         .upgrade-options {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            margin-top: 20px;
+            gap: 15px;
         }
 
         .upgrade-option {
-            background: rgba(255, 255, 255, 0.8);
             padding: 20px;
+            border: 2px solid var(--border);
             border-radius: var(--radius);
             text-align: center;
-            border: 2px solid transparent;
-            transition: var(--transition);
             cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .upgrade-option::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: var(--primary);
-            transform: scaleX(0);
             transition: var(--transition);
+            background: white;
         }
 
         .upgrade-option:hover {
             border-color: var(--primary);
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .upgrade-option:hover::before {
-            transform: scaleX(1);
+            transform: translateY(-2px);
         }
 
         .upgrade-option.current {
-            border-color: var(--success);
-            background: rgba(16, 185, 129, 0.1);
-        }
-
-        .upgrade-option.current::before {
-            background: var(--success);
-            transform: scaleX(1);
+            border-color: var(--primary);
+            background: rgba(124, 58, 237, 0.05);
         }
 
         .upgrade-option h4 {
             color: var(--primary);
             margin-bottom: 8px;
-            font-size: 18px;
         }
 
         .upgrade-option .price {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--success);
-            margin-bottom: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 5px;
         }
 
-        .upgrade-option .features {
-            font-size: 12px;
+        .upgrade-option small {
             color: var(--secondary);
-            margin-bottom: 12px;
-        }
-
-        .alert {
-            padding: 16px 20px;
-            border-radius: var(--radius);
-            margin-bottom: 16px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .alert-success {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--success);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-        }
-
-        .alert-danger {
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--danger);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-        }
-
-        .alert-info {
-            background: rgba(6, 182, 212, 0.1);
-            color: var(--info);
-            border: 1px solid rgba(6, 182, 212, 0.2);
-        }
-
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 40px;
-        }
-
-        .spinner {
-            border: 4px solid var(--border);
-            border-top: 4px solid var(--primary);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
         }
 
         .toast {
             position: fixed;
             top: 20px;
             right: 20px;
-            background: var(--success);
-            color: white;
-            padding: 16px 24px;
+            padding: 15px 20px;
             border-radius: var(--radius);
-            box-shadow: var(--shadow-lg);
+            color: white;
+            font-weight: 500;
             z-index: 1000;
             transform: translateX(400px);
             transition: var(--transition);
@@ -398,6 +274,10 @@
 
         .toast.show {
             transform: translateX(0);
+        }
+
+        .toast.success {
+            background: var(--success);
         }
 
         .toast.error {
@@ -409,18 +289,12 @@
         }
 
         @media (max-width: 768px) {
-            .profile-grid {
+            .content-grid {
                 grid-template-columns: 1fr;
             }
             
-            .upgrade-options {
-                grid-template-columns: 1fr;
-            }
-
-            .header {
+            .subscription-actions {
                 flex-direction: column;
-                gap: 16px;
-                text-align: center;
             }
         }
     </style>
@@ -429,311 +303,170 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1><i class="fas fa-user-cog"></i> Profile Management</h1>
-            <a href="dashboard-basic-new.html" class="back-btn">
+            <h1>
+                <i class="fas fa-user-cog"></i>
+                Profile Management
+            </h1>
+            <a href="dashboard-basic-new.html" class="btn btn-secondary">
                 <i class="fas fa-arrow-left"></i>
                 Return to Dashboard
             </a>
         </div>
 
-        <!-- Loading State -->
-        <div id="loading" class="loading">
-            <div class="spinner"></div>
-            <p>Loading profile...</p>
-        </div>
-
-        <!-- Profile Content -->
-        <div id="profileContent" style="display: none;">
-            <div class="profile-grid">
-                <!-- Personal Information -->
-                <div class="card">
-                    <h2><i class="fas fa-user"></i> Personal Information</h2>
-                    <form id="personalForm">
-                        <div class="form-group">
-                            <label class="form-label">Full Name</label>
-                            <input type="text" id="fullName" class="form-input" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Email</label>
-                            <input type="email" id="email" class="form-input" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Phone Number</label>
-                            <input type="tel" id="phone" class="form-input">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Spouse Name</label>
-                            <input type="text" id="spouseName" class="form-input">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Billing Address</label>
-                            <textarea id="billingAddress" class="form-input" rows="3" placeholder="Street address, city, state, zip code"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Mailing Address</label>
-                            <textarea id="mailingAddress" class="form-input" rows="3" placeholder="Street address, city, state, zip code"></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i>
-                            Save Changes
-                        </button>
-                    </form>
-                </div>
-
-                <!-- Password Change -->
-                <div class="card">
-                    <h2><i class="fas fa-lock"></i> Change Password</h2>
-                    <form id="passwordForm">
-                        <div class="form-group">
-                            <label class="form-label">Current Password</label>
-                            <input type="password" id="currentPassword" class="form-input" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">New Password</label>
-                            <input type="password" id="newPassword" class="form-input" required minlength="6">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Confirm New Password</label>
-                            <input type="password" id="confirmPassword" class="form-input" required minlength="6">
-                        </div>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-key"></i>
-                            Change Password
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Subscription Management -->
+        <!-- Main Content -->
+        <div class="content-grid">
+            <!-- Personal Information -->
             <div class="card">
-                <h2><i class="fas fa-credit-card"></i> Subscription Management</h2>
-                
-                <div class="subscription-card">
-                    <div class="subscription-plan" id="currentPlan">Loading...</div>
-                    <div class="subscription-status" id="subscriptionStatus">Loading...</div>
-                    
-                    <div style="display: flex; flex-wrap: wrap; gap: 12px;">
-                        <button class="stripe-portal-btn" onclick="openStripePortal()">
-                            <i class="fas fa-external-link-alt"></i>
-                            Manage Billing & Subscription
-                        </button>
-                        <button class="btn btn-danger" onclick="cancelSubscriptionNow()">
-                            <i class="fas fa-times"></i>
-                            Cancel Subscription
-                        </button>
+                <div class="card-header">
+                    <i class="fas fa-user"></i>
+                    <h2>Personal Information</h2>
+                </div>
+                <form id="personalForm">
+                    <div class="form-group">
+                        <label for="fullName">Full Name</label>
+                        <input type="text" id="fullName" name="fullName" placeholder="Enter your full name">
                     </div>
-                </div>
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" placeholder="Enter your phone number">
+                    </div>
+                    <div class="form-group">
+                        <label for="spouseName">Spouse Name</label>
+                        <input type="text" id="spouseName" name="spouseName" placeholder="Enter spouse name">
+                    </div>
+                    <div class="form-group">
+                        <label for="billingAddress">Billing Address</label>
+                        <input type="text" id="billingAddress" name="billingAddress" placeholder="Enter billing address">
+                    </div>
+                    <div class="form-group">
+                        <label for="mailingAddress">Mailing Address</label>
+                        <input type="text" id="mailingAddress" name="mailingAddress" placeholder="Enter mailing address">
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        Save Changes
+                    </button>
+                </form>
+            </div>
 
-                <div class="upgrade-options" id="upgradeOptions">
-                    <!-- Upgrade options will be populated -->
+            <!-- Change Password -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-lock"></i>
+                    <h2>Change Password</h2>
                 </div>
+                <form id="passwordForm">
+                    <div class="form-group">
+                        <label for="currentPassword">Current Password</label>
+                        <input type="password" id="currentPassword" name="currentPassword" placeholder="Enter current password">
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword">New Password</label>
+                        <input type="password" id="newPassword" name="newPassword" placeholder="Enter new password">
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm New Password</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm new password">
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-lock"></i>
+                        Change Password
+                    </button>
+                </form>
             </div>
         </div>
 
-        <!-- Alerts -->
-        <div id="alerts"></div>
+        <!-- Subscription Management -->
+        <div class="subscription-card">
+            <div class="subscription-info">
+                <div>
+                    <h3 id="currentPlan">Trial Plan</h3>
+                    <div class="status" id="subscriptionStatus">Active - Free</div>
+                </div>
+            </div>
+            
+            <div class="subscription-actions" id="subscriptionActions">
+                <button class="btn btn-danger" onclick="cancelSubscription()">
+                    <i class="fas fa-times"></i>
+                    Cancel Subscription
+                </button>
+                <button class="btn btn-primary" onclick="openStripePortal()">
+                    <i class="fas fa-dollar-sign"></i>
+                    Manage Billing
+                </button>
+            </div>
+
+            <h3 style="margin-bottom: 15px; color: var(--primary);">Upgrade Options</h3>
+            <div class="upgrade-options" id="upgradeOptions">
+                <!-- Upgrade options will be populated here -->
+            </div>
+        </div>
     </div>
 
     <!-- Toast Notification -->
     <div class="toast" id="toast"></div>
 
     <script>
-        // Wait for Firebase to load
-        window.addEventListener('load', function() {
-            console.log('=== SCRIPT STARTING ===');
-            console.log('Firebase object:', typeof firebase);
-            
-            // Firebase configuration - CORRECTED PROJECT ID
-            const firebaseConfig = {
-                apiKey: "AIzaSyBvOkBwJ1Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4",
-                authDomain: "nestmate-167ed.firebaseapp.com",
-                projectId: "nestmate-167ed",
-                storageBucket: "nestmate-167ed.appspot.com",
-                messagingSenderId: "123456789012",
-                appId: "1:123456789012:web:abcdefghijklmnopqrstuv"
-            };
+        // Simple working profile page
+        console.log('Profile page script starting...');
+        
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBvOkBwJ1Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4",
+            authDomain: "nestmate-167ed.firebaseapp.com",
+            projectId: "nestmate-167ed",
+            storageBucket: "nestmate-167ed.appspot.com",
+            messagingSenderId: "123456789012",
+            appId: "1:123456789012:web:abcdefghijklmnopqrstuv"
+        };
 
-            console.log('Firebase config:', firebaseConfig);
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        
+        console.log('Firebase initialized');
+        
+        let currentUser = null;
+        let userData = null;
 
-            // Initialize Firebase
-            firebase.initializeApp(firebaseConfig);
-            const auth = firebase.auth();
-            const db = firebase.firestore();
+        // Initialize page when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, checking auth...');
             
-            console.log('Firebase initialized');
-            console.log('Auth object:', auth);
-            console.log('DB object:', db);
-            
-            let currentUser = null;
-            let userData = null;
-
-            // Initialize page
-            document.addEventListener('DOMContentLoaded', function() {
-            console.log('=== PROFILE PAGE LOADED ===');
-            console.log('DOM Content Loaded event fired');
-            
-            // Clear any URL parameters to prevent redirect loops
-            const newUrl = window.location.pathname;
-            window.history.replaceState({}, document.title, newUrl);
-            console.log('URL cleared, new URL:', newUrl);
-            
-            // Show profile content immediately
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('profileContent').style.display = 'block';
-            console.log('Profile content shown');
-            
-            // Try to populate email immediately as fallback
-            populateEmailIfAvailable();
-            
-            // Debug: Check auth state every second for 5 seconds
-            let debugAttempts = 0;
-            const debugInterval = setInterval(() => {
-                debugAttempts++;
-                console.log(`Debug attempt ${debugAttempts}: auth.currentUser =`, auth.currentUser);
-                if (auth.currentUser) {
-                    console.log('Found user during debug:', auth.currentUser.email);
-                    clearInterval(debugInterval);
-                }
-                if (debugAttempts >= 5) {
-                    clearInterval(debugInterval);
-                    console.log('Debug complete - no user found after 5 attempts');
-                }
-            }, 1000);
-            
-            // Don't set test email - let the user detection handle it
-            
-            // Check for current user immediately with retry
-            let attempts = 0;
-            const maxAttempts = 10;
-            
-            const checkUser = () => {
-                attempts++;
-                const user = auth.currentUser;
-                console.log(`Attempt ${attempts}: auth.currentUser =`, user);
+            // Check if user is logged in
+            auth.onAuthStateChanged(function(user) {
+                console.log('Auth state changed:', user);
                 
                 if (user) {
-                    console.log('Current user found:', user.email);
+                    console.log('User found:', user.email);
                     currentUser = user;
                     loadUserProfile();
-                } else if (attempts < maxAttempts) {
-                    console.log(`No user found, retrying in 500ms... (${attempts}/${maxAttempts})`);
-                    setTimeout(checkUser, 500);
                 } else {
-                    console.log('No user found after all attempts, setting up auth listener');
-                    // Set up auth state listener - NO REDIRECTS, just load data
-                    auth.onAuthStateChanged(async (user) => {
-                        if (user) {
-                            console.log('User detected via listener:', user.email);
-                            currentUser = user;
-                            await loadUserProfile();
-                        } else {
-                            console.log('No user detected, showing default profile');
-                            loadProfileWithoutAuth();
-                        }
-                    });
+                    console.log('No user found');
+                    showToast('Please sign in to view your profile', 'error');
+                    setTimeout(() => {
+                        window.location.href = 'signin.html';
+                    }, 2000);
                 }
-            };
-            
-            checkUser();
+            });
         });
 
-        // Load profile without authentication
-        function loadProfileWithoutAuth() {
-            // Set default values
-            document.getElementById('fullName').value = '';
-            document.getElementById('email').value = '';
-            document.getElementById('phone').value = '';
-            document.getElementById('spouseName').value = '';
-            document.getElementById('billingAddress').value = '';
-            document.getElementById('mailingAddress').value = '';
-            
-            // Set default userData for trial plan
-            userData = { accountType: 'trial' };
-            updateSubscriptionInfo();
-        }
-
-        // Fallback function to populate email if available
-        function populateEmailIfAvailable() {
-            console.log('=== POPULATE EMAIL FUNCTION CALLED ===');
-            console.log('Trying to populate email...');
-            console.log('auth object:', auth);
-            console.log('auth.currentUser:', auth.currentUser);
-            console.log('auth.currentUser?.email:', auth.currentUser?.email);
-            
-            // Try to get email from various sources
-            const emailSources = [
-                () => {
-                    console.log('Trying auth.currentUser.email...');
-                    return auth.currentUser?.email;
-                },
-                () => {
-                    console.log('Trying localStorage...');
-                    return localStorage.getItem('userEmail');
-                },
-                () => {
-                    console.log('Trying sessionStorage...');
-                    return sessionStorage.getItem('userEmail');
-                },
-                () => {
-                    console.log('Trying URL params...');
-                    const urlParams = new URLSearchParams(window.location.search);
-                    return urlParams.get('email');
-                },
-                () => {
-                    console.log('Trying localStorage with different keys...');
-                    return localStorage.getItem('email') || localStorage.getItem('user') || localStorage.getItem('currentUser');
-                }
-            ];
-            
-            for (let i = 0; i < emailSources.length; i++) {
-                const email = emailSources[i]();
-                console.log(`Email source ${i} returned:`, email);
-                if (email) {
-                    document.getElementById('email').value = email;
-                    console.log('Email populated from fallback:', email);
-                    return email;
-                }
-            }
-            
-            console.log('No email found from any source');
-            return null;
-        }
-
-        // Load user profile data (for authenticated users)
+        // Load user profile data
         async function loadUserProfile() {
             try {
-                // Check user in subscription collections first
-                const collections = [
-                    { name: 'Advanced Pro User Accounts', type: 'advanced' },
-                    { name: 'Pro User Accounts', type: 'pro' },
-                    { name: 'Basic User Accounts', type: 'basic' }
-                ];
+                console.log('Loading user profile...');
                 
-                let accountType = 'trial';
-                let foundInCollection = false;
-                
-                for (const collection of collections) {
-                    const query = await db.collection(collection.name)
-                        .where('email', '==', currentUser.email)
-                        .limit(1)
-                        .get();
-                    
-                    if (!query.empty) {
-                        accountType = collection.type;
-                        foundInCollection = true;
-                        break;
-                    }
-                }
-                
-                // Load user data from Firestore
+                // Get user data from Firestore
                 const userDoc = await db.collection('userProfiles').doc(currentUser.uid).get();
                 
                 if (userDoc.exists) {
                     userData = userDoc.data();
-                    // Override account type if found in subscription collection
-                    if (foundInCollection) {
-                        userData.accountType = accountType;
-                    }
+                    console.log('User data loaded:', userData);
                 } else {
                     // Create default profile
                     userData = {
@@ -743,12 +476,13 @@
                         spouseName: '',
                         billingAddress: '',
                         mailingAddress: '',
-                        accountType: accountType
+                        accountType: 'trial'
                     };
+                    console.log('Created default profile');
                 }
                 
                 // Populate form fields
-                document.getElementById('fullName').value = userData.displayName || currentUser.displayName || '';
+                document.getElementById('fullName').value = userData.displayName || '';
                 document.getElementById('email').value = currentUser.email;
                 document.getElementById('phone').value = userData.phone || '';
                 document.getElementById('spouseName').value = userData.spouseName || '';
@@ -758,9 +492,11 @@
                 // Update subscription info
                 updateSubscriptionInfo();
                 
+                showToast('Profile loaded successfully!', 'success');
+                
             } catch (error) {
-                console.error('Error loading user profile:', error);
-                showToast('Error loading profile. Please try again.', 'error');
+                console.error('Error loading profile:', error);
+                showToast('Error loading profile', 'error');
             }
         }
 
@@ -784,38 +520,16 @@
             document.getElementById('currentPlan').textContent = planNames[accountType];
             document.getElementById('subscriptionStatus').textContent = `Active - ${planPrices[accountType]}`;
             
-            // Update upgrade options
             updateUpgradeOptions(accountType);
         }
 
         // Update upgrade options
         function updateUpgradeOptions(currentAccountType) {
-            const upgradeDiv = document.getElementById('upgradeOptions');
             const plans = [
-                { 
-                    id: 'trial', 
-                    name: 'Trial', 
-                    price: 'Free', 
-                    features: ['Basic features', 'Limited access'] 
-                },
-                { 
-                    id: 'basic', 
-                    name: 'Basic', 
-                    price: '$5/month', 
-                    features: ['All trial features', 'Priority support', '10 tasks limit'] 
-                },
-                { 
-                    id: 'pro', 
-                    name: 'Pro', 
-                    price: '$10/month', 
-                    features: ['All basic features', 'Multiple homes', 'Product orders', 'Price tracking'] 
-                },
-                { 
-                    id: 'advanced', 
-                    name: 'Advanced Pro', 
-                    price: '$16/month', 
-                    features: ['All pro features', 'Family management', 'Emergency services', 'Team orders'] 
-                }
+                { id: 'trial', name: 'Trial', price: 'Free', features: ['Basic features'] },
+                { id: 'basic', name: 'Basic', price: '$5/month', features: ['All trial features', 'Priority support'] },
+                { id: 'pro', name: 'Pro', price: '$10/month', features: ['All basic features', 'Advanced tools', 'Family management'] },
+                { id: 'advanced', name: 'Advanced', price: '$16/month', features: ['All pro features', 'Premium support', 'Custom integrations'] }
             ];
 
             let optionsHTML = '';
@@ -830,26 +544,16 @@
                 optionsHTML += `
                     <div class="upgrade-option ${isCurrent ? 'current' : ''}" 
                          data-plan-id="${plan.id}" 
-                         ${canUpgrade ? 'data-clickable="true"' : ''}>
+                         ${canUpgrade ? 'onclick="upgradeToPlan(\'' + plan.id + '\')"' : ''}>
                         <h4>${plan.name}</h4>
                         <div class="price">${plan.price}</div>
-                        <div class="features">${plan.features.join(', ')}</div>
-                        ${isCurrent ? '<small style="color: var(--success); font-weight: 600;">Current Plan</small>' : ''}
-                        ${canUpgrade ? '<small style="color: var(--primary); font-weight: 600;">Click to upgrade</small>' : ''}
+                        ${isCurrent ? '<small>Current Plan</small>' : ''}
+                        ${canUpgrade ? '<small>Click to upgrade</small>' : ''}
                     </div>
                 `;
             });
 
-            upgradeDiv.innerHTML = optionsHTML;
-            
-            // Add event listeners to clickable upgrade options
-            const clickableOptions = upgradeDiv.querySelectorAll('[data-clickable="true"]');
-            clickableOptions.forEach(option => {
-                option.addEventListener('click', function() {
-                    const planId = this.getAttribute('data-plan-id');
-                    upgradeToPlan(planId);
-                });
-            });
+            document.getElementById('upgradeOptions').innerHTML = optionsHTML;
         }
 
         // Save personal information
@@ -857,7 +561,7 @@
             e.preventDefault();
             
             if (!currentUser) {
-                showToast('Please sign in to save profile changes.', 'error');
+                showToast('Please sign in to save changes', 'error');
                 return;
             }
             
@@ -871,7 +575,7 @@
                     updatedAt: new Date().toISOString()
                 };
 
-                // Save to userProfiles collection
+                // Save to Firestore
                 await db.collection('userProfiles').doc(currentUser.uid).set(updates, { merge: true });
                 
                 // Update Firebase Auth display name
@@ -886,7 +590,7 @@
                 
             } catch (error) {
                 console.error('Error updating profile:', error);
-                showToast('Error updating profile. Please try again.', 'error');
+                showToast('Error updating profile', 'error');
             }
         });
 
@@ -895,7 +599,7 @@
             e.preventDefault();
             
             if (!currentUser) {
-                showToast('Please sign in to change password.', 'error');
+                showToast('Please sign in to change password', 'error');
                 return;
             }
             
@@ -904,12 +608,12 @@
             const confirmPassword = document.getElementById('confirmPassword').value;
             
             if (newPassword !== confirmPassword) {
-                showToast('New passwords do not match.', 'error');
+                showToast('New passwords do not match', 'error');
                 return;
             }
             
             if (newPassword.length < 6) {
-                showToast('New password must be at least 6 characters long.', 'error');
+                showToast('New password must be at least 6 characters long', 'error');
                 return;
             }
             
@@ -932,11 +636,11 @@
             } catch (error) {
                 console.error('Error changing password:', error);
                 if (error.code === 'auth/wrong-password') {
-                    showToast('Current password is incorrect.', 'error');
+                    showToast('Current password is incorrect', 'error');
                 } else if (error.code === 'auth/weak-password') {
-                    showToast('New password is too weak.', 'error');
+                    showToast('New password is too weak', 'error');
                 } else {
-                    showToast('Error changing password. Please try again.', 'error');
+                    showToast('Error changing password', 'error');
                 }
             }
         });
@@ -945,56 +649,39 @@
         async function openStripePortal() {
             try {
                 showToast('Opening billing portal...', 'info');
-                
-                // Create Stripe customer portal session
                 const response = await fetch('/.netlify/functions/create-customer-portal', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({
-                        customerId: currentUser.uid,
-                        email: currentUser.email
-                    })
+                    body: JSON.stringify({ uid: currentUser.uid, email: currentUser.email })
                 });
 
                 if (response.ok) {
-                    const result = await response.json();
-                    if (result.url) {
-                        window.open(result.url, '_blank');
-                    } else {
-                        // Fallback to direct Stripe portal link
-                        window.open('https://billing.stripe.com/p/login/bJe28tfiGbQPdU184J1sQ00', '_blank');
-                    }
+                    const { url } = await response.json();
+                    window.location.href = url;
                 } else {
-                    // Fallback to direct Stripe portal link
-                    window.open('https://billing.stripe.com/p/login/bJe28tfiGbQPdU184J1sQ00', '_blank');
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to create customer portal session');
                 }
             } catch (error) {
-                console.error('Error opening Stripe portal:', error);
-                // Fallback to direct Stripe portal link
-                window.open('https://billing.stripe.com/p/login/bJe28tfiGbQPdU184J1sQ00', '_blank');
+                console.error('Error opening Stripe Customer Portal:', error);
+                showToast('Error opening billing portal', 'error');
             }
         }
 
         // Upgrade to specific plan
-        async function upgradeToPlan(planId) {
+        function upgradeToPlan(planId) {
             if (confirm(`Are you sure you want to upgrade to the ${planId} plan?`)) {
-                try {
-                    // Redirect to upgrade page
-                    window.location.href = `upgrade-${planId}.html`;
-                } catch (error) {
-                    console.error('Error upgrading plan:', error);
-                    showToast('Error upgrading plan. Please try again.', 'error');
-                }
+                window.location.href = `upgrade-${planId}.html`;
             }
         }
 
         // Cancel subscription
-        async function cancelSubscriptionNow() {
+        async function cancelSubscription() {
             if (confirm('Are you sure you want to cancel your subscription? This will downgrade your account to Trial.')) {
                 try {
-                    // Update user account type to trial in userProfiles
+                    // Update Firestore to downgrade account
                     await db.collection('userProfiles').doc(currentUser.uid).update({
                         accountType: 'trial',
                         plan: 'trial',
@@ -1003,24 +690,7 @@
                         updatedAt: new Date().toISOString()
                     });
 
-                    // Remove from subscription collection
-                    const collections = [
-                        'Advanced Pro User Accounts',
-                        'Pro User Accounts', 
-                        'Basic User Accounts'
-                    ];
-                    
-                    for (const collectionName of collections) {
-                        const query = await db.collection(collectionName)
-                            .where('email', '==', currentUser.email)
-                            .get();
-                        
-                        query.forEach(doc => {
-                            doc.ref.delete();
-                        });
-                    }
-
-                    showToast('Subscription cancelled successfully! Your account has been downgraded to Trial.', 'success');
+                    showToast('Subscription cancelled successfully!', 'success');
                     
                     // Reload the page to show updated status
                     setTimeout(() => {
@@ -1029,23 +699,21 @@
                     
                 } catch (error) {
                     console.error('Error cancelling subscription:', error);
-                    showToast('Error cancelling subscription. Please contact support.', 'error');
+                    showToast('Error cancelling subscription', 'error');
                 }
             }
         }
 
-        // Show toast notification
-        function showToast(message, type = 'success') {
+        // Show toast message
+        function showToast(message, type) {
             const toast = document.getElementById('toast');
             toast.textContent = message;
             toast.className = `toast ${type}`;
             toast.classList.add('show');
-            
             setTimeout(() => {
                 toast.classList.remove('show');
             }, 3000);
         }
-        }); // Close window load event listener
     </script>
 </body>
 </html>
