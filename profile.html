@@ -569,15 +569,26 @@
         // Check if user is logged in and load profile accordingly
         async function checkUserAndLoadProfile() {
             try {
-                // Check if there's a current user without setting up auth state listener
-                const user = auth.currentUser;
+                console.log('Checking for logged in user...');
+                
+                // Wait for Firebase auth to initialize and retry if needed
+                let user = auth.currentUser;
+                let attempts = 0;
+                const maxAttempts = 10;
+                
+                while (!user && attempts < maxAttempts) {
+                    attempts++;
+                    console.log(`Auth attempt ${attempts}/${maxAttempts}`);
+                    await new Promise(resolve => setTimeout(resolve, 200));
+                    user = auth.currentUser;
+                }
                 
                 if (user) {
                     console.log('User is logged in:', user.email);
                     currentUser = user;
                     await loadUserProfile();
                 } else {
-                    console.log('No user logged in, showing default profile');
+                    console.log('No user logged in after', maxAttempts, 'attempts, showing default profile');
                     loadProfileWithoutAuth();
                 }
                 
@@ -612,6 +623,7 @@
         async function loadUserProfile() {
             try {
                 console.log('Loading user profile for:', currentUser.email);
+                console.log('User UID:', currentUser.uid);
                 
                 // Check user in subscription collections first
                 const collections = [
@@ -624,27 +636,34 @@
                 let foundInCollection = false;
                 
                 for (const collection of collections) {
+                    console.log('Checking collection:', collection.name);
                     const query = await db.collection(collection.name)
                         .where('email', '==', currentUser.email)
                         .limit(1)
                         .get();
                     
+                    console.log('Query result for', collection.name, ':', query.empty ? 'empty' : 'found');
+                    
                     if (!query.empty) {
                         accountType = collection.type;
                         foundInCollection = true;
-                        console.log('User found in collection:', collection.name);
+                        console.log('User found in collection:', collection.name, 'with type:', accountType);
                         break;
                     }
                 }
                 
                 // Load user data from Firestore
+                console.log('Loading user document from userProfiles...');
                 const userDoc = await db.collection('userProfiles').doc(currentUser.uid).get();
+                console.log('User document exists:', userDoc.exists);
                 
                 if (userDoc.exists) {
                     userData = userDoc.data();
+                    console.log('User data loaded:', userData);
                     // Override account type if found in subscription collection
                     if (foundInCollection) {
                         userData.accountType = accountType;
+                        console.log('Updated account type to:', accountType);
                     }
                 } else {
                     // Create default profile
@@ -657,9 +676,11 @@
                         mailingAddress: '',
                         accountType: accountType
                     };
+                    console.log('Created default user data:', userData);
                 }
                 
                 // Populate form fields
+                console.log('Populating form fields...');
                 document.getElementById('fullName').value = userData.displayName || currentUser.displayName || '';
                 document.getElementById('email').value = currentUser.email;
                 document.getElementById('phone').value = userData.phone || '';
@@ -667,8 +688,11 @@
                 document.getElementById('billingAddress').value = userData.billingAddress || '';
                 document.getElementById('mailingAddress').value = userData.mailingAddress || '';
                 
+                console.log('Form fields populated, updating subscription info...');
                 // Update subscription info
                 updateSubscriptionInfo();
+                
+                console.log('Profile loading complete!');
                 
             } catch (error) {
                 console.error('Error loading user profile:', error);
