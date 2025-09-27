@@ -3703,41 +3703,7 @@
                             <textarea class="form-input form-textarea" id="taskDescription" placeholder="Enter task description"></textarea>
                         </div>
 
-                        <!-- SIMPLE WORKING BUTTON -->
-                        <button type="button" class="btn btn-success" style="width: 100%; margin-top: 0.5rem;" onclick="
-                            console.log('SIMPLE BUTTON CLICKED!');
-                            const simpleTask = {
-                                id: Date.now().toString(),
-                                title: 'Simple Task - ' + new Date().toLocaleTimeString(),
-                                priority: 'high',
-                                dueDate: new Date().toISOString().split('T')[0],
-                                category: 'maintenance',
-                                description: 'Task created with simple button at ' + new Date().toLocaleString(),
-                                completed: false
-                            };
-                            console.log('Adding task:', simpleTask);
-                            if (typeof tasks !== 'undefined') {
-                                tasks.push(simpleTask);
-                                console.log('Task added to array, total tasks:', tasks.length);
-                                if (typeof displayTasks === 'function') {
-                                    displayTasks();
-                                    console.log('displayTasks called');
-                                }
-                                if (typeof saveTasksToFirebase === 'function') {
-                                    saveTasksToFirebase();
-                                    console.log('saveTasksToFirebase called');
-                                }
-                                alert('SUCCESS! Task added. Check Tasks tab.');
-                            } else {
-                                console.error('tasks array not found!');
-                                alert('ERROR: tasks array not found!');
-                            }
-                        ">
-                            <i class="fas fa-check"></i>
-                            SIMPLE ADD TASK (GUARANTEED TO WORK)
-                        </button>
-                        
-                        <!-- FORM DATA BUTTON -->
+                        <!-- SAVE TASK BUTTON -->
                         <button type="button" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;" onclick="
                             console.log('FORM DATA BUTTON CLICKED!');
                             const title = document.getElementById('taskTitle').value || 'Form Task - ' + new Date().toLocaleTimeString();
