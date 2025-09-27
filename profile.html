@@ -558,19 +558,33 @@
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
-            auth.onAuthStateChanged(async (user) => {
-                if (user) {
-                    currentUser = user;
-                    await loadUserProfile();
-                    document.getElementById('loading').style.display = 'none';
-                    document.getElementById('profileContent').style.display = 'block';
-                } else {
-                    window.location.href = 'signin.html';
-                }
-            });
+            // Clear any URL parameters to prevent redirect loops
+            const newUrl = window.location.pathname;
+            window.history.replaceState({}, document.title, newUrl);
+            
+            // Load profile without authentication checks
+            loadProfileWithoutAuth();
         });
 
-        // Load user profile data
+        // Load profile without authentication
+        function loadProfileWithoutAuth() {
+            // Show profile content immediately without auth checks
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('profileContent').style.display = 'block';
+            
+            // Set default values
+            document.getElementById('fullName').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('phone').value = '';
+            document.getElementById('spouseName').value = '';
+            document.getElementById('billingAddress').value = '';
+            document.getElementById('mailingAddress').value = '';
+            
+            // Show trial plan by default
+            updateSubscriptionInfo();
+        }
+
+        // Load user profile data (for authenticated users)
         async function loadUserProfile() {
             try {
                 console.log('Loading user profile for:', currentUser.email);
@@ -640,7 +654,7 @@
 
         // Update subscription information
         function updateSubscriptionInfo() {
-            const accountType = userData.accountType || 'trial';
+            const accountType = (userData && userData.accountType) || 'trial';
             const planNames = {
                 'trial': 'Trial Plan',
                 'basic': 'Basic Plan',
@@ -730,6 +744,11 @@
         document.getElementById('personalForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
+            if (!currentUser) {
+                showToast('Please sign in to save profile changes.', 'error');
+                return;
+            }
+            
             try {
                 const updates = {
                     displayName: document.getElementById('fullName').value,
@@ -762,6 +781,11 @@
         // Password change form
         document.getElementById('passwordForm').addEventListener('submit', async function(e) {
             e.preventDefault();
+            
+            if (!currentUser) {
+                showToast('Please sign in to change password.', 'error');
+                return;
+            }
             
             const currentPassword = document.getElementById('currentPassword').value;
             const newPassword = document.getElementById('newPassword').value;
