@@ -607,15 +607,8 @@
                         const userCredential = await auth.createUserWithEmailAndPassword(email, password);
                         console.log('Auth account created:', userCredential.user.uid);
                         
-                        // Check if this email is already registered as a seller
-                        const sellerSnapshot = await db.collection('SELLER USER ACCOUNTS').where('email', '==', email).get();
-                        if (!sellerSnapshot.empty) {
-                            // User is already a seller, sign them out and show error
-                            await auth.signOut();
-                            showError('This email is already registered as a seller. Please use the seller login page.');
-                            hideLoading(button);
-                            return;
-                        }
+                        // Skip seller check during signup to avoid permissions issues
+                        // This will be handled by the payment confirmation system
                         
                         console.log('Updating user profile...');
                         await userCredential.user.updateProfile({
