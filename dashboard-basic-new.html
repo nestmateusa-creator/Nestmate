@@ -7751,7 +7751,7 @@
             document.getElementById('serviceRecords').textContent = thisYearServices.length;
             
             // Load tasks completed this month
-            const tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+            // Use global tasks variable instead of localStorage
             const currentMonth = new Date().getMonth();
             const currentYearForTasks = new Date().getFullYear();
             const thisMonthTasks = tasks.filter(task => {
@@ -7830,7 +7830,7 @@
 
         function updateHomeHealthScore() {
             const serviceRecords = JSON.parse(localStorage.getItem('serviceRecords') || '[]');
-            const tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+            // Use global tasks variable instead of localStorage
             
             let healthScore = 100; // Start with perfect score
             
@@ -7925,7 +7925,7 @@
             startDate.setDate(startDate.getDate() - firstDay.getDay());
             
             const calendarDays = document.getElementById('miniCalendarDays');
-            const tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+            // Use global tasks variable instead of localStorage
             
             for (let i = 0; i < 42; i++) {
                 const date = new Date(startDate);
@@ -7987,7 +7987,7 @@
             const upcomingTasksList = document.getElementById('upcomingTasksList');
             if (!upcomingTasksList) return;
             
-            const tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+            // Use global tasks variable instead of localStorage
             const now = new Date();
             const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
             
@@ -8066,7 +8066,7 @@
         }
 
         function showDayTasks(year, month, day) {
-            const tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+            // Use global tasks variable instead of localStorage
             const targetDate = new Date(year, month, day);
             const targetDateString = targetDate.toISOString().split('T')[0];
             
