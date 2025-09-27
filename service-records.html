@@ -888,57 +888,23 @@
         }
 
         function loadRecords() {
-            if (!currentUser) {
-                console.error('No authenticated user');
-                showEmptyState();
-                return;
-            }
+            // Load service records from localStorage instead of Firebase
+            const records = JSON.parse(localStorage.getItem('serviceHistory') || '[]');
+            const drafts = JSON.parse(localStorage.getItem('serviceDrafts') || '[]');
 
-            console.log('Loading records for user:', currentUser.uid);
+            // Add isDraft flag to drafts
+            const draftsWithFlag = drafts.map(draft => ({ ...draft, isDraft: true }));
 
-            // Load service records from Firebase
-            const recordsPromise = db.collection('NESTMATE USER HOME SAVED DATA')
-                .doc(currentUser.uid)
-                .collection('serviceHistory')
-                .orderBy('createdAt', 'desc')
-                .get();
-
-            // Load drafts from Firebase
-            const draftsPromise = db.collection('NESTMATE USER HOME SAVED DATA')
-                .doc(currentUser.uid)
-                .collection('serviceDrafts')
-                .orderBy('savedAt', 'desc')
-                .get();
-
-            Promise.all([recordsPromise, draftsPromise])
-                .then(([recordsSnapshot, draftsSnapshot]) => {
-                    const records = [];
-                    const drafts = [];
-
-                    recordsSnapshot.forEach(doc => {
-                        records.push({ ...doc.data(), id: doc.id });
-                    });
-
-                    draftsSnapshot.forEach(doc => {
-                        drafts.push({ ...doc.data(), id: doc.id, isDraft: true });
-                    });
-
-                    allRecords = [...records, ...drafts];
-                    allRecords.sort((a, b) => {
-                        const dateA = new Date(a.createdAt || a.savedAt);
-                        const dateB = new Date(b.createdAt || b.savedAt);
-                        return dateB - dateA;
-                    });
-                    
-                    filteredRecords = [...allRecords];
-                    updateStats();
-                    displayRecords();
-                })
-                .catch(error => {
-                    console.error('Error loading records:', error);
-                    // Instead of showing error, just show empty state
-                    showEmptyState();
-                });
+            allRecords = [...records, ...draftsWithFlag];
+            allRecords.sort((a, b) => {
+                const dateA = new Date(a.createdAt || a.savedAt);
+                const dateB = new Date(b.createdAt || b.savedAt);
+                return dateB - dateA;
+            });
+            
+            filteredRecords = [...allRecords];
+            updateStats();
+            displayRecords();
         }
         
         function showEmptyState() {

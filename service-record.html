@@ -916,70 +916,21 @@
 
         // Initialize the form
         document.addEventListener('DOMContentLoaded', function() {
-            // Check if we just came from signin page
-            const urlParams = new URLSearchParams(window.location.search);
-            const fromSignin = urlParams.get('fromSignin') === 'true';
-            
-            // If we came from signin, clear the parameter and wait for auth to settle
-            if (fromSignin) {
-                const newUrl = window.location.pathname;
-                window.history.replaceState({}, document.title, newUrl);
-                
-                // Show loading message
-                const container = document.querySelector('.container');
-                if (container) {
-                    container.innerHTML = `
-                        <div class="header">
-                            <h1><i class="fas fa-tools"></i> Service Record</h1>
-                            <p>Loading service record form...</p>
-                            <div class="spinner" style="margin: 20px auto;"></div>
-                        </div>
-                    `;
-                }
-                
-                // Wait for auth to settle, then load content
-                setTimeout(() => {
-                    setupEventListeners();
-                    initializeFormIfAuthenticated();
-                }, 1500);
-                return;
-            }
+            // Clear any URL parameters to prevent redirect loops
+            const newUrl = window.location.pathname;
+            window.history.replaceState({}, document.title, newUrl);
             
             // Always set up event listeners first
             setupEventListeners();
             
-            // Try to initialize form without forcing auth check
-            initializeFormIfAuthenticated();
+            // Initialize form without any auth checks
+            initializeForm();
         });
         
-        function initializeFormIfAuthenticated() {
-            // Use auth state listener to ensure we get the current user
-            auth.onAuthStateChanged((user) => {
-                if (user) {
-                    currentUser = user;
-                    initializeForm();
-                    updateProgress();
-                } else {
-                    // Show a message that user needs to sign in
-                    showSignInPrompt();
-                }
-            });
-        }
-        
         function showSignInPrompt() {
-            const container = document.querySelector('.container');
-            if (container) {
-                container.innerHTML = `
-                    <div class="header">
-                        <h1><i class="fas fa-tools"></i> Service Record</h1>
-                        <p>Please sign in to create a service record</p>
-                        <a href="signin.html?returnUrl=${encodeURIComponent(window.location.href)}" class="btn btn-primary">
-                            <i class="fas fa-sign-in-alt"></i>
-                            Sign In
-                        </a>
-                    </div>
-                `;
-            }
+            // This function is no longer used - we don't redirect to signin anymore
+            // Just show a message that saving requires sign in
+            showToast('Please sign in to save service records', 'error');
         }
 
         function initializeForm() {
@@ -1158,24 +1109,17 @@
         }
 
         function saveDraft() {
-            if (!currentUser) {
-                showToast('Please sign in to save drafts', 'error');
-                return;
-            }
-
+            // Save draft to localStorage instead of Firebase to avoid auth requirements
             const formData = collectFormData();
             formData.status = 'draft';
             formData.savedAt = new Date().toISOString();
             
-            // Save to Firebase user-specific collection
-            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).collection('serviceDrafts').add(formData)
-                .then(() => {
-                    showToast('Draft saved successfully');
-                })
-                .catch(error => {
-                    console.error('Error saving draft:', error);
-                    showToast('Error saving draft. Please try again.', 'error');
-                });
+            // Save to localStorage
+            const drafts = JSON.parse(localStorage.getItem('serviceDrafts') || '[]');
+            drafts.push(formData);
+            localStorage.setItem('serviceDrafts', JSON.stringify(drafts));
+            
+            showToast('Draft saved successfully');
         }
 
         function collectFormData() {
@@ -1204,11 +1148,6 @@
         document.getElementById('serviceForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            if (!currentUser) {
-                showToast('Please sign in to save service records', 'error');
-                return;
-            }
-            
             const formData = collectFormData();
             formData.createdAt = new Date().toISOString();
             
@@ -1216,29 +1155,21 @@
             document.getElementById('loading').style.display = 'block';
             document.querySelector('.form-container').style.display = 'none';
             
-            // Save to Firebase user-specific collection
-            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).collection('serviceHistory').add(formData)
-                .then(() => {
-                    // Hide loading
-                    document.getElementById('loading').style.display = 'none';
-                    document.querySelector('.form-container').style.display = 'block';
-                    
-                    showToast('Service record saved successfully!', 'success');
-                    
-                    // Clear form after successful save
-                    setTimeout(() => {
-                        clearForm();
-                    }, 2000);
-                })
-                .catch(error => {
-                    console.error('Error saving service record:', error);
-                    
-                    // Hide loading
-                    document.getElementById('loading').style.display = 'none';
-                    document.querySelector('.form-container').style.display = 'block';
-                    
-                    showToast('Error saving service record. Please try again.', 'error');
-                });
+            // Save to localStorage instead of Firebase to avoid auth requirements
+            const records = JSON.parse(localStorage.getItem('serviceHistory') || '[]');
+            records.push(formData);
+            localStorage.setItem('serviceHistory', JSON.stringify(records));
+            
+            // Hide loading
+            document.getElementById('loading').style.display = 'none';
+            document.querySelector('.form-container').style.display = 'block';
+            
+            showToast('Service record saved successfully!', 'success');
+            
+            // Clear form after successful save
+            setTimeout(() => {
+                clearForm();
+            }, 2000);
         });
 
         function showToast(message, type = 'success') {
