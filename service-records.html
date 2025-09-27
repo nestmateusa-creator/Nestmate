@@ -802,15 +802,16 @@
         });
         
         function loadRecordsIfAuthenticated() {
-            // Check auth state without redirecting
-            const user = auth.currentUser;
-            if (user) {
-                currentUser = user;
-                loadRecords();
-            } else {
-                // Show a message that user needs to sign in
-                showSignInPrompt();
-            }
+            // Use auth state listener to ensure we get the current user
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    currentUser = user;
+                    loadRecords();
+                } else {
+                    // Show a message that user needs to sign in
+                    showSignInPrompt();
+                }
+            });
         }
         
         function showSignInPrompt() {
