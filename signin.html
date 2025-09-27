@@ -650,10 +650,14 @@
                             status: 'active'
                         };
                         
-                        // Save to userProfiles only (most permissive collection)
-                        await db.collection('userProfiles').doc(userCredential.user.uid).set(userProfileData);
+                        // Save to both collections
+                        await Promise.all([
+                            db.collection('userProfiles').doc(userCredential.user.uid).set(userProfileData),
+                            db.collection('accounts').doc(userCredential.user.uid).set(accountData),
+                            db.collection('Basic User Accounts').doc(userCredential.user.uid).set(accountData)
+                        ]);
                         
-                        console.log('User profile document created successfully');
+                        console.log('User profile and account documents created in both collections');
                         
                         showSuccess('Account created successfully! Redirecting to checkout...');
                         
@@ -688,10 +692,8 @@
                 // Check if this is a forced signout
                 const urlParams = new URLSearchParams(window.location.search);
                 const isForcedSignout = urlParams.get('signout') === 'true';
-                const isSignupTab = urlParams.get('tab') === 'signup';
                 
-                // Don't auto-redirect if we're on the signup tab
-                if (user && !isForcedSignout && !isSignupTab) {
+                if (user && !isForcedSignout) {
                     console.log('User is signed in:', user.email);
                     // Don't automatically redirect, show a message instead
                     showAlreadySignedInMessage(user);
