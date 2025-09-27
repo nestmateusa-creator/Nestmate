@@ -562,16 +562,39 @@
             const newUrl = window.location.pathname;
             window.history.replaceState({}, document.title, newUrl);
             
-            // Load profile without authentication checks
-            loadProfileWithoutAuth();
+            // Check if user is logged in without redirecting
+            checkUserAndLoadProfile();
         });
+
+        // Check if user is logged in and load profile accordingly
+        async function checkUserAndLoadProfile() {
+            try {
+                // Check if there's a current user without setting up auth state listener
+                const user = auth.currentUser;
+                
+                if (user) {
+                    console.log('User is logged in:', user.email);
+                    currentUser = user;
+                    await loadUserProfile();
+                } else {
+                    console.log('No user logged in, showing default profile');
+                    loadProfileWithoutAuth();
+                }
+                
+                // Show profile content
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('profileContent').style.display = 'block';
+                
+            } catch (error) {
+                console.error('Error checking user:', error);
+                loadProfileWithoutAuth();
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('profileContent').style.display = 'block';
+            }
+        }
 
         // Load profile without authentication
         function loadProfileWithoutAuth() {
-            // Show profile content immediately without auth checks
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('profileContent').style.display = 'block';
-            
             // Set default values
             document.getElementById('fullName').value = '';
             document.getElementById('email').value = '';
@@ -580,7 +603,8 @@
             document.getElementById('billingAddress').value = '';
             document.getElementById('mailingAddress').value = '';
             
-            // Show trial plan by default
+            // Set default userData for trial plan
+            userData = { accountType: 'trial' };
             updateSubscriptionInfo();
         }
 
