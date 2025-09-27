@@ -650,17 +650,18 @@
                             status: 'active'
                         };
                         
-                        // Save to userProfiles only (most permissive collection)
-                        await db.collection('userProfiles').doc(userCredential.user.uid).set(userProfileData);
+                        // Store user email for confirmation page
+                        localStorage.setItem('userEmail', email);
+                        localStorage.setItem('userName', name);
                         
-                        console.log('User profile document created successfully');
+                        console.log('User account created successfully');
                         
-                        showSuccess('Account created successfully! Redirecting to checkout...');
+                        showSuccess('Account created successfully! Redirecting to plan selection...');
                         
-                        // Redirect new users to Stripe Basic plan checkout
-                        console.log('🛒 Redirecting new user to Stripe Basic plan checkout...');
+                        // Redirect to plan selection page
+                        console.log('🛒 Redirecting new user to plan selection page...');
                         await new Promise(resolve => setTimeout(resolve, 2000));
-                        window.location.href = 'https://buy.stripe.com/9B600lc6u4oneY50Ch1sQ0M';
+                        window.location.href = `signup-confirmation.html?email=${encodeURIComponent(email)}`;
             } catch (error) {
                         console.error('Signup error:', error);
                         
