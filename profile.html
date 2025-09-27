@@ -474,7 +474,10 @@
                     currentUser = user;
                     loadUserProfile();
                 } else {
-                    showSignInPrompt();
+                    // Only show signin prompt if we haven't already loaded a user
+                    if (!currentUser) {
+                        showSignInPrompt();
+                    }
                 }
             });
         });
@@ -498,9 +501,7 @@
             document.getElementById('loading').style.display = 'none';
             document.getElementById('profileContent').style.display = 'none';
             showToast('Please sign in to view your profile', 'error');
-            setTimeout(function() {
-                window.location.href = 'signin.html';
-            }, 2000);
+            // Don't redirect automatically - let user manually go to signin
         }
 
         // Load user profile data
