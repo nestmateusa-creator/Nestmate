@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clear Authentication</title>
+</head>
+<body>
+    <h1>Clearing Authentication...</h1>
+    <p>This will sign you out completely and clear all session data.</p>
+    
+    <!-- Firebase CDN -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBvOkBwJ1Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4Z4",
+            authDomain: "nestmate-167ed.firebaseapp.com",
+            projectId: "nestmate-167ed",
+            storageBucket: "nestmate-167ed.appspot.com",
+            messagingSenderId: "123456789012",
+            appId: "1:123456789012:web:abcdefghijklmnopqrstuv"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        
+        // Clear all authentication data
+        async function clearAuth() {
+            try {
+                console.log('Clearing authentication...');
+                
+                // Sign out from Firebase
+                await auth.signOut();
+                console.log('Signed out from Firebase');
+                
+                // Clear localStorage
+                localStorage.clear();
+                console.log('Cleared localStorage');
+                
+                // Clear sessionStorage
+                sessionStorage.clear();
+                console.log('Cleared sessionStorage');
+                
+                // Clear cookies (if any)
+                document.cookie.split(";").forEach(function(c) { 
+                    document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+                });
+                console.log('Cleared cookies');
+                
+                alert('Authentication cleared! You can now sign in fresh.');
+                
+                // Redirect to signin page
+                window.location.href = 'signin.html';
+                
+            } catch (error) {
+                console.error('Error clearing auth:', error);
+                alert('Error clearing authentication: ' + error.message);
+            }
+        }
+        
+        // Run on page load
+        window.addEventListener('load', function() {
+            setTimeout(clearAuth, 1000);
+        });
+    </script>
+</body>
+</html>
