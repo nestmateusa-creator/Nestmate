@@ -763,9 +763,31 @@
 
         // Initialize the page
         document.addEventListener('DOMContentLoaded', function() {
-            // Wait for Firebase to initialize, then check auth
+            // Check if we just came from signin page
+            const urlParams = new URLSearchParams(window.location.search);
+            const fromSignin = urlParams.get('fromSignin') === 'true';
+            
+            // If we came from signin, clear the parameter and don't redirect
+            if (fromSignin) {
+                // Clear the URL parameter
+                const newUrl = window.location.pathname;
+                window.history.replaceState({}, document.title, newUrl);
+                
+                // Wait a bit for auth to settle, then load content
+                setTimeout(() => {
+                    const user = auth.currentUser;
+                    if (user) {
+                        currentUser = user;
+                        loadRecords();
+                        setupEventListeners();
+                    }
+                }, 1000);
+                return;
+            }
+            
+            // Normal auth check for direct access
             let authCheckAttempts = 0;
-            const maxAttempts = 10;
+            const maxAttempts = 5;
             
             function checkAuth() {
                 authCheckAttempts++;
@@ -777,7 +799,7 @@
                     setupEventListeners();
                 } else if (authCheckAttempts < maxAttempts) {
                     // Wait a bit more for Firebase to initialize
-                    setTimeout(checkAuth, 100);
+                    setTimeout(checkAuth, 200);
                 } else {
                     // After max attempts, redirect to signin
                     if (!window.location.href.includes('signin.html')) {

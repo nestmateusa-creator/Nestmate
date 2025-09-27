@@ -424,7 +424,9 @@
                 
                 if (returnUrl) {
                     console.log('🔄 Return URL found, redirecting to:', returnUrl);
-                    window.location.href = decodeURIComponent(returnUrl);
+                    const decodedUrl = decodeURIComponent(returnUrl);
+                    const separator = decodedUrl.includes('?') ? '&' : '?';
+                    window.location.href = decodedUrl + separator + 'fromSignin=true';
                     return;
                 }
                 
