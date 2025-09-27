@@ -659,10 +659,12 @@
                         
                         console.log('User profile and account documents created in both collections');
                         
-                        showSuccess('Account created successfully! Redirecting to dashboard...');
+                        showSuccess('Account created successfully! Redirecting to checkout...');
                         
-                        // Redirect to appropriate dashboard for new users using subscription verification
-                        await redirectToUserDashboard();
+                        // Redirect new users to Stripe Basic plan checkout
+                        console.log('🛒 Redirecting new user to Stripe Basic plan checkout...');
+                        await new Promise(resolve => setTimeout(resolve, 2000));
+                        window.location.href = 'https://buy.stripe.com/9B600lc6u4oneY50Ch1sQ0M';
             } catch (error) {
                         console.error('Signup error:', error);
                         
