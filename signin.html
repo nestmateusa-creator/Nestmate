@@ -418,6 +418,16 @@
             console.log('🔍 Checking user subscription status:', user.email);
             
             try {
+                // Check for returnUrl parameter first
+                const urlParams = new URLSearchParams(window.location.search);
+                const returnUrl = urlParams.get('returnUrl');
+                
+                if (returnUrl) {
+                    console.log('🔄 Return URL found, redirecting to:', returnUrl);
+                    window.location.href = decodeURIComponent(returnUrl);
+                    return;
+                }
+                
                 const db = firebase.firestore();
                 
                 // Check if user exists in any subscription collection
