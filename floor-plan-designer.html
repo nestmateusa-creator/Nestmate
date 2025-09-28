@@ -416,9 +416,12 @@
         <button class="control-btn secondary" onclick="redo()">
           <i class="fas fa-redo"></i> Redo
         </button>
-        <button class="control-btn secondary" id="dimensionToggle" onclick="toggleDimensions()">
-          <i class="fas fa-ruler"></i> Show Dimensions
-        </button>
+            <button class="control-btn secondary" id="dimensionToggle" onclick="toggleDimensions()">
+              <i class="fas fa-ruler"></i> Show Dimensions
+            </button>
+            <button class="control-btn secondary" onclick="selectAllElements()">
+              <i class="fas fa-expand-arrows-alt"></i> Select All
+            </button>
       </div>
       
       <div class="room-templates">
@@ -487,6 +490,7 @@
     let historyIndex = -1;
     let is3DMode = false;
     let selectedElement = null;
+    let selectedElements = []; // Array for multiple selection
     let isDragging = false;
     let dragOffset = { x: 0, y: 0 };
     let currentCurve = null;
@@ -521,6 +525,7 @@
       
       // Clear selection when switching tools
       selectedElement = null;
+      selectedElements = [];
       redrawCanvas();
     }
     
@@ -634,17 +639,20 @@
       if (currentTool === 'select') {
         // Check for resize handles first
         const handle = getResizeHandleAt(mouseX, mouseY);
-        if (handle && selectedElement) {
+        if (handle && (selectedElement || selectedElements.length > 0)) {
           isResizing = true;
           resizeHandle = handle;
-          console.log('Resizing element:', selectedElement, 'handle:', handle);
+          console.log('Resizing element:', selectedElement || selectedElements[0], 'handle:', handle);
           redrawCanvas();
           return;
         }
         
         // Handle selection
-        selectedElement = getElementAt(mouseX, mouseY);
-        if (selectedElement) {
+        const clickedElement = getElementAt(mouseX, mouseY);
+        if (clickedElement) {
+          // Clear multiple selection and select single element
+          selectedElements = [];
+          selectedElement = clickedElement;
           isDragging = true;
           if (selectedElement.type === 'wall' || selectedElement.type === 'room') {
             dragOffset.x = mouseX - selectedElement.startX;
@@ -655,7 +663,9 @@
           }
           console.log('Selected element:', selectedElement);
         } else {
+          // Clear all selections
           selectedElement = null;
+          selectedElements = [];
         }
         redrawCanvas();
         return;
@@ -911,6 +921,35 @@
           selectedElement = null;
           redrawCanvas();
           updateStats();
+        } else if (selectedElements.length > 0) {
+          console.log('Deleting', selectedElements.length, 'elements');
+          
+          // Remove all selected elements from their arrays
+          selectedElements.forEach(element => {
+            if (element.type === 'wall') {
+              const index = walls.indexOf(element);
+              if (index > -1) walls.splice(index, 1);
+            } else if (element.type === 'door') {
+              const index = doors.indexOf(element);
+              if (index > -1) doors.splice(index, 1);
+            } else if (element.type === 'window') {
+              const index = windows.indexOf(element);
+              if (index > -1) windows.splice(index, 1);
+            } else if (element.type === 'furniture') {
+              const index = furniture.indexOf(element);
+              if (index > -1) furniture.splice(index, 1);
+            } else if (element.type === 'electrical') {
+              const index = electrical.indexOf(element);
+              if (index > -1) electrical.splice(index, 1);
+            } else if (element.type === 'room') {
+              const index = rooms.indexOf(element);
+              if (index > -1) rooms.splice(index, 1);
+            }
+          });
+          
+          selectedElements = [];
+          redrawCanvas();
+          updateStats();
         }
       }
     }
@@ -938,10 +977,16 @@
     
     function drawElements() {
       // Draw rooms first (background)
-      ctx.fillStyle = 'rgba(240, 248, 255, 0.3)';
-      ctx.strokeStyle = '#4a5568';
-      ctx.lineWidth = 2;
       rooms.forEach(room => {
+        if (selectedElement === room || selectedElements.includes(room)) {
+          ctx.fillStyle = 'rgba(240, 248, 255, 0.5)';
+          ctx.strokeStyle = '#e53e3e';
+          ctx.lineWidth = 4;
+        } else {
+          ctx.fillStyle = 'rgba(240, 248, 255, 0.3)';
+          ctx.strokeStyle = '#4a5568';
+          ctx.lineWidth = 2;
+        }
         ctx.beginPath();
         ctx.rect(room.startX, room.startY, room.endX - room.startX, room.endY - room.startY);
         ctx.fill();
@@ -958,9 +1003,14 @@
       });
       
       // Draw walls
-      ctx.strokeStyle = '#2d3748';
-      ctx.lineWidth = 8;
       walls.forEach(wall => {
+        if (selectedElement === wall || selectedElements.includes(wall)) {
+          ctx.strokeStyle = '#e53e3e';
+          ctx.lineWidth = 10;
+        } else {
+          ctx.strokeStyle = '#2d3748';
+          ctx.lineWidth = 8;
+        }
         ctx.beginPath();
         ctx.moveTo(wall.startX, wall.startY);
         ctx.lineTo(wall.endX, wall.endY);
@@ -1030,8 +1080,8 @@
       
       // Draw doors with proper architectural floor plan symbols
       doors.forEach(door => {
-        // Highlight if selected
-        if (selectedElement === door) {
+        // Highlight if selected (single or multiple selection)
+        if (selectedElement === door || selectedElements.includes(door)) {
           ctx.strokeStyle = '#e53e3e';
           ctx.lineWidth = 3;
         } else {
@@ -1060,13 +1110,14 @@
         ctx.arc(door.x, door.y, radius, 0, Math.PI / 2);
         ctx.stroke();
         
-        // Draw door panel line (architectural symbol) - straight line representing door
+        // Draw door panel line (architectural symbol) - perfectly straight line representing door
         ctx.strokeStyle = '#2d3748';
         ctx.lineWidth = 2;
         ctx.beginPath();
-        // Draw door as a straight line from hinge to handle (80% of full length)
-        const endX = door.x + (door.width / doorLength) * doorLength * 0.8;
-        const endY = door.y + (door.height / doorLength) * doorLength * 0.8;
+        // Draw door as a perfectly straight line from hinge to handle (80% of full length)
+        const doorPanelLength = doorLength * 0.8;
+        const endX = door.x + (door.width / doorLength) * doorPanelLength;
+        const endY = door.y + (door.height / doorLength) * doorPanelLength;
         ctx.moveTo(door.x, door.y);
         ctx.lineTo(endX, endY);
         ctx.stroke();
@@ -1090,8 +1141,8 @@
         const centerX = window.x + window.width / 2;
         const centerY = window.y + window.height / 2;
         
-        // Highlight if selected
-        if (selectedElement === window) {
+        // Highlight if selected (single or multiple selection)
+        if (selectedElement === window || selectedElements.includes(window)) {
           ctx.strokeStyle = '#e53e3e';
           ctx.lineWidth = 3;
         } else {
@@ -1145,8 +1196,8 @@
       
       // Draw furniture with realistic shapes
       furniture.forEach(item => {
-        // Highlight if selected
-        if (selectedElement === item) {
+        // Highlight if selected (single or multiple selection)
+        if (selectedElement === item || selectedElements.includes(item)) {
           ctx.strokeStyle = '#e53e3e';
           ctx.lineWidth = 3;
         } else {
@@ -1160,8 +1211,8 @@
       
       // Draw electrical with professional styling
       electrical.forEach(item => {
-        // Highlight if selected
-        if (selectedElement === item) {
+        // Highlight if selected (single or multiple selection)
+        if (selectedElement === item || selectedElements.includes(item)) {
           ctx.strokeStyle = '#e53e3e';
           ctx.lineWidth = 3;
         } else {
@@ -1173,9 +1224,16 @@
         drawElectricalShape(item);
       });
       
-      // Draw resize handles for selected element
-      if (selectedElement && currentTool === 'select') {
-        drawResizeHandles(selectedElement);
+      // Draw resize handles for selected elements
+      if (currentTool === 'select') {
+        if (selectedElement) {
+          drawResizeHandles(selectedElement);
+        } else if (selectedElements.length > 0) {
+          // Draw resize handles for all selected elements
+          selectedElements.forEach(element => {
+            drawResizeHandles(element);
+          });
+        }
       }
     }
     
@@ -1793,6 +1851,29 @@
         button.innerHTML = '<i class="fas fa-ruler"></i> Show Dimensions';
         button.classList.remove('active');
       }
+      redrawCanvas();
+    }
+    
+    function selectAllElements() {
+      console.log('Selecting all elements');
+      selectedElements = [];
+      
+      // Add all elements to selection
+      selectedElements.push(...walls);
+      selectedElements.push(...curvedWalls);
+      selectedElements.push(...dimensions);
+      selectedElements.push(...doors);
+      selectedElements.push(...windows);
+      selectedElements.push(...rooms);
+      selectedElements.push(...furniture);
+      selectedElements.push(...electrical);
+      
+      // Set current tool to select
+      currentTool = 'select';
+      document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelector('[onclick="setTool(\'select\')"]').classList.add('active');
+      
+      console.log('Selected', selectedElements.length, 'elements');
       redrawCanvas();
     }
     
