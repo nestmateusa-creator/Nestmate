@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon Affiliate Link Generator - NestMate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .affiliate-tag {
+            background: linear-gradient(135deg, #ff9900, #ff6600);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-weight: 600;
+            display: inline-block;
+            font-size: 1rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        /* Link Generator Form */
+        .generator-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #ff9900;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #ff9900, #ff6600);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 153, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d, #495057);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745, #20c997);
+        }
+
+        .btn-success:hover {
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        /* Generated Link Display */
+        .result-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .generated-link {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .link-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .link-preview {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .preview-title {
+            font-weight: 600;
+            color: #1976d2;
+            margin-bottom: 8px;
+        }
+
+        .preview-details {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* Link History */
+        .history-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            grid-column: 1 / -1;
+        }
+
+        .history-item {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-info {
+            flex: 1;
+        }
+
+        .history-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .history-link {
+            font-size: 12px;
+            color: #666;
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+        }
+
+        .history-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .quick-action {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quick-action:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .quick-action i {
+            font-size: 2rem;
+            color: #ff9900;
+            margin-bottom: 10px;
+        }
+
+        .quick-action h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .quick-action p {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* Back to Dashboard */
+        .back-to-dashboard {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #ff9900;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(255, 153, 0, 0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-to-dashboard:hover {
+            background: #e68900;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 153, 0, 0.4);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .history-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .history-actions {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .container {
+                padding: 15px;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading i {
+            animation: spin 1s linear infinite;
+            font-size: 2rem;
+            color: #ff9900;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Success Message */
+        .success-message {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        /* Error Message */
+        .error-message {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Back to Dashboard Button -->
+    <a href="dashboard-pro-new.html" class="back-to-dashboard">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1><i class="fab fa-amazon"></i> Amazon Affiliate Link Generator</h1>
+            <p>Generate custom Amazon affiliate links with your tag: <span class="affiliate-tag">nestmateusa-20</span></p>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <div class="quick-action" onclick="generateSearchLink()">
+                <i class="fas fa-search"></i>
+                <h3>Search Link</h3>
+                <p>Generate affiliate link for Amazon search</p>
+            </div>
+            <div class="quick-action" onclick="generateProductLink()">
+                <i class="fas fa-box"></i>
+                <h3>Product Link</h3>
+                <p>Generate affiliate link for specific product</p>
+            </div>
+            <div class="quick-action" onclick="generateCategoryLink()">
+                <i class="fas fa-tags"></i>
+                <h3>Category Link</h3>
+                <p>Generate affiliate link for product category</p>
+            </div>
+            <div class="quick-action" onclick="generateHomepageLink()">
+                <i class="fas fa-home"></i>
+                <h3>Homepage Link</h3>
+                <p>Generate your affiliate homepage link</p>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Link Generator Form -->
+            <div class="generator-card">
+                <h2 class="card-title">
+                    <i class="fas fa-link"></i>
+                    Generate Affiliate Link
+                </h2>
+
+                <form id="linkGeneratorForm">
+                    <div class="form-group">
+                        <label for="linkType">Link Type</label>
+                        <select id="linkType" onchange="updateFormFields()">
+                            <option value="search">Search Link</option>
+                            <option value="product">Product Link (ASIN)</option>
+                            <option value="category">Category Link</option>
+                            <option value="homepage">Homepage Link</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="searchGroup">
+                        <label for="searchQuery">Search Query</label>
+                        <input type="text" id="searchQuery" placeholder="Enter product name or keywords">
+                    </div>
+
+                    <div class="form-group" id="asinGroup" style="display: none;">
+                        <label for="productAsin">Product ASIN</label>
+                        <input type="text" id="productAsin" placeholder="Enter Amazon ASIN (e.g., B08N5WRWNW)">
+                    </div>
+
+                    <div class="form-group" id="categoryGroup" style="display: none;">
+                        <label for="productCategory">Product Category</label>
+                        <select id="productCategory">
+                            <option value="">Select Category</option>
+                            <option value="electronics">Electronics</option>
+                            <option value="home-garden">Home & Garden</option>
+                            <option value="kitchen">Kitchen & Dining</option>
+                            <option value="tools">Tools & Home Improvement</option>
+                            <option value="automotive">Automotive</option>
+                            <option value="sports">Sports & Outdoors</option>
+                            <option value="books">Books</option>
+                            <option value="clothing">Clothing, Shoes & Jewelry</option>
+                            <option value="beauty">Beauty & Personal Care</option>
+                            <option value="toys">Toys & Games</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="linkDescription">Description (Optional)</label>
+                        <textarea id="linkDescription" placeholder="Add a description for this link..."></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="campaignId">Campaign ID (Optional)</label>
+                            <input type="text" id="campaignId" placeholder="e.g., nestmate-home">
+                        </div>
+                        <div class="form-group">
+                            <label for="linkId">Link ID (Optional)</label>
+                            <input type="text" id="linkId" placeholder="e.g., smart-home-2024">
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn" onclick="generateLink()">
+                        <i class="fas fa-magic"></i>
+                        Generate Link
+                    </button>
+                </form>
+
+                <div class="loading" id="loading">
+                    <i class="fas fa-spinner"></i>
+                    <p>Generating your affiliate link...</p>
+                </div>
+
+                <div class="success-message" id="successMessage">
+                    <i class="fas fa-check-circle"></i>
+                    Link generated successfully!
+                </div>
+
+                <div class="error-message" id="errorMessage">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span id="errorText">Please fill in all required fields.</span>
+                </div>
+            </div>
+
+            <!-- Generated Link Display -->
+            <div class="result-card">
+                <h2 class="card-title">
+                    <i class="fas fa-external-link-alt"></i>
+                    Generated Link
+                </h2>
+
+                <div id="linkPreview" style="display: none;">
+                    <div class="link-preview">
+                        <div class="preview-title" id="previewTitle">Link Preview</div>
+                        <div class="preview-details" id="previewDetails">Click "Generate Link" to see your affiliate link here.</div>
+                    </div>
+                </div>
+
+                <div class="generated-link" id="generatedLink" style="display: none;">
+                    <div id="linkText">Your generated affiliate link will appear here...</div>
+                </div>
+
+                <div class="link-actions" id="linkActions" style="display: none;">
+                    <button class="btn btn-success" onclick="copyLink()">
+                        <i class="fas fa-copy"></i>
+                        Copy Link
+                    </button>
+                    <button class="btn btn-secondary" onclick="testLink()">
+                        <i class="fas fa-external-link-alt"></i>
+                        Test Link
+                    </button>
+                    <button class="btn btn-secondary" onclick="saveLink()">
+                        <i class="fas fa-save"></i>
+                        Save Link
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Link History -->
+        <div class="history-card">
+            <h2 class="card-title">
+                <i class="fas fa-history"></i>
+                Generated Links History
+            </h2>
+
+            <div id="linkHistory">
+                <p style="text-align: center; color: #666; padding: 20px;">
+                    No links generated yet. Create your first affiliate link above!
+                </p>
+            </div>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn btn-secondary" onclick="clearHistory()">
+                    <i class="fas fa-trash"></i>
+                    Clear History
+                </button>
+                <button class="btn btn-secondary" onclick="exportHistory()">
+                    <i class="fas fa-download"></i>
+                    Export History
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const AFFILIATE_TAG = 'nestmateusa-20';
+        const AMAZON_BASE_URL = 'https://www.amazon.com';
+        const HOMEPAGE_URL = 'https://www.amazon.com?&linkCode=ll2&tag=nestmateusa-20&linkId=8e9dc927270a08024cdcdbbfbb031428&language=en_US&ref_=as_li_ss_tl';
+
+        // Global variables
+        let currentGeneratedLink = '';
+        let linkHistory = JSON.parse(localStorage.getItem('affiliateLinkHistory') || '[]');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadLinkHistory();
+            updateFormFields();
+        });
+
+        function updateFormFields() {
+            const linkType = document.getElementById('linkType').value;
+            
+            // Hide all groups
+            document.getElementById('searchGroup').style.display = 'none';
+            document.getElementById('asinGroup').style.display = 'none';
+            document.getElementById('categoryGroup').style.display = 'none';
+            
+            // Show relevant group
+            switch(linkType) {
+                case 'search':
+                    document.getElementById('searchGroup').style.display = 'block';
+                    break;
+                case 'product':
+                    document.getElementById('asinGroup').style.display = 'block';
+                    break;
+                case 'category':
+                    document.getElementById('categoryGroup').style.display = 'block';
+                    break;
+                case 'homepage':
+                    // No additional fields needed
+                    break;
+            }
+        }
+
+        function generateLink() {
+            const linkType = document.getElementById('linkType').value;
+            const description = document.getElementById('linkDescription').value;
+            const campaignId = document.getElementById('campaignId').value;
+            const linkId = document.getElementById('linkId').value;
+            
+            let generatedUrl = '';
+            let linkTitle = '';
+            let linkDetails = '';
+
+            // Show loading
+            showLoading(true);
+            hideMessages();
+
+            // Simulate processing time
+            setTimeout(() => {
+                try {
+                    switch(linkType) {
+                        case 'search':
+                            const searchQuery = document.getElementById('searchQuery').value.trim();
+                            if (!searchQuery) {
+                                showError('Please enter a search query.');
+                                return;
+                            }
+                            generatedUrl = generateSearchLink(searchQuery, campaignId, linkId);
+                            linkTitle = `Search: "${searchQuery}"`;
+                            linkDetails = `Amazon search results for "${searchQuery}"`;
+                            break;
+
+                        case 'product':
+                            const asin = document.getElementById('productAsin').value.trim();
+                            if (!asin) {
+                                showError('Please enter a product ASIN.');
+                                return;
+                            }
+                            generatedUrl = generateProductLink(asin, campaignId, linkId);
+                            linkTitle = `Product: ${asin}`;
+                            linkDetails = `Direct link to Amazon product ${asin}`;
+                            break;
+
+                        case 'category':
+                            const category = document.getElementById('productCategory').value;
+                            if (!category) {
+                                showError('Please select a category.');
+                                return;
+                            }
+                            generatedUrl = generateCategoryLink(category, campaignId, linkId);
+                            linkTitle = `Category: ${category}`;
+                            linkDetails = `Amazon category page for ${category}`;
+                            break;
+
+                        case 'homepage':
+                            generatedUrl = HOMEPAGE_URL;
+                            linkTitle = 'Amazon Homepage';
+                            linkDetails = 'Your affiliate homepage link';
+                            break;
+
+                        default:
+                            showError('Invalid link type selected.');
+                            return;
+                    }
+
+                    // Display the generated link
+                    displayGeneratedLink(generatedUrl, linkTitle, linkDetails, description);
+                    
+                    // Save to history
+                    saveToHistory(generatedUrl, linkTitle, linkDetails, description);
+                    
+                    showSuccess('Link generated successfully!');
+                    
+                } catch (error) {
+                    showError('Error generating link: ' + error.message);
+                } finally {
+                    showLoading(false);
+                }
+            }, 1000);
+        }
+
+        function generateSearchLink(query, campaignId, linkId) {
+            const encodedQuery = encodeURIComponent(query);
+            let url = `${AMAZON_BASE_URL}/s?k=${encodedQuery}&tag=${AFFILIATE_TAG}`;
+            
+            if (campaignId) {
+                url += `&campaign=${encodeURIComponent(campaignId)}`;
+            }
+            if (linkId) {
+                url += `&linkCode=${encodeURIComponent(linkId)}`;
+            }
+            
+            return url;
+        }
+
+        function generateProductLink(asin, campaignId, linkId) {
+            let url = `${AMAZON_BASE_URL}/dp/${asin}?tag=${AFFILIATE_TAG}`;
+            
+            if (campaignId) {
+                url += `&campaign=${encodeURIComponent(campaignId)}`;
+            }
+            if (linkId) {
+                url += `&linkCode=${encodeURIComponent(linkId)}`;
+            }
+            
+            return url;
+        }
+
+        function generateCategoryLink(category, campaignId, linkId) {
+            let url = `${AMAZON_BASE_URL}/s?i=${encodeURIComponent(category)}&tag=${AFFILIATE_TAG}`;
+            
+            if (campaignId) {
+                url += `&campaign=${encodeURIComponent(campaignId)}`;
+            }
+            if (linkId) {
+                url += `&linkCode=${encodeURIComponent(linkId)}`;
+            }
+            
+            return url;
+        }
+
+        function displayGeneratedLink(url, title, details, description) {
+            document.getElementById('previewTitle').textContent = title;
+            document.getElementById('previewDetails').textContent = details;
+            document.getElementById('linkText').textContent = url;
+            
+            document.getElementById('linkPreview').style.display = 'block';
+            document.getElementById('generatedLink').style.display = 'block';
+            document.getElementById('linkActions').style.display = 'flex';
+            
+            currentGeneratedLink = url;
+        }
+
+        function copyLink() {
+            navigator.clipboard.writeText(currentGeneratedLink).then(() => {
+                showSuccess('Link copied to clipboard!');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = currentGeneratedLink;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showSuccess('Link copied to clipboard!');
+            });
+        }
+
+        function testLink() {
+            window.open(currentGeneratedLink, '_blank');
+        }
+
+        function saveLink() {
+            // Link is already saved to history when generated
+            showSuccess('Link saved to history!');
+        }
+
+        function saveToHistory(url, title, details, description) {
+            const linkEntry = {
+                id: Date.now(),
+                url: url,
+                title: title,
+                details: details,
+                description: description,
+                timestamp: new Date().toISOString(),
+                type: document.getElementById('linkType').value
+            };
+            
+            linkHistory.unshift(linkEntry);
+            
+            // Keep only last 50 entries
+            if (linkHistory.length > 50) {
+                linkHistory = linkHistory.slice(0, 50);
+            }
+            
+            localStorage.setItem('affiliateLinkHistory', JSON.stringify(linkHistory));
+            loadLinkHistory();
+        }
+
+        function loadLinkHistory() {
+            const historyContainer = document.getElementById('linkHistory');
+            
+            if (linkHistory.length === 0) {
+                historyContainer.innerHTML = `
+                    <p style="text-align: center; color: #666; padding: 20px;">
+                        No links generated yet. Create your first affiliate link above!
+                    </p>
+                `;
+                return;
+            }
+            
+            historyContainer.innerHTML = linkHistory.map(entry => `
+                <div class="history-item">
+                    <div class="history-info">
+                        <div class="history-title">${entry.title}</div>
+                        <div class="history-link">${entry.url}</div>
+                        ${entry.description ? `<div style="font-size: 12px; color: #888; margin-top: 5px;">${entry.description}</div>` : ''}
+                        <div style="font-size: 11px; color: #999; margin-top: 5px;">
+                            ${new Date(entry.timestamp).toLocaleString()} • ${entry.type}
+                        </div>
+                    </div>
+                    <div class="history-actions">
+                        <button class="btn btn-small" onclick="copyHistoryLink('${entry.url}')">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                        <button class="btn btn-small btn-secondary" onclick="testHistoryLink('${entry.url}')">
+                            <i class="fas fa-external-link-alt"></i>
+                        </button>
+                        <button class="btn btn-small btn-secondary" onclick="deleteHistoryLink(${entry.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function copyHistoryLink(url) {
+            navigator.clipboard.writeText(url).then(() => {
+                showSuccess('Link copied to clipboard!');
+            });
+        }
+
+        function testHistoryLink(url) {
+            window.open(url, '_blank');
+        }
+
+        function deleteHistoryLink(id) {
+            if (confirm('Are you sure you want to delete this link from history?')) {
+                linkHistory = linkHistory.filter(entry => entry.id !== id);
+                localStorage.setItem('affiliateLinkHistory', JSON.stringify(linkHistory));
+                loadLinkHistory();
+                showSuccess('Link deleted from history!');
+            }
+        }
+
+        function clearHistory() {
+            if (confirm('Are you sure you want to clear all link history?')) {
+                linkHistory = [];
+                localStorage.removeItem('affiliateLinkHistory');
+                loadLinkHistory();
+                showSuccess('History cleared!');
+            }
+        }
+
+        function exportHistory() {
+            const dataStr = JSON.stringify(linkHistory, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `amazon-affiliate-links-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+            showSuccess('History exported successfully!');
+        }
+
+        // Quick action functions
+        function generateSearchLink() {
+            document.getElementById('linkType').value = 'search';
+            updateFormFields();
+            document.getElementById('searchQuery').focus();
+        }
+
+        function generateProductLink() {
+            document.getElementById('linkType').value = 'product';
+            updateFormFields();
+            document.getElementById('productAsin').focus();
+        }
+
+        function generateCategoryLink() {
+            document.getElementById('linkType').value = 'category';
+            updateFormFields();
+            document.getElementById('productCategory').focus();
+        }
+
+        function generateHomepageLink() {
+            document.getElementById('linkType').value = 'homepage';
+            updateFormFields();
+            generateLink();
+        }
+
+        // Utility functions
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+
+        function showSuccess(message) {
+            const successEl = document.getElementById('successMessage');
+            successEl.textContent = message;
+            successEl.style.display = 'block';
+            setTimeout(() => {
+                successEl.style.display = 'none';
+            }, 3000);
+        }
+
+        function showError(message) {
+            const errorEl = document.getElementById('errorMessage');
+            document.getElementById('errorText').textContent = message;
+            errorEl.style.display = 'block';
+            setTimeout(() => {
+                errorEl.style.display = 'none';
+            }, 5000);
+        }
+
+        function hideMessages() {
+            document.getElementById('successMessage').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
