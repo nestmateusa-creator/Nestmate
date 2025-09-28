@@ -10164,6 +10164,8 @@
         let recognition = null;
         let dataFillingMode = false;
         let currentDataStep = 0;
+        let taskAddingMode = false;
+        let serviceAddingMode = false;
         let dataFillingSteps = [
             // Basic Home Information
             { field: 'homeName', question: 'What is the name of your home? (e.g., "My House", "123 Main St", or "The Johnson Residence")', type: 'text' },
@@ -10351,6 +10353,18 @@
                 // Handle data filling mode
                 if (dataFillingMode) {
                     handleDataFillingResponse(message);
+                    return;
+                }
+                
+                // Handle task adding mode
+                if (taskAddingMode) {
+                    handleTaskAddingResponse(message);
+                    return;
+                }
+                
+                // Handle service adding mode
+                if (serviceAddingMode) {
+                    handleServiceAddingResponse(message);
                     return;
                 }
                 
@@ -10572,22 +10586,22 @@
         }
 
         function aiQuickAction(action) {
-            const prompts = {
-                'fill-all-data': 'I\'ll help you fill out all your home management data step by step! This will take a few minutes, but I\'ll guide you through everything including Pro features. Ready to start?',
-                'add-task': 'What task would you like me to add? For example: "Change air filter" or "Schedule HVAC maintenance"',
-                'update-home': 'What home detail would you like to update?',
-                'add-service': 'What type of service was performed?',
-                'order-product': 'What product would you like to order?',
-                'price-alert': 'What product would you like to track for price alerts?',
-                'help': 'I can help you with tasks, product orders, price alerts, health scores, and more. Just tell me what you need!'
-            };
-            
             if (action === 'fill-all-data') {
-                addAIMessageWithActions(prompts[action], [
+                addAIMessageWithActions('I\'ll help you fill out all your home management data step by step! This will take a few minutes, but I\'ll guide you through everything including Pro features. Ready to start?', [
                     { text: 'Yes, Start Now', callback: () => startDataFillingMode() },
                     { text: 'Maybe Later', callback: () => addAIMessage('No problem! You can start this anytime by saying "fill out all home data".', 'bot') }
                 ]);
+            } else if (action === 'add-task') {
+                startTaskAddingMode();
+            } else if (action === 'add-service') {
+                startServiceAddingMode();
             } else {
+                const prompts = {
+                    'update-home': 'What home detail would you like to update?',
+                    'order-product': 'What product would you like to order?',
+                    'price-alert': 'What product would you like to track for price alerts?',
+                    'help': 'I can help you with tasks, product orders, price alerts, health scores, and more. Just tell me what you need!'
+                };
                 addAIMessage(prompts[action], 'bot');
             }
         }
@@ -10687,6 +10701,104 @@
             }).catch(error => {
                 console.error(`Error saving ${field}:`, error);
             });
+        }
+
+        function startTaskAddingMode() {
+            taskAddingMode = true;
+            addAIMessageWithActions('Great! I\'ll help you add a task. What task would you like to add? For example: "Change air filter" or "Schedule HVAC maintenance"', [
+                { text: 'Cancel', callback: () => cancelTaskAdding() }
+            ]);
+        }
+
+        function handleTaskAddingResponse(message) {
+            const taskText = message.trim();
+            
+            if (taskText.toLowerCase().includes('cancel') || taskText.toLowerCase().includes('stop')) {
+                cancelTaskAdding();
+                return;
+            }
+            
+            if (taskText.length < 3) {
+                addAIMessage('Please provide a more detailed task description. What would you like to add?', 'bot');
+                return;
+            }
+            
+            // Add the task
+            addTaskFromAI(taskText);
+            taskAddingMode = false;
+            
+            addAIMessageWithActions(`Perfect! I've added the task "${taskText}" to your dashboard!`, [
+                { text: 'View Tasks', callback: () => showSection('tasks') },
+                { text: 'Add Another Task', callback: () => startTaskAddingMode() }
+            ]);
+        }
+
+        function cancelTaskAdding() {
+            taskAddingMode = false;
+            addAIMessage('No problem! You can add a task anytime by saying "add task" or clicking the Add Task button.', 'bot');
+        }
+
+        function startServiceAddingMode() {
+            serviceAddingMode = true;
+            addAIMessageWithActions('Great! I\'ll help you add a service record. What type of service was performed?', [
+                { text: 'HVAC Service', callback: () => addServiceRecordFromAI('HVAC') },
+                { text: 'Plumbing', callback: () => addServiceRecordFromAI('Plumbing') },
+                { text: 'Electrical', callback: () => addServiceRecordFromAI('Electrical') },
+                { text: 'Other', callback: () => addServiceRecordFromAI('Other') },
+                { text: 'Cancel', callback: () => cancelServiceAdding() }
+            ]);
+        }
+
+        function handleServiceAddingResponse(message) {
+            const serviceText = message.trim();
+            
+            if (serviceText.toLowerCase().includes('cancel') || serviceText.toLowerCase().includes('stop')) {
+                cancelServiceAdding();
+                return;
+            }
+            
+            // Try to determine service type from the message
+            let serviceType = 'Other';
+            const lowerText = serviceText.toLowerCase();
+            
+            if (lowerText.includes('hvac') || lowerText.includes('heating') || lowerText.includes('cooling') || lowerText.includes('air conditioning')) {
+                serviceType = 'HVAC';
+            } else if (lowerText.includes('plumb') || lowerText.includes('water') || lowerText.includes('pipe') || lowerText.includes('toilet') || lowerText.includes('sink')) {
+                serviceType = 'Plumbing';
+            } else if (lowerText.includes('electric') || lowerText.includes('wiring') || lowerText.includes('outlet') || lowerText.includes('switch')) {
+                serviceType = 'Electrical';
+            }
+            
+            addServiceRecordFromAI(serviceType, serviceText);
+        }
+
+        function addServiceRecordFromAI(serviceType, description = null) {
+            const serviceRecord = {
+                id: Date.now(),
+                serviceType: serviceType,
+                date: new Date().toISOString().split('T')[0],
+                description: description || `${serviceType} service performed`,
+                cost: 0,
+                provider: 'AI Assistant',
+                notes: 'Added via AI chatbot'
+            };
+            
+            // Save to localStorage (same as service-record.html)
+            let serviceRecords = JSON.parse(localStorage.getItem('serviceRecords') || '[]');
+            serviceRecords.push(serviceRecord);
+            localStorage.setItem('serviceRecords', JSON.stringify(serviceRecords));
+            
+            serviceAddingMode = false;
+            
+            addAIMessageWithActions(`Perfect! I've added a ${serviceType} service record for today!`, [
+                { text: 'View Records', callback: () => showSection('service') },
+                { text: 'Add Another Service', callback: () => startServiceAddingMode() }
+            ]);
+        }
+
+        function cancelServiceAdding() {
+            serviceAddingMode = false;
+            addAIMessage('No problem! You can add a service record anytime by saying "add service" or clicking the Add Service button.', 'bot');
         }
 
         // Voice Input Functions
