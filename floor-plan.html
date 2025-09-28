@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Floor Plan Manager - NestMate</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --primary-light: #818cf8;
+      --secondary: #f59e0b;
+      --accent: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --success: #10b981;
+      
+      --bg-primary: #0f0f23;
+      --bg-secondary: #1a1a2e;
+      --bg-tertiary: #16213e;
+      --bg-card: #1e293b;
+      --bg-glass: rgba(30, 41, 59, 0.8);
+      
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      
+      --border: #334155;
+      --border-light: #475569;
+      
+      --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+      --gradient-secondary: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+      --gradient-accent: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.3);
+      
+      --radius: 12px;
+      --radius-lg: 20px;
+      --radius-xl: 32px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Header */
+    .header {
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--gradient-primary);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.2rem;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: var(--radius);
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: var(--gradient-primary);
+      color: white;
+      box-shadow: var(--shadow-glow);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-card);
+      border-color: var(--primary);
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* Plan Selection */
+    .plan-selector {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .plan-selector h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .plan-selector p {
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+    }
+
+    .plan-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .plan-option {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .plan-option:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .plan-option.selected {
+      border-color: var(--primary);
+      background: var(--bg-tertiary);
+      box-shadow: var(--shadow-glow);
+    }
+
+    .plan-option h3 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+    }
+
+    .plan-option p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .plan-badge {
+      position: absolute;
+      top: -10px;
+      right: 10px;
+      background: var(--gradient-accent);
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    /* Upload Section */
+    .upload-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      display: none;
+    }
+
+    .upload-section.active {
+      display: block;
+    }
+
+    .upload-area {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 3rem 2rem;
+      text-align: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      margin-bottom: 1.5rem;
+    }
+
+    .upload-area:hover {
+      border-color: var(--primary);
+      background: var(--bg-secondary);
+    }
+
+    .upload-area.dragover {
+      border-color: var(--primary);
+      background: var(--bg-tertiary);
+    }
+
+    .upload-icon {
+      font-size: 3rem;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+
+    .upload-text {
+      font-size: 1.1rem;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .upload-subtext {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .file-input {
+      display: none;
+    }
+
+    .uploaded-files {
+      margin-top: 1.5rem;
+    }
+
+    .file-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .file-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .file-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--gradient-primary);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    .file-details h4 {
+      color: var(--text-primary);
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .file-details p {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    .file-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-view {
+      background: var(--gradient-accent);
+      color: white;
+    }
+
+    .btn-delete {
+      background: var(--danger);
+      color: white;
+    }
+
+    /* Drawing Canvas Section */
+    .canvas-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      display: none;
+    }
+
+    .canvas-section.active {
+      display: block;
+    }
+
+    .canvas-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .canvas-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .canvas-tools {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .tool-btn {
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--border);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+    }
+
+    .tool-btn:hover {
+      background: var(--bg-tertiary);
+      border-color: var(--primary);
+    }
+
+    .tool-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+
+    .canvas-container {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      position: relative;
+      min-height: 600px;
+    }
+
+    #floorPlanCanvas {
+      display: block;
+      cursor: crosshair;
+    }
+
+    .canvas-info {
+      background: var(--bg-secondary);
+      padding: 1rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .canvas-stats {
+      display: flex;
+      gap: 2rem;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .canvas-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    /* Room Templates */
+    .room-templates {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      display: none;
+    }
+
+    .room-templates.active {
+      display: block;
+    }
+
+    .templates-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .template-item {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .template-item:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .template-icon {
+      font-size: 2rem;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .template-name {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+
+      .header {
+        padding: 1rem;
+      }
+
+      .header-content {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .plan-options {
+        grid-template-columns: 1fr;
+      }
+
+      .canvas-header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .canvas-tools {
+        justify-content: center;
+      }
+
+      .canvas-info {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .canvas-stats {
+        justify-content: center;
+      }
+
+      .templates-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      }
+    }
+
+    /* Loading Animation */
+    .loading {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 15, 35, 0.9);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .loading.active {
+      display: flex;
+    }
+
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid var(--border);
+      border-top: 3px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Loading Screen -->
+  <div class="loading" id="loading">
+    <div class="loading-spinner"></div>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <a href="index.html" class="logo">
+        <div class="logo-icon">
+          <i class="fas fa-home"></i>
+        </div>
+        NestMate
+      </a>
+      
+      <div class="header-actions">
+        <button class="btn btn-secondary" onclick="saveFloorPlan()">
+          <i class="fas fa-save"></i>
+          Save Floor Plan
+        </button>
+        <a href="dashboard-basic-new.html" class="btn btn-primary">
+          <i class="fas fa-arrow-left"></i>
+          Back to Dashboard
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <div class="container">
+    <!-- Plan Selection -->
+    <div class="plan-selector">
+      <h2><i class="fas fa-drafting-compass"></i> Floor Plan Manager</h2>
+      <p>Upload your existing floor plan or create a new one from scratch</p>
+      
+      <div class="plan-options">
+        <div class="plan-option" onclick="selectPlan('upload')">
+          <h3><i class="fas fa-upload"></i> Upload Floor Plan</h3>
+          <p>Upload an existing floor plan image (PDF, JPG, PNG)</p>
+          <div class="plan-badge">Basic+</div>
+        </div>
+        
+        <div class="plan-option" onclick="selectPlan('create')">
+          <h3><i class="fas fa-pencil-ruler"></i> Create Floor Plan</h3>
+          <p>Draw your floor plan using our built-in tools</p>
+          <div class="plan-badge">Pro+</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Upload Section -->
+    <div class="upload-section" id="uploadSection">
+      <h3><i class="fas fa-cloud-upload-alt"></i> Upload Your Floor Plan</h3>
+      <p>Supported formats: PDF, JPG, PNG (Max 10MB)</p>
+      
+      <div class="upload-area" onclick="document.getElementById('fileInput').click()" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+        <div class="upload-icon">
+          <i class="fas fa-cloud-upload-alt"></i>
+        </div>
+        <div class="upload-text">Click to upload or drag and drop</div>
+        <div class="upload-subtext">Your floor plan files here</div>
+      </div>
+      
+      <input type="file" id="fileInput" class="file-input" accept=".pdf,.jpg,.jpeg,.png" multiple onchange="handleFileSelect(event)">
+      
+      <div class="uploaded-files" id="uploadedFiles"></div>
+    </div>
+
+    <!-- Drawing Canvas Section -->
+    <div class="canvas-section" id="canvasSection">
+      <div class="canvas-header">
+        <h3 class="canvas-title"><i class="fas fa-drafting-compass"></i> Floor Plan Designer</h3>
+        <div class="canvas-tools">
+          <button class="tool-btn active" data-tool="wall" onclick="selectTool('wall')">
+            <i class="fas fa-square"></i> Wall
+          </button>
+          <button class="tool-btn" data-tool="door" onclick="selectTool('door')">
+            <i class="fas fa-door-open"></i> Door
+          </button>
+          <button class="tool-btn" data-tool="window" onclick="selectTool('window')">
+            <i class="fas fa-window-maximize"></i> Window
+          </button>
+          <button class="tool-btn" data-tool="room" onclick="selectTool('room')">
+            <i class="fas fa-home"></i> Room
+          </button>
+          <button class="tool-btn" data-tool="text" onclick="selectTool('text')">
+            <i class="fas fa-font"></i> Text
+          </button>
+          <button class="tool-btn" data-tool="select" onclick="selectTool('select')">
+            <i class="fas fa-mouse-pointer"></i> Select
+          </button>
+          <button class="tool-btn" onclick="clearCanvas()">
+            <i class="fas fa-trash"></i> Clear
+          </button>
+        </div>
+      </div>
+      
+      <div class="canvas-container">
+        <canvas id="floorPlanCanvas" width="1200" height="600"></canvas>
+        <div class="canvas-info">
+          <div class="canvas-stats">
+            <span><i class="fas fa-square"></i> <span id="wallCount">0</span> Walls</span>
+            <span><i class="fas fa-door-open"></i> <span id="doorCount">0</span> Doors</span>
+            <span><i class="fas fa-window-maximize"></i> <span id="windowCount">0</span> Windows</span>
+            <span><i class="fas fa-home"></i> <span id="roomCount">0</span> Rooms</span>
+          </div>
+          <div class="canvas-actions">
+            <button class="btn btn-secondary" onclick="undoAction()">
+              <i class="fas fa-undo"></i> Undo
+            </button>
+            <button class="btn btn-secondary" onclick="redoAction()">
+              <i class="fas fa-redo"></i> Redo
+            </button>
+            <button class="btn btn-primary" onclick="exportFloorPlan()">
+              <i class="fas fa-download"></i> Export
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Room Templates -->
+    <div class="room-templates" id="roomTemplates">
+      <h3><i class="fas fa-th-large"></i> Room Templates</h3>
+      <p>Click on a room template to add it to your floor plan</p>
+      
+      <div class="templates-grid">
+        <div class="template-item" onclick="addRoomTemplate('living')">
+          <div class="template-icon"><i class="fas fa-couch"></i></div>
+          <div class="template-name">Living Room</div>
+        </div>
+        <div class="template-item" onclick="addRoomTemplate('kitchen')">
+          <div class="template-icon"><i class="fas fa-utensils"></i></div>
+          <div class="template-name">Kitchen</div>
+        </div>
+        <div class="template-item" onclick="addRoomTemplate('bedroom')">
+          <div class="template-icon"><i class="fas fa-bed"></i></div>
+          <div class="template-name">Bedroom</div>
+        </div>
+        <div class="template-item" onclick="addRoomTemplate('bathroom')">
+          <div class="template-icon"><i class="fas fa-bath"></i></div>
+          <div class="template-name">Bathroom</div>
+        </div>
+        <div class="template-item" onclick="addRoomTemplate('dining')">
+          <div class="template-icon"><i class="fas fa-chair"></i></div>
+          <div class="template-name">Dining Room</div>
+        </div>
+        <div class="template-item" onclick="addRoomTemplate('office')">
+          <div class="template-icon"><i class="fas fa-laptop"></i></div>
+          <div class="template-name">Office</div>
+        </div>
+        <div class="template-item" onclick="addRoomTemplate('garage')">
+          <div class="template-icon"><i class="fas fa-car"></i></div>
+          <div class="template-name">Garage</div>
+        </div>
+        <div class="template-item" onclick="addRoomTemplate('closet')">
+          <div class="template-icon"><i class="fas fa-tshirt"></i></div>
+          <div class="template-name">Closet</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Global variables
+    let currentTool = 'wall';
+    let isDrawing = false;
+    let startX, startY;
+    let canvas, ctx;
+    let elements = [];
+    let history = [];
+    let historyIndex = -1;
+    let currentUserPlan = 'basic'; // This would come from user authentication
+
+    // Initialize the application
+    document.addEventListener('DOMContentLoaded', function() {
+      canvas = document.getElementById('floorPlanCanvas');
+      ctx = canvas.getContext('2d');
+      
+      // Set up canvas event listeners
+      canvas.addEventListener('mousedown', startDrawing);
+      canvas.addEventListener('mousemove', draw);
+      canvas.addEventListener('mouseup', stopDrawing);
+      canvas.addEventListener('mouseout', stopDrawing);
+      
+      // Initialize canvas
+      clearCanvas();
+      
+      // Hide loading screen
+      setTimeout(() => {
+        document.getElementById('loading').classList.remove('active');
+      }, 1000);
+    });
+
+    // Plan selection
+    function selectPlan(type) {
+      // Remove active class from all options
+      document.querySelectorAll('.plan-option').forEach(option => {
+        option.classList.remove('selected');
+      });
+      
+      // Add active class to selected option
+      event.currentTarget.classList.add('selected');
+      
+      // Hide all sections
+      document.getElementById('uploadSection').classList.remove('active');
+      document.getElementById('canvasSection').classList.remove('active');
+      document.getElementById('roomTemplates').classList.remove('active');
+      
+      if (type === 'upload') {
+        document.getElementById('uploadSection').classList.add('active');
+      } else if (type === 'create') {
+        // Check if user has Pro plan
+        if (currentUserPlan === 'basic') {
+          alert('Floor plan creation is available for Pro and Advanced Pro plans only. Please upgrade to create custom floor plans.');
+          return;
+        }
+        document.getElementById('canvasSection').classList.add('active');
+        document.getElementById('roomTemplates').classList.add('active');
+      }
+    }
+
+    // File upload handling
+    function handleFileSelect(event) {
+      const files = event.target.files;
+      for (let file of files) {
+        addFileToList(file);
+      }
+    }
+
+    function handleDrop(event) {
+      event.preventDefault();
+      event.currentTarget.classList.remove('dragover');
+      
+      const files = event.dataTransfer.files;
+      for (let file of files) {
+        if (file.type.startsWith('image/') || file.type === 'application/pdf') {
+          addFileToList(file);
+        }
+      }
+    }
+
+    function handleDragOver(event) {
+      event.preventDefault();
+      event.currentTarget.classList.add('dragover');
+    }
+
+    function handleDragLeave(event) {
+      event.currentTarget.classList.remove('dragover');
+    }
+
+    function addFileToList(file) {
+      const uploadedFiles = document.getElementById('uploadedFiles');
+      const fileItem = document.createElement('div');
+      fileItem.className = 'file-item';
+      
+      const fileIcon = getFileIcon(file.type);
+      const fileSize = (file.size / 1024 / 1024).toFixed(2);
+      
+      fileItem.innerHTML = `
+        <div class="file-info">
+          <div class="file-icon">
+            <i class="${fileIcon}"></i>
+          </div>
+          <div class="file-details">
+            <h4>${file.name}</h4>
+            <p>${fileSize} MB • ${new Date().toLocaleDateString()}</p>
+          </div>
+        </div>
+        <div class="file-actions">
+          <button class="btn-icon btn-view" onclick="viewFile('${file.name}')" title="View">
+            <i class="fas fa-eye"></i>
+          </button>
+          <button class="btn-icon btn-delete" onclick="deleteFile('${file.name}')" title="Delete">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      `;
+      
+      uploadedFiles.appendChild(fileItem);
+    }
+
+    function getFileIcon(fileType) {
+      if (fileType.startsWith('image/')) return 'fas fa-image';
+      if (fileType === 'application/pdf') return 'fas fa-file-pdf';
+      return 'fas fa-file';
+    }
+
+    function viewFile(fileName) {
+      alert(`Viewing file: ${fileName}\n\nThis would open a file viewer modal in a real implementation.`);
+    }
+
+    function deleteFile(fileName) {
+      if (confirm(`Are you sure you want to delete ${fileName}?`)) {
+        // Find and remove the file item
+        const fileItems = document.querySelectorAll('.file-item');
+        fileItems.forEach(item => {
+          if (item.querySelector('h4').textContent === fileName) {
+            item.remove();
+          }
+        });
+      }
+    }
+
+    // Canvas drawing functions
+    function selectTool(tool) {
+      currentTool = tool;
+      
+      // Update active tool button
+      document.querySelectorAll('.tool-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.querySelector(`[data-tool="${tool}"]`).classList.add('active');
+      
+      // Change cursor based on tool
+      switch(tool) {
+        case 'wall':
+        case 'door':
+        case 'window':
+        case 'room':
+          canvas.style.cursor = 'crosshair';
+          break;
+        case 'text':
+          canvas.style.cursor = 'text';
+          break;
+        case 'select':
+          canvas.style.cursor = 'pointer';
+          break;
+      }
+    }
+
+    function startDrawing(event) {
+      if (currentTool === 'select') return;
+      
+      isDrawing = true;
+      const rect = canvas.getBoundingClientRect();
+      startX = event.clientX - rect.left;
+      startY = event.clientY - rect.top;
+      
+      saveState();
+    }
+
+    function draw(event) {
+      if (!isDrawing) return;
+      
+      const rect = canvas.getBoundingClientRect();
+      const currentX = event.clientX - rect.left;
+      const currentY = event.clientY - rect.top;
+      
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      redrawElements();
+      
+      // Draw current element being created
+      ctx.strokeStyle = getToolColor(currentTool);
+      ctx.lineWidth = getToolWidth(currentTool);
+      ctx.setLineDash(getToolDash(currentTool));
+      
+      switch(currentTool) {
+        case 'wall':
+          drawWall(startX, startY, currentX, currentY);
+          break;
+        case 'door':
+          drawDoor(startX, startY, currentX, currentY);
+          break;
+        case 'window':
+          drawWindow(startX, startY, currentX, currentY);
+          break;
+        case 'room':
+          drawRoom(startX, startY, currentX, currentY);
+          break;
+      }
+    }
+
+    function stopDrawing(event) {
+      if (!isDrawing) return;
+      
+      isDrawing = false;
+      const rect = canvas.getBoundingClientRect();
+      const endX = event.clientX - rect.left;
+      const endY = event.clientY - rect.top;
+      
+      // Add element to the elements array
+      const element = {
+        type: currentTool,
+        startX: startX,
+        startY: startY,
+        endX: endX,
+        endY: endY,
+        color: getToolColor(currentTool),
+        width: getToolWidth(currentTool),
+        dash: getToolDash(currentTool)
+      };
+      
+      elements.push(element);
+      updateStats();
+    }
+
+    function drawWall(x1, y1, x2, y2) {
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+    }
+
+    function drawDoor(x1, y1, x2, y2) {
+      const length = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+      const angle = Math.atan2(y2 - y1, x2 - x1);
+      
+      // Draw door frame
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+      
+      // Draw door arc
+      ctx.beginPath();
+      ctx.arc(x1, y1, length * 0.8, angle, angle + Math.PI / 2);
+      ctx.stroke();
+    }
+
+    function drawWindow(x1, y1, x2, y2) {
+      const length = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+      const angle = Math.atan2(y2 - y1, x2 - x1);
+      
+      // Draw window frame
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+      
+      // Draw window panes
+      const midX = (x1 + x2) / 2;
+      const midY = (y1 + y2) / 2;
+      const perpX = -Math.sin(angle) * 10;
+      const perpY = Math.cos(angle) * 10;
+      
+      ctx.beginPath();
+      ctx.moveTo(midX + perpX, midY + perpY);
+      ctx.lineTo(midX - perpX, midY - perpY);
+      ctx.stroke();
+    }
+
+    function drawRoom(x1, y1, x2, y2) {
+      const width = Math.abs(x2 - x1);
+      const height = Math.abs(y2 - y1);
+      const startX = Math.min(x1, x2);
+      const startY = Math.min(y1, y2);
+      
+      ctx.fillStyle = 'rgba(99, 102, 241, 0.1)';
+      ctx.fillRect(startX, startY, width, height);
+      ctx.strokeRect(startX, startY, width, height);
+    }
+
+    function getToolColor(tool) {
+      switch(tool) {
+        case 'wall': return '#374151';
+        case 'door': return '#059669';
+        case 'window': return '#0ea5e9';
+        case 'room': return '#6366f1';
+        default: return '#374151';
+      }
+    }
+
+    function getToolWidth(tool) {
+      switch(tool) {
+        case 'wall': return 4;
+        case 'door': return 3;
+        case 'window': return 2;
+        case 'room': return 2;
+        default: return 2;
+      }
+    }
+
+    function getToolDash(tool) {
+      switch(tool) {
+        case 'door': return [5, 5];
+        case 'window': return [3, 3];
+        default: return [];
+      }
+    }
+
+    function redrawElements() {
+      elements.forEach(element => {
+        ctx.strokeStyle = element.color;
+        ctx.lineWidth = element.width;
+        ctx.setLineDash(element.dash);
+        
+        switch(element.type) {
+          case 'wall':
+            drawWall(element.startX, element.startY, element.endX, element.endY);
+            break;
+          case 'door':
+            drawDoor(element.startX, element.startY, element.endX, element.endY);
+            break;
+          case 'window':
+            drawWindow(element.startX, element.startY, element.endX, element.endY);
+            break;
+          case 'room':
+            drawRoom(element.startX, element.startY, element.endX, element.endY);
+            break;
+        }
+      });
+    }
+
+    function clearCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      elements = [];
+      updateStats();
+      saveState();
+    }
+
+    function updateStats() {
+      const stats = {
+        wall: elements.filter(e => e.type === 'wall').length,
+        door: elements.filter(e => e.type === 'door').length,
+        window: elements.filter(e => e.type === 'window').length,
+        room: elements.filter(e => e.type === 'room').length
+      };
+      
+      document.getElementById('wallCount').textContent = stats.wall;
+      document.getElementById('doorCount').textContent = stats.door;
+      document.getElementById('windowCount').textContent = stats.window;
+      document.getElementById('roomCount').textContent = stats.room;
+    }
+
+    function saveState() {
+      historyIndex++;
+      if (historyIndex < history.length) {
+        history.length = historyIndex;
+      }
+      history.push(JSON.parse(JSON.stringify(elements)));
+    }
+
+    function undoAction() {
+      if (historyIndex > 0) {
+        historyIndex--;
+        elements = JSON.parse(JSON.stringify(history[historyIndex]));
+        redrawElements();
+        updateStats();
+      }
+    }
+
+    function redoAction() {
+      if (historyIndex < history.length - 1) {
+        historyIndex++;
+        elements = JSON.parse(JSON.stringify(history[historyIndex]));
+        redrawElements();
+        updateStats();
+      }
+    }
+
+    function addRoomTemplate(roomType) {
+      if (currentUserPlan === 'basic') {
+        alert('Room templates are available for Pro and Advanced Pro plans only.');
+        return;
+      }
+      
+      // Add a predefined room template
+      const templates = {
+        living: { width: 200, height: 150, name: 'Living Room' },
+        kitchen: { width: 150, height: 120, name: 'Kitchen' },
+        bedroom: { width: 180, height: 140, name: 'Bedroom' },
+        bathroom: { width: 100, height: 80, name: 'Bathroom' },
+        dining: { width: 160, height: 120, name: 'Dining Room' },
+        office: { width: 120, height: 100, name: 'Office' },
+        garage: { width: 250, height: 150, name: 'Garage' },
+        closet: { width: 80, height: 60, name: 'Closet' }
+      };
+      
+      const template = templates[roomType];
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      
+      const element = {
+        type: 'room',
+        startX: centerX - template.width / 2,
+        startY: centerY - template.height / 2,
+        endX: centerX + template.width / 2,
+        endY: centerY + template.height / 2,
+        color: getToolColor('room'),
+        width: getToolWidth('room'),
+        dash: getToolDash('room'),
+        name: template.name
+      };
+      
+      elements.push(element);
+      redrawElements();
+      updateStats();
+      saveState();
+    }
+
+    function exportFloorPlan() {
+      const link = document.createElement('a');
+      link.download = 'floor-plan.png';
+      link.href = canvas.toDataURL();
+      link.click();
+    }
+
+    function saveFloorPlan() {
+      // This would save to Firebase in a real implementation
+      const floorPlanData = {
+        elements: elements,
+        timestamp: new Date().toISOString(),
+        userPlan: currentUserPlan
+      };
+      
+      // Simulate saving
+      document.getElementById('loading').classList.add('active');
+      setTimeout(() => {
+        document.getElementById('loading').classList.remove('active');
+        alert('Floor plan saved successfully!');
+      }, 2000);
+    }
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(event) {
+      if (event.ctrlKey || event.metaKey) {
+        switch(event.key) {
+          case 'z':
+            event.preventDefault();
+            undoAction();
+            break;
+          case 'y':
+            event.preventDefault();
+            redoAction();
+            break;
+          case 's':
+            event.preventDefault();
+            saveFloorPlan();
+            break;
+        }
+      }
+    });
+  </script>
+</body>
+</html>

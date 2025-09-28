@@ -2604,6 +2604,11 @@
                         <span>Favorites</span>
                     </button>
                     
+                    <button class="nav-item" onclick="openFloorPlan()">
+                        <i class="fas fa-drafting-compass"></i>
+                        <span>Floor Plan</span>
+                    </button>
+                    
                     <button class="nav-item" onclick="showSection('emergency', this)">
                         <i class="fas fa-phone-alt"></i>
                         <span>Emergency</span>
@@ -9002,6 +9007,11 @@
             URL.revokeObjectURL(url);
             
             alert('Home data exported successfully!');
+        }
+
+        function openFloorPlan() {
+            // Open floor plan page in new tab
+            window.open('floor-plan.html', '_blank');
         }
 
         // Google Places API Integration
