@@ -6,12 +6,13 @@
     <title>Pro Dashboard - NestMate</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="amazon-affiliate-styles.css">
+    <link rel="stylesheet" href="product-recommendation-styles.css">
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC_dBBCQ9R3n0KiZ6RodccRsUHoBov7GSA&libraries=places&callback=initGooglePlaces" async defer></script>
-    <script src="amazon-affiliate-integration.js"></script>
+    <script src="amazon-product-catalog.js"></script>
+    <script src="product-recommendation-engine.js"></script>
     
     <!-- Firebase Configuration moved to main JavaScript section -->
     <style>
@@ -3439,11 +3440,8 @@
                         </div>
                     </div>
                     
-                    <!-- Amazon Product Search Integration -->
-                    <div id="amazonSearchContainer" style="display: none;"></div>
-                    
-                    <!-- Commission Dashboard -->
-                    <div id="commissionDashboard" style="display: none;"></div>
+                    <!-- Product Recommendations -->
+                    <div id="productRecommendations"></div>
                     
                     <div class="price-tracking-grid">
                         <div class="price-alerts-card">
@@ -3461,11 +3459,11 @@
                                         <span class="current-price">$175.99</span>
                                         <span class="price-change down">-5%</span>
                                     </div>
-                                    <div class="alert-actions">
-                                        <button class="buy-now-btn" onclick="amazonIntegration.trackClick('Smart Home Hub', '$175.99', '$150.00'); window.open('https://www.amazon.com/s?k=Smart+Home+Hub&tag=nestmateusa-20', '_blank');">
-                                            <i class="fas fa-shopping-cart"></i> Buy Now
-                                        </button>
-                                    </div>
+                    <div class="alert-actions">
+                        <button class="buy-now-btn" onclick="window.open('https://www.amazon.com/s?k=Smart+Home+Hub&tag=nestmateusa-20', '_blank');">
+                            <i class="fas fa-shopping-cart"></i> Buy Now
+                        </button>
+                    </div>
                                 </div>
                             </div>
                         </div>
@@ -9431,14 +9429,11 @@
         let priceAlerts = [];
         let priceHistory = {};
 
-        // Initialize Amazon integration when page loads
+        // Initialize product recommendation system when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            if (typeof amazonIntegration !== 'undefined') {
-                // Initialize Amazon search container
-                amazonIntegration.createProductSearch('amazonSearchContainer');
-                
-                // Load and display affiliate stats
-                loadAffiliateStats();
+            if (typeof productEngine !== 'undefined') {
+                // Initialize product recommendations
+                productEngine.createRecommendationDisplay('productRecommendations');
                 
                 // Load existing price alerts
                 loadPriceAlerts();
@@ -9446,39 +9441,21 @@
         });
 
         function showAmazonSearch() {
-            const container = document.getElementById('amazonSearchContainer');
-            const commissionDashboard = document.getElementById('commissionDashboard');
-            
-            if (container.style.display === 'none') {
-                container.style.display = 'block';
-                commissionDashboard.style.display = 'none';
-            } else {
-                container.style.display = 'none';
+            if (typeof productEngine !== 'undefined') {
+                productEngine.refreshRecommendations();
             }
         }
 
         function toggleCommissionDashboard() {
-            const container = document.getElementById('commissionDashboard');
-            const amazonSearch = document.getElementById('amazonSearchContainer');
-            
-            if (container.style.display === 'none') {
-                container.style.display = 'block';
-                amazonSearch.style.display = 'none';
-                amazonIntegration.createCommissionDashboard('commissionDashboard');
-            } else {
-                container.style.display = 'none';
-            }
+            // This function can be used for future commission tracking features
+            console.log('Commission dashboard feature coming soon!');
         }
 
         function loadAffiliateStats() {
-            if (typeof amazonIntegration === 'undefined') return;
-            
-            const dashboard = amazonIntegration.getCommissionDashboard();
-            
-            document.getElementById('totalClicks').textContent = dashboard.totalClicks;
-            document.getElementById('totalRevenue').textContent = `$${dashboard.totalRevenue.toFixed(2)}`;
-            document.getElementById('avgCommission').textContent = dashboard.totalClicks > 0 ? 
-                `$${(dashboard.totalRevenue / dashboard.totalClicks).toFixed(2)}` : '$0.00';
+            // Placeholder for future affiliate stats
+            document.getElementById('totalClicks').textContent = '0';
+            document.getElementById('totalRevenue').textContent = '$0.00';
+            document.getElementById('avgCommission').textContent = '$0.00';
         }
 
         function loadPriceAlerts() {
