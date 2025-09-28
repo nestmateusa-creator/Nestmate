@@ -123,6 +123,10 @@
       display: block;
       background: white;
       cursor: crosshair;
+      background-image: 
+        linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px);
+      background-size: 20px 20px;
     }
     
     .stats {
@@ -343,6 +347,7 @@
       currentTool = tool;
       document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
       event.target.classList.add('active');
+      console.log('Tool set to:', tool);
     }
     
     function startDrawing(e) {
@@ -554,6 +559,7 @@
     }
     
     function clearCanvas() {
+      console.log('Clearing canvas...');
       saveState();
       walls = [];
       doors = [];
@@ -579,6 +585,7 @@
     }
     
     function saveFloorPlan() {
+      console.log('Saving floor plan...');
       const floorPlanName = document.getElementById('floorPlanName').value || 'My Floor Plan';
       
       const floorPlanData = {
@@ -589,6 +596,8 @@
         rooms,
         timestamp: new Date().toISOString()
       };
+      
+      console.log('Floor plan data:', floorPlanData);
       
       // Save to localStorage
       const savedPlans = JSON.parse(localStorage.getItem('savedFloorPlans') || '[]');
