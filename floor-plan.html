@@ -733,7 +733,27 @@
     </div>
   </div>
 
+  <!-- Firebase Configuration -->
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+  
   <script>
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyC_dBBCQ9R3n0KiZ6RodccRsUHoBov7GSA",
+      authDomain: "nestmate-167ed.firebaseapp.com",
+      projectId: "nestmate-167ed",
+      storageBucket: "nestmate-167ed.appspot.com",
+      messagingSenderId: "123456789012",
+      appId: "1:123456789012:web:abcdef1234567890"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
     // Global variables
     let currentTool = 'wall';
     let isDrawing = false;
@@ -742,10 +762,56 @@
     let elements = [];
     let history = [];
     let historyIndex = -1;
-    let currentUserPlan = 'basic'; // This would come from user authentication
+    let currentUserPlan = 'basic'; // Will be updated based on user's actual plan
+    let currentUser = null;
+
+    // Check user authentication and plan
+    function checkUserPlan() {
+      auth.onAuthStateChanged(user => {
+        if (user) {
+          currentUser = user;
+          console.log('User authenticated:', user.email);
+          
+          // Check user's plan from Firebase collections
+          const email = user.email;
+          
+          // Check Pro users
+          db.collection('NESTMATE PRO USER ACCOUNTS').where('email', '==', email).get()
+            .then(snapshot => {
+              if (!snapshot.empty) {
+                currentUserPlan = 'pro';
+                console.log('User is on Pro plan');
+                return;
+              }
+              
+              // Check Advanced Pro users
+              return db.collection('NESTMATE ADVANCED PRO USER ACCOUNTS').where('email', '==', email).get();
+            })
+            .then(snapshot => {
+              if (snapshot && !snapshot.empty) {
+                currentUserPlan = 'advanced';
+                console.log('User is on Advanced Pro plan');
+              } else {
+                currentUserPlan = 'basic';
+                console.log('User is on Basic plan');
+              }
+            })
+            .catch(error => {
+              console.error('Error checking user plan:', error);
+              currentUserPlan = 'basic'; // Default to basic on error
+            });
+        } else {
+          console.log('No user authenticated');
+          currentUserPlan = 'basic';
+        }
+      });
+    }
 
     // Initialize the application
     document.addEventListener('DOMContentLoaded', function() {
+      // Check user authentication and plan first
+      checkUserPlan();
+      
       canvas = document.getElementById('floorPlanCanvas');
       ctx = canvas.getContext('2d');
       
@@ -782,11 +848,12 @@
       if (type === 'upload') {
         document.getElementById('uploadSection').classList.add('active');
       } else if (type === 'create') {
-        // Check if user has Pro plan
+        // Check if user has Pro or Advanced Pro plan
         if (currentUserPlan === 'basic') {
           alert('Floor plan creation is available for Pro and Advanced Pro plans only. Please upgrade to create custom floor plans.');
           return;
         }
+        // Allow Pro and Advanced Pro users to create floor plans
         document.getElementById('canvasSection').classList.add('active');
         document.getElementById('roomTemplates').classList.add('active');
       }
@@ -1128,6 +1195,7 @@
         alert('Room templates are available for Pro and Advanced Pro plans only.');
         return;
       }
+      // Allow Pro and Advanced Pro users to use room templates
       
       // Add a predefined room template
       const templates = {
