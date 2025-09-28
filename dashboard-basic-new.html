@@ -6010,11 +6010,25 @@
                 console.error('allTasksList element not found!');
                 return;
             }
-            tasksList.innerHTML = tasks.map(task => `
+            
+            // Add task limit indicator for Basic users
+            const taskLimitInfo = `
+                <div class="task-limit-info" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1rem; border-radius: 10px; margin-bottom: 1rem; text-align: center;">
+                    <div style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem;">
+                        📋 Basic Plan: ${tasks.length}/10 Tasks Used
+                    </div>
+                    <div style="font-size: 0.9rem; opacity: 0.9;">
+                        ${tasks.length >= 10 ? '❌ Task limit reached! Upgrade to Pro for unlimited tasks.' : `✅ ${10 - tasks.length} tasks remaining`}
+                    </div>
+                    ${tasks.length >= 8 ? '<div style="font-size: 0.8rem; margin-top: 0.5rem; color: #ffeb3b;">⚠️ Approaching limit! Consider upgrading to Pro.</div>' : ''}
+                </div>
+            `;
+            
+            tasksList.innerHTML = taskLimitInfo + tasks.map(task => `
                 <div class="task-item">
                     <div class="task-checkbox ${task.completed ? 'checked' : ''}" onclick="toggleTask('${task.id}')"></div>
                     <div class="task-content">
-                        <div class="task-title">${task.title}</div>
+                        <div class="task-title">${task.title || task.text}</div>
                         <div class="task-due">Due: ${task.dueDate} - ${task.category} (${task.priority} priority)</div>
                         ${task.description ? `<div class="task-description">${task.description}</div>` : ''}
                     </div>
@@ -6022,9 +6036,10 @@
                         <button class="task-action-btn edit" onclick="editTask('${task.id}')" title="Edit Task">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button class="task-action-btn delete" onclick="deleteTask('${task.id}')" title="Delete Task">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                        <!-- Delete button removed for Basic users - they can only mark tasks as completed -->
+                        <div class="task-completed-info" style="color: #666; font-size: 0.8rem; padding: 0.5rem;">
+                            ${task.completed ? '✅ Completed' : '⏳ Pending'}
+                        </div>
                     </div>
                 </div>
             `).join('');
@@ -6086,17 +6101,9 @@
         }
 
         function deleteTask(taskId) {
-            if (!confirm('Are you sure you want to delete this task?')) {
-                return;
-            }
-
-            const taskIndex = tasks.findIndex(t => t.id === taskId);
-            if (taskIndex !== -1) {
-                tasks.splice(taskIndex, 1);
-                displayTasks();
-                saveTasksToFirebase();
-                alert('Task deleted successfully!');
-            }
+            // Basic users cannot delete tasks - they can only mark them as completed
+            alert('❌ Basic Plan: Task deletion is not available. You can mark tasks as completed instead. Upgrade to Pro for full task management including deletion.');
+            return;
         }
 
         // Form handlers
@@ -9887,18 +9894,31 @@
         }
 
         function addTaskFromAI(taskText) {
+            // Check Basic plan limit (10 tasks)
+            if (tasks.length >= 10) {
+                addAIMessage('❌ Basic plan limit reached! You can only have 10 tasks. Upgrade to Pro for unlimited tasks and advanced features.', 'bot');
+                return;
+            }
+            
             const newTask = {
                 id: Date.now(),
+                title: taskText,
                 text: taskText,
                 completed: false,
                 priority: 'medium',
                 category: 'General',
+                dueDate: new Date().toISOString().split('T')[0],
+                description: `Task created via AI: ${taskText}`,
                 createdAt: new Date().toISOString()
             };
             
             tasks.push(newTask);
             saveTasksToFirebase();
-            loadTasks();
+            displayTasks();
+            
+            // Show success message with upgrade option
+            const remainingTasks = 10 - tasks.length;
+            addAIMessage(`✅ Task added! You have ${remainingTasks} tasks remaining. Upgrade to Pro for unlimited tasks!`, 'bot');
         }
 
         function aiUpdateHomeDetail(field) {
@@ -10074,10 +10094,14 @@
             addTaskFromAI(taskText);
             taskAddingMode = false;
             
-            addAIMessageWithActions(`Perfect! I've added the task "${taskText}" to your dashboard!`, [
-                { text: 'View Tasks', callback: () => showSection('tasks') },
-                { text: 'Add Another Task', callback: () => startTaskAddingMode() }
-            ]);
+            // Check if task was actually added (not blocked by limit)
+            if (tasks.length <= 10) {
+                const remainingTasks = 10 - tasks.length;
+                addAIMessageWithActions(`Perfect! I've added the task "${taskText}" to your dashboard! You have ${remainingTasks} tasks remaining.`, [
+                    { text: 'View Tasks', callback: () => showSection('tasks') },
+                    { text: 'Add Another Task', callback: () => startTaskAddingMode() }
+                ]);
+            }
         }
 
         function cancelTaskAdding() {

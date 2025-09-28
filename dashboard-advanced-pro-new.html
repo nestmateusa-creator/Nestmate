@@ -6981,11 +6981,24 @@
                 console.error('allTasksList element not found!');
                 return;
             }
-            tasksList.innerHTML = tasks.map(task => `
+            
+            // Add Advanced Pro plan indicator
+            const advancedProPlanInfo = `
+                <div class="advanced-pro-plan-info" style="background: linear-gradient(135deg, #FF6B6B 0%, #4ECDC4 100%); color: white; padding: 1rem; border-radius: 10px; margin-bottom: 1rem; text-align: center;">
+                    <div style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem;">
+                        🚀 Advanced Pro Plan: Unlimited Tasks + Family Management
+                    </div>
+                    <div style="font-size: 0.9rem; opacity: 0.9;">
+                        ✅ Full task management with edit, delete, and family collaboration features
+                    </div>
+                </div>
+            `;
+            
+            tasksList.innerHTML = advancedProPlanInfo + tasks.map(task => `
                 <div class="task-item">
                     <div class="task-checkbox ${task.completed ? 'checked' : ''}" onclick="toggleTask('${task.id}')"></div>
                     <div class="task-content">
-                        <div class="task-title">${task.title}</div>
+                        <div class="task-title">${task.title || task.text}</div>
                         <div class="task-due">Due: ${task.dueDate} - ${task.category} (${task.priority} priority)</div>
                         ${task.description ? `<div class="task-description">${task.description}</div>` : ''}
                     </div>
@@ -11675,16 +11688,19 @@
         function addTaskFromAI(taskText) {
             const newTask = {
                 id: Date.now(),
+                title: taskText,
                 text: taskText,
                 completed: false,
                 priority: 'medium',
                 category: 'General',
+                dueDate: new Date().toISOString().split('T')[0],
+                description: `Task created via AI: ${taskText}`,
                 createdAt: new Date().toISOString()
             };
             
             tasks.push(newTask);
             saveTasksToFirebase();
-            loadTasks();
+            displayTasks();
         }
 
         function aiAddFamilyMember() {
