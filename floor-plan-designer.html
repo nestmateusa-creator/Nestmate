@@ -875,19 +875,28 @@
     
     function drawElements() {
       // Draw rooms first (background)
-      ctx.fillStyle = 'rgba(139, 92, 246, 0.1)';
-      ctx.strokeStyle = '#8b5cf6';
+      ctx.fillStyle = 'rgba(240, 248, 255, 0.3)';
+      ctx.strokeStyle = '#4a5568';
       ctx.lineWidth = 2;
       rooms.forEach(room => {
         ctx.beginPath();
         ctx.rect(room.startX, room.startY, room.endX - room.startX, room.endY - room.startY);
         ctx.fill();
         ctx.stroke();
+        
+        // Add room label
+        ctx.fillStyle = '#4a5568';
+        ctx.font = 'bold 12px Arial';
+        ctx.textAlign = 'center';
+        const roomCenterX = room.startX + (room.endX - room.startX) / 2;
+        const roomCenterY = room.startY + (room.endY - room.startY) / 2;
+        ctx.fillText(room.name || 'Room', roomCenterX, roomCenterY);
+        ctx.textAlign = 'left';
       });
       
       // Draw walls
-      ctx.strokeStyle = '#333';
-      ctx.lineWidth = 6;
+      ctx.strokeStyle = '#2d3748';
+      ctx.lineWidth = 8;
       walls.forEach(wall => {
         ctx.beginPath();
         ctx.moveTo(wall.startX, wall.startY);
@@ -895,115 +904,360 @@
         ctx.stroke();
       });
       
-      // Draw doors
+      // Draw doors with professional styling
       doors.forEach(door => {
+        const centerX = door.x + door.width / 2;
+        const centerY = door.y + door.height / 2;
+        
         // Highlight if selected
         if (selectedElement === door) {
-          ctx.strokeStyle = '#ff6b6b';
-          ctx.lineWidth = 3;
+          ctx.strokeStyle = '#e53e3e';
+          ctx.lineWidth = 4;
         } else {
-          ctx.strokeStyle = '#8b5cf6';
-          ctx.lineWidth = 2;
+          ctx.strokeStyle = '#2d3748';
+          ctx.lineWidth = 3;
         }
         
-        // Draw door rectangle
+        // Draw door frame
         ctx.beginPath();
         ctx.rect(door.x, door.y, door.width, door.height);
         ctx.stroke();
         
-        // Draw door arc
-        ctx.strokeStyle = '#8b5cf6';
+        // Draw door swing arc
+        ctx.strokeStyle = '#4a5568';
         ctx.lineWidth = 2;
         ctx.beginPath();
-        const centerX = door.x + door.width / 2;
-        const centerY = door.y + door.height / 2;
-        const radius = Math.min(door.width, door.height) * 0.8;
+        const radius = Math.min(door.width, door.height) * 0.9;
         ctx.arc(centerX, centerY, radius, 0, Math.PI / 2);
         ctx.stroke();
         
-        // Add door label
-        ctx.fillStyle = '#8b5cf6';
-        ctx.font = '10px Arial';
-        ctx.fillText(door.style, door.x + 2, door.y - 5);
+        // Draw door panel
+        ctx.fillStyle = '#e2e8f0';
+        ctx.beginPath();
+        ctx.rect(door.x + 2, door.y + 2, door.width - 4, door.height - 4);
+        ctx.fill();
+        
+        // Add door handle
+        ctx.fillStyle = '#4a5568';
+        ctx.beginPath();
+        ctx.arc(centerX + door.width/4, centerY, 2, 0, 2 * Math.PI);
+        ctx.fill();
       });
       
-      // Draw windows
+      // Draw windows with professional styling
       windows.forEach(window => {
+        const centerX = window.x + window.width / 2;
+        const centerY = window.y + window.height / 2;
+        
         // Highlight if selected
         if (selectedElement === window) {
-          ctx.strokeStyle = '#ff6b6b';
-          ctx.lineWidth = 3;
+          ctx.strokeStyle = '#e53e3e';
+          ctx.lineWidth = 4;
         } else {
-          ctx.strokeStyle = '#06b6d4';
-          ctx.lineWidth = 2;
+          ctx.strokeStyle = '#2d3748';
+          ctx.lineWidth = 3;
         }
         
-        // Draw window rectangle
+        // Draw window frame
         ctx.beginPath();
         ctx.rect(window.x, window.y, window.width, window.height);
         ctx.stroke();
         
+        // Draw window glass
+        ctx.fillStyle = 'rgba(135, 206, 235, 0.3)';
+        ctx.beginPath();
+        ctx.rect(window.x + 2, window.y + 2, window.width - 4, window.height - 4);
+        ctx.fill();
+        
         // Draw window cross
-        ctx.strokeStyle = '#06b6d4';
+        ctx.strokeStyle = '#4a5568';
         ctx.lineWidth = 1;
         ctx.beginPath();
-        const centerX = window.x + window.width / 2;
-        const centerY = window.y + window.height / 2;
         ctx.moveTo(window.x, centerY);
         ctx.lineTo(window.x + window.width, centerY);
         ctx.moveTo(centerX, window.y);
         ctx.lineTo(centerX, window.y + window.height);
         ctx.stroke();
-        
-        // Add window label
-        ctx.fillStyle = '#06b6d4';
-        ctx.font = '10px Arial';
-        ctx.fillText(window.style, window.x + 2, window.y - 5);
       });
       
-      // Draw furniture
+      // Draw furniture with realistic shapes
       furniture.forEach(item => {
         // Highlight if selected
         if (selectedElement === item) {
-          ctx.strokeStyle = '#ff6b6b';
+          ctx.strokeStyle = '#e53e3e';
           ctx.lineWidth = 3;
         } else {
-          ctx.strokeStyle = '#10b981';
+          ctx.strokeStyle = '#4a5568';
           ctx.lineWidth = 2;
         }
         
-        // Draw furniture rectangle
-        ctx.beginPath();
-        ctx.rect(item.x, item.y, item.width, item.height);
-        ctx.stroke();
-        
-        // Add furniture label
-        ctx.fillStyle = '#10b981';
-        ctx.font = '10px Arial';
-        ctx.fillText(item.furnitureType, item.x + 2, item.y - 5);
+        // Draw furniture based on type
+        drawFurnitureShape(item);
       });
       
-      // Draw electrical
+      // Draw electrical with professional styling
       electrical.forEach(item => {
         // Highlight if selected
         if (selectedElement === item) {
-          ctx.strokeStyle = '#ff6b6b';
+          ctx.strokeStyle = '#e53e3e';
           ctx.lineWidth = 3;
         } else {
-          ctx.strokeStyle = '#f59e0b';
+          ctx.strokeStyle = '#f6ad55';
           ctx.lineWidth = 2;
         }
         
-        // Draw electrical circle
-        ctx.beginPath();
-        ctx.arc(item.x + item.width/2, item.y + item.height/2, item.width/2, 0, 2 * Math.PI);
-        ctx.stroke();
-        
-        // Add electrical label
-        ctx.fillStyle = '#f59e0b';
-        ctx.font = '8px Arial';
-        ctx.fillText(item.electricalType, item.x + 2, item.y - 5);
+        // Draw electrical based on type
+        drawElectricalShape(item);
       });
+    }
+    
+    function drawFurnitureShape(item) {
+      const x = item.x;
+      const y = item.y;
+      const w = item.width;
+      const h = item.height;
+      const centerX = x + w / 2;
+      const centerY = y + h / 2;
+      
+      ctx.fillStyle = '#f7fafc';
+      ctx.strokeStyle = '#4a5568';
+      ctx.lineWidth = 2;
+      
+      switch(item.furnitureType) {
+        case 'sofa':
+          // Draw sofa with curved back
+          ctx.beginPath();
+          ctx.rect(x, y + h/3, w, h*2/3);
+          ctx.fill();
+          ctx.stroke();
+          // Back rest
+          ctx.beginPath();
+          ctx.rect(x, y, w, h/3);
+          ctx.fill();
+          ctx.stroke();
+          // Armrests
+          ctx.beginPath();
+          ctx.rect(x, y + h/4, w/6, h/2);
+          ctx.rect(x + w*5/6, y + h/4, w/6, h/2);
+          ctx.fill();
+          ctx.stroke();
+          break;
+          
+        case 'bed':
+          // Draw bed with headboard
+          ctx.beginPath();
+          ctx.rect(x, y + h/4, w, h*3/4);
+          ctx.fill();
+          ctx.stroke();
+          // Headboard
+          ctx.beginPath();
+          ctx.rect(x + w/4, y, w/2, h/4);
+          ctx.fill();
+          ctx.stroke();
+          break;
+          
+        case 'table':
+          // Draw table with legs
+          ctx.beginPath();
+          ctx.rect(x, y, w, h);
+          ctx.fill();
+          ctx.stroke();
+          // Table legs
+          ctx.strokeStyle = '#4a5568';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(x + w/6, y + h);
+          ctx.lineTo(x + w/6, y + h + 5);
+          ctx.moveTo(x + w*5/6, y + h);
+          ctx.lineTo(x + w*5/6, y + h + 5);
+          ctx.moveTo(x + w/6, y);
+          ctx.lineTo(x + w/6, y - 5);
+          ctx.moveTo(x + w*5/6, y);
+          ctx.lineTo(x + w*5/6, y - 5);
+          ctx.stroke();
+          break;
+          
+        case 'chair':
+          // Draw chair with back
+          ctx.beginPath();
+          ctx.rect(x, y + h/3, w, h*2/3);
+          ctx.fill();
+          ctx.stroke();
+          // Back rest
+          ctx.beginPath();
+          ctx.rect(x, y, w, h/3);
+          ctx.fill();
+          ctx.stroke();
+          break;
+          
+        case 'toilet':
+          // Draw toilet bowl
+          ctx.beginPath();
+          ctx.ellipse(centerX, centerY + h/4, w/2, h/3, 0, 0, 2 * Math.PI);
+          ctx.fill();
+          ctx.stroke();
+          // Tank
+          ctx.beginPath();
+          ctx.rect(x + w/4, y, w/2, h/2);
+          ctx.fill();
+          ctx.stroke();
+          break;
+          
+        case 'bathtub':
+          // Draw bathtub
+          ctx.beginPath();
+          ctx.rect(x, y, w, h);
+          ctx.fill();
+          ctx.stroke();
+          // Inner tub
+          ctx.beginPath();
+          ctx.rect(x + 3, y + 3, w - 6, h - 6);
+          ctx.stroke();
+          break;
+          
+        case 'refrigerator':
+          // Draw fridge with handle
+          ctx.beginPath();
+          ctx.rect(x, y, w, h);
+          ctx.fill();
+          ctx.stroke();
+          // Handle
+          ctx.strokeStyle = '#4a5568';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.rect(x + w - 8, y + h/3, 4, h/3);
+          ctx.stroke();
+          break;
+          
+        case 'stove':
+          // Draw stove with burners
+          ctx.beginPath();
+          ctx.rect(x, y, w, h);
+          ctx.fill();
+          ctx.stroke();
+          // Burners
+          ctx.fillStyle = '#2d3748';
+          ctx.beginPath();
+          ctx.arc(x + w/4, y + h/3, 3, 0, 2 * Math.PI);
+          ctx.arc(x + w*3/4, y + h/3, 3, 0, 2 * Math.PI);
+          ctx.arc(x + w/4, y + h*2/3, 3, 0, 2 * Math.PI);
+          ctx.arc(x + w*3/4, y + h*2/3, 3, 0, 2 * Math.PI);
+          ctx.fill();
+          break;
+          
+        default:
+          // Default rectangle for other furniture
+          ctx.beginPath();
+          ctx.rect(x, y, w, h);
+          ctx.fill();
+          ctx.stroke();
+      }
+      
+      // Add furniture label
+      ctx.fillStyle = '#4a5568';
+      ctx.font = 'bold 10px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText(item.furnitureType, centerX, y - 5);
+      ctx.textAlign = 'left';
+    }
+    
+    function drawElectricalShape(item) {
+      const x = item.x;
+      const y = item.y;
+      const w = item.width;
+      const h = item.height;
+      const centerX = x + w / 2;
+      const centerY = y + h / 2;
+      
+      ctx.fillStyle = '#fff5f5';
+      ctx.strokeStyle = '#f6ad55';
+      ctx.lineWidth = 2;
+      
+      switch(item.electricalType) {
+        case 'outlet':
+          // Draw outlet
+          ctx.beginPath();
+          ctx.rect(x, y, w, h);
+          ctx.fill();
+          ctx.stroke();
+          // Outlet holes
+          ctx.fillStyle = '#2d3748';
+          ctx.beginPath();
+          ctx.rect(x + 2, y + 3, 3, 2);
+          ctx.rect(x + 6, y + 3, 3, 2);
+          ctx.rect(x + 4, y + 7, 3, 1);
+          ctx.fill();
+          break;
+          
+        case 'switch':
+          // Draw light switch
+          ctx.beginPath();
+          ctx.rect(x, y, w, h);
+          ctx.fill();
+          ctx.stroke();
+          // Switch toggle
+          ctx.fillStyle = '#4a5568';
+          ctx.beginPath();
+          ctx.rect(x + 2, y + 2, w - 4, h - 4);
+          ctx.fill();
+          break;
+          
+        case 'ceiling_light':
+          // Draw ceiling light
+          ctx.beginPath();
+          ctx.arc(centerX, centerY, w/2, 0, 2 * Math.PI);
+          ctx.fill();
+          ctx.stroke();
+          // Light rays
+          ctx.strokeStyle = '#f6ad55';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          for(let i = 0; i < 8; i++) {
+            const angle = (i * Math.PI * 2) / 8;
+            const startX = centerX + Math.cos(angle) * w/2;
+            const startY = centerY + Math.sin(angle) * w/2;
+            const endX = centerX + Math.cos(angle) * w;
+            const endY = centerY + Math.sin(angle) * w;
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(endX, endY);
+          }
+          ctx.stroke();
+          break;
+          
+        case 'ceiling_fan':
+          // Draw ceiling fan
+          ctx.beginPath();
+          ctx.arc(centerX, centerY, w/2, 0, 2 * Math.PI);
+          ctx.fill();
+          ctx.stroke();
+          // Fan blades
+          ctx.strokeStyle = '#4a5568';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          for(let i = 0; i < 4; i++) {
+            const angle = (i * Math.PI * 2) / 4;
+            const endX = centerX + Math.cos(angle) * w;
+            const endY = centerY + Math.sin(angle) * w;
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(endX, endY);
+          }
+          ctx.stroke();
+          break;
+          
+        default:
+          // Default circle for other electrical
+          ctx.beginPath();
+          ctx.arc(centerX, centerY, w/2, 0, 2 * Math.PI);
+          ctx.fill();
+          ctx.stroke();
+      }
+      
+      // Add electrical label
+      ctx.fillStyle = '#f6ad55';
+      ctx.font = 'bold 8px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText(item.electricalType, centerX, y - 5);
+      ctx.textAlign = 'left';
     }
     
     function redrawCanvas() {
