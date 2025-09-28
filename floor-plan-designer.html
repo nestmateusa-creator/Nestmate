@@ -271,6 +271,12 @@
         <button class="tool-btn active" onclick="setTool('wall')">
           <i class="fas fa-minus"></i> Wall
         </button>
+        <button class="tool-btn" onclick="setTool('curved_wall')">
+          <i class="fas fa-circle"></i> Curved Wall
+        </button>
+        <button class="tool-btn" onclick="setTool('dimension')">
+          <i class="fas fa-ruler"></i> Dimension
+        </button>
         <button class="tool-btn" onclick="setTool('select')">
           <i class="fas fa-mouse-pointer"></i> Select
         </button>
@@ -467,6 +473,8 @@
     let isDrawing = false;
     let startX, startY;
     let walls = [];
+    let curvedWalls = [];
+    let dimensions = [];
     let doors = [];
     let windows = [];
     let rooms = [];
@@ -478,6 +486,7 @@
     let selectedElement = null;
     let isDragging = false;
     let dragOffset = { x: 0, y: 0 };
+    let currentCurve = null;
     
     // Initialize the designer
     window.onload = function() {
@@ -696,6 +705,18 @@
       if (currentTool === 'room') {
         // Draw rectangle for room
         ctx.rect(startX, startY, currentX - startX, currentY - startY);
+      } else if (currentTool === 'curved_wall') {
+        // Draw curved wall preview
+        const centerX = (startX + currentX) / 2;
+        const centerY = (startY + currentY) / 2;
+        const radius = Math.sqrt(Math.pow(currentX - startX, 2) + Math.pow(currentY - startY, 2)) / 2;
+        const startAngle = Math.atan2(startY - centerY, startX - centerX);
+        const endAngle = Math.atan2(currentY - centerY, currentX - centerX);
+        ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+      } else if (currentTool === 'dimension') {
+        // Draw dimension line preview
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(currentX, currentY);
       } else {
         // Draw line for walls, doors, windows
         ctx.moveTo(startX, startY);
@@ -730,6 +751,19 @@
         case 'wall':
           walls.push({startX, startY, endX, endY, id: Date.now(), type: 'wall'});
           console.log('Added wall, total walls:', walls.length);
+          break;
+        case 'curved_wall':
+          const centerX = (startX + endX) / 2;
+          const centerY = (startY + endY) / 2;
+          const radius = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2)) / 2;
+          const startAngle = Math.atan2(startY - centerY, startX - centerX);
+          const endAngle = Math.atan2(endY - centerY, endX - centerX);
+          curvedWalls.push({centerX, centerY, radius, startAngle, endAngle, id: Date.now(), type: 'curved_wall'});
+          console.log('Added curved wall, total curved walls:', curvedWalls.length);
+          break;
+        case 'dimension':
+          dimensions.push({startX, startY, endX, endY, id: Date.now(), type: 'dimension'});
+          console.log('Added dimension, total dimensions:', dimensions.length);
           break;
         case 'room':
           rooms.push({startX, startY, endX, endY, id: Date.now(), type: 'room'});
@@ -904,7 +938,52 @@
         ctx.stroke();
       });
       
-      // Draw doors with professional styling
+      // Draw curved walls
+      ctx.strokeStyle = '#2d3748';
+      ctx.lineWidth = 8;
+      curvedWalls.forEach(curve => {
+        ctx.beginPath();
+        ctx.arc(curve.centerX, curve.centerY, curve.radius, curve.startAngle, curve.endAngle);
+        ctx.stroke();
+      });
+      
+      // Draw dimensions
+      ctx.strokeStyle = '#4a5568';
+      ctx.lineWidth = 1;
+      ctx.fillStyle = '#4a5568';
+      ctx.font = '10px Arial';
+      dimensions.forEach(dim => {
+        // Draw dimension line
+        ctx.beginPath();
+        ctx.moveTo(dim.startX, dim.startY);
+        ctx.lineTo(dim.endX, dim.endY);
+        ctx.stroke();
+        
+        // Draw dimension arrows
+        const angle = Math.atan2(dim.endY - dim.startY, dim.endX - dim.startX);
+        const arrowLength = 5;
+        ctx.beginPath();
+        ctx.moveTo(dim.startX, dim.startY);
+        ctx.lineTo(dim.startX + arrowLength * Math.cos(angle - Math.PI/6), dim.startY + arrowLength * Math.sin(angle - Math.PI/6));
+        ctx.moveTo(dim.startX, dim.startY);
+        ctx.lineTo(dim.startX + arrowLength * Math.cos(angle + Math.PI/6), dim.startY + arrowLength * Math.sin(angle + Math.PI/6));
+        ctx.moveTo(dim.endX, dim.endY);
+        ctx.lineTo(dim.endX - arrowLength * Math.cos(angle - Math.PI/6), dim.endY - arrowLength * Math.sin(angle - Math.PI/6));
+        ctx.moveTo(dim.endX, dim.endY);
+        ctx.lineTo(dim.endX - arrowLength * Math.cos(angle + Math.PI/6), dim.endY - arrowLength * Math.sin(angle + Math.PI/6));
+        ctx.stroke();
+        
+        // Draw dimension text
+        const centerX = (dim.startX + dim.endX) / 2;
+        const centerY = (dim.startY + dim.endY) / 2;
+        const distance = Math.sqrt(Math.pow(dim.endX - dim.startX, 2) + Math.pow(dim.endY - dim.startY, 2));
+        const feet = Math.floor(distance / 20);
+        const inches = Math.round((distance % 20) / 20 * 12);
+        const text = inches > 0 ? `${feet}'${inches}"` : `${feet}'`;
+        ctx.fillText(text, centerX, centerY - 5);
+      });
+      
+      // Draw doors with architectural floor plan symbols
       doors.forEach(door => {
         const centerX = door.x + door.width / 2;
         const centerY = door.y + door.height / 2;
@@ -912,59 +991,38 @@
         // Highlight if selected
         if (selectedElement === door) {
           ctx.strokeStyle = '#e53e3e';
-          ctx.lineWidth = 4;
+          ctx.lineWidth = 3;
         } else {
-          ctx.strokeStyle = '#1a202c';
+          ctx.strokeStyle = '#2d3748';
           ctx.lineWidth = 2;
         }
         
-        // Draw door opening (gap in wall)
+        // Draw door opening (gap in wall) - architectural symbol
         ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 6;
+        ctx.lineWidth = 8;
         ctx.beginPath();
         ctx.moveTo(door.x, door.y);
         ctx.lineTo(door.x + door.width, door.y + door.height);
         ctx.stroke();
         
-        // Draw door panel (realistic door shape)
-        ctx.fillStyle = '#f7fafc';
+        // Draw door swing arc (quarter circle) - architectural symbol
         ctx.strokeStyle = '#2d3748';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.rect(door.x, door.y, door.width, door.height);
-        ctx.fill();
-        ctx.stroke();
-        
-        // Draw door swing arc (quarter circle)
-        ctx.strokeStyle = '#4a5568';
         ctx.lineWidth = 2;
         ctx.beginPath();
-        const radius = Math.min(door.width, door.height) * 0.8;
+        const radius = Math.min(door.width, door.height) * 0.9;
         ctx.arc(door.x, door.y, radius, 0, Math.PI / 2);
         ctx.stroke();
         
-        // Add door handle (realistic position)
-        ctx.fillStyle = '#2d3748';
+        // Draw door panel line (architectural symbol)
+        ctx.strokeStyle = '#2d3748';
+        ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.arc(door.x + door.width * 0.75, door.y + door.height * 0.5, 1.5, 0, 2 * Math.PI);
-        ctx.fill();
-        
-        // Add door panel lines (realistic door detail)
-        ctx.strokeStyle = '#cbd5e0';
-        ctx.lineWidth = 0.5;
-        ctx.beginPath();
-        // Vertical panel lines
-        ctx.moveTo(door.x + door.width * 0.33, door.y);
-        ctx.lineTo(door.x + door.width * 0.33, door.y + door.height);
-        ctx.moveTo(door.x + door.width * 0.66, door.y);
-        ctx.lineTo(door.x + door.width * 0.66, door.y + door.height);
-        // Horizontal panel lines
-        ctx.moveTo(door.x, door.y + door.height * 0.5);
-        ctx.lineTo(door.x + door.width, door.y + door.height * 0.5);
+        ctx.moveTo(door.x, door.y);
+        ctx.lineTo(door.x + door.width, door.y + door.height);
         ctx.stroke();
       });
       
-      // Draw windows with professional styling
+      // Draw windows with architectural floor plan symbols
       windows.forEach(window => {
         const centerX = window.x + window.width / 2;
         const centerY = window.y + window.height / 2;
@@ -972,25 +1030,33 @@
         // Highlight if selected
         if (selectedElement === window) {
           ctx.strokeStyle = '#e53e3e';
-          ctx.lineWidth = 4;
+          ctx.lineWidth = 3;
         } else {
           ctx.strokeStyle = '#2d3748';
-          ctx.lineWidth = 3;
+          ctx.lineWidth = 2;
         }
         
-        // Draw window frame
+        // Draw window opening (gap in wall) - architectural symbol
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 8;
         ctx.beginPath();
-        ctx.rect(window.x, window.y, window.width, window.height);
+        ctx.moveTo(window.x, window.y);
+        ctx.lineTo(window.x + window.width, window.y + window.height);
         ctx.stroke();
         
-        // Draw window glass
-        ctx.fillStyle = 'rgba(135, 206, 235, 0.3)';
+        // Draw window frame lines (architectural symbol)
+        ctx.strokeStyle = '#2d3748';
+        ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.rect(window.x + 2, window.y + 2, window.width - 4, window.height - 4);
-        ctx.fill();
+        // Top and bottom frame lines
+        ctx.moveTo(window.x, window.y);
+        ctx.lineTo(window.x + window.width, window.y + window.height);
+        ctx.moveTo(window.x, window.y + window.height);
+        ctx.lineTo(window.x + window.width, window.y);
+        ctx.stroke();
         
-        // Draw window cross
-        ctx.strokeStyle = '#4a5568';
+        // Draw window cross (architectural symbol)
+        ctx.strokeStyle = '#2d3748';
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(window.x, centerY);
@@ -1312,7 +1378,7 @@
     
     function updateStats() {
       document.getElementById('stats').textContent = 
-        `${walls.length} Walls • ${doors.length} Doors • ${windows.length} Windows • ${rooms.length} Rooms • ${furniture.length} Furniture • ${electrical.length} Electrical`;
+        `${walls.length} Walls • ${curvedWalls.length} Curved • ${dimensions.length} Dimensions • ${doors.length} Doors • ${windows.length} Windows • ${rooms.length} Rooms • ${furniture.length} Furniture • ${electrical.length} Electrical`;
     }
     
     function saveState() {
@@ -1322,6 +1388,8 @@
       }
       history.push({
         walls: JSON.parse(JSON.stringify(walls)),
+        curvedWalls: JSON.parse(JSON.stringify(curvedWalls)),
+        dimensions: JSON.parse(JSON.stringify(dimensions)),
         doors: JSON.parse(JSON.stringify(doors)),
         windows: JSON.parse(JSON.stringify(windows)),
         rooms: JSON.parse(JSON.stringify(rooms)),
@@ -1335,6 +1403,8 @@
         historyIndex--;
         const state = history[historyIndex];
         walls = state.walls;
+        curvedWalls = state.curvedWalls;
+        dimensions = state.dimensions;
         doors = state.doors;
         windows = state.windows;
         rooms = state.rooms;
@@ -1350,6 +1420,8 @@
         historyIndex++;
         const state = history[historyIndex];
         walls = state.walls;
+        curvedWalls = state.curvedWalls;
+        dimensions = state.dimensions;
         doors = state.doors;
         windows = state.windows;
         rooms = state.rooms;
@@ -1396,6 +1468,8 @@
       console.log('Clearing canvas...');
       saveState();
       walls = [];
+      curvedWalls = [];
+      dimensions = [];
       doors = [];
       windows = [];
       rooms = [];
@@ -1542,6 +1616,8 @@
       const floorPlanData = {
         name: floorPlanName,
         walls,
+        curvedWalls,
+        dimensions,
         doors,
         windows,
         rooms,
