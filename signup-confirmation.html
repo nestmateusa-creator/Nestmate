@@ -151,6 +151,33 @@
             font-size: 1.3rem;
         }
 
+        .logout-button {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logout-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .logout-button i {
+            font-size: 0.8rem;
+        }
+
         .plans-section {
             margin-bottom: 60px;
         }
@@ -620,6 +647,9 @@
                 
                 <div class="user-info">
                     <p>Account created for: <span class="user-email" id="userEmail">Loading...</span></p>
+                    <button class="logout-button" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
                 </div>
             </div>
         </div>
@@ -954,6 +984,21 @@
             setTimeout(() => {
                 window.location.href = stripeLinks[planType];
             }, 1000);
+        }
+
+        // Logout function
+        function logout() {
+            // Clear all stored data
+            localStorage.clear();
+            sessionStorage.clear();
+            
+            // Clear any cookies (if any)
+            document.cookie.split(";").forEach(function(c) { 
+                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+            });
+            
+            // Redirect to home page
+            window.location.href = 'index.html';
         }
 
         // Add some animation on load
