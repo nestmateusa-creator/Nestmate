@@ -1170,6 +1170,320 @@
             font-weight: 500;
         }
 
+        /* AI Chatbot Styles */
+        .ai-chatbot-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .ai-chatbot-toggle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .ai-chatbot-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(16, 185, 129, 0.6);
+        }
+
+        .ai-chatbot-toggle i {
+            color: white;
+            font-size: 24px;
+        }
+
+        .ai-chatbot-toggle .pulse-ring {
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            border: 2px solid #10b981;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.4); opacity: 0; }
+        }
+
+        .ai-chatbot-window {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 400px;
+            height: 500px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .ai-chatbot-window.open {
+            display: flex;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .ai-chatbot-header {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .ai-chatbot-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .ai-chatbot-title i {
+            font-size: 20px;
+        }
+
+        .ai-chatbot-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: background 0.3s ease;
+        }
+
+        .ai-chatbot-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .ai-chatbot-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .ai-message {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .ai-message.user {
+            flex-direction: row-reverse;
+        }
+
+        .ai-message-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .ai-message.user .ai-message-avatar {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        }
+
+        .ai-message.bot .ai-message-avatar {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .ai-message-content {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .ai-message.user .ai-message-content {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+        }
+
+        .ai-message.bot .ai-message-content {
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+
+        .ai-message-actions {
+            margin-top: 8px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .ai-action-button {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .ai-action-button:hover {
+            background: #059669;
+        }
+
+        .ai-chatbot-input {
+            padding: 20px;
+            border-top: 1px solid #e2e8f0;
+            background: white;
+        }
+
+        .ai-input-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .ai-text-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 25px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .ai-text-input:focus {
+            border-color: #10b981;
+        }
+
+        .ai-voice-button {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .ai-voice-button:hover {
+            transform: scale(1.1);
+        }
+
+        .ai-voice-button.recording {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            animation: pulse 1s infinite;
+        }
+
+        .ai-send-button {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .ai-send-button:hover {
+            transform: scale(1.1);
+        }
+
+        .ai-typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #64748b;
+            font-size: 14px;
+            font-style: italic;
+        }
+
+        .ai-typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .ai-typing-dots span {
+            width: 6px;
+            height: 6px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .ai-typing-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .ai-typing-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .ai-chatbot-container {
+                bottom: 15px;
+                right: 15px;
+            }
+
+            .ai-chatbot-window {
+                width: calc(100vw - 30px);
+                height: 60vh;
+                right: -15px;
+            }
+
+            .ai-chatbot-toggle {
+                width: 55px;
+                height: 55px;
+            }
+        }
+
         .welcome-stats {
             display: flex;
             justify-content: center;
@@ -9843,6 +10157,469 @@
                 event.target.style.display = 'none';
             }
         }
+
+        // AI Chatbot Functions for Pro Dashboard
+        let aiChatbotOpen = false;
+        let isRecording = false;
+        let recognition = null;
+
+        function toggleAIChatbot() {
+            const chatbotWindow = document.getElementById('aiChatbotWindow');
+            aiChatbotOpen = !aiChatbotOpen;
+            
+            if (aiChatbotOpen) {
+                chatbotWindow.classList.add('open');
+                document.getElementById('aiTextInput').focus();
+            } else {
+                chatbotWindow.classList.remove('open');
+            }
+        }
+
+        function sendAIMessage() {
+            const input = document.getElementById('aiTextInput');
+            const message = input.value.trim();
+            
+            if (message) {
+                addAIMessage(message, 'user');
+                input.value = '';
+                processAICommand(message);
+            }
+        }
+
+        function handleAIInputKeypress(event) {
+            if (event.key === 'Enter') {
+                sendAIMessage();
+            }
+        }
+
+        function addAIMessage(content, sender) {
+            const messagesContainer = document.getElementById('aiChatbotMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `ai-message ${sender}`;
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'ai-message-avatar';
+            avatar.innerHTML = sender === 'user' ? '<i class="fas fa-user"></i>' : '<i class="fas fa-robot"></i>';
+            
+            const messageContent = document.createElement('div');
+            messageContent.className = 'ai-message-content';
+            messageContent.innerHTML = `<p>${content}</p>`;
+            
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(messageContent);
+            messagesContainer.appendChild(messageDiv);
+            
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function addAIMessageWithActions(content, actions) {
+            const messagesContainer = document.getElementById('aiChatbotMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'ai-message bot';
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'ai-message-avatar';
+            avatar.innerHTML = '<i class="fas fa-robot"></i>';
+            
+            const messageContent = document.createElement('div');
+            messageContent.className = 'ai-message-content';
+            messageContent.innerHTML = `<p>${content}</p>`;
+            
+            if (actions && actions.length > 0) {
+                const actionsDiv = document.createElement('div');
+                actionsDiv.className = 'ai-message-actions';
+                
+                actions.forEach(action => {
+                    const button = document.createElement('button');
+                    button.className = 'ai-action-button';
+                    button.textContent = action.text;
+                    button.onclick = () => action.callback();
+                    actionsDiv.appendChild(button);
+                });
+                
+                messageContent.appendChild(actionsDiv);
+            }
+            
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(messageContent);
+            messagesContainer.appendChild(messageDiv);
+            
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function showAITyping() {
+            const messagesContainer = document.getElementById('aiChatbotMessages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'ai-message bot';
+            typingDiv.id = 'aiTypingIndicator';
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'ai-message-avatar';
+            avatar.innerHTML = '<i class="fas fa-robot"></i>';
+            
+            const typingContent = document.createElement('div');
+            typingContent.className = 'ai-typing-indicator';
+            typingContent.innerHTML = `
+                <span>AI is thinking</span>
+                <div class="ai-typing-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            `;
+            
+            typingDiv.appendChild(avatar);
+            typingDiv.appendChild(typingContent);
+            messagesContainer.appendChild(typingDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function hideAITyping() {
+            const typingIndicator = document.getElementById('aiTypingIndicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+
+        function processAICommand(message) {
+            showAITyping();
+            
+            setTimeout(() => {
+                hideAITyping();
+                
+                const lowerMessage = message.toLowerCase();
+                let response = '';
+                let actions = [];
+                
+                // Task Management
+                if (lowerMessage.includes('add task') || lowerMessage.includes('create task') || lowerMessage.includes('new task')) {
+                    const taskText = extractTaskFromMessage(message);
+                    if (taskText) {
+                        addTaskFromAI(taskText);
+                        response = `I've added the task "${taskText}" to your dashboard!`;
+                        actions = [
+                            { text: 'View Tasks', callback: () => showSection('tasks') },
+                            { text: 'Add Another', callback: () => aiQuickAction('add-task') }
+                        ];
+                    } else {
+                        response = 'I can help you add a task! What would you like to add? For example: "Add task: Change air filter"';
+                    }
+                }
+                
+                // Home Details
+                else if (lowerMessage.includes('update home') || lowerMessage.includes('change home') || lowerMessage.includes('edit home')) {
+                    response = 'I can help you update your home details! What would you like to change?';
+                    actions = [
+                        { text: 'Address', callback: () => aiUpdateHomeDetail('address') },
+                        { text: 'Square Footage', callback: () => aiUpdateHomeDetail('squareFootage') },
+                        { text: 'Year Built', callback: () => aiUpdateHomeDetail('yearBuilt') },
+                        { text: 'View Home', callback: () => showSection('home') }
+                    ];
+                }
+                
+                // Service Records
+                else if (lowerMessage.includes('add service') || lowerMessage.includes('service record') || lowerMessage.includes('maintenance')) {
+                    response = 'I can help you add a service record! What service was performed?';
+                    actions = [
+                        { text: 'HVAC Service', callback: () => aiAddServiceRecord('HVAC') },
+                        { text: 'Plumbing', callback: () => aiAddServiceRecord('Plumbing') },
+                        { text: 'Electrical', callback: () => aiAddServiceRecord('Electrical') },
+                        { text: 'Other', callback: () => aiAddServiceRecord('Other') }
+                    ];
+                }
+                
+                // Pro Features - Product Orders
+                else if (lowerMessage.includes('order product') || lowerMessage.includes('buy product') || lowerMessage.includes('purchase')) {
+                    response = 'I can help you with product orders! What would you like to do?';
+                    actions = [
+                        { text: 'View Orders', callback: () => showSection('orders') },
+                        { text: 'Add Order', callback: () => aiAddProductOrder() },
+                        { text: 'Track Prices', callback: () => showSection('alerts') }
+                    ];
+                }
+                
+                // Pro Features - Price Alerts
+                else if (lowerMessage.includes('price alert') || lowerMessage.includes('track price') || lowerMessage.includes('price tracking')) {
+                    response = 'I can help you set up price alerts! What product would you like to track?';
+                    actions = [
+                        { text: 'View Alerts', callback: () => showSection('alerts') },
+                        { text: 'Add Alert', callback: () => aiAddPriceAlert() }
+                    ];
+                }
+                
+                // Pro Features - Health Score
+                else if (lowerMessage.includes('health score') || lowerMessage.includes('home health')) {
+                    response = 'I can help you with your home health score!';
+                    actions = [
+                        { text: 'View Score', callback: () => showSection('health') },
+                        { text: 'Update Score', callback: () => aiUpdateHealthScore() }
+                    ];
+                }
+                
+                // Navigation
+                else if (lowerMessage.includes('go to') || lowerMessage.includes('show me') || lowerMessage.includes('open')) {
+                    if (lowerMessage.includes('task') || lowerMessage.includes('todo')) {
+                        showSection('tasks');
+                        response = 'I\'ve opened your tasks section!';
+                    } else if (lowerMessage.includes('home') || lowerMessage.includes('house')) {
+                        showSection('home');
+                        response = 'I\'ve opened your home details section!';
+                    } else if (lowerMessage.includes('service') || lowerMessage.includes('maintenance')) {
+                        showSection('service');
+                        response = 'I\'ve opened your service records section!';
+                    } else if (lowerMessage.includes('product') || lowerMessage.includes('recommendation')) {
+                        showSection('products');
+                        response = 'I\'ve opened your product recommendations section!';
+                    } else if (lowerMessage.includes('order')) {
+                        showSection('orders');
+                        response = 'I\'ve opened your product orders section!';
+                    } else if (lowerMessage.includes('alert')) {
+                        showSection('alerts');
+                        response = 'I\'ve opened your price alerts section!';
+                    } else if (lowerMessage.includes('health')) {
+                        showSection('health');
+                        response = 'I\'ve opened your home health score section!';
+                    } else {
+                        response = 'I can help you navigate! Try saying "go to tasks", "show me orders", or "open health score"';
+                    }
+                }
+                
+                // Help
+                else if (lowerMessage.includes('help') || lowerMessage.includes('what can you do')) {
+                    response = 'I can help you with many Pro features! Here are some examples:';
+                    actions = [
+                        { text: 'Add Task', callback: () => aiQuickAction('add-task') },
+                        { text: 'Order Product', callback: () => aiQuickAction('order-product') },
+                        { text: 'Set Price Alert', callback: () => aiQuickAction('price-alert') },
+                        { text: 'View Health Score', callback: () => showSection('health') }
+                    ];
+                }
+                
+                // Greeting
+                else if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('hey')) {
+                    response = 'Hello! I\'m your Pro AI assistant. I can help you with advanced home management features. What would you like to do today?';
+                    actions = [
+                        { text: 'Add Task', callback: () => aiQuickAction('add-task') },
+                        { text: 'Order Product', callback: () => aiQuickAction('order-product') },
+                        { text: 'Get Help', callback: () => aiQuickAction('help') }
+                    ];
+                }
+                
+                // Default response
+                else {
+                    response = 'I understand you want help with: "' + message + '". I can help you with tasks, product orders, price alerts, health scores, and more. What would you like to do?';
+                    actions = [
+                        { text: 'Add Task', callback: () => aiQuickAction('add-task') },
+                        { text: 'Order Product', callback: () => aiQuickAction('order-product') },
+                        { text: 'Set Price Alert', callback: () => aiQuickAction('price-alert') },
+                        { text: 'Get Help', callback: () => aiQuickAction('help') }
+                    ];
+                }
+                
+                addAIMessageWithActions(response, actions);
+            }, 1000 + Math.random() * 1000);
+        }
+
+        function extractTaskFromMessage(message) {
+            const patterns = [
+                /add task[:\s]+(.+)/i,
+                /create task[:\s]+(.+)/i,
+                /new task[:\s]+(.+)/i,
+                /task[:\s]+(.+)/i
+            ];
+            
+            for (const pattern of patterns) {
+                const match = message.match(pattern);
+                if (match) {
+                    return match[1].trim();
+                }
+            }
+            
+            return null;
+        }
+
+        function addTaskFromAI(taskText) {
+            const newTask = {
+                id: Date.now(),
+                text: taskText,
+                completed: false,
+                priority: 'medium',
+                category: 'General',
+                createdAt: new Date().toISOString()
+            };
+            
+            tasks.push(newTask);
+            saveTasksToFirebase();
+            loadTasks();
+        }
+
+        function aiUpdateHomeDetail(field) {
+            const prompts = {
+                address: 'What is your home address?',
+                squareFootage: 'What is your home\'s square footage?',
+                yearBuilt: 'What year was your home built?'
+            };
+            
+            addAIMessageWithActions(prompts[field], [
+                { text: 'Cancel', callback: () => addAIMessage('No problem! What else can I help you with?', 'bot') }
+            ]);
+        }
+
+        function aiAddServiceRecord(serviceType) {
+            const serviceRecord = {
+                id: Date.now(),
+                serviceType: serviceType,
+                date: new Date().toISOString().split('T')[0],
+                description: `Service performed by AI assistant`,
+                cost: 0,
+                provider: 'AI Assistant',
+                notes: 'Added via AI chatbot'
+            };
+            
+            let serviceRecords = JSON.parse(localStorage.getItem('serviceRecords') || '[]');
+            serviceRecords.push(serviceRecord);
+            localStorage.setItem('serviceRecords', JSON.stringify(serviceRecords));
+            
+            addAIMessageWithActions(`I've added a ${serviceType} service record for today!`, [
+                { text: 'View Records', callback: () => showSection('service') },
+                { text: 'Add Another', callback: () => aiQuickAction('add-service') }
+            ]);
+        }
+
+        function aiAddProductOrder() {
+            addAIMessage('I can help you add a product order! What product would you like to order?', 'bot');
+        }
+
+        function aiAddPriceAlert() {
+            addAIMessage('I can help you set up a price alert! What product would you like to track?', 'bot');
+        }
+
+        function aiUpdateHealthScore() {
+            addAIMessage('I can help you update your home health score! What would you like to update?', 'bot');
+        }
+
+        function aiQuickAction(action) {
+            const prompts = {
+                'add-task': 'What task would you like me to add? For example: "Change air filter" or "Schedule HVAC maintenance"',
+                'update-home': 'What home detail would you like to update?',
+                'add-service': 'What type of service was performed?',
+                'order-product': 'What product would you like to order?',
+                'price-alert': 'What product would you like to track for price alerts?',
+                'help': 'I can help you with tasks, product orders, price alerts, health scores, and more. Just tell me what you need!'
+            };
+            
+            addAIMessage(prompts[action], 'bot');
+        }
+
+        // Voice Input Functions
+        function toggleVoiceInput() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                addAIMessage('Sorry, voice input is not supported in your browser.', 'bot');
+                return;
+            }
+            
+            if (isRecording) {
+                stopVoiceInput();
+            } else {
+                startVoiceInput();
+            }
+        }
+
+        function startVoiceInput() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+            
+            recognition.onstart = () => {
+                isRecording = true;
+                const voiceButton = document.getElementById('aiVoiceButton');
+                voiceButton.classList.add('recording');
+                voiceButton.innerHTML = '<i class="fas fa-stop"></i>';
+            };
+            
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById('aiTextInput').value = transcript;
+                sendAIMessage();
+            };
+            
+            recognition.onerror = (event) => {
+                addAIMessage('Sorry, I didn\'t catch that. Please try again.', 'bot');
+                stopVoiceInput();
+            };
+            
+            recognition.onend = () => {
+                stopVoiceInput();
+            };
+            
+            recognition.start();
+        }
+
+        function stopVoiceInput() {
+            if (recognition) {
+                recognition.stop();
+            }
+            isRecording = false;
+            const voiceButton = document.getElementById('aiVoiceButton');
+            voiceButton.classList.remove('recording');
+            voiceButton.innerHTML = '<i class="fas fa-microphone"></i>';
+        }
+
+        // Initialize voice recognition if available
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            console.log('Voice recognition supported');
+        }
     </script>
+
+    <!-- AI Chatbot -->
+    <div class="ai-chatbot-container">
+        <button class="ai-chatbot-toggle" onclick="toggleAIChatbot()">
+            <i class="fas fa-robot"></i>
+            <div class="pulse-ring"></div>
+        </button>
+        
+        <div class="ai-chatbot-window" id="aiChatbotWindow">
+            <div class="ai-chatbot-header">
+                <div class="ai-chatbot-title">
+                    <i class="fas fa-robot"></i>
+                    <span>NestMate Pro AI</span>
+                </div>
+                <button class="ai-chatbot-close" onclick="toggleAIChatbot()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="ai-chatbot-messages" id="aiChatbotMessages">
+                <div class="ai-message bot">
+                    <div class="ai-message-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="ai-message-content">
+                        <p>Hello! I'm your Pro AI assistant. I can help you with advanced features:</p>
+                        <div class="ai-message-actions">
+                            <button class="ai-action-button" onclick="aiQuickAction('add-task')">Add Task</button>
+                            <button class="ai-action-button" onclick="aiQuickAction('order-product')">Order Product</button>
+                            <button class="ai-action-button" onclick="aiQuickAction('price-alert')">Set Price Alert</button>
+                            <button class="ai-action-button" onclick="aiQuickAction('help')">Get Help</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="ai-chatbot-input">
+                <div class="ai-input-container">
+                    <input type="text" class="ai-text-input" id="aiTextInput" placeholder="Ask me about Pro features..." onkeypress="handleAIInputKeypress(event)">
+                    <button class="ai-voice-button" id="aiVoiceButton" onclick="toggleVoiceInput()">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    <button class="ai-send-button" onclick="sendAIMessage()">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
