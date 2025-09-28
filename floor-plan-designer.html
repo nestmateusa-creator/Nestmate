@@ -491,6 +491,8 @@
     let dragOffset = { x: 0, y: 0 };
     let currentCurve = null;
     let showDimensions = false;
+    let isResizing = false;
+    let resizeHandle = null;
     
     // Initialize the designer
     window.onload = function() {
@@ -630,6 +632,16 @@
       const mouseY = Math.round(rawY / 20) * 20;
       
       if (currentTool === 'select') {
+        // Check for resize handles first
+        const handle = getResizeHandleAt(mouseX, mouseY);
+        if (handle && selectedElement) {
+          isResizing = true;
+          resizeHandle = handle;
+          console.log('Resizing element:', selectedElement, 'handle:', handle);
+          redrawCanvas();
+          return;
+        }
+        
         // Handle selection
         selectedElement = getElementAt(mouseX, mouseY);
         if (selectedElement) {
@@ -666,6 +678,13 @@
       // Snap to grid
       const currentX = Math.round(rawX / 20) * 20;
       const currentY = Math.round(rawY / 20) * 20;
+      
+      if (isResizing && selectedElement && resizeHandle) {
+        // Handle resizing selected element
+        handleResize(currentX, currentY);
+        redrawCanvas();
+        return;
+      }
       
       if (isDragging && selectedElement) {
         // Handle dragging selected element
@@ -731,6 +750,12 @@
     }
     
     function stopDrawing(e) {
+      if (isResizing) {
+        isResizing = false;
+        resizeHandle = null;
+        return;
+      }
+      
       if (isDragging) {
         isDragging = false;
         return;
@@ -1142,6 +1167,11 @@
         // Draw electrical based on type
         drawElectricalShape(item);
       });
+      
+      // Draw resize handles for selected element
+      if (selectedElement && currentTool === 'select') {
+        drawResizeHandles(selectedElement);
+      }
     }
     
     function drawFurnitureShape(item) {
@@ -1654,6 +1684,98 @@
       ctx.fillStyle = '#333';
       ctx.font = 'bold 24px Arial';
       ctx.fillText('3D VIEW', 20, 40);
+    }
+    
+    function getResizeHandleAt(x, y) {
+      if (!selectedElement) return null;
+      
+      const handles = getResizeHandles(selectedElement);
+      for (let handle of handles) {
+        if (x >= handle.x - 5 && x <= handle.x + 5 && y >= handle.y - 5 && y <= handle.y + 5) {
+          return handle.type;
+        }
+      }
+      return null;
+    }
+    
+    function getResizeHandles(element) {
+      if (!element) return [];
+      
+      if (element.type === 'wall' || element.type === 'room') {
+        return [
+          { x: element.startX, y: element.startY, type: 'start' },
+          { x: element.endX, y: element.endY, type: 'end' }
+        ];
+      } else {
+        return [
+          { x: element.x, y: element.y, type: 'top-left' },
+          { x: element.x + element.width, y: element.y, type: 'top-right' },
+          { x: element.x, y: element.y + element.height, type: 'bottom-left' },
+          { x: element.x + element.width, y: element.y + element.height, type: 'bottom-right' }
+        ];
+      }
+    }
+    
+    function handleResize(x, y) {
+      if (!selectedElement || !resizeHandle) return;
+      
+      if (selectedElement.type === 'wall' || selectedElement.type === 'room') {
+        if (resizeHandle === 'start') {
+          selectedElement.startX = x;
+          selectedElement.startY = y;
+        } else if (resizeHandle === 'end') {
+          selectedElement.endX = x;
+          selectedElement.endY = y;
+        }
+      } else {
+        const oldX = selectedElement.x;
+        const oldY = selectedElement.y;
+        const oldWidth = selectedElement.width;
+        const oldHeight = selectedElement.height;
+        
+        switch(resizeHandle) {
+          case 'top-left':
+            selectedElement.x = x;
+            selectedElement.y = y;
+            selectedElement.width = oldWidth + (oldX - x);
+            selectedElement.height = oldHeight + (oldY - y);
+            break;
+          case 'top-right':
+            selectedElement.y = y;
+            selectedElement.width = x - oldX;
+            selectedElement.height = oldHeight + (oldY - y);
+            break;
+          case 'bottom-left':
+            selectedElement.x = x;
+            selectedElement.width = oldWidth + (oldX - x);
+            selectedElement.height = y - oldY;
+            break;
+          case 'bottom-right':
+            selectedElement.width = x - oldX;
+            selectedElement.height = y - oldY;
+            break;
+        }
+        
+        // Ensure minimum size
+        selectedElement.width = Math.max(10, selectedElement.width);
+        selectedElement.height = Math.max(10, selectedElement.height);
+      }
+    }
+    
+    function drawResizeHandles(element) {
+      if (!element) return;
+      
+      const handles = getResizeHandles(element);
+      ctx.fillStyle = '#e53e3e';
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+      
+      handles.forEach(handle => {
+        ctx.beginPath();
+        ctx.rect(handle.x - 5, handle.y - 5, 10, 10);
+        ctx.fill();
+        ctx.stroke();
+      });
     }
     
     function toggleDimensions() {
