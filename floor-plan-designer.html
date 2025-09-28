@@ -167,6 +167,34 @@
       font-size: 12px;
     }
     
+    .style-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 5px;
+      margin-bottom: 10px;
+    }
+    
+    .style-item {
+      background: #444;
+      padding: 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+      text-align: center;
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .style-item:hover {
+      background: #555;
+    }
+    
+    .style-icon {
+      font-size: 16px;
+    }
+    
     .save-modal {
       position: fixed;
       top: 0;
@@ -243,11 +271,8 @@
         <button class="tool-btn active" onclick="setTool('wall')">
           <i class="fas fa-minus"></i> Wall
         </button>
-        <button class="tool-btn" onclick="setTool('door')">
-          <i class="fas fa-door-open"></i> Door
-        </button>
-        <button class="tool-btn" onclick="setTool('window')">
-          <i class="fas fa-square"></i> Window
+        <button class="tool-btn" onclick="setTool('select')">
+          <i class="fas fa-mouse-pointer"></i> Select
         </button>
         <button class="tool-btn" onclick="setTool('room')">
           <i class="fas fa-home"></i> Room
@@ -255,9 +280,78 @@
         <button class="tool-btn" onclick="setTool('text')">
           <i class="fas fa-font"></i> Text
         </button>
-        <button class="tool-btn" onclick="setTool('select')">
-          <i class="fas fa-mouse-pointer"></i> Select
-        </button>
+      </div>
+      
+      <div class="tool-section">
+        <h3>Doors</h3>
+        <div class="style-grid">
+          <div class="style-item" onclick="addDoor('single')" title="Single Door">
+            <div class="style-icon">🚪</div>
+          </div>
+          <div class="style-item" onclick="addDoor('double')" title="Double Door">
+            <div class="style-icon">🚪🚪</div>
+          </div>
+          <div class="style-item" onclick="addDoor('sliding')" title="Sliding Door">
+            <div class="style-icon">⬅️🚪</div>
+          </div>
+          <div class="style-item" onclick="addDoor('french')" title="French Door">
+            <div class="style-icon">🪟🚪</div>
+          </div>
+          <div class="style-item" onclick="addDoor('barn')" title="Barn Door">
+            <div class="style-icon">🚪⬆️</div>
+          </div>
+          <div class="style-item" onclick="addDoor('pocket')" title="Pocket Door">
+            <div class="style-icon">⬅️⬅️</div>
+          </div>
+          <div class="style-item" onclick="addDoor('bifold')" title="Bifold Door">
+            <div class="style-icon">🚪🚪</div>
+          </div>
+          <div class="style-item" onclick="addDoor('accordion')" title="Accordion Door">
+            <div class="style-icon">🚪🚪🚪</div>
+          </div>
+          <div class="style-item" onclick="addDoor('revolving')" title="Revolving Door">
+            <div class="style-icon">🔄</div>
+          </div>
+          <div class="style-item" onclick="addDoor('automatic')" title="Automatic Door">
+            <div class="style-icon">🚪⚡</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="tool-section">
+        <h3>Windows</h3>
+        <div class="style-grid">
+          <div class="style-item" onclick="addWindow('single')" title="Single Window">
+            <div class="style-icon">🪟</div>
+          </div>
+          <div class="style-item" onclick="addWindow('double')" title="Double Window">
+            <div class="style-icon">🪟🪟</div>
+          </div>
+          <div class="style-item" onclick="addWindow('bay')" title="Bay Window">
+            <div class="style-icon">🪟🪟🪟</div>
+          </div>
+          <div class="style-item" onclick="addWindow('casement')" title="Casement Window">
+            <div class="style-icon">🪟⬅️</div>
+          </div>
+          <div class="style-item" onclick="addWindow('awning')" title="Awning Window">
+            <div class="style-icon">🪟⬆️</div>
+          </div>
+          <div class="style-item" onclick="addWindow('sliding')" title="Sliding Window">
+            <div class="style-icon">⬅️🪟</div>
+          </div>
+          <div class="style-item" onclick="addWindow('picture')" title="Picture Window">
+            <div class="style-icon">🖼️</div>
+          </div>
+          <div class="style-item" onclick="addWindow('skylight')" title="Skylight">
+            <div class="style-icon">☀️</div>
+          </div>
+          <div class="style-item" onclick="addWindow('transom')" title="Transom Window">
+            <div class="style-icon">🪟⬆️</div>
+          </div>
+          <div class="style-item" onclick="addWindow('stained')" title="Stained Glass">
+            <div class="style-icon">🌈</div>
+          </div>
+        </div>
       </div>
       
       <div class="tool-section">
@@ -331,6 +425,9 @@
     let history = [];
     let historyIndex = -1;
     let is3DMode = false;
+    let selectedElement = null;
+    let isDragging = false;
+    let dragOffset = { x: 0, y: 0 };
     
     // Initialize the designer
     window.onload = function() {
@@ -343,6 +440,9 @@
       canvas.addEventListener('mouseup', stopDrawing);
       canvas.addEventListener('mouseout', stopDrawing);
       
+      // Set up keyboard event listeners
+      document.addEventListener('keydown', handleKeyPress);
+      
       // Initialize canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawGrid();
@@ -353,28 +453,88 @@
       document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
       event.target.classList.add('active');
       console.log('Tool set to:', tool);
+      
+      // Clear selection when switching tools
+      selectedElement = null;
+      redrawCanvas();
+    }
+    
+    function addDoor(style) {
+      console.log('Adding door style:', style);
+      currentTool = 'door';
+      selectedDoorStyle = style;
+      
+      // Add a door at a default position
+      const door = {
+        startX: 100,
+        startY: 100,
+        endX: 140,
+        endY: 100,
+        id: Date.now(),
+        type: 'door',
+        style: style
+      };
+      
+      doors.push(door);
+      redrawCanvas();
+      updateStats();
+    }
+    
+    function addWindow(style) {
+      console.log('Adding window style:', style);
+      currentTool = 'window';
+      selectedWindowStyle = style;
+      
+      // Add a window at a default position
+      const window = {
+        startX: 200,
+        startY: 100,
+        endX: 260,
+        endY: 100,
+        id: Date.now(),
+        type: 'window',
+        style: style
+      };
+      
+      windows.push(window);
+      redrawCanvas();
+      updateStats();
     }
     
     function startDrawing(e) {
-      if (currentTool === 'select') return;
-      
-      console.log('Starting to draw with tool:', currentTool);
-      isDrawing = true;
       const rect = canvas.getBoundingClientRect();
       const rawX = e.clientX - rect.left;
       const rawY = e.clientY - rect.top;
       
       // Snap to grid
-      startX = Math.round(rawX / 20) * 20;
-      startY = Math.round(rawY / 20) * 20;
+      const mouseX = Math.round(rawX / 20) * 20;
+      const mouseY = Math.round(rawY / 20) * 20;
+      
+      if (currentTool === 'select') {
+        // Handle selection
+        selectedElement = getElementAt(mouseX, mouseY);
+        if (selectedElement) {
+          isDragging = true;
+          dragOffset.x = mouseX - selectedElement.startX;
+          dragOffset.y = mouseY - selectedElement.startY;
+          console.log('Selected element:', selectedElement);
+        } else {
+          selectedElement = null;
+        }
+        redrawCanvas();
+        return;
+      }
+      
+      console.log('Starting to draw with tool:', currentTool);
+      isDrawing = true;
+      startX = mouseX;
+      startY = mouseY;
       
       console.log('Start position (snapped):', startX, startY);
       saveState();
     }
     
     function draw(e) {
-      if (!isDrawing) return;
-      
       const rect = canvas.getBoundingClientRect();
       const rawX = e.clientX - rect.left;
       const rawY = e.clientY - rect.top;
@@ -382,6 +542,24 @@
       // Snap to grid
       const currentX = Math.round(rawX / 20) * 20;
       const currentY = Math.round(rawY / 20) * 20;
+      
+      if (isDragging && selectedElement) {
+        // Handle dragging selected element
+        const newStartX = currentX - dragOffset.x;
+        const newStartY = currentY - dragOffset.y;
+        const newEndX = newStartX + (selectedElement.endX - selectedElement.startX);
+        const newEndY = newStartY + (selectedElement.endY - selectedElement.startY);
+        
+        selectedElement.startX = newStartX;
+        selectedElement.startY = newStartY;
+        selectedElement.endX = newEndX;
+        selectedElement.endY = newEndY;
+        
+        redrawCanvas();
+        return;
+      }
+      
+      if (!isDrawing) return;
       
       // Clear canvas and redraw everything
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -411,6 +589,11 @@
     }
     
     function stopDrawing(e) {
+      if (isDragging) {
+        isDragging = false;
+        return;
+      }
+      
       if (!isDrawing) return;
       
       console.log('Stopping drawing with tool:', currentTool);
@@ -431,18 +614,6 @@
           walls.push({startX, startY, endX, endY, id: Date.now(), type: 'wall'});
           console.log('Added wall, total walls:', walls.length);
           break;
-        case 'door':
-          const doorSize = Math.max(Math.abs(endX - startX), Math.abs(endY - startY));
-          const doorType = doorSize < 40 ? 'small' : doorSize < 80 ? 'medium' : 'large';
-          doors.push({startX, startY, endX, endY, id: Date.now(), type: 'door', size: doorType});
-          console.log('Added door, total doors:', doors.length);
-          break;
-        case 'window':
-          const windowSize = Math.max(Math.abs(endX - startX), Math.abs(endY - startY));
-          const windowType = windowSize < 60 ? 'small' : windowSize < 120 ? 'medium' : 'large';
-          windows.push({startX, startY, endX, endY, id: Date.now(), type: 'window', size: windowType});
-          console.log('Added window, total windows:', windows.length);
-          break;
         case 'room':
           rooms.push({startX, startY, endX, endY, id: Date.now(), type: 'room'});
           console.log('Added room, total rooms:', rooms.length);
@@ -451,6 +622,97 @@
       
       redrawCanvas();
       updateStats();
+    }
+    
+    function getElementAt(x, y) {
+      // Check walls
+      for (let wall of walls) {
+        if (isPointOnLine(x, y, wall.startX, wall.startY, wall.endX, wall.endY, 10)) {
+          return wall;
+        }
+      }
+      
+      // Check doors
+      for (let door of doors) {
+        if (isPointOnLine(x, y, door.startX, door.startY, door.endX, door.endY, 10)) {
+          return door;
+        }
+      }
+      
+      // Check windows
+      for (let window of windows) {
+        if (isPointOnLine(x, y, window.startX, window.startY, window.endX, window.endY, 10)) {
+          return window;
+        }
+      }
+      
+      // Check rooms
+      for (let room of rooms) {
+        if (x >= room.startX && x <= room.endX && y >= room.startY && y <= room.endY) {
+          return room;
+        }
+      }
+      
+      return null;
+    }
+    
+    function isPointOnLine(px, py, x1, y1, x2, y2, tolerance) {
+      const A = px - x1;
+      const B = py - y1;
+      const C = x2 - x1;
+      const D = y2 - y1;
+      
+      const dot = A * C + B * D;
+      const lenSq = C * C + D * D;
+      let param = -1;
+      
+      if (lenSq !== 0) {
+        param = dot / lenSq;
+      }
+      
+      let xx, yy;
+      
+      if (param < 0) {
+        xx = x1;
+        yy = y1;
+      } else if (param > 1) {
+        xx = x2;
+        yy = y2;
+      } else {
+        xx = x1 + param * C;
+        yy = y1 + param * D;
+      }
+      
+      const dx = px - xx;
+      const dy = py - yy;
+      return Math.sqrt(dx * dx + dy * dy) <= tolerance;
+    }
+    
+    function handleKeyPress(e) {
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        if (selectedElement) {
+          console.log('Deleting selected element:', selectedElement);
+          
+          // Remove from appropriate array
+          if (selectedElement.type === 'wall') {
+            const index = walls.indexOf(selectedElement);
+            if (index > -1) walls.splice(index, 1);
+          } else if (selectedElement.type === 'door') {
+            const index = doors.indexOf(selectedElement);
+            if (index > -1) doors.splice(index, 1);
+          } else if (selectedElement.type === 'window') {
+            const index = windows.indexOf(selectedElement);
+            if (index > -1) windows.splice(index, 1);
+          } else if (selectedElement.type === 'room') {
+            const index = rooms.indexOf(selectedElement);
+            if (index > -1) rooms.splice(index, 1);
+          }
+          
+          selectedElement = null;
+          redrawCanvas();
+          updateStats();
+        }
+      }
     }
     
     function drawGrid() {
@@ -502,25 +764,51 @@
         const centerY = (door.startY + door.endY) / 2;
         const length = Math.sqrt(Math.pow(door.endX - door.startX, 2) + Math.pow(door.endY - door.startY, 2));
         
-        ctx.strokeStyle = '#8b5cf6';
-        ctx.lineWidth = 4;
+        // Highlight if selected
+        if (selectedElement === door) {
+          ctx.strokeStyle = '#ff6b6b';
+          ctx.lineWidth = 6;
+        } else {
+          ctx.strokeStyle = '#8b5cf6';
+          ctx.lineWidth = 4;
+        }
+        
         ctx.beginPath();
         ctx.moveTo(door.startX, door.startY);
         ctx.lineTo(door.endX, door.endY);
         ctx.stroke();
         
-        // Draw door arc
+        // Draw door style based on type
         ctx.strokeStyle = '#8b5cf6';
         ctx.lineWidth = 2;
         ctx.beginPath();
-        const radius = length * 0.8;
-        ctx.arc(centerX, centerY, radius, 0, Math.PI / 2);
+        
+        switch(door.style) {
+          case 'single':
+            const radius = length * 0.8;
+            ctx.arc(centerX, centerY, radius, 0, Math.PI / 2);
+            break;
+          case 'double':
+            ctx.arc(centerX - length/4, centerY, length/2, 0, Math.PI / 2);
+            ctx.arc(centerX + length/4, centerY, length/2, Math.PI / 2, Math.PI);
+            break;
+          case 'sliding':
+            ctx.moveTo(centerX - length/2, centerY - 5);
+            ctx.lineTo(centerX + length/2, centerY - 5);
+            break;
+          case 'french':
+            ctx.arc(centerX - length/4, centerY, length/3, 0, Math.PI / 2);
+            ctx.arc(centerX + length/4, centerY, length/3, Math.PI / 2, Math.PI);
+            break;
+          default:
+            ctx.arc(centerX, centerY, length * 0.8, 0, Math.PI / 2);
+        }
         ctx.stroke();
         
-        // Add door size indicator
+        // Add door style indicator
         ctx.fillStyle = '#8b5cf6';
-        ctx.font = '10px Arial';
-        ctx.fillText(door.size, centerX + 5, centerY - 5);
+        ctx.font = '8px Arial';
+        ctx.fillText(door.style, centerX + 5, centerY - 5);
       });
       
       // Draw windows with different styles
@@ -528,27 +816,62 @@
         const centerX = (window.startX + window.endX) / 2;
         const centerY = (window.startY + window.endY) / 2;
         
-        ctx.strokeStyle = '#06b6d4';
-        ctx.lineWidth = 4;
+        // Highlight if selected
+        if (selectedElement === window) {
+          ctx.strokeStyle = '#ff6b6b';
+          ctx.lineWidth = 6;
+        } else {
+          ctx.strokeStyle = '#06b6d4';
+          ctx.lineWidth = 4;
+        }
+        
         ctx.beginPath();
         ctx.moveTo(window.startX, window.startY);
         ctx.lineTo(window.endX, window.endY);
         ctx.stroke();
         
-        // Draw window cross lines
+        // Draw window style based on type
         ctx.strokeStyle = '#06b6d4';
         ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.moveTo(centerX - 10, centerY);
-        ctx.lineTo(centerX + 10, centerY);
-        ctx.moveTo(centerX, centerY - 10);
-        ctx.lineTo(centerX, centerY + 10);
+        
+        switch(window.style) {
+          case 'single':
+            ctx.moveTo(centerX - 10, centerY);
+            ctx.lineTo(centerX + 10, centerY);
+            ctx.moveTo(centerX, centerY - 10);
+            ctx.lineTo(centerX, centerY + 10);
+            break;
+          case 'double':
+            ctx.moveTo(centerX - 15, centerY);
+            ctx.lineTo(centerX + 15, centerY);
+            ctx.moveTo(centerX - 15, centerY - 10);
+            ctx.lineTo(centerX - 15, centerY + 10);
+            ctx.moveTo(centerX + 15, centerY - 10);
+            ctx.lineTo(centerX + 15, centerY + 10);
+            break;
+          case 'bay':
+            ctx.moveTo(centerX - 20, centerY);
+            ctx.lineTo(centerX + 20, centerY);
+            ctx.moveTo(centerX - 20, centerY - 15);
+            ctx.lineTo(centerX - 20, centerY + 15);
+            ctx.moveTo(centerX, centerY - 15);
+            ctx.lineTo(centerX, centerY + 15);
+            ctx.moveTo(centerX + 20, centerY - 15);
+            ctx.lineTo(centerX + 20, centerY + 15);
+            break;
+          default:
+            ctx.moveTo(centerX - 10, centerY);
+            ctx.lineTo(centerX + 10, centerY);
+            ctx.moveTo(centerX, centerY - 10);
+            ctx.lineTo(centerX, centerY + 10);
+        }
         ctx.stroke();
         
-        // Add window size indicator
+        // Add window style indicator
         ctx.fillStyle = '#06b6d4';
-        ctx.font = '10px Arial';
-        ctx.fillText(window.size, centerX + 5, centerY - 5);
+        ctx.font = '8px Arial';
+        ctx.fillText(window.style, centerX + 5, centerY - 5);
       });
     }
     
