@@ -1086,6 +1086,90 @@
             text-align: center;
         }
 
+        .welcome-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .house-photo-container {
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .house-photo-container:hover {
+            transform: scale(1.05);
+        }
+
+        .house-photo {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 3px solid rgba(16, 185, 129, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .house-photo:hover {
+            border-color: #10b981;
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .photo-upload-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            color: white;
+            font-size: 0.7rem;
+            text-align: center;
+            padding: 4px;
+        }
+
+        .house-photo-container:hover .photo-upload-overlay {
+            opacity: 1;
+        }
+
+        .photo-upload-overlay i {
+            font-size: 1.2rem;
+            margin-bottom: 2px;
+        }
+
+        .welcome-text {
+            flex: 1;
+        }
+
+        .welcome-text h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: none;
+        }
+
+        .welcome-text p {
+            margin: 0.5rem 0 0 0;
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+        }
+
         .welcome-stats {
             display: flex;
             justify-content: center;
@@ -2473,8 +2557,19 @@
                     <!-- Welcome Header -->
                     <div class="welcome-section">
                         <div class="welcome-content">
-                            <h1>🏠 Your Home Command Center</h1>
-                            <p>Complete home intelligence from foundation to roof</p>
+                            <div class="welcome-header">
+                                <div class="house-photo-container">
+                                    <img id="housePhoto" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTMyIDQgTDQgMjggSDEyIFY2MCBIMjYgVjQwIEgzOCBWNjAgSDUyIFYyOCBINjAgWiIgZmlsbD0iIzEwYjk4MSIvPgo8L3N2Zz4K" alt="House" class="house-photo" onclick="uploadHousePhoto()">
+                                    <div class="photo-upload-overlay">
+                                        <i class="fas fa-camera"></i>
+                                        <span>Click to upload your house photo</span>
+                                    </div>
+                                </div>
+                                <div class="welcome-text">
+                                    <h1>Your Home Command Center</h1>
+                                    <p>Complete home intelligence from foundation to roof</p>
+                                </div>
+                            </div>
                             <div class="welcome-stats">
                                 <span class="welcome-stat">
                                     <i class="fas fa-calendar-alt"></i>
@@ -3982,6 +4077,53 @@
         let tasks = [];
         let homeData = {};
 
+        // House Photo Upload Functions
+        function uploadHousePhoto() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const housePhoto = document.getElementById('housePhoto');
+                        housePhoto.src = e.target.result;
+                        saveHousePhoto(e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            input.click();
+        }
+
+        function saveHousePhoto(photoData) {
+            if (!currentUser) return;
+            
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).set({
+                housePhoto: photoData,
+                updatedAt: new Date().toISOString()
+            }, { merge: true }).then(() => {
+                showToast('House photo saved successfully!', 'success');
+            }).catch(error => {
+                console.error('Error saving house photo:', error);
+                showToast('Error saving house photo', 'error');
+            });
+        }
+
+        function loadHousePhoto() {
+            if (!currentUser) return;
+            
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get().then(doc => {
+                if (doc.exists && doc.data().housePhoto) {
+                    const housePhoto = document.getElementById('housePhoto');
+                    housePhoto.src = doc.data().housePhoto;
+                }
+            }).catch(error => {
+                console.error('Error loading house photo:', error);
+            });
+        }
+
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', function() {
             console.log('DOM Content Loaded - Initializing dashboard...');
@@ -3995,6 +4137,7 @@
                 loadOrdersFromFirebase(); // Load product orders for Pro users
                 loadAlertsFromFirebase(); // Load price alerts for Pro users
                 loadHealthScoreFromFirebase(); // Load health score data for Pro users
+                loadHousePhoto(); // Load house photo
                 console.log('Dashboard initialization completed successfully');
             } catch (error) {
                 console.error('Error during dashboard initialization:', error);
