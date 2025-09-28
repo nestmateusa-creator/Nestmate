@@ -416,6 +416,9 @@
         <button class="control-btn secondary" onclick="redo()">
           <i class="fas fa-redo"></i> Redo
         </button>
+        <button class="control-btn secondary" id="dimensionToggle" onclick="toggleDimensions()">
+          <i class="fas fa-ruler"></i> Show Dimensions
+        </button>
       </div>
       
       <div class="room-templates">
@@ -487,6 +490,7 @@
     let isDragging = false;
     let dragOffset = { x: 0, y: 0 };
     let currentCurve = null;
+    let showDimensions = false;
     
     // Initialize the designer
     window.onload = function() {
@@ -936,6 +940,22 @@
         ctx.moveTo(wall.startX, wall.startY);
         ctx.lineTo(wall.endX, wall.endY);
         ctx.stroke();
+        
+        // Add dimension if toggle is on
+        if (showDimensions) {
+          const distance = Math.sqrt(Math.pow(wall.endX - wall.startX, 2) + Math.pow(wall.endY - wall.startY, 2));
+          const feet = Math.floor(distance / 20);
+          const inches = Math.round((distance % 20) / 20 * 12);
+          const text = inches > 0 ? `${feet}'${inches}"` : `${feet}'`;
+          
+          ctx.fillStyle = '#4a5568';
+          ctx.font = 'bold 10px Arial';
+          ctx.textAlign = 'center';
+          const centerX = (wall.startX + wall.endX) / 2;
+          const centerY = (wall.startY + wall.endY) / 2;
+          ctx.fillText(text, centerX, centerY - 15);
+          ctx.textAlign = 'left';
+        }
       });
       
       // Draw curved walls
@@ -983,11 +1003,8 @@
         ctx.fillText(text, centerX, centerY - 5);
       });
       
-      // Draw doors with architectural floor plan symbols
+      // Draw doors with perfect architectural floor plan symbols
       doors.forEach(door => {
-        const centerX = door.x + door.width / 2;
-        const centerY = door.y + door.height / 2;
-        
         // Highlight if selected
         if (selectedElement === door) {
           ctx.strokeStyle = '#e53e3e';
@@ -997,7 +1014,7 @@
           ctx.lineWidth = 2;
         }
         
-        // Draw door opening (gap in wall) - architectural symbol
+        // Draw door opening (gap in wall) - white line to show opening
         ctx.strokeStyle = '#ffffff';
         ctx.lineWidth = 8;
         ctx.beginPath();
@@ -1005,21 +1022,37 @@
         ctx.lineTo(door.x + door.width, door.y + door.height);
         ctx.stroke();
         
-        // Draw door swing arc (quarter circle) - architectural symbol
+        // Draw door swing arc (quarter circle) - perfect arc
         ctx.strokeStyle = '#2d3748';
         ctx.lineWidth = 2;
         ctx.beginPath();
-        const radius = Math.min(door.width, door.height) * 0.9;
+        const radius = Math.min(door.width, door.height) * 0.85;
         ctx.arc(door.x, door.y, radius, 0, Math.PI / 2);
         ctx.stroke();
         
-        // Draw door panel line (architectural symbol)
+        // Draw door panel line (architectural symbol) - clean diagonal
         ctx.strokeStyle = '#2d3748';
         ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.moveTo(door.x, door.y);
         ctx.lineTo(door.x + door.width, door.y + door.height);
         ctx.stroke();
+        
+        // Add dimension if toggle is on
+        if (showDimensions) {
+          const distance = Math.sqrt(Math.pow(door.width, 2) + Math.pow(door.height, 2));
+          const feet = Math.floor(distance / 20);
+          const inches = Math.round((distance % 20) / 20 * 12);
+          const text = inches > 0 ? `${feet}'${inches}"` : `${feet}'`;
+          
+          ctx.fillStyle = '#4a5568';
+          ctx.font = 'bold 10px Arial';
+          ctx.textAlign = 'center';
+          const centerX = door.x + door.width / 2;
+          const centerY = door.y + door.height / 2;
+          ctx.fillText(text, centerX, centerY - 10);
+          ctx.textAlign = 'left';
+        }
       });
       
       // Draw windows with architectural floor plan symbols
@@ -1064,6 +1097,20 @@
         ctx.moveTo(centerX, window.y);
         ctx.lineTo(centerX, window.y + window.height);
         ctx.stroke();
+        
+        // Add dimension if toggle is on
+        if (showDimensions) {
+          const distance = Math.sqrt(Math.pow(window.width, 2) + Math.pow(window.height, 2));
+          const feet = Math.floor(distance / 20);
+          const inches = Math.round((distance % 20) / 20 * 12);
+          const text = inches > 0 ? `${feet}'${inches}"` : `${feet}'`;
+          
+          ctx.fillStyle = '#4a5568';
+          ctx.font = 'bold 10px Arial';
+          ctx.textAlign = 'center';
+          ctx.fillText(text, centerX, centerY - 10);
+          ctx.textAlign = 'left';
+        }
       });
       
       // Draw furniture with realistic shapes
@@ -1607,6 +1654,19 @@
       ctx.fillStyle = '#333';
       ctx.font = 'bold 24px Arial';
       ctx.fillText('3D VIEW', 20, 40);
+    }
+    
+    function toggleDimensions() {
+      showDimensions = !showDimensions;
+      const button = document.getElementById('dimensionToggle');
+      if (showDimensions) {
+        button.innerHTML = '<i class="fas fa-ruler"></i> Hide Dimensions';
+        button.classList.add('active');
+      } else {
+        button.innerHTML = '<i class="fas fa-ruler"></i> Show Dimensions';
+        button.classList.remove('active');
+      }
+      redrawCanvas();
     }
     
     function saveFloorPlan() {
