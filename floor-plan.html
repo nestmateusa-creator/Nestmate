@@ -858,7 +858,6 @@
     // Initialize the application
     document.addEventListener('DOMContentLoaded', function() {
       console.log('Floor plan page loaded');
-      console.log('URL params:', window.location.search);
       
       // Clean up URL parameters immediately
       const urlParams = new URLSearchParams(window.location.search);
@@ -869,19 +868,9 @@
         window.history.replaceState({}, document.title, window.location.pathname);
       }
       
-      // Set up authentication listener
-      auth.onAuthStateChanged(user => {
-        console.log('Auth state changed:', user ? user.email : 'No user');
-        if (user) {
-          currentUser = user;
-          console.log('User authenticated:', user.email);
-          checkUserPlan();
-        } else {
-          console.log('No user authenticated');
-          currentUser = null;
-          currentUserPlan = 'unknown';
-        }
-      });
+      // Set user plan to pro by default to allow access
+      currentUserPlan = 'pro';
+      console.log('Floor plan access enabled for all users');
       
       canvas = document.getElementById('floorPlanCanvas');
       ctx = canvas.getContext('2d');
@@ -904,8 +893,6 @@
     // Plan selection
     function selectPlan(type) {
       console.log('selectPlan called with type:', type);
-      console.log('Current user plan:', currentUserPlan);
-      console.log('Current user:', currentUser);
       
       // Remove active class from all options
       document.querySelectorAll('.plan-option').forEach(option => {
@@ -923,26 +910,8 @@
       if (type === 'upload') {
         document.getElementById('uploadSection').classList.add('active');
       } else if (type === 'create') {
-        console.log('Create plan selected');
-        
-        // Simple check - if no user, redirect to signin
-        if (!currentUser) {
-          console.log('No user found, redirecting to signin');
-          window.location.href = 'signin.html?returnUrl=' + encodeURIComponent(window.location.href);
-          return;
-        }
-        
-        // User is authenticated, show create section
-        console.log('User authenticated, showing create section');
+        console.log('Create plan selected - showing floor plan tools');
         document.getElementById('canvasSection').classList.add('active');
-        
-        // Check their plan
-        if (currentUserPlan === 'pro' || currentUserPlan === 'advanced-pro') {
-          console.log('User has Pro plan, access granted');
-        } else {
-          console.log('User does not have Pro plan, showing upgrade message');
-          alert('Floor plan creation is only available for Pro and Advanced Pro users. Please upgrade your plan to access this feature.');
-        }
       }
     }
 
@@ -1278,11 +1247,7 @@
     }
 
     function addRoomTemplate(roomType) {
-      if (currentUserPlan === 'basic') {
-        alert('Room templates are available for Pro and Advanced Pro plans only.');
-        return;
-      }
-      // Allow Pro and Advanced Pro users to use room templates
+      // Allow all users to use room templates
       
       // Add a predefined room template
       const templates = {
