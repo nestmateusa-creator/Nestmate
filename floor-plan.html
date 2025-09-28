@@ -809,18 +809,30 @@
 
     // Immediate plan check for when user clicks create
     function checkUserPlanImmediate() {
-      if (!currentUser) {
-        console.log('No current user, checking auth state...');
+      console.log('checkUserPlanImmediate called');
+      console.log('Current user:', currentUser);
+      console.log('Auth current user:', auth.currentUser);
+      
+      // Check if we have a current user, if not try to get it from auth
+      const user = currentUser || auth.currentUser;
+      
+      if (user) {
+        console.log('User found:', user.email);
+        currentUser = user;
+        performPlanCheck(user.email);
+      } else {
+        console.log('No user found, checking auth state...');
+        // Try to get the current user from auth state
         auth.onAuthStateChanged(user => {
           if (user) {
+            console.log('User found in auth state:', user.email);
             currentUser = user;
             performPlanCheck(user.email);
           } else {
+            console.log('No user in auth state either');
             alert('Please sign in to access floor plan features.');
           }
         });
-      } else {
-        performPlanCheck(currentUser.email);
       }
     }
 
@@ -861,8 +873,17 @@
 
     // Initialize the application
     document.addEventListener('DOMContentLoaded', function() {
-      // Check user authentication and plan first
-      checkUserPlan();
+      console.log('Floor plan page loaded');
+      
+      // Check for existing authentication first
+      if (auth.currentUser) {
+        console.log('User already authenticated:', auth.currentUser.email);
+        currentUser = auth.currentUser;
+        checkUserPlan();
+      } else {
+        console.log('No current user, setting up auth listener');
+        checkUserPlan();
+      }
       
       canvas = document.getElementById('floorPlanCanvas');
       ctx = canvas.getContext('2d');
