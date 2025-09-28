@@ -890,6 +890,556 @@
       }, 1000);
     });
 
+    // Open floor plan designer in new window
+    function openFloorPlanDesigner() {
+      const designerWindow = window.open('', 'floorPlanDesigner', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+      
+      designerWindow.document.write(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Floor Plan Designer - NestMate</title>
+          <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+          <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+          <style>
+            * {
+              margin: 0;
+              padding: 0;
+              box-sizing: border-box;
+            }
+            
+            body {
+              font-family: 'Inter', sans-serif;
+              background: #1a1a1a;
+              color: white;
+              overflow: hidden;
+            }
+            
+            .designer-header {
+              background: #2d2d2d;
+              padding: 15px 20px;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              border-bottom: 1px solid #444;
+            }
+            
+            .designer-title {
+              font-size: 18px;
+              font-weight: 600;
+              color: #8b5cf6;
+            }
+            
+            .designer-controls {
+              display: flex;
+              gap: 10px;
+              align-items: center;
+            }
+            
+            .control-btn {
+              background: #8b5cf6;
+              color: white;
+              border: none;
+              padding: 8px 16px;
+              border-radius: 6px;
+              cursor: pointer;
+              font-size: 14px;
+              transition: background 0.2s;
+            }
+            
+            .control-btn:hover {
+              background: #7c3aed;
+            }
+            
+            .control-btn.secondary {
+              background: #444;
+            }
+            
+            .control-btn.secondary:hover {
+              background: #555;
+            }
+            
+            .designer-content {
+              display: flex;
+              height: calc(100vh - 70px);
+            }
+            
+            .toolbar {
+              width: 200px;
+              background: #2d2d2d;
+              border-right: 1px solid #444;
+              padding: 20px;
+              overflow-y: auto;
+            }
+            
+            .tool-section {
+              margin-bottom: 25px;
+            }
+            
+            .tool-section h3 {
+              color: #8b5cf6;
+              font-size: 14px;
+              margin-bottom: 10px;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+            }
+            
+            .tool-btn {
+              width: 100%;
+              background: #444;
+              color: white;
+              border: none;
+              padding: 12px;
+              border-radius: 6px;
+              cursor: pointer;
+              margin-bottom: 8px;
+              transition: all 0.2s;
+              display: flex;
+              align-items: center;
+              gap: 8px;
+            }
+            
+            .tool-btn:hover {
+              background: #555;
+            }
+            
+            .tool-btn.active {
+              background: #8b5cf6;
+            }
+            
+            .canvas-container {
+              flex: 1;
+              position: relative;
+              overflow: auto;
+              background: #f8f9fa;
+            }
+            
+            #floorPlanCanvas {
+              display: block;
+              background: white;
+              cursor: crosshair;
+              background-image: 
+                linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px);
+              background-size: 20px 20px;
+            }
+            
+            .stats {
+              position: absolute;
+              top: 10px;
+              right: 10px;
+              background: rgba(0,0,0,0.8);
+              padding: 10px;
+              border-radius: 6px;
+              font-size: 12px;
+            }
+            
+            .room-templates {
+              margin-top: 20px;
+            }
+            
+            .template-item {
+              background: #444;
+              padding: 10px;
+              border-radius: 6px;
+              margin-bottom: 8px;
+              cursor: pointer;
+              transition: background 0.2s;
+              text-align: center;
+            }
+            
+            .template-item:hover {
+              background: #555;
+            }
+            
+            .template-icon {
+              font-size: 20px;
+              margin-bottom: 5px;
+              color: #8b5cf6;
+            }
+            
+            .template-name {
+              font-size: 12px;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="designer-header">
+            <div class="designer-title">
+              <i class="fas fa-drafting-compass"></i> Floor Plan Designer
+            </div>
+            <div class="designer-controls">
+              <button class="control-btn secondary" onclick="clearCanvas()">
+                <i class="fas fa-trash"></i> Clear
+              </button>
+              <button class="control-btn secondary" onclick="exportFloorPlan()">
+                <i class="fas fa-download"></i> Export
+              </button>
+              <button class="control-btn" onclick="saveFloorPlan()">
+                <i class="fas fa-save"></i> Save
+              </button>
+            </div>
+          </div>
+          
+          <div class="designer-content">
+            <div class="toolbar">
+              <div class="tool-section">
+                <h3>Drawing Tools</h3>
+                <button class="tool-btn active" onclick="setTool('wall')">
+                  <i class="fas fa-minus"></i> Wall
+                </button>
+                <button class="tool-btn" onclick="setTool('door')">
+                  <i class="fas fa-door-open"></i> Door
+                </button>
+                <button class="tool-btn" onclick="setTool('window')">
+                  <i class="fas fa-square"></i> Window
+                </button>
+                <button class="tool-btn" onclick="setTool('room')">
+                  <i class="fas fa-home"></i> Room
+                </button>
+                <button class="tool-btn" onclick="setTool('text')">
+                  <i class="fas fa-font"></i> Text
+                </button>
+                <button class="tool-btn" onclick="setTool('select')">
+                  <i class="fas fa-mouse-pointer"></i> Select
+                </button>
+              </div>
+              
+              <div class="tool-section">
+                <h3>Actions</h3>
+                <button class="control-btn secondary" onclick="undo()">
+                  <i class="fas fa-undo"></i> Undo
+                </button>
+                <button class="control-btn secondary" onclick="redo()">
+                  <i class="fas fa-redo"></i> Redo
+                </button>
+              </div>
+              
+              <div class="room-templates">
+                <h3>Room Templates</h3>
+                <div class="template-item" onclick="addRoomTemplate('living')">
+                  <div class="template-icon"><i class="fas fa-couch"></i></div>
+                  <div class="template-name">Living Room</div>
+                </div>
+                <div class="template-item" onclick="addRoomTemplate('kitchen')">
+                  <div class="template-icon"><i class="fas fa-utensils"></i></div>
+                  <div class="template-name">Kitchen</div>
+                </div>
+                <div class="template-item" onclick="addRoomTemplate('bedroom')">
+                  <div class="template-icon"><i class="fas fa-bed"></i></div>
+                  <div class="template-name">Bedroom</div>
+                </div>
+                <div class="template-item" onclick="addRoomTemplate('bathroom')">
+                  <div class="template-icon"><i class="fas fa-bath"></i></div>
+                  <div class="template-name">Bathroom</div>
+                </div>
+                <div class="template-item" onclick="addRoomTemplate('dining')">
+                  <div class="template-icon"><i class="fas fa-chair"></i></div>
+                  <div class="template-name">Dining Room</div>
+                </div>
+                <div class="template-item" onclick="addRoomTemplate('office')">
+                  <div class="template-icon"><i class="fas fa-laptop"></i></div>
+                  <div class="template-name">Office</div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="canvas-container">
+              <canvas id="floorPlanCanvas" width="1200" height="800"></canvas>
+              <div class="stats" id="stats">
+                0 Walls • 0 Doors • 0 Windows • 0 Rooms
+              </div>
+            </div>
+          </div>
+          
+          <script>
+            let canvas, ctx;
+            let currentTool = 'wall';
+            let isDrawing = false;
+            let startX, startY;
+            let walls = [];
+            let doors = [];
+            let windows = [];
+            let rooms = [];
+            let history = [];
+            let historyIndex = -1;
+            
+            // Initialize the designer
+            window.onload = function() {
+              canvas = document.getElementById('floorPlanCanvas');
+              ctx = canvas.getContext('2d');
+              
+              // Set up canvas event listeners
+              canvas.addEventListener('mousedown', startDrawing);
+              canvas.addEventListener('mousemove', draw);
+              canvas.addEventListener('mouseup', stopDrawing);
+              canvas.addEventListener('mouseout', stopDrawing);
+              
+              // Initialize canvas
+              clearCanvas();
+            };
+            
+            function setTool(tool) {
+              currentTool = tool;
+              document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+              event.target.classList.add('active');
+            }
+            
+            function startDrawing(e) {
+              if (currentTool === 'select') return;
+              
+              isDrawing = true;
+              const rect = canvas.getBoundingClientRect();
+              startX = e.clientX - rect.left;
+              startY = e.clientY - rect.top;
+              
+              saveState();
+            }
+            
+            function draw(e) {
+              if (!isDrawing) return;
+              
+              const rect = canvas.getBoundingClientRect();
+              const currentX = e.clientX - rect.left;
+              const currentY = e.clientY - rect.top;
+              
+              // Clear canvas and redraw everything
+              clearCanvas();
+              
+              // Draw grid
+              drawGrid();
+              
+              // Draw existing elements
+              drawElements();
+              
+              // Draw current element being drawn
+              ctx.strokeStyle = '#8b5cf6';
+              ctx.lineWidth = 3;
+              ctx.beginPath();
+              ctx.moveTo(startX, startY);
+              ctx.lineTo(currentX, currentY);
+              ctx.stroke();
+            }
+            
+            function stopDrawing(e) {
+              if (!isDrawing) return;
+              
+              isDrawing = false;
+              const rect = canvas.getBoundingClientRect();
+              const endX = e.clientX - rect.left;
+              const endY = e.clientY - rect.top;
+              
+              // Add element based on current tool
+              switch(currentTool) {
+                case 'wall':
+                  walls.push({startX, startY, endX, endY, id: Date.now()});
+                  break;
+                case 'door':
+                  doors.push({startX, startY, endX, endY, id: Date.now()});
+                  break;
+                case 'window':
+                  windows.push({startX, startY, endX, endY, id: Date.now()});
+                  break;
+                case 'room':
+                  rooms.push({startX, startY, endX, endY, id: Date.now()});
+                  break;
+              }
+              
+              redrawCanvas();
+              updateStats();
+            }
+            
+            function drawGrid() {
+              ctx.strokeStyle = 'rgba(0,0,0,0.1)';
+              ctx.lineWidth = 1;
+              
+              // Vertical lines
+              for (let x = 0; x <= canvas.width; x += 20) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+              }
+              
+              // Horizontal lines
+              for (let y = 0; y <= canvas.height; y += 20) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+              }
+            }
+            
+            function drawElements() {
+              // Draw walls
+              ctx.strokeStyle = '#333';
+              ctx.lineWidth = 4;
+              walls.forEach(wall => {
+                ctx.beginPath();
+                ctx.moveTo(wall.startX, wall.startY);
+                ctx.lineTo(wall.endX, wall.endY);
+                ctx.stroke();
+              });
+              
+              // Draw doors
+              ctx.strokeStyle = '#8b5cf6';
+              ctx.lineWidth = 3;
+              doors.forEach(door => {
+                ctx.beginPath();
+                ctx.moveTo(door.startX, door.startY);
+                ctx.lineTo(door.endX, door.endY);
+                ctx.stroke();
+              });
+              
+              // Draw windows
+              ctx.strokeStyle = '#06b6d4';
+              ctx.lineWidth = 3;
+              windows.forEach(window => {
+                ctx.beginPath();
+                ctx.moveTo(window.startX, window.startY);
+                ctx.lineTo(window.endX, window.endY);
+                ctx.stroke();
+              });
+              
+              // Draw rooms
+              ctx.fillStyle = 'rgba(139, 92, 246, 0.1)';
+              ctx.strokeStyle = '#8b5cf6';
+              ctx.lineWidth = 2;
+              rooms.forEach(room => {
+                ctx.beginPath();
+                ctx.rect(room.startX, room.startY, room.endX - room.startX, room.endY - room.startY);
+                ctx.fill();
+                ctx.stroke();
+              });
+            }
+            
+            function clearCanvas() {
+              ctx.clearRect(0, 0, canvas.width, canvas.height);
+              drawGrid();
+            }
+            
+            function redrawCanvas() {
+              clearCanvas();
+              drawElements();
+            }
+            
+            function updateStats() {
+              document.getElementById('stats').textContent = 
+                \`\${walls.length} Walls • \${doors.length} Doors • \${windows.length} Windows • \${rooms.length} Rooms\`;
+            }
+            
+            function saveState() {
+              historyIndex++;
+              if (historyIndex < history.length) {
+                history.length = historyIndex;
+              }
+              history.push({
+                walls: JSON.parse(JSON.stringify(walls)),
+                doors: JSON.parse(JSON.stringify(doors)),
+                windows: JSON.parse(JSON.stringify(windows)),
+                rooms: JSON.parse(JSON.stringify(rooms))
+              });
+            }
+            
+            function undo() {
+              if (historyIndex > 0) {
+                historyIndex--;
+                const state = history[historyIndex];
+                walls = state.walls;
+                doors = state.doors;
+                windows = state.windows;
+                rooms = state.rooms;
+                redrawCanvas();
+                updateStats();
+              }
+            }
+            
+            function redo() {
+              if (historyIndex < history.length - 1) {
+                historyIndex++;
+                const state = history[historyIndex];
+                walls = state.walls;
+                doors = state.doors;
+                windows = state.windows;
+                rooms = state.rooms;
+                redrawCanvas();
+                updateStats();
+              }
+            }
+            
+            function addRoomTemplate(roomType) {
+              const templates = {
+                living: { width: 200, height: 150, name: 'Living Room' },
+                kitchen: { width: 150, height: 120, name: 'Kitchen' },
+                bedroom: { width: 120, height: 100, name: 'Bedroom' },
+                bathroom: { width: 80, height: 80, name: 'Bathroom' },
+                dining: { width: 150, height: 100, name: 'Dining Room' },
+                office: { width: 100, height: 80, name: 'Office' }
+              };
+              
+              const template = templates[roomType];
+              if (template) {
+                saveState();
+                rooms.push({
+                  startX: 100,
+                  startY: 100,
+                  endX: 100 + template.width,
+                  endY: 100 + template.height,
+                  id: Date.now(),
+                  name: template.name
+                });
+                redrawCanvas();
+                updateStats();
+              }
+            }
+            
+            function clearCanvas() {
+              saveState();
+              walls = [];
+              doors = [];
+              windows = [];
+              rooms = [];
+              redrawCanvas();
+              updateStats();
+            }
+            
+            function exportFloorPlan() {
+              const link = document.createElement('a');
+              link.download = 'floor-plan.png';
+              link.href = canvas.toDataURL();
+              link.click();
+            }
+            
+            function saveFloorPlan() {
+              const floorPlanData = {
+                walls,
+                doors,
+                windows,
+                rooms,
+                timestamp: new Date().toISOString()
+              };
+              
+              const dataStr = JSON.stringify(floorPlanData, null, 2);
+              const dataBlob = new Blob([dataStr], {type: 'application/json'});
+              const url = URL.createObjectURL(dataBlob);
+              
+              const link = document.createElement('a');
+              link.href = url;
+              link.download = 'floor-plan.json';
+              link.click();
+              
+              URL.revokeObjectURL(url);
+            }
+          </script>
+        </body>
+        </html>
+      `);
+      
+      designerWindow.document.close();
+    }
+
     // Plan selection
     function selectPlan(type) {
       console.log('selectPlan called with type:', type);
@@ -910,8 +1460,8 @@
       if (type === 'upload') {
         document.getElementById('uploadSection').classList.add('active');
       } else if (type === 'create') {
-        console.log('Create plan selected - showing floor plan tools');
-        document.getElementById('canvasSection').classList.add('active');
+        console.log('Create plan selected - opening floor plan designer in new window');
+        openFloorPlanDesigner();
       }
     }
 
