@@ -7138,13 +7138,20 @@
         // exportHomeData function moved to complete functions section
 
         function loadHomeDataFromFirebase() {
-            if (!currentUser) return;
+            if (!currentUser) {
+                console.log('No current user, cannot load home data');
+                return;
+            }
             
+            console.log('Loading home data for user:', currentUser.uid);
             db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
                 .then(doc => {
                     if (doc.exists) {
                         homeData = doc.data();
+                        console.log('Home data loaded:', homeData);
                         loadHomeData();
+                    } else {
+                        console.log('No home data document found for user');
                     }
                 })
                 .catch(error => {
@@ -7306,14 +7313,22 @@
 
         // Utility functions
         function updateQuickStats() {
-            if (homeData.yearBuilt) {
+            console.log('updateQuickStats called, homeData:', homeData);
+            
+            if (homeData && homeData.yearBuilt) {
                 const currentYear = new Date().getFullYear();
                 const homeAge = currentYear - parseInt(homeData.yearBuilt);
+                console.log('Setting home age:', homeAge);
                 document.getElementById('homeAge').textContent = homeAge;
+            } else {
+                console.log('No yearBuilt data found');
             }
             
-            if (homeData.squareFootage) {
+            if (homeData && homeData.squareFootage) {
+                console.log('Setting square footage:', homeData.squareFootage);
                 document.getElementById('homeSqft').textContent = homeData.squareFootage.toLocaleString();
+            } else {
+                console.log('No squareFootage data found');
             }
         }
 
@@ -8402,32 +8417,38 @@
                     if (doc.exists) {
                         const homeData = doc.data();
                         
-                        // Calculate home age
+                        // Calculate home age from yearBuilt field
                         if (homeData.yearBuilt) {
                             const currentYear = new Date().getFullYear();
                             const homeAge = currentYear - parseInt(homeData.yearBuilt);
                             document.getElementById('homeAge').textContent = homeAge;
                         }
                         
-                        // Calculate total square footage
-                        let totalSqft = 0;
-                        if (homeData.totalArea) totalSqft += parseInt(homeData.totalArea) || 0;
-                        if (homeData.bedrooms) {
-                            homeData.bedrooms.forEach(bedroom => {
-                                if (bedroom.squareFootage) totalSqft += parseInt(bedroom.squareFootage) || 0;
-                            });
+                        // Calculate total square footage from squareFootage field
+                        if (homeData.squareFootage) {
+                            const totalSqft = parseInt(homeData.squareFootage) || 0;
+                            document.getElementById('homeSqft').textContent = totalSqft > 0 ? totalSqft.toLocaleString() : '--';
+                        } else {
+                            // Fallback: try to calculate from individual room data
+                            let totalSqft = 0;
+                            if (homeData.totalArea) totalSqft += parseInt(homeData.totalArea) || 0;
+                            if (homeData.bedrooms) {
+                                homeData.bedrooms.forEach(bedroom => {
+                                    if (bedroom.squareFootage) totalSqft += parseInt(bedroom.squareFootage) || 0;
+                                });
+                            }
+                            if (homeData.bathrooms) {
+                                homeData.bathrooms.forEach(bathroom => {
+                                    if (bathroom.squareFootage) totalSqft += parseInt(bathroom.squareFootage) || 0;
+                                });
+                            }
+                            if (homeData.livingAreas) {
+                                homeData.livingAreas.forEach(area => {
+                                    if (area.squareFootage) totalSqft += parseInt(area.squareFootage) || 0;
+                                });
+                            }
+                            document.getElementById('homeSqft').textContent = totalSqft > 0 ? totalSqft.toLocaleString() : '--';
                         }
-                        if (homeData.bathrooms) {
-                            homeData.bathrooms.forEach(bathroom => {
-                                if (bathroom.squareFootage) totalSqft += parseInt(bathroom.squareFootage) || 0;
-                            });
-                        }
-                        if (homeData.livingAreas) {
-                            homeData.livingAreas.forEach(area => {
-                                if (area.squareFootage) totalSqft += parseInt(area.squareFootage) || 0;
-                            });
-                        }
-                        document.getElementById('homeSqft').textContent = totalSqft > 0 ? totalSqft.toLocaleString() : '--';
                     }
                 })
                 .catch(error => console.error('Error loading home data:', error));
