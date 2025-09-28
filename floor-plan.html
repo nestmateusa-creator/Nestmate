@@ -807,6 +807,58 @@
       });
     }
 
+    // Immediate plan check for when user clicks create
+    function checkUserPlanImmediate() {
+      if (!currentUser) {
+        console.log('No current user, checking auth state...');
+        auth.onAuthStateChanged(user => {
+          if (user) {
+            currentUser = user;
+            performPlanCheck(user.email);
+          } else {
+            alert('Please sign in to access floor plan features.');
+          }
+        });
+      } else {
+        performPlanCheck(currentUser.email);
+      }
+    }
+
+    function performPlanCheck(email) {
+      console.log('Performing immediate plan check for:', email);
+      
+      // Check Pro users first
+      db.collection('NESTMATE PRO USER ACCOUNTS').where('email', '==', email).get()
+        .then(snapshot => {
+          if (!snapshot.empty) {
+            currentUserPlan = 'pro';
+            console.log('User is on Pro plan - allowing floor plan creation');
+            document.getElementById('canvasSection').classList.add('active');
+            document.getElementById('roomTemplates').classList.add('active');
+            return;
+          }
+          
+          // Check Advanced Pro users
+          return db.collection('NESTMATE ADVANCED PRO USER ACCOUNTS').where('email', '==', email).get();
+        })
+        .then(snapshot => {
+          if (snapshot && !snapshot.empty) {
+            currentUserPlan = 'advanced';
+            console.log('User is on Advanced Pro plan - allowing floor plan creation');
+            document.getElementById('canvasSection').classList.add('active');
+            document.getElementById('roomTemplates').classList.add('active');
+          } else {
+            currentUserPlan = 'basic';
+            console.log('User is on Basic plan - showing upgrade message');
+            alert('Floor plan creation is available for Pro and Advanced Pro plans only. Please upgrade to create custom floor plans.');
+          }
+        })
+        .catch(error => {
+          console.error('Error checking user plan:', error);
+          alert('Error checking your plan. Please try again.');
+        });
+    }
+
     // Initialize the application
     document.addEventListener('DOMContentLoaded', function() {
       // Check user authentication and plan first
@@ -832,6 +884,9 @@
 
     // Plan selection
     function selectPlan(type) {
+      console.log('selectPlan called with type:', type);
+      console.log('Current user plan:', currentUserPlan);
+      
       // Remove active class from all options
       document.querySelectorAll('.plan-option').forEach(option => {
         option.classList.remove('selected');
@@ -848,14 +903,8 @@
       if (type === 'upload') {
         document.getElementById('uploadSection').classList.add('active');
       } else if (type === 'create') {
-        // Check if user has Pro or Advanced Pro plan
-        if (currentUserPlan === 'basic') {
-          alert('Floor plan creation is available for Pro and Advanced Pro plans only. Please upgrade to create custom floor plans.');
-          return;
-        }
-        // Allow Pro and Advanced Pro users to create floor plans
-        document.getElementById('canvasSection').classList.add('active');
-        document.getElementById('roomTemplates').classList.add('active');
+        // Check plan immediately and also trigger a fresh check
+        checkUserPlanImmediate();
       }
     }
 
