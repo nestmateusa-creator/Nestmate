@@ -10162,6 +10162,67 @@
         let aiChatbotOpen = false;
         let isRecording = false;
         let recognition = null;
+        let dataFillingMode = false;
+        let currentDataStep = 0;
+        let dataFillingSteps = [
+            // Basic Home Information
+            { field: 'homeName', question: 'What is the name of your home? (e.g., "My House", "123 Main St", or "The Johnson Residence")', type: 'text' },
+            { field: 'address', question: 'What is your home address?', type: 'text' },
+            { field: 'city', question: 'What city is your home located in?', type: 'text' },
+            { field: 'state', question: 'What state is your home in?', type: 'text' },
+            { field: 'zipCode', question: 'What is your ZIP code?', type: 'text' },
+            { field: 'squareFootage', question: 'What is the square footage of your home?', type: 'number' },
+            { field: 'yearBuilt', question: 'What year was your home built?', type: 'number' },
+            { field: 'homeType', question: 'What type of home is it? (e.g., Single Family, Townhouse, Condo, Apartment)', type: 'text' },
+            { field: 'bedrooms', question: 'How many bedrooms does your home have?', type: 'number' },
+            { field: 'bathrooms', question: 'How many bathrooms does your home have?', type: 'number' },
+            { field: 'garageSpaces', question: 'How many garage spaces does your home have?', type: 'number' },
+            { field: 'lotSize', question: 'What is the size of your lot? (e.g., "0.25 acres" or "10,000 sq ft")', type: 'text' },
+            
+            // Home Systems
+            { field: 'heatingSystem', question: 'What type of heating system do you have? (e.g., Central Air, Heat Pump, Gas Furnace, Electric)', type: 'text' },
+            { field: 'coolingSystem', question: 'What type of cooling system do you have? (e.g., Central Air, Heat Pump, Window Units)', type: 'text' },
+            { field: 'waterHeater', question: 'What type of water heater do you have? (e.g., Gas, Electric, Tankless)', type: 'text' },
+            { field: 'roofType', question: 'What type of roof do you have? (e.g., Asphalt Shingles, Metal, Tile, Slate)', type: 'text' },
+            { field: 'roofAge', question: 'How old is your roof? (in years)', type: 'number' },
+            { field: 'hvacAge', question: 'How old is your HVAC system? (in years)', type: 'number' },
+            { field: 'waterHeaterAge', question: 'How old is your water heater? (in years)', type: 'number' },
+            
+            // Utilities and Services
+            { field: 'electricCompany', question: 'What is your electric company name?', type: 'text' },
+            { field: 'gasCompany', question: 'What is your gas company name? (if applicable)', type: 'text' },
+            { field: 'waterCompany', question: 'What is your water company name?', type: 'text' },
+            { field: 'internetProvider', question: 'What is your internet service provider?', type: 'text' },
+            { field: 'trashCompany', question: 'What company handles your trash collection?', type: 'text' },
+            
+            // Insurance and Legal
+            { field: 'homeInsurance', question: 'What is your home insurance company?', type: 'text' },
+            { field: 'policyNumber', question: 'What is your home insurance policy number?', type: 'text' },
+            { field: 'mortgageCompany', question: 'What is your mortgage company? (if applicable)', type: 'text' },
+            { field: 'propertyTax', question: 'What is your annual property tax amount?', type: 'number' },
+            
+            // Emergency Contacts
+            { field: 'emergencyContact1', question: 'Who is your primary emergency contact? (Name and phone number)', type: 'text' },
+            { field: 'emergencyContact2', question: 'Who is your secondary emergency contact? (Name and phone number)', type: 'text' },
+            { field: 'neighborContact', question: 'Do you have a trusted neighbor contact? (Name and phone number)', type: 'text' },
+            
+            // Service Providers
+            { field: 'hvacContractor', question: 'Do you have a preferred HVAC contractor? (Name and phone number)', type: 'text' },
+            { field: 'plumber', question: 'Do you have a preferred plumber? (Name and phone number)', type: 'text' },
+            { field: 'electrician', question: 'Do you have a preferred electrician? (Name and phone number)', type: 'text' },
+            { field: 'handyman', question: 'Do you have a preferred handyman? (Name and phone number)', type: 'text' },
+            { field: 'landscaper', question: 'Do you have a preferred landscaper? (Name and phone number)', type: 'text' },
+            
+            // Pro Features - Product Preferences
+            { field: 'preferredBrands', question: 'What are your preferred home improvement brands? (e.g., "Home Depot, Lowe\'s, Amazon")', type: 'text' },
+            { field: 'budgetRange', question: 'What is your typical monthly home maintenance budget?', type: 'number' },
+            { field: 'energyGoals', question: 'What are your energy efficiency goals? (e.g., "Reduce bills", "Eco-friendly", "Comfort")', type: 'text' },
+            { field: 'maintenanceSchedule', question: 'How often do you prefer to do maintenance? (e.g., "Monthly", "Quarterly", "As needed")', type: 'text' },
+            
+            // Personal Preferences
+            { field: 'homeGoals', question: 'What are your main home management goals? (e.g., "Maintain value", "Energy efficiency", "Comfort")', type: 'text' },
+            { field: 'preferredContactMethod', question: 'How do you prefer to be contacted for reminders? (Email, Phone, Text)', type: 'text' }
+        ];
 
         function toggleAIChatbot() {
             const chatbotWindow = document.getElementById('aiChatbotWindow');
@@ -10287,9 +10348,21 @@
             setTimeout(() => {
                 hideAITyping();
                 
+                // Handle data filling mode
+                if (dataFillingMode) {
+                    handleDataFillingResponse(message);
+                    return;
+                }
+                
                 const lowerMessage = message.toLowerCase();
                 let response = '';
                 let actions = [];
+                
+                // Data Filling Mode
+                if (lowerMessage.includes('fill out all home data') || lowerMessage.includes('fill all data') || lowerMessage.includes('complete profile')) {
+                    startDataFillingMode();
+                    return;
+                }
                 
                 // Task Management
                 if (lowerMessage.includes('add task') || lowerMessage.includes('create task') || lowerMessage.includes('new task')) {
@@ -10500,6 +10573,7 @@
 
         function aiQuickAction(action) {
             const prompts = {
+                'fill-all-data': 'I\'ll help you fill out all your home management data step by step! This will take a few minutes, but I\'ll guide you through everything including Pro features. Ready to start?',
                 'add-task': 'What task would you like me to add? For example: "Change air filter" or "Schedule HVAC maintenance"',
                 'update-home': 'What home detail would you like to update?',
                 'add-service': 'What type of service was performed?',
@@ -10508,7 +10582,111 @@
                 'help': 'I can help you with tasks, product orders, price alerts, health scores, and more. Just tell me what you need!'
             };
             
-            addAIMessage(prompts[action], 'bot');
+            if (action === 'fill-all-data') {
+                addAIMessageWithActions(prompts[action], [
+                    { text: 'Yes, Start Now', callback: () => startDataFillingMode() },
+                    { text: 'Maybe Later', callback: () => addAIMessage('No problem! You can start this anytime by saying "fill out all home data".', 'bot') }
+                ]);
+            } else {
+                addAIMessage(prompts[action], 'bot');
+            }
+        }
+
+        function startDataFillingMode() {
+            dataFillingMode = true;
+            currentDataStep = 0;
+            addAIMessage('Great! I\'ll help you fill out all your home management data including Pro features. I\'ll ask you questions one at a time, and you can answer naturally. Let\'s start!', 'bot');
+            askNextDataQuestion();
+        }
+
+        function askNextDataQuestion() {
+            if (currentDataStep >= dataFillingSteps.length) {
+                completeDataFilling();
+                return;
+            }
+
+            const step = dataFillingSteps[currentDataStep];
+            const progress = `(${currentDataStep + 1} of ${dataFillingSteps.length})`;
+            
+            addAIMessageWithActions(`${progress} ${step.question}`, [
+                { text: 'Skip This', callback: () => skipCurrentQuestion() },
+                { text: 'Stop Data Entry', callback: () => stopDataFilling() }
+            ]);
+        }
+
+        function handleDataFillingResponse(message) {
+            const step = dataFillingSteps[currentDataStep];
+            let value = message.trim();
+            
+            // Handle "skip" or "none" responses
+            if (value.toLowerCase().includes('skip') || value.toLowerCase().includes('none') || value.toLowerCase().includes('n/a') || value.toLowerCase().includes('not applicable')) {
+                addAIMessage('Got it, skipping this question.', 'bot');
+                currentDataStep++;
+                setTimeout(() => askNextDataQuestion(), 1000);
+                return;
+            }
+            
+            // Validate and format the value based on type
+            if (step.type === 'number') {
+                const numValue = parseFloat(value);
+                if (isNaN(numValue)) {
+                    addAIMessage('Please enter a number for this question.', 'bot');
+                    return;
+                }
+                value = numValue;
+            }
+            
+            // Save the data
+            saveHomeDataField(step.field, value);
+            
+            // Confirm and move to next question
+            addAIMessage(`Perfect! I've saved: ${step.field} = ${value}`, 'bot');
+            currentDataStep++;
+            
+            setTimeout(() => askNextDataQuestion(), 1500);
+        }
+
+        function skipCurrentQuestion() {
+            addAIMessage('Skipped this question.', 'bot');
+            currentDataStep++;
+            setTimeout(() => askNextDataQuestion(), 1000);
+        }
+
+        function stopDataFilling() {
+            dataFillingMode = false;
+            const completed = currentDataStep;
+            const total = dataFillingSteps.length;
+            addAIMessageWithActions(`Data entry stopped. You completed ${completed} of ${total} questions. You can continue anytime by saying "fill out all home data".`, [
+                { text: 'Continue Later', callback: () => addAIMessage('No problem! Just say "fill out all home data" when you\'re ready to continue.', 'bot') },
+                { text: 'Start Over', callback: () => startDataFillingMode() }
+            ]);
+        }
+
+        function completeDataFilling() {
+            dataFillingMode = false;
+            addAIMessageWithActions('🎉 Congratulations! You\'ve completed filling out all your home management data including Pro features! Your profile is now complete and ready to help you manage your home effectively.', [
+                { text: 'View Home Details', callback: () => showSection('home') },
+                { text: 'Order Products', callback: () => aiQuickAction('order-product') },
+                { text: 'Set Price Alerts', callback: () => aiQuickAction('price-alert') },
+                { text: 'Get Help', callback: () => aiQuickAction('help') }
+            ]);
+        }
+
+        function saveHomeDataField(field, value) {
+            if (!currentUser) return;
+            
+            // Update the homeData object
+            homeData[field] = value;
+            
+            // Save to Firebase
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).set({
+                [field]: value,
+                updatedAt: new Date().toISOString()
+            }, { merge: true }).then(() => {
+                console.log(`Saved ${field}: ${value}`);
+            }).catch(error => {
+                console.error(`Error saving ${field}:`, error);
+            });
         }
 
         // Voice Input Functions
@@ -10599,10 +10777,10 @@
                     <div class="ai-message-content">
                         <p>Hello! I'm your Pro AI assistant. I can help you with advanced features:</p>
                         <div class="ai-message-actions">
+                            <button class="ai-action-button" onclick="aiQuickAction('fill-all-data')">Fill Out All Home Data</button>
                             <button class="ai-action-button" onclick="aiQuickAction('add-task')">Add Task</button>
                             <button class="ai-action-button" onclick="aiQuickAction('order-product')">Order Product</button>
                             <button class="ai-action-button" onclick="aiQuickAction('price-alert')">Set Price Alert</button>
-                            <button class="ai-action-button" onclick="aiQuickAction('help')">Get Help</button>
                         </div>
                     </div>
                 </div>
