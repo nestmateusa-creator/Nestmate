@@ -830,8 +830,8 @@
             performPlanCheck(user.email);
           } else {
             console.log('No user in auth state either');
-            // Don't show alert, just redirect to signin
-            window.location.href = 'signin.html?returnUrl=' + encodeURIComponent(window.location.href);
+            // Don't redirect here, let the selectPlan function handle it
+            console.log('Authentication check complete - no user found');
           }
         });
       }
@@ -875,6 +875,17 @@
     // Initialize the application
     document.addEventListener('DOMContentLoaded', function() {
       console.log('Floor plan page loaded');
+      console.log('URL params:', window.location.search);
+      
+      // Check if we're coming from signin (avoid redirect loops)
+      const urlParams = new URLSearchParams(window.location.search);
+      const fromSignin = urlParams.get('fromSignin');
+      
+      if (fromSignin) {
+        console.log('Coming from signin, clearing URL params');
+        // Clean up the URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
       
       // Check for existing authentication first
       if (auth.currentUser) {
@@ -927,16 +938,28 @@
       } else if (type === 'create') {
         // Check plan immediately and also trigger a fresh check
         console.log('Create plan selected, checking user plan...');
-        checkUserPlanImmediate();
         
-        // Also show the create section immediately if user is authenticated
+        // Check if user is authenticated first
         const user = currentUser || auth.currentUser;
         if (user) {
           console.log('User authenticated, showing create section');
           document.getElementById('canvasSection').classList.add('active');
+          // Also check their plan
+          checkUserPlanImmediate();
         } else {
-          console.log('No user found, redirecting to signin');
-          window.location.href = 'signin.html?returnUrl=' + encodeURIComponent(window.location.href);
+          console.log('No user found, checking auth state...');
+          // Wait a moment for auth state to settle
+          setTimeout(() => {
+            const userAfterWait = currentUser || auth.currentUser;
+            if (userAfterWait) {
+              console.log('User found after wait, showing create section');
+              document.getElementById('canvasSection').classList.add('active');
+              checkUserPlanImmediate();
+            } else {
+              console.log('Still no user, redirecting to signin');
+              window.location.href = 'signin.html?returnUrl=' + encodeURIComponent(window.location.href);
+            }
+          }, 500);
         }
       }
     }
