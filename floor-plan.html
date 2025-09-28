@@ -830,7 +830,8 @@
             performPlanCheck(user.email);
           } else {
             console.log('No user in auth state either');
-            alert('Please sign in to access floor plan features.');
+            // Don't show alert, just redirect to signin
+            window.location.href = 'signin.html?returnUrl=' + encodeURIComponent(window.location.href);
           }
         });
       }
@@ -925,7 +926,18 @@
         document.getElementById('uploadSection').classList.add('active');
       } else if (type === 'create') {
         // Check plan immediately and also trigger a fresh check
+        console.log('Create plan selected, checking user plan...');
         checkUserPlanImmediate();
+        
+        // Also show the create section immediately if user is authenticated
+        const user = currentUser || auth.currentUser;
+        if (user) {
+          console.log('User authenticated, showing create section');
+          document.getElementById('canvasSection').classList.add('active');
+        } else {
+          console.log('No user found, redirecting to signin');
+          window.location.href = 'signin.html?returnUrl=' + encodeURIComponent(window.location.href);
+        }
       }
     }
 
