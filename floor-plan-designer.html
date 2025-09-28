@@ -353,11 +353,13 @@
     function startDrawing(e) {
       if (currentTool === 'select') return;
       
+      console.log('Starting to draw with tool:', currentTool);
       isDrawing = true;
       const rect = canvas.getBoundingClientRect();
       startX = e.clientX - rect.left;
       startY = e.clientY - rect.top;
       
+      console.log('Start position:', startX, startY);
       saveState();
     }
     
@@ -369,7 +371,7 @@
       const currentY = e.clientY - rect.top;
       
       // Clear canvas and redraw everything
-      clearCanvas();
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       
       // Draw grid
       drawGrid();
@@ -389,24 +391,31 @@
     function stopDrawing(e) {
       if (!isDrawing) return;
       
+      console.log('Stopping drawing with tool:', currentTool);
       isDrawing = false;
       const rect = canvas.getBoundingClientRect();
       const endX = e.clientX - rect.left;
       const endY = e.clientY - rect.top;
       
+      console.log('End position:', endX, endY);
+      
       // Add element based on current tool
       switch(currentTool) {
         case 'wall':
           walls.push({startX, startY, endX, endY, id: Date.now()});
+          console.log('Added wall, total walls:', walls.length);
           break;
         case 'door':
           doors.push({startX, startY, endX, endY, id: Date.now()});
+          console.log('Added door, total doors:', doors.length);
           break;
         case 'window':
           windows.push({startX, startY, endX, endY, id: Date.now()});
+          console.log('Added window, total windows:', windows.length);
           break;
         case 'room':
           rooms.push({startX, startY, endX, endY, id: Date.now()});
+          console.log('Added room, total rooms:', rooms.length);
           break;
       }
       
@@ -533,6 +542,8 @@
     }
     
     function addRoomTemplate(roomType) {
+      console.log('Adding room template:', roomType);
+      
       const templates = {
         living: { width: 200, height: 150, name: 'Living Room' },
         kitchen: { width: 150, height: 120, name: 'Kitchen' },
@@ -544,6 +555,7 @@
       
       const template = templates[roomType];
       if (template) {
+        console.log('Template found:', template);
         saveState();
         rooms.push({
           startX: 100,
@@ -553,8 +565,11 @@
           id: Date.now(),
           name: template.name
         });
+        console.log('Added room template, total rooms:', rooms.length);
         redrawCanvas();
         updateStats();
+      } else {
+        console.log('Template not found for:', roomType);
       }
     }
     
@@ -565,7 +580,8 @@
       doors = [];
       windows = [];
       rooms = [];
-      redrawCanvas();
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawGrid();
       updateStats();
     }
     
