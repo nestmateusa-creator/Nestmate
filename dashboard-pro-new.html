@@ -6,10 +6,12 @@
     <title>Pro Dashboard - NestMate</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="amazon-affiliate-styles.css">
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC_dBBCQ9R3n0KiZ6RodccRsUHoBov7GSA&libraries=places&callback=initGooglePlaces" async defer></script>
+    <script src="amazon-affiliate-integration.js"></script>
     
     <!-- Firebase Configuration moved to main JavaScript section -->
     <style>
@@ -2569,6 +2571,97 @@
             margin-top: 1rem;
         }
 
+        .affiliate-performance-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .affiliate-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .stat-content {
+            flex: 1;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #f1f5f9;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .alert-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .remove-btn {
+            background: linear-gradient(45deg, #e53e3e, #c53030);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .remove-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(229, 62, 62, 0.4);
+        }
+
+        .no-alerts {
+            text-align: center;
+            padding: 2rem;
+            color: #94a3b8;
+            font-style: italic;
+        }
+
         .price-alerts-card, .price-history-card {
             background: rgba(0, 0, 0, 0.3);
             border-radius: 12px;
@@ -3340,16 +3433,25 @@
                             <button type="button" class="btn btn-primary btn-small" onclick="addPriceAlert()">
                                 <i class="fas fa-bell"></i> Add Price Alert
                             </button>
+                            <button type="button" class="btn btn-secondary btn-small" onclick="showAmazonSearch()">
+                                <i class="fab fa-amazon"></i> Search Amazon
+                            </button>
                         </div>
                     </div>
+                    
+                    <!-- Amazon Product Search Integration -->
+                    <div id="amazonSearchContainer" style="display: none;"></div>
+                    
+                    <!-- Commission Dashboard -->
+                    <div id="commissionDashboard" style="display: none;"></div>
                     
                     <div class="price-tracking-grid">
                         <div class="price-alerts-card">
                             <div class="price-alerts-header">
                                 <h5>Active Price Alerts</h5>
-                                <span class="alerts-count">5 alerts</span>
+                                <span class="alerts-count" id="alertsCount">0 alerts</span>
                             </div>
-                            <div class="price-alerts-list">
+                            <div class="price-alerts-list" id="priceAlertsList">
                                 <div class="price-alert-item">
                                     <div class="alert-info">
                                         <h6>Smart Home Hub</h6>
@@ -3358,6 +3460,11 @@
                                     <div class="alert-status">
                                         <span class="current-price">$175.99</span>
                                         <span class="price-change down">-5%</span>
+                                    </div>
+                                    <div class="alert-actions">
+                                        <button class="buy-now-btn" onclick="amazonIntegration.trackClick('Smart Home Hub', '$175.99', '$150.00'); window.open('https://www.amazon.com/s?k=Smart+Home+Hub&tag=nestmateusa-20', '_blank');">
+                                            <i class="fas fa-shopping-cart"></i> Buy Now
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -3376,6 +3483,41 @@
                                 <div class="chart-placeholder">
                                     <i class="fas fa-chart-line"></i>
                                     <p>Price tracking chart will appear here</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Amazon Affiliate Performance -->
+                    <div class="affiliate-performance-section">
+                        <div class="section-header">
+                            <h4 class="section-title">💰 Amazon Affiliate Performance</h4>
+                            <div class="header-actions">
+                                <button type="button" class="btn btn-secondary btn-small" onclick="toggleCommissionDashboard()">
+                                    <i class="fas fa-chart-line"></i> View Performance
+                                </button>
+                            </div>
+                        </div>
+                        <div id="affiliateStats" class="affiliate-stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-icon"><i class="fas fa-mouse-pointer"></i></div>
+                                <div class="stat-content">
+                                    <div class="stat-value" id="totalClicks">0</div>
+                                    <div class="stat-label">Total Clicks</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
+                                <div class="stat-content">
+                                    <div class="stat-value" id="totalRevenue">$0.00</div>
+                                    <div class="stat-label">Estimated Revenue</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon"><i class="fas fa-percentage"></i></div>
+                                <div class="stat-content">
+                                    <div class="stat-value" id="avgCommission">$0.00</div>
+                                    <div class="stat-label">Avg. Commission</div>
                                 </div>
                             </div>
                         </div>
@@ -9285,9 +9427,103 @@
             });
         }
 
-        // Price Tracking & Alerts - Pro Feature
+        // Price Tracking & Alerts - Pro Feature with Amazon Integration
         let priceAlerts = [];
         let priceHistory = {};
+
+        // Initialize Amazon integration when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof amazonIntegration !== 'undefined') {
+                // Initialize Amazon search container
+                amazonIntegration.createProductSearch('amazonSearchContainer');
+                
+                // Load and display affiliate stats
+                loadAffiliateStats();
+                
+                // Load existing price alerts
+                loadPriceAlerts();
+            }
+        });
+
+        function showAmazonSearch() {
+            const container = document.getElementById('amazonSearchContainer');
+            const commissionDashboard = document.getElementById('commissionDashboard');
+            
+            if (container.style.display === 'none') {
+                container.style.display = 'block';
+                commissionDashboard.style.display = 'none';
+            } else {
+                container.style.display = 'none';
+            }
+        }
+
+        function toggleCommissionDashboard() {
+            const container = document.getElementById('commissionDashboard');
+            const amazonSearch = document.getElementById('amazonSearchContainer');
+            
+            if (container.style.display === 'none') {
+                container.style.display = 'block';
+                amazonSearch.style.display = 'none';
+                amazonIntegration.createCommissionDashboard('commissionDashboard');
+            } else {
+                container.style.display = 'none';
+            }
+        }
+
+        function loadAffiliateStats() {
+            if (typeof amazonIntegration === 'undefined') return;
+            
+            const dashboard = amazonIntegration.getCommissionDashboard();
+            
+            document.getElementById('totalClicks').textContent = dashboard.totalClicks;
+            document.getElementById('totalRevenue').textContent = `$${dashboard.totalRevenue.toFixed(2)}`;
+            document.getElementById('avgCommission').textContent = dashboard.totalClicks > 0 ? 
+                `$${(dashboard.totalRevenue / dashboard.totalClicks).toFixed(2)}` : '$0.00';
+        }
+
+        function loadPriceAlerts() {
+            const alertsList = document.getElementById('priceAlertsList');
+            const alertsCount = document.getElementById('alertsCount');
+            
+            // Load from localStorage
+            const savedAlerts = JSON.parse(localStorage.getItem('priceAlerts') || '[]');
+            
+            if (savedAlerts.length === 0) {
+                alertsList.innerHTML = '<div class="no-alerts">No price alerts set. Add one to get started!</div>';
+                alertsCount.textContent = '0 alerts';
+                return;
+            }
+            
+            alertsList.innerHTML = savedAlerts.map(alert => `
+                <div class="price-alert-item">
+                    <div class="alert-info">
+                        <h6>${alert.productName}</h6>
+                        <p>Target: ${alert.targetPrice}</p>
+                    </div>
+                    <div class="alert-status">
+                        <span class="current-price">${alert.currentPrice}</span>
+                        <span class="price-change down">-5%</span>
+                    </div>
+                    <div class="alert-actions">
+                        <button class="buy-now-btn" onclick="amazonIntegration.trackClick('${alert.productName}', '${alert.currentPrice}', '${alert.targetPrice}'); window.open('${alert.affiliateUrl}', '_blank');">
+                            <i class="fas fa-shopping-cart"></i> Buy Now
+                        </button>
+                        <button class="remove-btn" onclick="removePriceAlert('${alert.id}')">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            
+            alertsCount.textContent = `${savedAlerts.length} alert${savedAlerts.length !== 1 ? 's' : ''}`;
+        }
+
+        function removePriceAlert(alertId) {
+            const savedAlerts = JSON.parse(localStorage.getItem('priceAlerts') || '[]');
+            const updatedAlerts = savedAlerts.filter(alert => alert.id != alertId);
+            localStorage.setItem('priceAlerts', JSON.stringify(updatedAlerts));
+            loadPriceAlerts();
+        }
 
         function addPriceAlert() {
             const modal = document.createElement('div');
