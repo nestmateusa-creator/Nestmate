@@ -387,6 +387,96 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
+    /* Features Section */
+    .features-section {
+      padding: 6rem 2rem;
+      background: var(--bg-secondary);
+    }
+
+    .features-container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 2rem;
+      margin-top: 4rem;
+    }
+
+    .feature-category {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      transition: all 0.3s ease;
+    }
+
+    .feature-category:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-xl);
+      border-color: var(--primary);
+    }
+
+    .category-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .category-header i {
+      font-size: 2rem;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .category-header h3 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .feature-category .feature-list {
+      list-style: none;
+      margin: 0;
+    }
+
+    .feature-category .feature-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .feature-category .feature-list li::before {
+      content: '✓';
+      background: var(--gradient-accent);
+      color: white;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: bold;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    .feature-category .feature-list li strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
     /* Interactive Demo Section */
     .demo-section {
       padding: 6rem 2rem;
@@ -780,6 +870,64 @@
       font-weight: bold;
     }
 
+    /* Value Proposition Section */
+    .value-section {
+      padding: 6rem 2rem;
+      background: var(--bg-primary);
+    }
+
+    .value-container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .value-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+      margin-top: 4rem;
+    }
+
+    .value-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .value-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-xl);
+      border-color: var(--primary);
+    }
+
+    .value-icon {
+      width: 80px;
+      height: 80px;
+      background: var(--gradient-primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      font-size: 2rem;
+      color: white;
+    }
+
+    .value-card h3 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+    }
+
+    .value-card p {
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
     /* CTA Section */
     .cta-section {
       padding: 6rem 2rem;
@@ -844,6 +992,16 @@
         gap: 2rem;
       }
 
+      .features-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .value-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
       .hero-actions {
         flex-direction: column;
         align-items: center;
@@ -856,6 +1014,14 @@
 
       .floating-card {
         display: none;
+      }
+
+      .feature-category {
+        padding: 1.5rem;
+      }
+
+      .value-card {
+        padding: 1.5rem;
       }
     }
 
@@ -965,13 +1131,13 @@
       </div>
       
       <h1 class="hero-title">
-        The Future of<br>
-        Home Management
+        The Complete<br>
+        Home Management System
       </h1>
       
       <p class="hero-subtitle">
-        Transform your home into a smart, organized, and valuable asset. 
-        Track everything, get AI-powered insights, and increase your property value by up to 15%.
+        Track every detail of your home - from window sizes and trim styles to maintenance schedules and warranty information. 
+        Get AI-powered insights, automated reminders, and increase your property value by up to 15%.
       </p>
       
       <div class="hero-actions">
@@ -983,6 +1149,121 @@
           <i class="fas fa-play"></i>
           Watch Demo
         </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Comprehensive Features Section -->
+  <section class="features-section" id="features">
+    <div class="section-header">
+      <h2 class="section-title">Everything You Need to Manage Your Home</h2>
+      <p class="section-subtitle">
+        NestMate tracks every detail of your home, from the smallest trim piece to major systems. 
+        Here's exactly what you get with your subscription.
+      </p>
+    </div>
+    
+    <div class="features-grid">
+      <!-- Home Structure & Details -->
+      <div class="feature-category">
+        <div class="category-header">
+          <i class="fas fa-home"></i>
+          <h3>Home Structure & Details</h3>
+        </div>
+        <ul class="feature-list">
+          <li><strong>Window Sizes & Types:</strong> Track every window's dimensions, style, and installation date</li>
+          <li><strong>Trim Styles & Materials:</strong> Record crown molding, baseboards, door casings, and materials used</li>
+          <li><strong>Flooring Details:</strong> Document room-by-room flooring types, installation dates, and warranties</li>
+          <li><strong>Paint Colors & Brands:</strong> Store paint codes, brands, and application dates for every room</li>
+          <li><strong>Door Specifications:</strong> Track door sizes, styles, hardware, and security features</li>
+          <li><strong>Ceiling Details:</strong> Record ceiling heights, materials, and any special features</li>
+          <li><strong>Wall Materials:</strong> Document drywall, plaster, paneling, and insulation details</li>
+        </ul>
+      </div>
+
+      <!-- Systems & Appliances -->
+      <div class="feature-category">
+        <div class="category-header">
+          <i class="fas fa-cogs"></i>
+          <h3>Systems & Appliances</h3>
+        </div>
+        <ul class="feature-list">
+          <li><strong>HVAC System:</strong> Track model numbers, installation dates, maintenance history, and warranties</li>
+          <li><strong>Plumbing System:</strong> Document pipe materials, fixture brands, and water pressure details</li>
+          <li><strong>Electrical System:</strong> Record panel capacity, outlet types, and electrical upgrades</li>
+          <li><strong>Water Heater:</strong> Track capacity, fuel type, age, and maintenance schedule</li>
+          <li><strong>Kitchen Appliances:</strong> Document all appliances with model numbers and warranties</li>
+          <li><strong>Laundry Equipment:</strong> Track washer/dryer specifications and maintenance needs</li>
+          <li><strong>Security Systems:</strong> Record alarm systems, cameras, and smart home devices</li>
+        </ul>
+      </div>
+
+      <!-- Exterior & Landscaping -->
+      <div class="feature-category">
+        <div class="category-header">
+          <i class="fas fa-tree"></i>
+          <h3>Exterior & Landscaping</h3>
+        </div>
+        <ul class="feature-list">
+          <li><strong>Roof Details:</strong> Track shingle type, installation date, and warranty information</li>
+          <li><strong>Siding Materials:</strong> Document siding type, color, and maintenance schedule</li>
+          <li><strong>Gutters & Downspouts:</strong> Record materials, installation dates, and cleaning schedule</li>
+          <li><strong>Driveway & Walkways:</strong> Track materials, dimensions, and maintenance needs</li>
+          <li><strong>Landscaping:</strong> Document trees, shrubs, irrigation systems, and maintenance schedules</li>
+          <li><strong>Outdoor Structures:</strong> Record sheds, decks, patios, and their maintenance needs</li>
+          <li><strong>Fencing:</strong> Track fence materials, heights, and maintenance requirements</li>
+        </ul>
+      </div>
+
+      <!-- Maintenance & Service -->
+      <div class="feature-category">
+        <div class="category-header">
+          <i class="fas fa-tools"></i>
+          <h3>Maintenance & Service</h3>
+        </div>
+        <ul class="feature-list">
+          <li><strong>Service Records:</strong> Complete history of all maintenance, repairs, and improvements</li>
+          <li><strong>Warranty Tracking:</strong> Monitor all warranties and their expiration dates</li>
+          <li><strong>Contractor Database:</strong> Store contact info for all service providers</li>
+          <li><strong>Maintenance Schedules:</strong> Automated reminders for seasonal and routine maintenance</li>
+          <li><strong>Cost Tracking:</strong> Record all home-related expenses and improvements</li>
+          <li><strong>Receipt Storage:</strong> Digital storage for all home-related receipts and invoices</li>
+          <li><strong>Emergency Contacts:</strong> Quick access to emergency services and trusted contractors</li>
+        </ul>
+      </div>
+
+      <!-- Smart Features -->
+      <div class="feature-category">
+        <div class="category-header">
+          <i class="fas fa-brain"></i>
+          <h3>AI-Powered Smart Features</h3>
+        </div>
+        <ul class="feature-list">
+          <li><strong>Health Score:</strong> AI-calculated home health score based on maintenance and age</li>
+          <li><strong>Predictive Maintenance:</strong> AI predicts when systems need attention before they fail</li>
+          <li><strong>Value Tracking:</strong> Monitor your home's value and ROI on improvements</li>
+          <li><strong>Product Recommendations:</strong> AI suggests products based on your home's specific needs</li>
+          <li><strong>Price Alerts:</strong> Get notified when products you need go on sale</li>
+          <li><strong>Voice Assistant:</strong> Control your home management with voice commands</li>
+          <li><strong>Smart Reminders:</strong> Intelligent scheduling based on your home's unique characteristics</li>
+        </ul>
+      </div>
+
+      <!-- Family & Collaboration -->
+      <div class="feature-category">
+        <div class="category-header">
+          <i class="fas fa-users"></i>
+          <h3>Family & Collaboration</h3>
+        </div>
+        <ul class="feature-list">
+          <li><strong>Family Management:</strong> Invite family members to collaborate on home management</li>
+          <li><strong>Task Assignment:</strong> Assign maintenance tasks to family members</li>
+          <li><strong>Shared Calendar:</strong> Family-wide calendar for home maintenance and events</li>
+          <li><strong>Team Product Orders:</strong> Collaborate on purchasing decisions for home improvements</li>
+          <li><strong>Family Dashboard:</strong> Centralized view of all family home management activities</li>
+          <li><strong>Emergency Services:</strong> Quick access to emergency contacts and procedures</li>
+          <li><strong>Communication Hub:</strong> Family messaging and notification system</li>
+        </ul>
       </div>
     </div>
   </section>
@@ -1159,10 +1440,12 @@
           <div class="pricing-period">per month</div>
           
           <ul class="pricing-features">
-            <li>Manage your first home with ease</li>
-            <li>Home inventory tracking</li>
-            <li>Basic maintenance alerts</li>
-            <li>Document storage</li>
+            <li>Track 1 home with complete details</li>
+            <li>Window sizes, trim styles, paint colors</li>
+            <li>Basic maintenance reminders</li>
+            <li>Service record storage</li>
+            <li>10-task limit with completion tracking</li>
+            <li>Basic home health score</li>
             <li>Mobile app access</li>
             <li>Email support</li>
           </ul>
@@ -1179,11 +1462,15 @@
           <div class="pricing-period">per month</div>
           
           <ul class="pricing-features">
-            <li>Create unlimited home profiles</li>
-            <li>Everything in Basic</li>
-            <li>AI-powered insights</li>
-            <li>Advanced analytics</li>
-            <li>Product recommendations</li>
+            <li>Track unlimited homes</li>
+            <li>Everything in Basic, plus:</li>
+            <li>Unlimited tasks with full management</li>
+            <li>AI-powered maintenance predictions</li>
+            <li>Enhanced home health scoring</li>
+            <li>Smart product recommendations</li>
+            <li>Price tracking & alerts</li>
+            <li>Direct product ordering</li>
+            <li>Advanced analytics & reports</li>
             <li>Priority support</li>
           </ul>
           
@@ -1198,11 +1485,14 @@
           <div class="pricing-period">per month</div>
           
           <ul class="pricing-features">
-            <li>All Pro features, plus more family power</li>
-            <li>Everything in Pro</li>
-            <li>Family management</li>
-            <li>Emergency services</li>
-            <li>Team collaboration</li>
+            <li>Everything in Pro, plus:</li>
+            <li>Family management & collaboration</li>
+            <li>Team product ordering</li>
+            <li>Family dashboard & shared calendar</li>
+            <li>Emergency services & contacts</li>
+            <li>Task assignment to family members</li>
+            <li>Family communication hub</li>
+            <li>Advanced family analytics</li>
             <li>Custom integrations</li>
             <li>24/7 phone support</li>
           </ul>
@@ -1210,6 +1500,75 @@
           <a href="https://buy.stripe.com/9B628t1rQ2gfdU1et71sQ0O" target="_blank" class="btn btn-secondary">
             Start Advanced Pro
           </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Value Proposition Section -->
+  <section class="value-section">
+    <div class="value-container">
+      <div class="section-header">
+        <h2 class="section-title">What You Get With NestMate</h2>
+        <p class="section-subtitle">
+          Transform your home management from chaotic to organized, from reactive to proactive, 
+          and from expensive to cost-effective.
+        </p>
+      </div>
+      
+      <div class="value-grid">
+        <div class="value-card">
+          <div class="value-icon">
+            <i class="fas fa-clipboard-list"></i>
+          </div>
+          <h3>Complete Home Inventory</h3>
+          <p>Track every detail: window sizes, trim styles, paint colors, flooring types, 
+             appliance models, warranty information, and maintenance schedules.</p>
+        </div>
+        
+        <div class="value-card">
+          <div class="value-icon">
+            <i class="fas fa-brain"></i>
+          </div>
+          <h3>AI-Powered Insights</h3>
+          <p>Get predictive maintenance alerts, health scores, value tracking, 
+             and smart recommendations based on your home's unique characteristics.</p>
+        </div>
+        
+        <div class="value-card">
+          <div class="value-icon">
+            <i class="fas fa-dollar-sign"></i>
+          </div>
+          <h3>Save Money & Increase Value</h3>
+          <p>Prevent costly repairs with proactive maintenance, track ROI on improvements, 
+             and increase your home's value by up to 15% with proper documentation.</p>
+        </div>
+        
+        <div class="value-card">
+          <div class="value-icon">
+            <i class="fas fa-clock"></i>
+          </div>
+          <h3>Save Time & Reduce Stress</h3>
+          <p>Automated reminders, organized records, quick contractor access, 
+             and family collaboration tools make home management effortless.</p>
+        </div>
+        
+        <div class="value-card">
+          <div class="value-icon">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <h3>Protect Your Investment</h3>
+          <p>Comprehensive warranty tracking, service history, and emergency contacts 
+             ensure your home is always protected and well-maintained.</p>
+        </div>
+        
+        <div class="value-card">
+          <div class="value-icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <h3>Family Collaboration</h3>
+          <p>Share home management with family members, assign tasks, 
+             and work together to maintain your most valuable asset.</p>
         </div>
       </div>
     </div>
@@ -1293,7 +1652,7 @@
     }, observerOptions);
 
     // Observe elements for animation
-    document.querySelectorAll('.demo-section, .testimonials, .pricing, .cta-section').forEach(el => {
+    document.querySelectorAll('.features-section, .demo-section, .testimonials, .pricing, .value-section, .cta-section').forEach(el => {
       el.classList.add('fade-in');
       observer.observe(el);
     });
