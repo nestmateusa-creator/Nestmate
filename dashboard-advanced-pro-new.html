@@ -6,12 +6,13 @@
     <title>Advanced Pro Dashboard - NestMate</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="amazon-affiliate-styles.css">
+    <link rel="stylesheet" href="product-recommendation-styles.css">
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC_dBBCQ9R3n0KiZ6RodccRsUHoBov7GSA&libraries=places&callback=initGooglePlaces" async defer></script>
-    <script src="amazon-affiliate-integration.js"></script>
+    <script src="amazon-product-catalog.js"></script>
+    <script src="product-recommendation-engine.js"></script>
     
     <!-- Firebase Configuration moved to main JavaScript section -->
     <style>
@@ -3092,6 +3093,11 @@
                         <span>Floor Plan</span>
                     </button>
                     
+                    <button class="nav-item" onclick="openAmazonStore()">
+                        <i class="fas fa-store"></i>
+                        <span>Store</span>
+                    </button>
+                    
                     <button class="nav-item" onclick="showSection('emergency', this)">
                         <i class="fas fa-phone-alt"></i>
                         <span>Emergency</span>
@@ -3569,6 +3575,9 @@
                         <div class="header-actions">
                             <button type="button" class="btn btn-primary btn-small" onclick="addPriceAlert()">
                                 <i class="fas fa-bell"></i> Add Price Alert
+                            </button>
+                            <button type="button" class="btn btn-secondary btn-small" onclick="openAmazonStore()">
+                                <i class="fab fa-amazon"></i> Visit Store
                             </button>
                         </div>
                     </div>
@@ -9407,6 +9416,10 @@
         function openFloorPlan() {
             // Open floor plan page in new tab
             window.open('floor-plan.html', '_blank');
+        }
+
+        function openAmazonStore() {
+            window.open('amazon-store.html', '_blank');
         }
 
         // Pro Features Functions

@@ -2956,6 +2956,11 @@
                         <span>Floor Plan</span>
                     </button>
                     
+                    <button class="nav-item" onclick="openAmazonStore()">
+                        <i class="fas fa-store"></i>
+                        <span>Store</span>
+                    </button>
+                    
                     <button class="nav-item" onclick="showSection('emergency', this)">
                         <i class="fas fa-phone-alt"></i>
                         <span>Emergency</span>
@@ -3434,8 +3439,8 @@
                             <button type="button" class="btn btn-primary btn-small" onclick="addPriceAlert()">
                                 <i class="fas fa-bell"></i> Add Price Alert
                             </button>
-                            <button type="button" class="btn btn-secondary btn-small" onclick="showAmazonSearch()">
-                                <i class="fab fa-amazon"></i> Search Amazon
+                            <button type="button" class="btn btn-secondary btn-small" onclick="openAmazonStore()">
+                                <i class="fab fa-amazon"></i> Visit Store
                             </button>
                         </div>
                     </div>
@@ -9439,6 +9444,10 @@
                 loadPriceAlerts();
             }
         });
+
+        function openAmazonStore() {
+            window.open('amazon-store.html', '_blank');
+        }
 
         function showAmazonSearch() {
             if (typeof productEngine !== 'undefined') {
