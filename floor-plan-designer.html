@@ -528,12 +528,12 @@
       console.log('Adding door style:', style);
       currentTool = 'door';
       
-      // Add a door at a default position
+      // Add a door at a default position with proper dimensions
       const door = {
         x: 100,
         y: 100,
-        width: 30,
-        height: 60,
+        width: 40,  // Standard door width
+        height: 80, // Standard door height
         id: Date.now(),
         type: 'door',
         style: style
@@ -1028,7 +1028,7 @@
         ctx.fillText(text, centerX, centerY - 5);
       });
       
-      // Draw doors with perfect architectural floor plan symbols
+      // Draw doors with proper architectural floor plan symbols
       doors.forEach(door => {
         // Highlight if selected
         if (selectedElement === door) {
@@ -1039,6 +1039,11 @@
           ctx.lineWidth = 2;
         }
         
+        // Calculate door center and dimensions
+        const centerX = door.x + door.width / 2;
+        const centerY = door.y + door.height / 2;
+        const doorLength = Math.sqrt(door.width * door.width + door.height * door.height);
+        
         // Draw door opening (gap in wall) - white line to show opening
         ctx.strokeStyle = '#ffffff';
         ctx.lineWidth = 8;
@@ -1047,34 +1052,34 @@
         ctx.lineTo(door.x + door.width, door.y + door.height);
         ctx.stroke();
         
-        // Draw door swing arc (quarter circle) - perfect arc
+        // Draw door swing arc (quarter circle) - clean arc from corner
         ctx.strokeStyle = '#2d3748';
         ctx.lineWidth = 2;
         ctx.beginPath();
-        const radius = Math.min(door.width, door.height) * 0.85;
+        const radius = doorLength * 0.7;
         ctx.arc(door.x, door.y, radius, 0, Math.PI / 2);
         ctx.stroke();
         
-        // Draw door panel line (architectural symbol) - clean diagonal
+        // Draw door panel line (architectural symbol) - straight line representing door
         ctx.strokeStyle = '#2d3748';
         ctx.lineWidth = 2;
         ctx.beginPath();
+        // Draw door as a straight line from hinge to handle (80% of full length)
+        const endX = door.x + (door.width / doorLength) * doorLength * 0.8;
+        const endY = door.y + (door.height / doorLength) * doorLength * 0.8;
         ctx.moveTo(door.x, door.y);
-        ctx.lineTo(door.x + door.width, door.y + door.height);
+        ctx.lineTo(endX, endY);
         ctx.stroke();
         
         // Add dimension if toggle is on
         if (showDimensions) {
-          const distance = Math.sqrt(Math.pow(door.width, 2) + Math.pow(door.height, 2));
-          const feet = Math.floor(distance / 20);
-          const inches = Math.round((distance % 20) / 20 * 12);
+          const feet = Math.floor(doorLength / 20);
+          const inches = Math.round((doorLength % 20) / 20 * 12);
           const text = inches > 0 ? `${feet}'${inches}"` : `${feet}'`;
           
           ctx.fillStyle = '#4a5568';
           ctx.font = 'bold 10px Arial';
           ctx.textAlign = 'center';
-          const centerX = door.x + door.width / 2;
-          const centerY = door.y + door.height / 2;
           ctx.fillText(text, centerX, centerY - 10);
           ctx.textAlign = 'left';
         }
