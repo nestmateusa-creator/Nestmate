@@ -807,33 +807,16 @@
       });
     }
 
-    // Immediate plan check for when user clicks create
+    // Simple plan check for when user clicks create
     function checkUserPlanImmediate() {
       console.log('checkUserPlanImmediate called');
       console.log('Current user:', currentUser);
-      console.log('Auth current user:', auth.currentUser);
       
-      // Check if we have a current user, if not try to get it from auth
-      const user = currentUser || auth.currentUser;
-      
-      if (user) {
-        console.log('User found:', user.email);
-        currentUser = user;
-        performPlanCheck(user.email);
+      if (currentUser) {
+        console.log('User found:', currentUser.email);
+        performPlanCheck(currentUser.email);
       } else {
-        console.log('No user found, checking auth state...');
-        // Try to get the current user from auth state
-        auth.onAuthStateChanged(user => {
-          if (user) {
-            console.log('User found in auth state:', user.email);
-            currentUser = user;
-            performPlanCheck(user.email);
-          } else {
-            console.log('No user in auth state either');
-            // Don't redirect here, let the selectPlan function handle it
-            console.log('Authentication check complete - no user found');
-          }
-        });
+        console.log('No user found in immediate check');
       }
     }
 
@@ -877,25 +860,28 @@
       console.log('Floor plan page loaded');
       console.log('URL params:', window.location.search);
       
-      // Check if we're coming from signin (avoid redirect loops)
+      // Clean up URL parameters immediately
       const urlParams = new URLSearchParams(window.location.search);
       const fromSignin = urlParams.get('fromSignin');
       
       if (fromSignin) {
-        console.log('Coming from signin, clearing URL params');
-        // Clean up the URL
+        console.log('Coming from signin, cleaning URL');
         window.history.replaceState({}, document.title, window.location.pathname);
       }
       
-      // Check for existing authentication first
-      if (auth.currentUser) {
-        console.log('User already authenticated:', auth.currentUser.email);
-        currentUser = auth.currentUser;
-        checkUserPlan();
-      } else {
-        console.log('No current user, setting up auth listener');
-        checkUserPlan();
-      }
+      // Set up authentication listener
+      auth.onAuthStateChanged(user => {
+        console.log('Auth state changed:', user ? user.email : 'No user');
+        if (user) {
+          currentUser = user;
+          console.log('User authenticated:', user.email);
+          checkUserPlan();
+        } else {
+          console.log('No user authenticated');
+          currentUser = null;
+          currentUserPlan = 'unknown';
+        }
+      });
       
       canvas = document.getElementById('floorPlanCanvas');
       ctx = canvas.getContext('2d');
@@ -919,6 +905,7 @@
     function selectPlan(type) {
       console.log('selectPlan called with type:', type);
       console.log('Current user plan:', currentUserPlan);
+      console.log('Current user:', currentUser);
       
       // Remove active class from all options
       document.querySelectorAll('.plan-option').forEach(option => {
@@ -936,30 +923,25 @@
       if (type === 'upload') {
         document.getElementById('uploadSection').classList.add('active');
       } else if (type === 'create') {
-        // Check plan immediately and also trigger a fresh check
-        console.log('Create plan selected, checking user plan...');
+        console.log('Create plan selected');
         
-        // Check if user is authenticated first
-        const user = currentUser || auth.currentUser;
-        if (user) {
-          console.log('User authenticated, showing create section');
-          document.getElementById('canvasSection').classList.add('active');
-          // Also check their plan
-          checkUserPlanImmediate();
+        // Simple check - if no user, redirect to signin
+        if (!currentUser) {
+          console.log('No user found, redirecting to signin');
+          window.location.href = 'signin.html?returnUrl=' + encodeURIComponent(window.location.href);
+          return;
+        }
+        
+        // User is authenticated, show create section
+        console.log('User authenticated, showing create section');
+        document.getElementById('canvasSection').classList.add('active');
+        
+        // Check their plan
+        if (currentUserPlan === 'pro' || currentUserPlan === 'advanced-pro') {
+          console.log('User has Pro plan, access granted');
         } else {
-          console.log('No user found, checking auth state...');
-          // Wait a moment for auth state to settle
-          setTimeout(() => {
-            const userAfterWait = currentUser || auth.currentUser;
-            if (userAfterWait) {
-              console.log('User found after wait, showing create section');
-              document.getElementById('canvasSection').classList.add('active');
-              checkUserPlanImmediate();
-            } else {
-              console.log('Still no user, redirecting to signin');
-              window.location.href = 'signin.html?returnUrl=' + encodeURIComponent(window.location.href);
-            }
-          }, 500);
+          console.log('User does not have Pro plan, showing upgrade message');
+          alert('Floor plan creation is only available for Pro and Advanced Pro users. Please upgrade your plan to access this feature.');
         }
       }
     }
