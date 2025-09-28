@@ -344,7 +344,8 @@
       canvas.addEventListener('mouseout', stopDrawing);
       
       // Initialize canvas
-      clearCanvas();
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawGrid();
     };
     
     function setTool(tool) {
@@ -551,13 +552,9 @@
       });
     }
     
-    function clearCanvas() {
+    function redrawCanvas() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawGrid();
-    }
-    
-    function redrawCanvas() {
-      clearCanvas();
       drawElements();
     }
     
@@ -644,8 +641,7 @@
       doors = [];
       windows = [];
       rooms = [];
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      drawGrid();
+      redrawCanvas();
       updateStats();
     }
     
