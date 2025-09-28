@@ -997,8 +997,16 @@
                 document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
             });
             
-            // Redirect to home page
-            window.location.href = 'index.html';
+            // Show loading state
+            const button = event.target;
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging out...';
+            button.disabled = true;
+            
+            // Redirect to home page after a brief delay
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 500);
         }
 
         // Add some animation on load
