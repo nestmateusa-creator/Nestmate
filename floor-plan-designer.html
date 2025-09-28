@@ -221,6 +221,9 @@
       <i class="fas fa-drafting-compass"></i> Floor Plan Designer
     </div>
     <div class="designer-controls">
+      <button class="control-btn secondary" onclick="toggle3D()">
+        <i class="fas fa-cube"></i> 3D View
+      </button>
       <button class="control-btn secondary" onclick="clearCanvas()">
         <i class="fas fa-trash"></i> Clear
       </button>
@@ -327,6 +330,7 @@
     let rooms = [];
     let history = [];
     let historyIndex = -1;
+    let is3DMode = false;
     
     // Initialize the designer
     window.onload = function() {
@@ -356,10 +360,14 @@
       console.log('Starting to draw with tool:', currentTool);
       isDrawing = true;
       const rect = canvas.getBoundingClientRect();
-      startX = e.clientX - rect.left;
-      startY = e.clientY - rect.top;
+      const rawX = e.clientX - rect.left;
+      const rawY = e.clientY - rect.top;
       
-      console.log('Start position:', startX, startY);
+      // Snap to grid
+      startX = Math.round(rawX / 20) * 20;
+      startY = Math.round(rawY / 20) * 20;
+      
+      console.log('Start position (snapped):', startX, startY);
       saveState();
     }
     
@@ -367,8 +375,12 @@
       if (!isDrawing) return;
       
       const rect = canvas.getBoundingClientRect();
-      const currentX = e.clientX - rect.left;
-      const currentY = e.clientY - rect.top;
+      const rawX = e.clientX - rect.left;
+      const rawY = e.clientY - rect.top;
+      
+      // Snap to grid
+      const currentX = Math.round(rawX / 20) * 20;
+      const currentY = Math.round(rawY / 20) * 20;
       
       // Clear canvas and redraw everything
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -379,13 +391,22 @@
       // Draw existing elements
       drawElements();
       
-      // Draw current element being drawn
+      // Draw current element being drawn with preview
       ctx.strokeStyle = '#8b5cf6';
       ctx.lineWidth = 3;
+      ctx.setLineDash([5, 5]); // Dashed line for preview
       ctx.beginPath();
-      ctx.moveTo(startX, startY);
-      ctx.lineTo(currentX, currentY);
+      
+      if (currentTool === 'room') {
+        // Draw rectangle for room
+        ctx.rect(startX, startY, currentX - startX, currentY - startY);
+      } else {
+        // Draw line for walls, doors, windows
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(currentX, currentY);
+      }
       ctx.stroke();
+      ctx.setLineDash([]); // Reset line dash
     }
     
     function stopDrawing(e) {
@@ -394,27 +415,35 @@
       console.log('Stopping drawing with tool:', currentTool);
       isDrawing = false;
       const rect = canvas.getBoundingClientRect();
-      const endX = e.clientX - rect.left;
-      const endY = e.clientY - rect.top;
+      const rawX = e.clientX - rect.left;
+      const rawY = e.clientY - rect.top;
       
-      console.log('End position:', endX, endY);
+      // Snap to grid
+      const endX = Math.round(rawX / 20) * 20;
+      const endY = Math.round(rawY / 20) * 20;
+      
+      console.log('End position (snapped):', endX, endY);
       
       // Add element based on current tool
       switch(currentTool) {
         case 'wall':
-          walls.push({startX, startY, endX, endY, id: Date.now()});
+          walls.push({startX, startY, endX, endY, id: Date.now(), type: 'wall'});
           console.log('Added wall, total walls:', walls.length);
           break;
         case 'door':
-          doors.push({startX, startY, endX, endY, id: Date.now()});
+          const doorSize = Math.max(Math.abs(endX - startX), Math.abs(endY - startY));
+          const doorType = doorSize < 40 ? 'small' : doorSize < 80 ? 'medium' : 'large';
+          doors.push({startX, startY, endX, endY, id: Date.now(), type: 'door', size: doorType});
           console.log('Added door, total doors:', doors.length);
           break;
         case 'window':
-          windows.push({startX, startY, endX, endY, id: Date.now()});
+          const windowSize = Math.max(Math.abs(endX - startX), Math.abs(endY - startY));
+          const windowType = windowSize < 60 ? 'small' : windowSize < 120 ? 'medium' : 'large';
+          windows.push({startX, startY, endX, endY, id: Date.now(), type: 'window', size: windowType});
           console.log('Added window, total windows:', windows.length);
           break;
         case 'room':
-          rooms.push({startX, startY, endX, endY, id: Date.now()});
+          rooms.push({startX, startY, endX, endY, id: Date.now(), type: 'room'});
           console.log('Added room, total rooms:', rooms.length);
           break;
       }
@@ -445,37 +474,7 @@
     }
     
     function drawElements() {
-      // Draw walls
-      ctx.strokeStyle = '#333';
-      ctx.lineWidth = 4;
-      walls.forEach(wall => {
-        ctx.beginPath();
-        ctx.moveTo(wall.startX, wall.startY);
-        ctx.lineTo(wall.endX, wall.endY);
-        ctx.stroke();
-      });
-      
-      // Draw doors
-      ctx.strokeStyle = '#8b5cf6';
-      ctx.lineWidth = 3;
-      doors.forEach(door => {
-        ctx.beginPath();
-        ctx.moveTo(door.startX, door.startY);
-        ctx.lineTo(door.endX, door.endY);
-        ctx.stroke();
-      });
-      
-      // Draw windows
-      ctx.strokeStyle = '#06b6d4';
-      ctx.lineWidth = 3;
-      windows.forEach(window => {
-        ctx.beginPath();
-        ctx.moveTo(window.startX, window.startY);
-        ctx.lineTo(window.endX, window.endY);
-        ctx.stroke();
-      });
-      
-      // Draw rooms
+      // Draw rooms first (background)
       ctx.fillStyle = 'rgba(139, 92, 246, 0.1)';
       ctx.strokeStyle = '#8b5cf6';
       ctx.lineWidth = 2;
@@ -484,6 +483,71 @@
         ctx.rect(room.startX, room.startY, room.endX - room.startX, room.endY - room.startY);
         ctx.fill();
         ctx.stroke();
+      });
+      
+      // Draw walls
+      ctx.strokeStyle = '#333';
+      ctx.lineWidth = 6;
+      walls.forEach(wall => {
+        ctx.beginPath();
+        ctx.moveTo(wall.startX, wall.startY);
+        ctx.lineTo(wall.endX, wall.endY);
+        ctx.stroke();
+      });
+      
+      // Draw doors with different styles
+      doors.forEach(door => {
+        const centerX = (door.startX + door.endX) / 2;
+        const centerY = (door.startY + door.endY) / 2;
+        const length = Math.sqrt(Math.pow(door.endX - door.startX, 2) + Math.pow(door.endY - door.startY, 2));
+        
+        ctx.strokeStyle = '#8b5cf6';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(door.startX, door.startY);
+        ctx.lineTo(door.endX, door.endY);
+        ctx.stroke();
+        
+        // Draw door arc
+        ctx.strokeStyle = '#8b5cf6';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        const radius = length * 0.8;
+        ctx.arc(centerX, centerY, radius, 0, Math.PI / 2);
+        ctx.stroke();
+        
+        // Add door size indicator
+        ctx.fillStyle = '#8b5cf6';
+        ctx.font = '10px Arial';
+        ctx.fillText(door.size, centerX + 5, centerY - 5);
+      });
+      
+      // Draw windows with different styles
+      windows.forEach(window => {
+        const centerX = (window.startX + window.endX) / 2;
+        const centerY = (window.startY + window.endY) / 2;
+        
+        ctx.strokeStyle = '#06b6d4';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(window.startX, window.startY);
+        ctx.lineTo(window.endX, window.endY);
+        ctx.stroke();
+        
+        // Draw window cross lines
+        ctx.strokeStyle = '#06b6d4';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(centerX - 10, centerY);
+        ctx.lineTo(centerX + 10, centerY);
+        ctx.moveTo(centerX, centerY - 10);
+        ctx.lineTo(centerX, centerY + 10);
+        ctx.stroke();
+        
+        // Add window size indicator
+        ctx.fillStyle = '#06b6d4';
+        ctx.font = '10px Arial';
+        ctx.fillText(window.size, centerX + 5, centerY - 5);
       });
     }
     
@@ -598,6 +662,121 @@
     
     function hideSaveModal() {
       document.getElementById('saveModal').style.display = 'none';
+    }
+    
+    function toggle3D() {
+      is3DMode = !is3DMode;
+      console.log('3D Mode:', is3DMode ? 'ON' : 'OFF');
+      
+      if (is3DMode) {
+        draw3DView();
+      } else {
+        redrawCanvas();
+      }
+    }
+    
+    function draw3DView() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Draw 3D perspective
+      ctx.fillStyle = '#f0f0f0';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Draw rooms in 3D
+      rooms.forEach(room => {
+        const width = room.endX - room.startX;
+        const height = room.endY - room.startY;
+        
+        // Floor
+        ctx.fillStyle = 'rgba(200, 200, 200, 0.8)';
+        ctx.fillRect(room.startX, room.startY, width, height);
+        
+        // Walls in 3D perspective
+        ctx.strokeStyle = '#666';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        
+        // Front wall
+        ctx.moveTo(room.startX, room.startY);
+        ctx.lineTo(room.endX, room.startY);
+        
+        // Right wall (perspective)
+        ctx.lineTo(room.endX + 20, room.startY - 20);
+        ctx.lineTo(room.endX + 20, room.endY - 20);
+        
+        // Back wall
+        ctx.lineTo(room.startX + 20, room.endY - 20);
+        ctx.lineTo(room.startX, room.endY);
+        
+        // Left wall
+        ctx.lineTo(room.startX, room.startY);
+        ctx.stroke();
+      });
+      
+      // Draw walls in 3D
+      walls.forEach(wall => {
+        ctx.strokeStyle = '#333';
+        ctx.lineWidth = 8;
+        ctx.beginPath();
+        ctx.moveTo(wall.startX, wall.startY);
+        ctx.lineTo(wall.endX, wall.endY);
+        ctx.stroke();
+        
+        // 3D depth
+        ctx.strokeStyle = '#555';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(wall.startX + 10, wall.startY - 10);
+        ctx.lineTo(wall.endX + 10, wall.endY - 10);
+        ctx.stroke();
+      });
+      
+      // Draw doors in 3D
+      doors.forEach(door => {
+        const centerX = (door.startX + door.endX) / 2;
+        const centerY = (door.startY + door.endY) / 2;
+        
+        ctx.strokeStyle = '#8b5cf6';
+        ctx.lineWidth = 6;
+        ctx.beginPath();
+        ctx.moveTo(door.startX, door.startY);
+        ctx.lineTo(door.endX, door.endY);
+        ctx.stroke();
+        
+        // Door arc in 3D
+        ctx.strokeStyle = '#8b5cf6';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        const length = Math.sqrt(Math.pow(door.endX - door.startX, 2) + Math.pow(door.endY - door.startY, 2));
+        const radius = length * 0.8;
+        ctx.arc(centerX, centerY, radius, 0, Math.PI / 2);
+        ctx.stroke();
+      });
+      
+      // Draw windows in 3D
+      windows.forEach(window => {
+        const centerX = (window.startX + window.endX) / 2;
+        const centerY = (window.startY + window.endY) / 2;
+        
+        ctx.strokeStyle = '#06b6d4';
+        ctx.lineWidth = 6;
+        ctx.beginPath();
+        ctx.moveTo(window.startX, window.startY);
+        ctx.lineTo(window.endX, window.endY);
+        ctx.stroke();
+        
+        // Window frame in 3D
+        ctx.strokeStyle = '#06b6d4';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.rect(centerX - 15, centerY - 15, 30, 30);
+        ctx.stroke();
+      });
+      
+      // Add 3D title
+      ctx.fillStyle = '#333';
+      ctx.font = 'bold 24px Arial';
+      ctx.fillText('3D VIEW', 20, 40);
     }
     
     function saveFloorPlan() {
