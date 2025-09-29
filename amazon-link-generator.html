@@ -429,6 +429,16 @@
                 <h3>Homepage Link</h3>
                 <p>Generate your affiliate homepage link</p>
             </div>
+            <div class="quick-action" onclick="showBulkGenerator()">
+                <i class="fas fa-list"></i>
+                <h3>Bulk Generator</h3>
+                <p>Generate multiple affiliate links at once</p>
+            </div>
+            <div class="quick-action" onclick="showProductImporter()">
+                <i class="fas fa-upload"></i>
+                <h3>Import Products</h3>
+                <p>Import product list from CSV or text</p>
+            </div>
         </div>
 
         <!-- Main Content -->
@@ -551,8 +561,103 @@
             </div>
         </div>
 
+        <!-- Bulk Link Generator -->
+        <div class="history-card" id="bulkGenerator" style="display: none;">
+            <h2 class="card-title">
+                <i class="fas fa-list"></i>
+                Bulk Affiliate Link Generator
+            </h2>
+
+            <div class="form-group">
+                <label for="bulkProducts">Product List (One per line)</label>
+                <textarea id="bulkProducts" placeholder="Enter products, one per line. Examples:&#10;Smart Home Hub&#10;B08N5WRWNW&#10;Robot Vacuum Cleaner&#10;Kitchen Appliances&#10;Home Security Camera" rows="10"></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="bulkLinkType">Default Link Type</label>
+                    <select id="bulkLinkType">
+                        <option value="search">Search Link</option>
+                        <option value="product">Product Link (ASIN)</option>
+                        <option value="category">Category Link</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="bulkCampaign">Campaign ID (Optional)</label>
+                    <input type="text" id="bulkCampaign" placeholder="e.g., bulk-campaign-2024">
+                </div>
+            </div>
+
+            <div style="text-align: center; margin: 20px 0;">
+                <button class="btn" onclick="generateBulkLinks()">
+                    <i class="fas fa-magic"></i>
+                    Generate All Links
+                </button>
+                <button class="btn btn-secondary" onclick="clearBulkForm()">
+                    <i class="fas fa-eraser"></i>
+                    Clear Form
+                </button>
+            </div>
+
+            <div id="bulkResults" style="display: none;">
+                <h3 style="margin-bottom: 15px;">Generated Links Preview</h3>
+                <div id="bulkPreview" style="background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 15px; margin-bottom: 20px; max-height: 300px; overflow-y: auto;"></div>
+                
+                <div style="text-align: center;">
+                    <button class="btn btn-success" onclick="downloadBulkLinks('csv')">
+                        <i class="fas fa-file-csv"></i>
+                        Download CSV
+                    </button>
+                    <button class="btn btn-success" onclick="downloadBulkLinks('txt')">
+                        <i class="fas fa-file-alt"></i>
+                        Download Text
+                    </button>
+                    <button class="btn btn-success" onclick="downloadBulkLinks('json')">
+                        <i class="fas fa-file-code"></i>
+                        Download JSON
+                    </button>
+                    <button class="btn btn-secondary" onclick="copyBulkLinks()">
+                        <i class="fas fa-copy"></i>
+                        Copy All Links
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Importer -->
+        <div class="history-card" id="productImporter" style="display: none;">
+            <h2 class="card-title">
+                <i class="fas fa-upload"></i>
+                Import Product List
+            </h2>
+
+            <div class="form-group">
+                <label for="fileInput">Upload CSV or Text File</label>
+                <input type="file" id="fileInput" accept=".csv,.txt" onchange="handleFileUpload()">
+                <small style="color: #666; margin-top: 5px; display: block;">
+                    Supported formats: CSV, TXT. One product per line.
+                </small>
+            </div>
+
+            <div class="form-group">
+                <label for="importPreview">Preview Imported Products</label>
+                <textarea id="importPreview" rows="8" readonly placeholder="Upload a file to see preview here..."></textarea>
+            </div>
+
+            <div style="text-align: center; margin: 20px 0;">
+                <button class="btn" onclick="processImportedProducts()" id="processBtn" disabled>
+                    <i class="fas fa-cogs"></i>
+                    Process Imported Products
+                </button>
+                <button class="btn btn-secondary" onclick="clearImport()">
+                    <i class="fas fa-eraser"></i>
+                    Clear Import
+                </button>
+            </div>
+        </div>
+
         <!-- Link History -->
-        <div class="history-card">
+        <div class="history-card" id="linkHistorySection">
             <h2 class="card-title">
                 <i class="fas fa-history"></i>
                 Generated Links History
@@ -586,6 +691,8 @@
         // Global variables
         let currentGeneratedLink = '';
         let linkHistory = JSON.parse(localStorage.getItem('affiliateLinkHistory') || '[]');
+        let bulkGeneratedLinks = [];
+        let importedProducts = [];
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
@@ -922,6 +1029,216 @@
         function hideMessages() {
             document.getElementById('successMessage').style.display = 'none';
             document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        // Bulk Generator Functions
+        function showBulkGenerator() {
+            hideAllSections();
+            document.getElementById('bulkGenerator').style.display = 'block';
+            document.getElementById('bulkProducts').focus();
+        }
+
+        function showProductImporter() {
+            hideAllSections();
+            document.getElementById('productImporter').style.display = 'block';
+        }
+
+        function hideAllSections() {
+            document.getElementById('bulkGenerator').style.display = 'none';
+            document.getElementById('productImporter').style.display = 'none';
+            document.getElementById('linkHistorySection').style.display = 'none';
+        }
+
+        function generateBulkLinks() {
+            const productsText = document.getElementById('bulkProducts').value.trim();
+            const linkType = document.getElementById('bulkLinkType').value;
+            const campaignId = document.getElementById('bulkCampaign').value.trim();
+            
+            if (!productsText) {
+                showError('Please enter at least one product.');
+                return;
+            }
+
+            const products = productsText.split('\n').filter(p => p.trim());
+            bulkGeneratedLinks = [];
+
+            products.forEach((product, index) => {
+                const trimmedProduct = product.trim();
+                if (!trimmedProduct) return;
+
+                let url = '';
+                let title = '';
+                let type = linkType;
+
+                // Auto-detect if it's an ASIN (10 characters, alphanumeric)
+                if (/^[A-Z0-9]{10}$/i.test(trimmedProduct)) {
+                    url = generateProductLink(trimmedProduct, campaignId, '');
+                    title = `Product: ${trimmedProduct}`;
+                    type = 'product';
+                } else {
+                    switch(linkType) {
+                        case 'search':
+                            url = generateSearchLink(trimmedProduct, campaignId, '');
+                            title = `Search: "${trimmedProduct}"`;
+                            break;
+                        case 'category':
+                            url = generateCategoryLink(trimmedProduct, campaignId, '');
+                            title = `Category: ${trimmedProduct}`;
+                            break;
+                        default:
+                            url = generateSearchLink(trimmedProduct, campaignId, '');
+                            title = `Search: "${trimmedProduct}"`;
+                    }
+                }
+
+                bulkGeneratedLinks.push({
+                    id: Date.now() + index,
+                    product: trimmedProduct,
+                    title: title,
+                    url: url,
+                    type: type,
+                    timestamp: new Date().toISOString()
+                });
+            });
+
+            displayBulkResults();
+            showSuccess(`Generated ${bulkGeneratedLinks.length} affiliate links!`);
+        }
+
+        function displayBulkResults() {
+            const preview = document.getElementById('bulkPreview');
+            const results = document.getElementById('bulkResults');
+            
+            preview.innerHTML = bulkGeneratedLinks.map(link => `
+                <div style="margin-bottom: 10px; padding: 10px; background: white; border-radius: 5px; border-left: 4px solid #ff9900;">
+                    <div style="font-weight: 600; color: #333; margin-bottom: 5px;">${link.title}</div>
+                    <div style="font-size: 12px; color: #666; font-family: 'Courier New', monospace; word-break: break-all;">${link.url}</div>
+                </div>
+            `).join('');
+            
+            results.style.display = 'block';
+        }
+
+        function downloadBulkLinks(format) {
+            if (bulkGeneratedLinks.length === 0) {
+                showError('No links to download. Generate links first.');
+                return;
+            }
+
+            let content = '';
+            let filename = '';
+            let mimeType = '';
+
+            switch(format) {
+                case 'csv':
+                    content = 'Product,Title,URL,Type,Generated\n';
+                    content += bulkGeneratedLinks.map(link => 
+                        `"${link.product}","${link.title}","${link.url}","${link.type}","${new Date(link.timestamp).toLocaleString()}"`
+                    ).join('\n');
+                    filename = `amazon-affiliate-links-${new Date().toISOString().split('T')[0]}.csv`;
+                    mimeType = 'text/csv';
+                    break;
+
+                case 'txt':
+                    content = `Amazon Affiliate Links Generated on ${new Date().toLocaleString()}\n`;
+                    content += `Affiliate Tag: ${AFFILIATE_TAG}\n`;
+                    content += `Total Links: ${bulkGeneratedLinks.length}\n\n`;
+                    content += bulkGeneratedLinks.map(link => 
+                        `${link.title}\n${link.url}\n${'-'.repeat(50)}`
+                    ).join('\n\n');
+                    filename = `amazon-affiliate-links-${new Date().toISOString().split('T')[0]}.txt`;
+                    mimeType = 'text/plain';
+                    break;
+
+                case 'json':
+                    content = JSON.stringify({
+                        generated: new Date().toISOString(),
+                        affiliateTag: AFFILIATE_TAG,
+                        totalLinks: bulkGeneratedLinks.length,
+                        links: bulkGeneratedLinks
+                    }, null, 2);
+                    filename = `amazon-affiliate-links-${new Date().toISOString().split('T')[0]}.json`;
+                    mimeType = 'application/json';
+                    break;
+            }
+
+            downloadFile(content, filename, mimeType);
+            showSuccess(`Downloaded ${bulkGeneratedLinks.length} links as ${format.toUpperCase()}!`);
+        }
+
+        function copyBulkLinks() {
+            if (bulkGeneratedLinks.length === 0) {
+                showError('No links to copy. Generate links first.');
+                return;
+            }
+
+            const textContent = bulkGeneratedLinks.map(link => `${link.title}\n${link.url}`).join('\n\n');
+            
+            navigator.clipboard.writeText(textContent).then(() => {
+                showSuccess(`Copied ${bulkGeneratedLinks.length} links to clipboard!`);
+            }).catch(() => {
+                showError('Failed to copy links. Please try again.');
+            });
+        }
+
+        function clearBulkForm() {
+            document.getElementById('bulkProducts').value = '';
+            document.getElementById('bulkCampaign').value = '';
+            document.getElementById('bulkResults').style.display = 'none';
+            bulkGeneratedLinks = [];
+        }
+
+        // File Import Functions
+        function handleFileUpload() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = e.target.result;
+                const lines = content.split('\n').filter(line => line.trim());
+                
+                importedProducts = lines.map(line => line.trim()).filter(line => line);
+                
+                document.getElementById('importPreview').value = importedProducts.join('\n');
+                document.getElementById('processBtn').disabled = false;
+                
+                showSuccess(`Imported ${importedProducts.length} products from file.`);
+            };
+            
+            reader.readAsText(file);
+        }
+
+        function processImportedProducts() {
+            if (importedProducts.length === 0) {
+                showError('No products to process. Import a file first.');
+                return;
+            }
+
+            // Move imported products to bulk generator
+            document.getElementById('bulkProducts').value = importedProducts.join('\n');
+            showBulkGenerator();
+            clearImport();
+        }
+
+        function clearImport() {
+            document.getElementById('fileInput').value = '';
+            document.getElementById('importPreview').value = '';
+            document.getElementById('processBtn').disabled = true;
+            importedProducts = [];
+        }
+
+        // Utility Functions
+        function downloadFile(content, filename, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            link.click();
+            URL.revokeObjectURL(url);
         }
     </script>
 </body>
