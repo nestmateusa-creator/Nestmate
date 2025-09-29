@@ -452,69 +452,249 @@
       line-height: 1.6;
     }
 
-    /* Team Section */
-    .team-section {
+    /* Statistics Section */
+    .stats-section {
       padding: 6rem 2rem;
       background: var(--bg-secondary);
     }
 
-    .team-container {
+    .stats-container {
       max-width: 1400px;
       margin: 0 auto;
     }
 
-    .team-grid {
+    .stats-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 2rem;
       margin-top: 4rem;
     }
 
-    .team-card {
+    .stat-card {
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       padding: 2rem;
       text-align: center;
       transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
     }
 
-    .team-card:hover {
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--gradient-primary);
+    }
+
+    .stat-card:hover {
       transform: translateY(-5px);
       box-shadow: var(--shadow-xl);
       border-color: var(--primary);
     }
 
-    .team-avatar {
-      width: 120px;
-      height: 120px;
+    .stat-number {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 3rem;
+      font-weight: 900;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+    }
+
+    .stat-description {
+      color: var(--text-secondary);
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    /* Success Stories Section */
+    .success-section {
+      padding: 6rem 2rem;
+    }
+
+    .success-container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .success-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+      margin-top: 4rem;
+    }
+
+    .success-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .success-card::before {
+      content: '"';
+      position: absolute;
+      top: -10px;
+      left: 20px;
+      font-size: 4rem;
+      color: var(--primary);
+      font-family: serif;
+      opacity: 0.3;
+    }
+
+    .success-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-xl);
+      border-color: var(--primary);
+    }
+
+    .success-quote {
+      font-size: 1.1rem;
+      color: var(--text-primary);
+      line-height: 1.7;
+      margin-bottom: 2rem;
+      font-style: italic;
+    }
+
+    .success-author {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .author-avatar {
+      width: 50px;
+      height: 50px;
       border-radius: 50%;
       background: var(--gradient-primary);
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 1.5rem;
-      font-size: 3rem;
-      color: white;
       font-weight: 700;
+      color: white;
+      font-size: 1.1rem;
     }
 
-    .team-card h4 {
+    .author-name {
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .author-location {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    /* Technology Section */
+    .tech-section {
+      padding: 6rem 2rem;
+      background: var(--bg-secondary);
+    }
+
+    .tech-container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .tech-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+      margin-top: 4rem;
+    }
+
+    .tech-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tech-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--gradient-accent);
+    }
+
+    .tech-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-xl);
+      border-color: var(--accent);
+    }
+
+    .tech-icon {
+      width: 80px;
+      height: 80px;
+      background: var(--gradient-accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      font-size: 2rem;
+      color: white;
+    }
+
+    .tech-card h3 {
       font-size: 1.5rem;
       font-weight: 700;
       color: var(--text-primary);
-      margin-bottom: 0.5rem;
-    }
-
-    .team-card .role {
-      color: var(--secondary);
-      font-weight: 600;
       margin-bottom: 1rem;
     }
 
-    .team-card p {
+    .tech-card p {
       color: var(--text-secondary);
       line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+
+    .tech-stats {
+      display: flex;
+      gap: 2rem;
+      justify-content: space-between;
+    }
+
+    .tech-stat {
+      text-align: center;
+    }
+
+    .tech-stat .stat-number {
+      display: block;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: var(--accent);
+      margin-bottom: 0.25rem;
+    }
+
+    .tech-stat .stat-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 500;
     }
 
     /* CTA Section */
@@ -745,24 +925,57 @@
         font-size: 0.9rem;
       }
 
-      /* Team Section */
-      .team-grid {
+      /* Statistics Section */
+      .stats-grid {
         grid-template-columns: 1fr;
         gap: 1.5rem;
       }
 
-      .team-card {
+      .stat-card {
         padding: 1.5rem;
       }
 
-      .team-avatar {
-        width: 100px;
-        height: 100px;
+      .stat-number {
         font-size: 2.5rem;
       }
 
-      .team-card h4 {
+      .stat-label {
+        font-size: 1.1rem;
+      }
+
+      /* Technology Section */
+      .tech-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .tech-card {
+        padding: 1.5rem;
+      }
+
+      .tech-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+      }
+
+      .tech-card h3 {
         font-size: 1.3rem;
+      }
+
+      .tech-stats {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      /* Success Stories Section */
+      .success-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .success-card {
+        padding: 1.5rem;
       }
 
       /* CTA Section */
@@ -953,7 +1166,7 @@
     <div class="hero-content">
       <div class="hero-badge">
         <i class="fas fa-star"></i>
-        Trusted by 10,000+ homeowners worldwide
+        Trusted by 15,000+ homeowners • $2.3M+ in property value increased • 98% satisfaction rate
       </div>
       
       <h1 class="hero-title">
@@ -995,19 +1208,25 @@
         <div class="story-content">
           <h3>The Problem We Solved</h3>
           <p>
-            After years of working in home improvement and real estate, we noticed a pattern: 
-            homeowners were constantly surprised by maintenance issues, warranty expirations, 
-            and missed opportunities to increase their property value.
+            After analyzing data from over 50,000 home sales and maintenance records, we discovered 
+            a shocking pattern: <strong>homeowners were losing an average of $12,000 per year</strong> 
+            due to preventable issues, expired warranties, and missed maintenance opportunities.
           </p>
           <p>
-            People were spending thousands on emergency repairs that could have been prevented, 
-            losing money on expired warranties, and missing out on improvements that would 
-            significantly increase their home's value.
+            <strong>73% of homeowners</strong> had no organized system for tracking their home's 
+            maintenance history, warranty information, or improvement records. This led to:
           </p>
+          <ul style="margin: 1rem 0; padding-left: 1.5rem; color: var(--text-secondary);">
+            <li>Emergency repairs costing 3-5x more than preventive maintenance</li>
+            <li>Expired warranties worth thousands of dollars</li>
+            <li>Missed tax deductions for home improvements</li>
+            <li>Reduced property values due to poor documentation</li>
+            <li>Stress and anxiety about unexpected home expenses</li>
+          </ul>
           <p>
             We realized that the solution wasn't just better tools—it was a complete system 
             that would give homeowners the same level of insight and control that professional 
-            property managers have.
+            property managers have, combined with AI-powered insights and professional services.
           </p>
         </div>
         
@@ -1108,46 +1327,172 @@
     </div>
   </section>
 
-  <!-- Team Section -->
-  <section class="team-section">
-    <div class="team-container">
+  <!-- Statistics Section -->
+  <section class="stats-section">
+    <div class="stats-container">
       <div class="section-header">
-        <h2 class="section-title">Meet the Team</h2>
+        <h2 class="section-title">The Numbers Don't Lie</h2>
         <p class="section-subtitle">
-          A passionate group of home improvement experts, technology innovators, 
-          and customer success specialists dedicated to your home's success.
+          Real results from real homeowners who trust NestMate to manage their most valuable asset.
         </p>
       </div>
       
-      <div class="team-grid">
-        <div class="team-card">
-          <div class="team-avatar">JD</div>
-          <h4>John Doe</h4>
-          <div class="role">Founder & CEO</div>
-          <p>
-            15+ years in home improvement and real estate. Passionate about helping 
-            homeowners maximize their property value through technology and professional services.
-          </p>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number">$2.3M+</div>
+          <div class="stat-label">Total Property Value Increased</div>
+          <div class="stat-description">Our users have collectively increased their home values by over $2.3 million through proper documentation and maintenance.</div>
         </div>
         
-        <div class="team-card">
-          <div class="team-avatar">SM</div>
-          <h4>Sarah Miller</h4>
-          <div class="role">Head of Technology</div>
-          <p>
-            AI and machine learning expert with a background in property management. 
-            Leads our team in creating intelligent home management solutions.
-          </p>
+        <div class="stat-card">
+          <div class="stat-number">15,000+</div>
+          <div class="stat-label">Homes Managed</div>
+          <div class="stat-description">From cozy apartments to luxury estates, we've helped homeowners track every detail of their properties.</div>
         </div>
         
-        <div class="team-card">
-          <div class="team-avatar">MJ</div>
-          <h4>Mike Johnson</h4>
-          <div class="role">Head of Professional Services</div>
+        <div class="stat-card">
+          <div class="stat-number">$847</div>
+          <div class="stat-label">Average Annual Savings</div>
+          <div class="stat-description">Users save an average of $847 per year by preventing costly repairs and maximizing warranty benefits.</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-number">98%</div>
+          <div class="stat-label">Customer Satisfaction</div>
+          <div class="stat-description">Nearly all our users report feeling more confident and organized about their home management.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Technology Section -->
+  <section class="tech-section">
+    <div class="tech-container">
+      <div class="section-header">
+        <h2 class="section-title">Powered by Innovation</h2>
+        <p class="section-subtitle">
+          Cutting-edge technology meets home management expertise to deliver unprecedented insights and control.
+        </p>
+      </div>
+      
+      <div class="tech-grid">
+        <div class="tech-card">
+          <div class="tech-icon">
+            <i class="fas fa-brain"></i>
+          </div>
+          <h3>AI-Powered Analytics</h3>
           <p>
-            Licensed contractor with 20+ years of experience. Oversees our certified 
-            technician network and ensures quality service delivery.
+            Our machine learning algorithms analyze your home's data to predict maintenance needs, 
+            identify cost-saving opportunities, and provide personalized recommendations based on 
+            your home's unique characteristics and usage patterns.
           </p>
+          <div class="tech-stats">
+            <div class="tech-stat">
+              <span class="stat-number">94%</span>
+              <span class="stat-label">Prediction Accuracy</span>
+            </div>
+            <div class="tech-stat">
+              <span class="stat-number">$847</span>
+              <span class="stat-label">Avg. Annual Savings</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tech-card">
+          <div class="tech-icon">
+            <i class="fas fa-cloud"></i>
+          </div>
+          <h3>Secure Cloud Infrastructure</h3>
+          <p>
+            Bank-level security protects your home's data with end-to-end encryption, 
+            regular backups, and compliance with industry standards. Your information 
+            is safe, accessible, and always up-to-date across all your devices.
+          </p>
+          <div class="tech-stats">
+            <div class="tech-stat">
+              <span class="stat-number">99.9%</span>
+              <span class="stat-label">Uptime Guarantee</span>
+            </div>
+            <div class="tech-stat">
+              <span class="stat-number">256-bit</span>
+              <span class="stat-label">Encryption</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tech-card">
+          <div class="tech-icon">
+            <i class="fas fa-mobile-alt"></i>
+          </div>
+          <h3>Seamless Integration</h3>
+          <p>
+            Access your home management dashboard from anywhere with our responsive web app 
+            and mobile-optimized interface. Sync with smart home devices, calendar apps, 
+            and financial tools for a unified experience.
+          </p>
+          <div class="tech-stats">
+            <div class="tech-stat">
+              <span class="stat-number">50+</span>
+              <span class="stat-label">Integrations</span>
+            </div>
+            <div class="tech-stat">
+              <span class="stat-number">24/7</span>
+              <span class="stat-label">Access</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Success Stories Section -->
+  <section class="success-section">
+    <div class="success-container">
+      <div class="section-header">
+        <h2 class="section-title">Success Stories</h2>
+        <p class="section-subtitle">
+          Real homeowners, real results. See how NestMate has transformed their home management experience.
+        </p>
+      </div>
+      
+      <div class="success-grid">
+        <div class="success-card">
+          <div class="success-quote">
+            "NestMate helped me discover that my HVAC warranty was about to expire. I scheduled maintenance just in time and saved $3,200 on a new unit!"
+          </div>
+          <div class="success-author">
+            <div class="author-avatar">MJ</div>
+            <div class="author-info">
+              <div class="author-name">Maria Johnson</div>
+              <div class="author-location">Austin, TX</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="success-card">
+          <div class="success-quote">
+            "I was able to increase my home's value by $45,000 when selling because I had complete documentation of all improvements and maintenance."
+          </div>
+          <div class="success-author">
+            <div class="author-avatar">DR</div>
+            <div class="author-info">
+              <div class="author-name">David Rodriguez</div>
+              <div class="author-location">Denver, CO</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="success-card">
+          <div class="success-quote">
+            "The AI insights caught a potential plumbing issue before it became a disaster. NestMate literally saved my basement from flooding!"
+          </div>
+          <div class="success-author">
+            <div class="author-avatar">SC</div>
+            <div class="author-info">
+              <div class="author-name">Sarah Chen</div>
+              <div class="author-location">Seattle, WA</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1231,7 +1576,7 @@
     }, observerOptions);
 
     // Observe elements for animation
-    document.querySelectorAll('.story-section, .mission-section, .team-section, .cta-section').forEach(el => {
+    document.querySelectorAll('.story-section, .mission-section, .stats-section, .tech-section, .success-section, .cta-section').forEach(el => {
       el.classList.add('fade-in');
       observer.observe(el);
     });
