@@ -2684,6 +2684,84 @@
             font-style: italic;
         }
 
+        .single-package-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .square-footage-slider {
+            margin: 25px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+        }
+
+        .square-footage-slider label {
+            display: block;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .slider-container {
+            position: relative;
+        }
+
+        #sqftSlider {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+            margin-bottom: 10px;
+        }
+
+        #sqftSlider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #ff9900;
+            cursor: pointer;
+            border: 3px solid white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        #sqftSlider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(255, 153, 0, 0.4);
+        }
+
+        #sqftSlider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #ff9900;
+            cursor: pointer;
+            border: 3px solid white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        #sqftValue {
+            color: #ff9900;
+            font-weight: 700;
+        }
+
         .package-features ul {
             list-style: none;
             margin-bottom: 25px;
@@ -3895,63 +3973,43 @@
                     </div>
 
                     <div class="service-packages">
-                        <h3>Service Packages</h3>
-                        <div class="packages-grid">
-                            <div class="package-card basic-package">
+                        <h3>Professional Home Intelligence Service</h3>
+                        <div class="single-package-container">
+                            <div class="package-card premium-package featured">
+                                <div class="package-badge">Premium Service</div>
                                 <div class="package-header">
-                                    <h4>Basic Data Collection</h4>
-                                    <div class="package-price" id="basicPrice">Starting at $75</div>
-                                    <div class="price-note">Price based on home size</div>
+                                    <h4>Complete Home Intelligence Assessment</h4>
+                                    <div class="package-price" id="dynamicPrice">$0.00</div>
+                                    <div class="price-note">Price calculated based on your home size</div>
                                 </div>
+                                
+                                <div class="square-footage-slider">
+                                    <label for="sqftSlider">Home Square Footage: <span id="sqftValue">1,500</span> sq ft</label>
+                                    <div class="slider-container">
+                                        <input type="range" id="sqftSlider" min="500" max="8000" value="1500" step="50" oninput="updatePriceFromSlider()">
+                                        <div class="slider-labels">
+                                            <span>500 sq ft</span>
+                                            <span>8,000 sq ft</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
                                 <div class="package-features">
                                     <ul>
-                                        <li><i class="fas fa-check"></i> Home measurements & square footage</li>
-                                        <li><i class="fas fa-check"></i> Room-by-room inventory</li>
-                                        <li><i class="fas fa-check"></i> Basic appliance documentation</li>
-                                        <li><i class="fas fa-check"></i> Window & door measurements</li>
-                                        <li><i class="fas fa-check"></i> 2-hour service window</li>
-                                    </ul>
-                                </div>
-                                <button class="btn btn-outline" onclick="selectPackage('basic')">Select Package</button>
-                            </div>
-
-                            <div class="package-card pro-package featured">
-                                <div class="package-badge">Most Popular</div>
-                                <div class="package-header">
-                                    <h4>Complete Home Assessment</h4>
-                                    <div class="package-price" id="proPrice">Starting at $150</div>
-                                    <div class="price-note">Price based on home size</div>
-                                </div>
-                                <div class="package-features">
-                                    <ul>
-                                        <li><i class="fas fa-check"></i> Everything in Basic package</li>
-                                        <li><i class="fas fa-check"></i> HVAC system documentation</li>
-                                        <li><i class="fas fa-check"></i> Electrical panel mapping</li>
-                                        <li><i class="fas fa-check"></i> Plumbing system overview</li>
-                                        <li><i class="fas fa-check"></i> Smart home device setup</li>
-                                        <li><i class="fas fa-check"></i> 4-hour service window</li>
-                                    </ul>
-                                </div>
-                                <button class="btn btn-primary" onclick="selectPackage('pro')">Select Package</button>
-                            </div>
-
-                            <div class="package-card premium-package">
-                                <div class="package-header">
-                                    <h4>Premium Home Intelligence</h4>
-                                    <div class="package-price" id="premiumPrice">Starting at $250</div>
-                                    <div class="price-note">Price based on home size</div>
-                                </div>
-                                <div class="package-features">
-                                    <ul>
-                                        <li><i class="fas fa-check"></i> Everything in Complete package</li>
-                                        <li><i class="fas fa-check"></i> Energy efficiency audit</li>
+                                        <li><i class="fas fa-check"></i> Complete home measurements & documentation</li>
+                                        <li><i class="fas fa-check"></i> Room-by-room detailed inventory</li>
+                                        <li><i class="fas fa-check"></i> HVAC system analysis & documentation</li>
+                                        <li><i class="fas fa-check"></i> Electrical panel mapping & assessment</li>
+                                        <li><i class="fas fa-check"></i> Plumbing system overview & inspection</li>
+                                        <li><i class="fas fa-check"></i> Smart home device setup & integration</li>
+                                        <li><i class="fas fa-check"></i> Energy efficiency audit & recommendations</li>
                                         <li><i class="fas fa-check"></i> Security system assessment</li>
                                         <li><i class="fas fa-check"></i> Maintenance schedule creation</li>
                                         <li><i class="fas fa-check"></i> Digital floor plan creation</li>
-                                        <li><i class="fas fa-check"></i> 6-hour service window</li>
+                                        <li><i class="fas fa-check"></i> 6-hour comprehensive service window</li>
                                     </ul>
                                 </div>
-                                <button class="btn btn-outline" onclick="selectPackage('premium')">Select Package</button>
+                                <button class="btn btn-primary" onclick="selectPackage('premium')">Book This Service</button>
                             </div>
                         </div>
                     </div>
@@ -5031,6 +5089,10 @@
             try {
                 initializeDashboard();
                 loadServiceHistory();
+                // Initialize the slider price
+                setTimeout(() => {
+                    updatePriceFromSlider();
+                }, 500);
                 loadUserData();
                 generateCalendar();
                 loadEssentialTasks();
@@ -9977,17 +10039,37 @@
         }
 
         function selectPackage(packageType) {
-            // This would typically open the booking modal with the package pre-selected
+            // Get the current square footage from the slider
+            const squareFootage = parseInt(document.getElementById('sqftSlider').value);
+            
+            // Open the booking modal with the package pre-selected
             bookTechnicianService();
             
-            // Pre-select the package
+            // Pre-select the package and square footage
             setTimeout(() => {
                 const packageSelect = document.getElementById('servicePackage');
-                if (packageSelect) {
+                const sqftInput = document.getElementById('homeSquareFootage');
+                if (packageSelect && sqftInput) {
                     packageSelect.value = packageType;
+                    sqftInput.value = squareFootage;
                     updatePackagePrice();
                 }
             }, 100);
+        }
+
+        function updatePriceFromSlider() {
+            const slider = document.getElementById('sqftSlider');
+            const sqftValue = document.getElementById('sqftValue');
+            const dynamicPrice = document.getElementById('dynamicPrice');
+            
+            if (slider && sqftValue && dynamicPrice) {
+                const squareFootage = parseInt(slider.value);
+                sqftValue.textContent = squareFootage.toLocaleString();
+                
+                // Calculate price using premium multiplier (2.0x)
+                const price = calculateServicePrice('premium', squareFootage);
+                dynamicPrice.textContent = `$${price.toFixed(2)}`;
+            }
         }
 
         function updatePackagePrice() {
@@ -9997,10 +10079,7 @@
             const calculatedPrice = document.getElementById('calculatedPrice');
             
             if (packageType && squareFootage && squareFootage >= 300) {
-                const basePrice = squareFootage * 0.25; // $0.25 per sq ft
-                const packageMultiplier = getPackageMultiplier(packageType);
-                const totalPrice = basePrice * packageMultiplier;
-                
+                const totalPrice = calculateServicePrice(packageType, squareFootage);
                 calculatedPrice.textContent = `$${totalPrice.toFixed(2)}`;
                 priceDisplay.style.display = 'block';
             } else {
