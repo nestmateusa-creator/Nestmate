@@ -3,170 +3,1286 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>About Me | NestMate</title>
-  <meta name="description" content="About NestMate: home automation, smart home, interior design, home improvement, DIY, technology, innovation, eco-friendly, security, comfort, modern living, connected devices, home gadgets, lifestyle, inspiration, renovation, decor, energy efficiency, smart appliances, home office, family, wellness, productivity, creativity, trends, solutions, expert tips, reviews, guides, shopping, Amazon, affiliate, best products, home essentials, organization, cleaning, outdoor living, garden, kitchen, bedroom, bathroom, living room, garage, entryway, kids, pets, entertainment, lighting, sustainability, future, smart tech, voice assistants, Alexa, Google Home, Apple HomeKit, automation, routines, smart plugs, thermostats, cameras, sensors, wireless, WiFi, Bluetooth, innovation, comfort, safety, convenience, value, quality, customer service, support, experience, trusted, reliable, reviews, ratings, deals, discounts, offers, exclusive, trending, new arrivals, top picks, must-haves, home solutions, expert advice, how-to, tutorials, blog, news, updates, community, feedback, testimonials, satisfaction, guarantee, warranty, support, help, contact, connect, follow, subscribe, join, share, discover, explore, learn, grow, transform, upgrade, enhance, personalize, customize, optimize, maximize, simplify, organize, beautify, secure, automate, modernize, smarten, green, save, invest, enjoy, relax, live, love, home.">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;500;400&display=swap" rel="stylesheet">
+  <title>About NestMate — The Future of Home Management</title>
+  <meta name="description" content="Learn about NestMate - the complete home management system that helps homeowners track every detail, increase property value, and maintain their homes with AI-powered insights and professional services.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body {
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --primary-light: #818cf8;
+      --secondary: #f59e0b;
+      --accent: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --success: #10b981;
+      
+      --bg-primary: #0f0f23;
+      --bg-secondary: #1a1a2e;
+      --bg-tertiary: #16213e;
+      --bg-card: #1e293b;
+      --bg-glass: rgba(30, 41, 59, 0.8);
+      
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      
+      --border: #334155;
+      --border-light: #475569;
+      
+      --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+      --gradient-secondary: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+      --gradient-accent: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      --gradient-bg: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+      
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.3);
+      
+      --radius: 12px;
+      --radius-lg: 20px;
+      --radius-xl: 32px;
+    }
+
+    * {
       margin: 0;
-      font-family: 'Montserrat', Arial, sans-serif;
-      background: linear-gradient(135deg, #f7fafc 0%, #e0e7ff 100%);
-      color: #1a202c;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Animated Background */
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background: var(--gradient-bg);
+    }
+
+    .bg-animation::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 40% 40%, rgba(217, 70, 239, 0.1) 0%, transparent 50%);
+      animation: float 20s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      33% { transform: translateY(-20px) rotate(1deg); }
+      66% { transform: translateY(10px) rotate(-1deg); }
+    }
+
+    /* Glass Morphism Navigation */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      transition: all 0.3s ease;
+    }
+
+    .navbar.scrolled {
+      background: rgba(15, 15, 35, 0.95);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .nav-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--gradient-primary);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.2rem;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .nav-links a:hover {
+      color: var(--text-primary);
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--gradient-primary);
+      transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: var(--radius);
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary {
+      background: var(--gradient-primary);
+      color: white;
+      box-shadow: var(--shadow-glow);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-card);
+      border-color: var(--primary);
+    }
+
+    /* Hero Section */
+    .hero {
       min-height: 100vh;
-    }
-    .about-container {
-      max-width: 900px;
-      margin: 48px auto;
-      background: #fff;
-      border-radius: 18px;
-      box-shadow: 0 8px 32px #2563eb22;
-      padding: 48px 36px 36px 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       text-align: center;
+      padding: 0 2rem;
+      position: relative;
     }
-    h1 {
-      font-size: 2.8rem;
-      color: #2563eb;
-      margin-bottom: 18px;
-      font-weight: 700;
-      letter-spacing: -1px;
+
+    .hero-content {
+      max-width: 1200px;
+      z-index: 10;
     }
-    .about-keywords {
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      padding: 0.75rem 1.5rem;
+      border-radius: 50px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 2rem;
+      animation: slideInDown 1s ease-out;
+    }
+
+    .hero-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(3rem, 8vw, 6rem);
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: slideInUp 1s ease-out 0.2s both;
+    }
+
+    .hero-subtitle {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      margin-bottom: 3rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      animation: slideInUp 1s ease-out 0.4s both;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 4rem;
+      animation: slideInUp 1s ease-out 0.6s both;
+    }
+
+    .btn-lg {
+      padding: 1rem 2rem;
       font-size: 1.1rem;
-      color: #64748b;
-      margin: 24px 0 32px 0;
-      line-height: 1.7;
-      word-break: break-word;
     }
-    .about-highlight {
-      color: #fbbf24;
+
+    @keyframes slideInDown {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* About Story Section */
+    .story-section {
+      padding: 6rem 2rem;
+      background: var(--bg-secondary);
+    }
+
+    .story-container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 3rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .section-subtitle {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .story-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+      margin-top: 4rem;
+    }
+
+    .story-content h3 {
+      font-size: 2rem;
       font-weight: 700;
-      background: #fef9c3;
-      padding: 2px 8px;
-      border-radius: 6px;
-      margin: 0 2px;
-      display: inline-block;
+      margin-bottom: 1rem;
+      color: var(--text-primary);
     }
-    .about-img {
+
+    .story-content p {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+      line-height: 1.7;
+    }
+
+    .story-visual {
+      position: relative;
+      background: var(--bg-card);
+      border-radius: var(--radius-xl);
+      padding: 2rem;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-xl);
+    }
+
+    .story-card {
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      text-align: center;
+      border: 1px solid var(--border);
+    }
+
+    .story-icon {
+      width: 80px;
+      height: 80px;
+      background: var(--gradient-primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      font-size: 2rem;
+      color: white;
+    }
+
+    .story-card h4 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+    }
+
+    .story-card p {
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* Mission Section */
+    .mission-section {
+      padding: 6rem 2rem;
+    }
+
+    .mission-container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .mission-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+      margin-top: 4rem;
+    }
+
+    .mission-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .mission-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-xl);
+      border-color: var(--primary);
+    }
+
+    .mission-icon {
+      width: 80px;
+      height: 80px;
+      background: var(--gradient-primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      font-size: 2rem;
+      color: white;
+    }
+
+    .mission-card h3 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+    }
+
+    .mission-card p {
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* Team Section */
+    .team-section {
+      padding: 6rem 2rem;
+      background: var(--bg-secondary);
+    }
+
+    .team-container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 4rem;
+    }
+
+    .team-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .team-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-xl);
+      border-color: var(--primary);
+    }
+
+    .team-avatar {
       width: 120px;
       height: 120px;
       border-radius: 50%;
-      object-fit: cover;
-      margin-bottom: 18px;
-      box-shadow: 0 2px 16px #2563eb33;
-      border: 4px solid #2563eb22;
-    }
-    .about-section {
-      margin: 32px 0;
-      text-align: left;
-    }
-    .about-section h2 {
-      color: #2563eb;
-      font-size: 1.5rem;
-      margin-bottom: 10px;
+      background: var(--gradient-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      font-size: 3rem;
+      color: white;
       font-weight: 700;
     }
-    .about-section ul {
-      margin: 0 0 0 18px;
-      padding: 0;
-      color: #1e3a8a;
-      font-size: 1.08rem;
+
+    .team-card h4 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
     }
-    .about-section li {
-      margin-bottom: 7px;
+
+    .team-card .role {
+      color: var(--secondary);
+      font-weight: 600;
+      margin-bottom: 1rem;
     }
-    .cta {
-      margin: 36px 0 0 0;
+
+    .team-card p {
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* CTA Section */
+    .cta-section {
+      padding: 6rem 2rem;
       text-align: center;
     }
-    .cta a {
-      display: inline-block;
-      background: linear-gradient(90deg, #2563eb 60%, #60a5fa 100%);
-      color: #fff;
-      font-size: 1.2rem;
-      font-weight: 700;
-      padding: 16px 36px;
-      border-radius: 12px;
+
+    .cta-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .cta-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 3rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .cta-subtitle {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      margin-bottom: 3rem;
+    }
+
+    .cta-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* Footer */
+    .footer {
+      padding: 3rem 2rem;
+      background: var(--bg-primary);
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .footer-content {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .footer-text {
+      color: var(--text-muted);
+    }
+
+    /* Mobile Navigation */
+    .mobile-menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .mobile-nav {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--bg-primary);
+      z-index: 9999;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+
+    .mobile-nav.active {
+      display: block;
+    }
+
+    .mobile-nav-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .mobile-nav-close {
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      font-size: 2rem;
+      cursor: pointer;
+    }
+
+    .mobile-nav-links {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .mobile-nav-links li {
+      margin-bottom: 1rem;
+    }
+
+    .mobile-nav-links a {
+      color: var(--text-primary);
       text-decoration: none;
-      box-shadow: 0 2px 16px #2563eb22;
-      transition: background 0.2s, box-shadow 0.2s;
+      font-size: 1.2rem;
+      font-weight: 500;
+      display: block;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--border);
     }
-    .cta a:hover {
-      background: linear-gradient(90deg, #fbbf24 0%, #f472b6 100%);
-      color: #fff;
-      box-shadow: 0 4px 32px #fbbf2444;
+
+    .mobile-nav-actions {
+      margin-top: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
     }
-    @media (max-width: 600px) {
-      .about-container {
-        padding: 18px 4vw 18px 4vw;
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .story-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
       }
-      h1 {
+
+      .mission-grid {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .team-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      /* Navigation */
+      .nav-links {
+        display: none;
+      }
+
+      .mobile-menu-toggle {
+        display: block;
+      }
+
+      .nav-container {
+        padding: 1rem;
+      }
+
+      /* Hero Section */
+      .hero {
+        padding: 2rem 1rem;
+        min-height: 80vh;
+      }
+
+      .hero-title {
+        font-size: clamp(2.5rem, 6vw, 4rem);
+        line-height: 1.2;
+      }
+
+      .hero-subtitle {
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+      }
+
+      .hero-actions {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .btn-lg {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+      }
+
+      /* Sections */
+      .story-section,
+      .mission-section,
+      .team-section,
+      .cta-section {
+        padding: 3rem 1rem;
+      }
+
+      .section-title {
+        font-size: 2rem;
+        line-height: 1.3;
+      }
+
+      .section-subtitle {
+        font-size: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      /* Story Section */
+      .story-visual {
+        order: -1;
+      }
+
+      /* Mission Section */
+      .mission-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .mission-card {
+        padding: 1.5rem;
+      }
+
+      .mission-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+      }
+
+      .mission-card h3 {
+        font-size: 1.3rem;
+      }
+
+      .mission-card p {
+        font-size: 0.9rem;
+      }
+
+      /* Team Section */
+      .team-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .team-card {
+        padding: 1.5rem;
+      }
+
+      .team-avatar {
+        width: 100px;
+        height: 100px;
+        font-size: 2.5rem;
+      }
+
+      .team-card h4 {
+        font-size: 1.3rem;
+      }
+
+      /* CTA Section */
+      .cta-actions {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .cta-title {
         font-size: 2rem;
       }
+
+      /* Footer */
+      .footer {
+        padding: 2rem 1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      /* Extra small screens */
+      .hero {
+        padding: 1rem;
+        min-height: 70vh;
+      }
+
+      .hero-title {
+        font-size: clamp(2rem, 8vw, 3rem);
+      }
+
+      .hero-subtitle {
+        font-size: 1rem;
+      }
+
+      .section-title {
+        font-size: 1.8rem;
+      }
+
+      .story-section,
+      .mission-section,
+      .team-section,
+      .cta-section {
+        padding: 2rem 1rem;
+      }
+
+      .mission-card,
+      .team-card {
+        padding: 1rem;
+      }
+
+      .mission-card h3 {
+        font-size: 1.2rem;
+      }
+
+      .team-card h4 {
+        font-size: 1.2rem;
+      }
+
+      .cta-title {
+        font-size: 1.8rem;
+      }
+
+      .btn {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+      }
+
+      .btn-lg {
+        padding: 1rem 1.5rem;
+        font-size: 1rem;
+      }
+    }
+
+    /* Scroll Animations */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.6s ease;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Loading Animation */
+    .loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease;
+    }
+
+    .loading.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid var(--border);
+      border-top: 3px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
-  <header style="background:#fff;box-shadow:0 2px 16px #2563eb11;padding:18px 0 0 0;">
-    <div style="display:flex;align-items:center;justify-content:space-between;max-width:1100px;margin:0 auto;padding:0 32px 0 32px;">
-      <a href="index.html" style="display:flex;align-items:center;gap:10px;font-size:1.5rem;font-weight:900;color:#2563eb;letter-spacing:-1px;text-decoration:none;transition:color 0.15s;">
-        <svg viewBox='0 0 64 64' width='32' height='32' fill='currentColor' style='vertical-align:middle;'><path d='M32 4 L4 28 H12 V60 H26 V40 H38 V60 H52 V28 H60 Z'/></svg>
-        <span style="padding:2px 10px;border-radius:6px;transition:background 0.15s;">NestMate</span>
+  <!-- Loading Screen -->
+  <div class="loading" id="loading">
+    <div class="loading-spinner"></div>
+  </div>
+
+  <!-- Animated Background -->
+  <div class="bg-animation"></div>
+
+  <!-- Navigation -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="logo">
+        <div class="logo-icon">
+          <i class="fas fa-home"></i>
+        </div>
+        NestMate
       </a>
-      <nav style="display:flex;align-items:center;gap:18px;">
-        <a href="pricing.html" style="color:#2563eb;font-weight:600;text-decoration:none;padding:8px 16px;border-radius:8px;transition:background 0.15s;">Pricing</a>
-        <a href="about.html" style="color:#2563eb;font-weight:600;text-decoration:none;padding:8px 16px;border-radius:8px;transition:background 0.15s;">About</a>
-        <a href="contact.html" style="color:#2563eb;font-weight:600;text-decoration:none;padding:8px 16px;border-radius:8px;transition:background 0.15s;">Contact</a>
-        <a href="faq.html" style="color:#2563eb;font-weight:600;text-decoration:none;padding:8px 16px;border-radius:8px;transition:background 0.15s;">FAQ</a>
-        <a href="register.html" style="background:linear-gradient(90deg,#2563eb 60%,#60a5fa 100%);color:#fff;font-weight:700;text-decoration:none;padding:8px 20px;border-radius:8px;box-shadow:0 2px 8px #2563eb22;transition:background 0.15s;">Register</a>
-        <a href="signin.html" style="background:linear-gradient(90deg,#fbbf24 0%,#f472b6 100%);color:#fff;font-weight:700;text-decoration:none;padding:8px 20px;border-radius:8px;box-shadow:0 2px 8px #fbbf2444;transition:background 0.15s;">Sign In</a>
-      </nav>
-    </div>
-  </header>
-  <div class="about-container">
-    <img src="https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=facearea&w=256&q=80" alt="About Me" class="about-img">
-    <h1>About NestMate</h1>
-    <div class="about-keywords">
-      Welcome to <span class="about-highlight">NestMate</span> — your personal home management hub! NestMate is designed to help you securely store and organize every detail about your home, from the roof to the crawlspace. Track maintenance, upgrades, warranties, and product info for every room and system — roofing, HVAC, appliances, plumbing, flooring, and more. Keep a digital record of your home’s story, manage important documents, and discover the best products and solutions for every space. With NestMate, you’ll always have your home’s data at your fingertips, making it easier to care for, improve, and enjoy your home like never before.
-    </div>
-  <div class="about-container">
-    <img src="https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=facearea&w=256&q=80" alt="About Me" class="about-img">
-    <h1>About NestMate</h1>
-    <div class="about-keywords">
-      Welcome to <span class="about-highlight">NestMate</span> — your personal home management hub! NestMate is designed to help you securely store and organize every detail about your home, from the roof to the crawlspace. Track maintenance, upgrades, warranties, and product info for every room and system — roofing, HVAC, appliances, plumbing, flooring, and more. Keep a digital record of your home’s story, manage important documents, and discover the best products and solutions for every space. With NestMate, you’ll always have your home’s data at your fingertips, making it easier to care for, improve, and enjoy your home like never before.
-    </div>
-    <div class="about-section">
-      <h2>Who We Are</h2>
-      <ul>
-        <li>Experts in <span class="about-highlight">home automation</span> and <span class="about-highlight">smart technology</span></li>
-        <li>Passionate about <span class="about-highlight">interior design</span> and <span class="about-highlight">modern living</span></li>
-        <li>Dedicated to <span class="about-highlight">eco-friendly</span> and <span class="about-highlight">energy-efficient</span> solutions</li>
-        <li>Trusted source for <span class="about-highlight">product reviews</span>, <span class="about-highlight">guides</span>, and <span class="about-highlight">expert tips</span></li>
-        <li>Committed to <span class="about-highlight">customer satisfaction</span> and <span class="about-highlight">support</span></li>
+      
+      <ul class="nav-links">
+        <li><a href="index.html#features">Features</a></li>
+        <li><a href="index.html#demo">Demo</a></li>
+        <li><a href="index.html#pricing">Pricing</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="faq.html">FAQ</a></li>
       </ul>
+      
+      <div class="nav-actions">
+        <a href="signin.html" class="btn btn-secondary">Sign In</a>
+        <a href="signin.html?tab=signup" class="btn btn-primary">Get Started</a>
+        <button class="mobile-menu-toggle" id="mobileMenuToggle">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
     </div>
-    <div class="about-section">
-      <h2>What We Offer</h2>
-      <ul>
-        <li>Curated <span class="about-highlight">shopping guides</span> for every room: <span class="about-highlight">kitchen</span>, <span class="about-highlight">bedroom</span>, <span class="about-highlight">bathroom</span>, <span class="about-highlight">living room</span>, <span class="about-highlight">outdoor</span>, <span class="about-highlight">garage</span>, <span class="about-highlight">kids</span>, <span class="about-highlight">pets</span></li>
-        <li>Latest <span class="about-highlight">trends</span> in <span class="about-highlight">home decor</span> and <span class="about-highlight">smart appliances</span></li>
-        <li>Step-by-step <span class="about-highlight">DIY tutorials</span> and <span class="about-highlight">how-to guides</span></li>
-        <li>Exclusive <span class="about-highlight">deals</span>, <span class="about-highlight">discounts</span>, and <span class="about-highlight">offers</span> on <span class="about-highlight">Amazon</span></li>
-        <li>Inspiration to <span class="about-highlight">upgrade</span>, <span class="about-highlight">organize</span>, and <span class="about-highlight">beautify</span> your home</li>
-      </ul>
+  </nav>
+
+  <!-- Mobile Navigation -->
+  <div class="mobile-nav" id="mobileNav">
+    <div class="mobile-nav-header">
+      <div class="logo">
+        <div class="logo-icon">
+          <i class="fas fa-home"></i>
+        </div>
+        NestMate
+      </div>
+      <button class="mobile-nav-close" id="mobileNavClose">
+        <i class="fas fa-times"></i>
+      </button>
     </div>
-    <div class="about-section">
-      <h2>Why Choose Us?</h2>
-      <ul>
-        <li><span class="about-highlight">Trusted</span> by thousands of homeowners and renters</li>
-        <li>Backed by <span class="about-highlight">expertise</span> and <span class="about-highlight">real-world experience</span></li>
-        <li>Driven by <span class="about-highlight">innovation</span>, <span class="about-highlight">quality</span>, and <span class="about-highlight">value</span></li>
-        <li>Always <span class="about-highlight">up-to-date</span> with the latest <span class="about-highlight">home trends</span></li>
-        <li>Focused on <span class="about-highlight">customer happiness</span> and <span class="about-highlight">support</span></li>
-      </ul>
-    </div>
-    <div class="cta">
-      <a href="shop-for-my-home.html">Start Shopping for Your Dream Home</a>
+    
+    <ul class="mobile-nav-links">
+      <li><a href="index.html#features" onclick="closeMobileNav()">Features</a></li>
+      <li><a href="index.html#demo" onclick="closeMobileNav()">Demo</a></li>
+      <li><a href="index.html#pricing" onclick="closeMobileNav()">Pricing</a></li>
+      <li><a href="about.html" onclick="closeMobileNav()">About</a></li>
+      <li><a href="faq.html" onclick="closeMobileNav()">FAQ</a></li>
+    </ul>
+    
+    <div class="mobile-nav-actions">
+      <a href="signin.html" class="btn btn-secondary" onclick="closeMobileNav()">Sign In</a>
+      <a href="signin.html?tab=signup" class="btn btn-primary" onclick="closeMobileNav()">Get Started</a>
     </div>
   </div>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">
+        <i class="fas fa-star"></i>
+        Trusted by 10,000+ homeowners worldwide
+      </div>
+      
+      <h1 class="hero-title">
+        About<br>
+        NestMate
+      </h1>
+      
+      <p class="hero-subtitle">
+        We're on a mission to revolutionize home management by combining cutting-edge technology 
+        with professional expertise. Learn how NestMate is transforming how homeowners care for, 
+        maintain, and increase the value of their most important investment.
+      </p>
+      
+      <div class="hero-actions">
+        <a href="signin.html?tab=signup" class="btn btn-primary btn-lg">
+          <i class="fas fa-rocket"></i>
+          Start Free Trial
+        </a>
+        <a href="index.html#demo" class="btn btn-secondary btn-lg">
+          <i class="fas fa-play"></i>
+          See How It Works
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Our Story Section -->
+  <section class="story-section">
+    <div class="story-container">
+      <div class="section-header">
+        <h2 class="section-title">Our Story</h2>
+        <p class="section-subtitle">
+          Born from a simple observation: homeowners were losing money, time, and peace of mind 
+          because they didn't have a complete picture of their home's needs and history.
+        </p>
+      </div>
+      
+      <div class="story-grid">
+        <div class="story-content">
+          <h3>The Problem We Solved</h3>
+          <p>
+            After years of working in home improvement and real estate, we noticed a pattern: 
+            homeowners were constantly surprised by maintenance issues, warranty expirations, 
+            and missed opportunities to increase their property value.
+          </p>
+          <p>
+            People were spending thousands on emergency repairs that could have been prevented, 
+            losing money on expired warranties, and missing out on improvements that would 
+            significantly increase their home's value.
+          </p>
+          <p>
+            We realized that the solution wasn't just better tools—it was a complete system 
+            that would give homeowners the same level of insight and control that professional 
+            property managers have.
+          </p>
+        </div>
+        
+        <div class="story-visual">
+          <div class="story-card">
+            <div class="story-icon">
+              <i class="fas fa-lightbulb"></i>
+            </div>
+            <h4>The Lightbulb Moment</h4>
+            <p>
+              "What if every homeowner could have a complete digital record of their home, 
+              with AI-powered insights and professional services to keep everything running perfectly?"
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mission Section -->
+  <section class="mission-section">
+    <div class="mission-container">
+      <div class="section-header">
+        <h2 class="section-title">Our Mission</h2>
+        <p class="section-subtitle">
+          To empower every homeowner with the tools, insights, and services they need to 
+          maximize their home's value while minimizing stress and unexpected costs.
+        </p>
+      </div>
+      
+      <div class="mission-grid">
+        <div class="mission-card">
+          <div class="mission-icon">
+            <i class="fas fa-home"></i>
+          </div>
+          <h3>Complete Home Intelligence</h3>
+          <p>
+            Track every detail of your home—from window sizes and trim styles to maintenance 
+            schedules and warranty information. Nothing gets missed or forgotten.
+          </p>
+        </div>
+        
+        <div class="mission-card">
+          <div class="mission-icon">
+            <i class="fas fa-brain"></i>
+          </div>
+          <h3>AI-Powered Insights</h3>
+          <p>
+            Get predictive maintenance alerts, health scores, and smart recommendations 
+            based on your home's unique characteristics and usage patterns.
+          </p>
+        </div>
+        
+        <div class="mission-card">
+          <div class="mission-icon">
+            <i class="fas fa-tools"></i>
+          </div>
+          <h3>Professional Services</h3>
+          <p>
+            Our certified technicians can visit your home to document everything, 
+            ensuring your NestMate dashboard is complete and accurate from day one.
+          </p>
+        </div>
+        
+        <div class="mission-card">
+          <div class="mission-icon">
+            <i class="fas fa-dollar-sign"></i>
+          </div>
+          <h3>Value Maximization</h3>
+          <p>
+            Increase your home's value by 15% or more through proper documentation, 
+            proactive maintenance, and strategic improvements.
+          </p>
+        </div>
+        
+        <div class="mission-card">
+          <div class="mission-icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <h3>Family Collaboration</h3>
+          <p>
+            Share home management with family members, assign tasks, and work together 
+            to maintain your most valuable asset.
+          </p>
+        </div>
+        
+        <div class="mission-card">
+          <div class="mission-icon">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <h3>Peace of Mind</h3>
+          <p>
+            Sleep better knowing your home is well-maintained, warranties are tracked, 
+            and you're prepared for any situation.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Team Section -->
+  <section class="team-section">
+    <div class="team-container">
+      <div class="section-header">
+        <h2 class="section-title">Meet the Team</h2>
+        <p class="section-subtitle">
+          A passionate group of home improvement experts, technology innovators, 
+          and customer success specialists dedicated to your home's success.
+        </p>
+      </div>
+      
+      <div class="team-grid">
+        <div class="team-card">
+          <div class="team-avatar">JD</div>
+          <h4>John Doe</h4>
+          <div class="role">Founder & CEO</div>
+          <p>
+            15+ years in home improvement and real estate. Passionate about helping 
+            homeowners maximize their property value through technology and professional services.
+          </p>
+        </div>
+        
+        <div class="team-card">
+          <div class="team-avatar">SM</div>
+          <h4>Sarah Miller</h4>
+          <div class="role">Head of Technology</div>
+          <p>
+            AI and machine learning expert with a background in property management. 
+            Leads our team in creating intelligent home management solutions.
+          </p>
+        </div>
+        
+        <div class="team-card">
+          <div class="team-avatar">MJ</div>
+          <h4>Mike Johnson</h4>
+          <div class="role">Head of Professional Services</div>
+          <p>
+            Licensed contractor with 20+ years of experience. Oversees our certified 
+            technician network and ensures quality service delivery.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="cta-container">
+      <h2 class="cta-title">Ready to Transform Your Home?</h2>
+      <p class="cta-subtitle">
+        Join thousands of homeowners who are already saving time, money, and stress 
+        while increasing their property value. Start your free trial today.
+      </p>
+      
+      <div class="cta-actions">
+        <a href="signin.html?tab=signup" class="btn btn-primary btn-lg">
+          <i class="fas fa-rocket"></i>
+          Start Free Trial
+        </a>
+        <a href="index.html" class="btn btn-secondary btn-lg">
+          <i class="fas fa-arrow-left"></i>
+          Back to Home
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <p class="footer-text">
+        &copy; 2025 NestMate. Built for your peace of mind.
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    // Loading screen
+    window.addEventListener('load', function() {
+      setTimeout(() => {
+        document.getElementById('loading').classList.add('hidden');
+      }, 1000);
+    });
+
+    // Navbar scroll effect
+    window.addEventListener('scroll', function() {
+      const navbar = document.getElementById('navbar');
+      if (window.scrollY > 100) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    });
+
+    // Smooth scrolling
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+
+    // Intersection Observer for animations
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver(function(entries) {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, observerOptions);
+
+    // Observe elements for animation
+    document.querySelectorAll('.story-section, .mission-section, .team-section, .cta-section').forEach(el => {
+      el.classList.add('fade-in');
+      observer.observe(el);
+    });
+
+    // Mobile navigation functionality
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+    const mobileNav = document.getElementById('mobileNav');
+    const mobileNavClose = document.getElementById('mobileNavClose');
+
+    function openMobileNav() {
+      mobileNav.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeMobileNav() {
+      mobileNav.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    if (mobileMenuToggle) {
+      mobileMenuToggle.addEventListener('click', openMobileNav);
+    }
+
+    if (mobileNavClose) {
+      mobileNavClose.addEventListener('click', closeMobileNav);
+    }
+
+    // Close mobile nav when clicking outside
+    if (mobileNav) {
+      mobileNav.addEventListener('click', function(e) {
+        if (e.target === mobileNav) {
+          closeMobileNav();
+        }
+      });
+    }
+
+    // Close mobile nav on escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && mobileNav.classList.contains('active')) {
+        closeMobileNav();
+      }
+    });
+
+    // Add click tracking
+    document.querySelectorAll('.btn').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        const action = this.textContent.trim();
+        console.log('Button clicked:', action);
+        // Add analytics tracking here
+      });
+    });
+  </script>
 </body>
 </html>
