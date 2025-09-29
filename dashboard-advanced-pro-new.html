@@ -1126,6 +1126,13 @@
             color: #ff9900;
         }
 
+        .price-note {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
         .package-features ul {
             list-style: none;
             margin-bottom: 25px;
@@ -4274,7 +4281,8 @@
                             <div class="package-card basic-package">
                                 <div class="package-header">
                                     <h4>Basic Data Collection</h4>
-                                    <div class="package-price">$149</div>
+                                    <div class="package-price" id="basicPrice">Starting at $75</div>
+                                    <div class="price-note">Price based on home size</div>
                                 </div>
                                 <div class="package-features">
                                     <ul>
@@ -4285,14 +4293,15 @@
                                         <li><i class="fas fa-check"></i> 2-hour service window</li>
                                     </ul>
                                 </div>
-                                <button class="btn btn-outline" onclick="selectPackage('basic', 149)">Select Package</button>
+                                <button class="btn btn-outline" onclick="selectPackage('basic')">Select Package</button>
                             </div>
 
                             <div class="package-card pro-package featured">
                                 <div class="package-badge">Most Popular</div>
                                 <div class="package-header">
                                     <h4>Complete Home Assessment</h4>
-                                    <div class="package-price">$299</div>
+                                    <div class="package-price" id="proPrice">Starting at $150</div>
+                                    <div class="price-note">Price based on home size</div>
                                 </div>
                                 <div class="package-features">
                                     <ul>
@@ -4304,13 +4313,14 @@
                                         <li><i class="fas fa-check"></i> 4-hour service window</li>
                                     </ul>
                                 </div>
-                                <button class="btn btn-primary" onclick="selectPackage('pro', 299)">Select Package</button>
+                                <button class="btn btn-primary" onclick="selectPackage('pro')">Select Package</button>
                             </div>
 
                             <div class="package-card premium-package">
                                 <div class="package-header">
                                     <h4>Premium Home Intelligence</h4>
-                                    <div class="package-price">$499</div>
+                                    <div class="package-price" id="premiumPrice">Starting at $250</div>
+                                    <div class="price-note">Price based on home size</div>
                                 </div>
                                 <div class="package-features">
                                     <ul>
@@ -4322,7 +4332,7 @@
                                         <li><i class="fas fa-check"></i> 6-hour service window</li>
                                     </ul>
                                 </div>
-                                <button class="btn btn-outline" onclick="selectPackage('premium', 499)">Select Package</button>
+                                <button class="btn btn-outline" onclick="selectPackage('premium')">Select Package</button>
                             </div>
                         </div>
                     </div>
@@ -9850,12 +9860,28 @@
                         <form id="technicianBookingForm">
                             <div class="form-group">
                                 <label>Service Package</label>
-                                <select id="servicePackage" required>
+                                <select id="servicePackage" required onchange="updatePackagePrice()">
                                     <option value="">Select a package</option>
-                                    <option value="basic">Basic Data Collection - $149</option>
-                                    <option value="pro">Complete Home Assessment - $299</option>
-                                    <option value="premium">Premium Home Intelligence - $499</option>
+                                    <option value="basic">Basic Data Collection</option>
+                                    <option value="pro">Complete Home Assessment</option>
+                                    <option value="premium">Premium Home Intelligence</option>
                                 </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Home Square Footage</label>
+                                <input type="number" id="homeSquareFootage" placeholder="Enter your home's square footage" required onchange="updatePackagePrice()" min="300" max="10000">
+                                <small style="color: #666; margin-top: 5px; display: block;">
+                                    Enter the total square footage of your home
+                                </small>
+                            </div>
+                            
+                            <div class="form-group" id="priceDisplay" style="display: none;">
+                                <label>Service Price</label>
+                                <div class="price-display">
+                                    <span id="calculatedPrice" style="font-size: 1.5rem; font-weight: 700; color: #ff9900;"></span>
+                                    <span style="color: #666; margin-left: 10px;">(Based on $0.25 per sq ft)</span>
+                                </div>
                             </div>
                             
                             <div class="form-group">
@@ -9905,7 +9931,7 @@
             document.getElementById('serviceDate').min = tomorrow.toISOString().split('T')[0];
         }
 
-        function selectPackage(packageType, price) {
+        function selectPackage(packageType) {
             // This would typically open the booking modal with the package pre-selected
             bookTechnicianService();
             
@@ -9914,16 +9940,56 @@
                 const packageSelect = document.getElementById('servicePackage');
                 if (packageSelect) {
                     packageSelect.value = packageType;
+                    updatePackagePrice();
                 }
             }, 100);
+        }
+
+        function updatePackagePrice() {
+            const packageType = document.getElementById('servicePackage').value;
+            const squareFootage = parseInt(document.getElementById('homeSquareFootage').value);
+            const priceDisplay = document.getElementById('priceDisplay');
+            const calculatedPrice = document.getElementById('calculatedPrice');
+            
+            if (packageType && squareFootage && squareFootage >= 300) {
+                const basePrice = squareFootage * 0.25; // $0.25 per sq ft
+                const packageMultiplier = getPackageMultiplier(packageType);
+                const totalPrice = basePrice * packageMultiplier;
+                
+                calculatedPrice.textContent = `$${totalPrice.toFixed(2)}`;
+                priceDisplay.style.display = 'block';
+            } else {
+                priceDisplay.style.display = 'none';
+            }
+        }
+
+        function getPackageMultiplier(packageType) {
+            const multipliers = {
+                'basic': 1.0,      // Base price
+                'pro': 1.5,        // 50% more than basic
+                'premium': 2.0     // 100% more than basic
+            };
+            return multipliers[packageType] || 1.0;
+        }
+
+        function calculateServicePrice(packageType, squareFootage) {
+            const basePrice = squareFootage * 0.25; // $0.25 per sq ft
+            const packageMultiplier = getPackageMultiplier(packageType);
+            return basePrice * packageMultiplier;
         }
 
         function processTechnicianBooking() {
             const form = document.getElementById('technicianBookingForm');
             const formData = new FormData(form);
             
+            const packageType = document.getElementById('servicePackage').value;
+            const squareFootage = parseInt(document.getElementById('homeSquareFootage').value);
+            const calculatedPrice = calculateServicePrice(packageType, squareFootage);
+            
             const bookingData = {
-                package: document.getElementById('servicePackage').value,
+                package: packageType,
+                squareFootage: squareFootage,
+                price: calculatedPrice,
                 date: document.getElementById('serviceDate').value,
                 time: document.getElementById('serviceTime').value,
                 phone: document.getElementById('contactPhone').value,
@@ -9933,8 +9999,13 @@
             };
             
             // Validate form
-            if (!bookingData.package || !bookingData.date || !bookingData.time || !bookingData.phone) {
-                alert('Please fill in all required fields.');
+            if (!bookingData.package || !bookingData.squareFootage || !bookingData.date || !bookingData.time || !bookingData.phone) {
+                alert('Please fill in all required fields including square footage.');
+                return;
+            }
+            
+            if (bookingData.squareFootage < 300 || bookingData.squareFootage > 10000) {
+                alert('Please enter a valid square footage between 300 and 10,000 sq ft.');
                 return;
             }
             
@@ -9975,6 +10046,7 @@
                         <h4>${getPackageName(booking.package)}</h4>
                         <p><strong>Date:</strong> ${new Date(booking.date).toLocaleDateString()}</p>
                         <p><strong>Time:</strong> ${getTimeSlot(booking.time)}</p>
+                        <p><strong>Price:</strong> $${booking.price ? booking.price.toFixed(2) : 'TBD'}</p>
                         <p><strong>Status:</strong> <span class="status-${booking.status}">${booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}</span></p>
                         ${booking.instructions ? `<p><strong>Instructions:</strong> ${booking.instructions}</p>` : ''}
                     </div>
@@ -10028,6 +10100,8 @@
                             <p><strong>Booking Date:</strong> ${new Date(booking.timestamp).toLocaleString()}</p>
                             <p><strong>Service Date:</strong> ${new Date(booking.date).toLocaleDateString()}</p>
                             <p><strong>Time Slot:</strong> ${getTimeSlot(booking.time)}</p>
+                            <p><strong>Home Size:</strong> ${booking.squareFootage ? booking.squareFootage + ' sq ft' : 'Not specified'}</p>
+                            <p><strong>Service Price:</strong> $${booking.price ? booking.price.toFixed(2) : 'TBD'}</p>
                             <p><strong>Contact Phone:</strong> ${booking.phone}</p>
                             <p><strong>Status:</strong> <span class="status-${booking.status}">${booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}</span></p>
                             ${booking.instructions ? `<p><strong>Special Instructions:</strong> ${booking.instructions}</p>` : ''}
