@@ -838,6 +838,176 @@
       line-height: 1.6;
     }
 
+    /* Professional Service Section */
+    .service-section {
+      padding: 6rem 2rem;
+      background: var(--bg-primary);
+    }
+
+    .service-container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .service-demo {
+      display: flex;
+      justify-content: center;
+      margin-top: 4rem;
+    }
+
+    .service-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      max-width: 600px;
+      width: 100%;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .service-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-xl);
+      border-color: var(--primary);
+    }
+
+    .service-badge {
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--gradient-primary);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .service-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding-top: 1rem;
+    }
+
+    .service-header h3 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+    }
+
+    .service-price {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--secondary);
+      margin-bottom: 0.5rem;
+    }
+
+    .price-note {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .square-footage-slider {
+      margin: 2rem 0;
+      padding: 1.5rem;
+      background: var(--bg-tertiary);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+
+    .square-footage-slider label {
+      display: block;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+    }
+
+    .slider-container {
+      position: relative;
+    }
+
+    #homePageSlider {
+      width: 100%;
+      height: 8px;
+      border-radius: 5px;
+      background: var(--border);
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+      margin-bottom: 0.5rem;
+    }
+
+    #homePageSlider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--secondary);
+      cursor: pointer;
+      border: 3px solid var(--bg-primary);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+    }
+
+    #homePageSlider::-webkit-slider-thumb:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+    }
+
+    #homePageSlider::-moz-range-thumb {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--secondary);
+      cursor: pointer;
+      border: 3px solid var(--bg-primary);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    .slider-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+    }
+
+    #homePageSqftValue {
+      color: var(--secondary);
+      font-weight: 700;
+    }
+
+    .service-features {
+      margin: 2rem 0;
+    }
+
+    .service-features ul {
+      list-style: none;
+      margin: 0;
+    }
+
+    .service-features li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .service-features li i {
+      color: var(--accent);
+      font-size: 0.9rem;
+      margin-top: 0.2rem;
+      flex-shrink: 0;
+    }
+
     /* CTA Section */
     .cta-section {
       padding: 6rem 2rem;
@@ -1023,6 +1193,7 @@
       /* Sections */
       .demo-section,
       .features-section,
+      .service-section,
       .testimonials,
       .pricing,
       .value-section,
@@ -1179,6 +1350,7 @@
 
       .demo-section,
       .features-section,
+      .service-section,
       .testimonials,
       .pricing,
       .value-section,
@@ -1189,7 +1361,8 @@
       .feature-category,
       .value-card,
       .testimonial-card,
-      .pricing-card {
+      .pricing-card,
+      .service-card {
         padding: 1rem;
       }
 
@@ -1556,6 +1729,61 @@
     </div>
   </section>
 
+  <!-- Professional Service Section -->
+  <section class="service-section" id="service">
+    <div class="service-container">
+      <div class="section-header">
+        <h2 class="section-title">Professional Home Intelligence Service</h2>
+        <p class="section-subtitle">
+          Let our certified technicians visit your home and collect all your home management data. 
+          Fair pricing based on your home size - no surprises, just professional service.
+        </p>
+      </div>
+      
+      <div class="service-demo">
+        <div class="service-card">
+          <div class="service-badge">Premium Service</div>
+          <div class="service-header">
+            <h3>Complete Home Intelligence Assessment</h3>
+            <div class="service-price" id="homePagePrice">$750.00</div>
+            <div class="price-note">Price calculated based on your home size</div>
+          </div>
+          
+          <div class="square-footage-slider">
+            <label for="homePageSlider">Home Square Footage: <span id="homePageSqftValue">1,500</span> sq ft</label>
+            <div class="slider-container">
+              <input type="range" id="homePageSlider" min="500" max="8000" value="1500" step="50" oninput="updateHomePagePrice()">
+              <div class="slider-labels">
+                <span>500 sq ft</span>
+                <span>8,000 sq ft</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="service-features">
+            <ul>
+              <li><i class="fas fa-check"></i> Complete home measurements & documentation</li>
+              <li><i class="fas fa-check"></i> Room-by-room detailed inventory</li>
+              <li><i class="fas fa-check"></i> HVAC system analysis & documentation</li>
+              <li><i class="fas fa-check"></i> Electrical panel mapping & assessment</li>
+              <li><i class="fas fa-check"></i> Plumbing system overview & inspection</li>
+              <li><i class="fas fa-check"></i> Smart home device setup & integration</li>
+              <li><i class="fas fa-check"></i> Energy efficiency audit & recommendations</li>
+              <li><i class="fas fa-check"></i> Security system assessment</li>
+              <li><i class="fas fa-check"></i> Maintenance schedule creation</li>
+              <li><i class="fas fa-check"></i> Digital floor plan creation</li>
+              <li><i class="fas fa-check"></i> 6-hour comprehensive service window</li>
+            </ul>
+          </div>
+          
+          <a href="signin.html?tab=signup" class="btn btn-primary btn-lg">
+            <i class="fas fa-rocket"></i>
+            Join today!
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <!-- Pricing -->
   <section class="pricing" id="pricing">
@@ -1786,7 +2014,7 @@
     }, observerOptions);
 
     // Observe elements for animation
-    document.querySelectorAll('.features-section, .demo-section, .testimonials, .pricing, .value-section, .cta-section').forEach(el => {
+    document.querySelectorAll('.features-section, .demo-section, .service-section, .testimonials, .pricing, .value-section, .cta-section').forEach(el => {
       el.classList.add('fade-in');
       observer.observe(el);
     });
@@ -1856,6 +2084,29 @@
       if (e.key === 'Escape' && mobileNav.classList.contains('active')) {
         closeMobileNav();
       }
+    });
+
+    // Home page slider functionality
+    function updateHomePagePrice() {
+      const slider = document.getElementById('homePageSlider');
+      const sqftValue = document.getElementById('homePageSqftValue');
+      const priceElement = document.getElementById('homePagePrice');
+      
+      if (slider && sqftValue && priceElement) {
+        const squareFootage = parseInt(slider.value);
+        sqftValue.textContent = squareFootage.toLocaleString();
+        
+        // Calculate price using premium multiplier (2.0x) and $0.25 per sq ft
+        const price = squareFootage * 0.25 * 2.0;
+        priceElement.textContent = `$${price.toFixed(2)}`;
+      }
+    }
+
+    // Initialize home page slider price on load
+    window.addEventListener('load', function() {
+      setTimeout(() => {
+        updateHomePagePrice();
+      }, 1500);
     });
   </script>
 </body>
