@@ -3442,6 +3442,11 @@
                         <span>Technician Service</span>
                     </button>
                     
+                    <button class="nav-item" onclick="showSection('photos', this)">
+                        <i class="fas fa-camera"></i>
+                        <span>Photos</span>
+                    </button>
+                    
                     <button class="nav-item" onclick="showSection('emergency', this)">
                         <i class="fas fa-phone-alt"></i>
                         <span>Emergency</span>
@@ -4459,6 +4464,65 @@
                         <h3>Service History</h3>
                         <div id="serviceHistoryList">
                             <!-- Service history will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Photos Section -->
+                <div class="content-section" id="photos">
+                    <div class="section-header">
+                        <h4 class="section-title">📸 Home Photos</h4>
+                        <div class="header-actions">
+                            <button type="button" class="btn btn-primary btn-small" onclick="openPhotoUpload()">
+                                <i class="fas fa-upload"></i> Upload Photos
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Room Filter Tabs -->
+                    <div class="photo-room-tabs">
+                        <button class="room-tab active" onclick="filterPhotosByRoom('all')">
+                            <i class="fas fa-images"></i> All Photos
+                        </button>
+                        <button class="room-tab" onclick="filterPhotosByRoom('living')">
+                            <i class="fas fa-couch"></i> Living Room
+                        </button>
+                        <button class="room-tab" onclick="filterPhotosByRoom('kitchen')">
+                            <i class="fas fa-utensils"></i> Kitchen
+                        </button>
+                        <button class="room-tab" onclick="filterPhotosByRoom('bedroom')">
+                            <i class="fas fa-bed"></i> Bedrooms
+                        </button>
+                        <button class="room-tab" onclick="filterPhotosByRoom('bathroom')">
+                            <i class="fas fa-bath"></i> Bathrooms
+                        </button>
+                        <button class="room-tab" onclick="filterPhotosByRoom('exterior')">
+                            <i class="fas fa-home"></i> Exterior
+                        </button>
+                        <button class="room-tab" onclick="filterPhotosByRoom('garage')">
+                            <i class="fas fa-car"></i> Garage
+                        </button>
+                        <button class="room-tab" onclick="filterPhotosByRoom('other')">
+                            <i class="fas fa-plus"></i> Other
+                        </button>
+                    </div>
+                    
+                    <!-- Photo Gallery -->
+                    <div class="photo-gallery" id="photoGallery">
+                        <div class="photo-grid" id="photoGrid">
+                            <!-- Photos will be loaded here -->
+                        </div>
+                        
+                        <!-- Empty State -->
+                        <div class="empty-state" id="photoEmptyState" style="display: none;">
+                            <div class="empty-icon">
+                                <i class="fas fa-camera"></i>
+                            </div>
+                            <h3>No Photos Yet</h3>
+                            <p>Start building your home photo collection by uploading your first photos!</p>
+                            <button class="btn btn-primary" onclick="openPhotoUpload()">
+                                <i class="fas fa-upload"></i> Upload Photos
+                            </button>
                         </div>
                     </div>
                 </div>
