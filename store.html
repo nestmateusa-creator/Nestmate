@@ -509,12 +509,12 @@
                 <ul class="nav-list">
                     <li><a href="#all">All Products</a></li>
                     <li><a href="#smart-home">Smart Home</a></li>
+                    <li><a href="#security">Security</a></li>
+                    <li><a href="#safety">Safety</a></li>
+                    <li><a href="#air-quality">Air Quality</a></li>
+                    <li><a href="#outdoor">Outdoor</a></li>
                     <li><a href="#maintenance">Home Maintenance</a></li>
                     <li><a href="#kitchen">Kitchen</a></li>
-                    <li><a href="#outdoor">Outdoor & Garden</a></li>
-                    <li><a href="#security">Security</a></li>
-                    <li><a href="#energy">Energy Efficiency</a></li>
-                    <li><a href="#cleaning">Cleaning</a></li>
                     <li><a href="#bathroom">Bathroom</a></li>
                     <li><a href="#bedroom">Bedroom & Living</a></li>
                 </ul>
@@ -563,6 +563,22 @@
                         Smart Home
                     </label>
                     <label>
+                        <input type="checkbox" value="security">
+                        Security
+                    </label>
+                    <label>
+                        <input type="checkbox" value="safety">
+                        Safety
+                    </label>
+                    <label>
+                        <input type="checkbox" value="air-quality">
+                        Air Quality
+                    </label>
+                    <label>
+                        <input type="checkbox" value="outdoor">
+                        Outdoor
+                    </label>
+                    <label>
                         <input type="checkbox" value="maintenance">
                         Home Maintenance
                     </label>
@@ -571,16 +587,12 @@
                         Kitchen
                     </label>
                     <label>
-                        <input type="checkbox" value="outdoor">
-                        Outdoor & Garden
+                        <input type="checkbox" value="bathroom">
+                        Bathroom
                     </label>
                     <label>
-                        <input type="checkbox" value="security">
-                        Security
-                    </label>
-                    <label>
-                        <input type="checkbox" value="energy">
-                        Energy Efficiency
+                        <input type="checkbox" value="bedroom">
+                        Bedroom & Living
                     </label>
                 </div>
             </div>
@@ -620,8 +632,179 @@
         let currentPage = 1;
         const productsPerPage = 12;
 
-        // Product data - currently empty
-        const sampleProducts = [];
+        // Product data - NestMate Store Catalog
+        const sampleProducts = [
+            {
+                id: 1,
+                title: "Smart Home Security Camera System",
+                price: 89.99,
+                rating: 4.5,
+                reviews: 128,
+                image: "https://via.placeholder.com/250x200/6366f1/ffffff?text=Security+Camera",
+                category: "security",
+                description: "Wireless security camera with night vision and mobile app control"
+            },
+            {
+                id: 2,
+                title: "Smart Door Lock with Keypad",
+                price: 149.99,
+                rating: 4.3,
+                reviews: 89,
+                image: "https://via.placeholder.com/250x200/10b981/ffffff?text=Smart+Lock",
+                category: "security",
+                description: "Keyless entry smart lock with smartphone control and keypad backup"
+            },
+            {
+                id: 3,
+                title: "Smart Thermostat WiFi",
+                price: 199.99,
+                rating: 4.7,
+                reviews: 256,
+                image: "https://via.placeholder.com/250x200/f59e0b/ffffff?text=Smart+Thermostat",
+                category: "smart-home",
+                description: "Energy-saving smart thermostat with learning capabilities"
+            },
+            {
+                id: 4,
+                title: "Smart Light Bulbs 4-Pack",
+                price: 39.99,
+                rating: 4.4,
+                reviews: 67,
+                image: "https://via.placeholder.com/250x200/8b5cf6/ffffff?text=Smart+Bulbs",
+                category: "smart-home",
+                description: "WiFi smart LED bulbs with color changing and dimming"
+            },
+            {
+                id: 5,
+                title: "Outdoor Security Camera",
+                price: 79.99,
+                rating: 4.2,
+                reviews: 143,
+                image: "https://via.placeholder.com/250x200/ef4444/ffffff?text=Outdoor+Camera",
+                category: "security",
+                description: "Weather-resistant outdoor security camera with motion detection"
+            },
+            {
+                id: 6,
+                title: "Smart Video Doorbell",
+                price: 129.99,
+                rating: 4.6,
+                reviews: 92,
+                image: "https://via.placeholder.com/250x200/06b6d4/ffffff?text=Video+Doorbell",
+                category: "security",
+                description: "HD video doorbell with two-way audio and motion alerts"
+            },
+            {
+                id: 7,
+                title: "Smart Plug 4-Pack",
+                price: 29.99,
+                rating: 4.1,
+                reviews: 78,
+                image: "https://via.placeholder.com/250x200/84cc16/ffffff?text=Smart+Plugs",
+                category: "smart-home",
+                description: "WiFi smart plugs for remote control of appliances"
+            },
+            {
+                id: 8,
+                title: "Smart Smoke Detector",
+                price: 69.99,
+                rating: 4.5,
+                reviews: 45,
+                image: "https://via.placeholder.com/250x200/f97316/ffffff?text=Smoke+Detector",
+                category: "safety",
+                description: "Smart smoke and carbon monoxide detector with app alerts"
+            },
+            {
+                id: 9,
+                title: "Smart Garage Door Opener",
+                price: 179.99,
+                rating: 4.3,
+                reviews: 34,
+                image: "https://via.placeholder.com/250x200/64748b/ffffff?text=Garage+Opener",
+                category: "smart-home",
+                description: "WiFi garage door opener with smartphone control"
+            },
+            {
+                id: 10,
+                title: "Smart Water Leak Detector",
+                price: 49.99,
+                rating: 4.4,
+                reviews: 56,
+                image: "https://via.placeholder.com/250x200/0891b2/ffffff?text=Leak+Detector",
+                category: "safety",
+                description: "Wireless water leak sensor with instant alerts"
+            },
+            {
+                id: 11,
+                title: "Smart Window Sensors",
+                price: 39.99,
+                rating: 4.2,
+                reviews: 23,
+                image: "https://via.placeholder.com/250x200/7c3aed/ffffff?text=Window+Sensors",
+                category: "security",
+                description: "Magnetic window and door sensors for home security"
+            },
+            {
+                id: 12,
+                title: "Smart Air Purifier",
+                price: 159.99,
+                rating: 4.6,
+                reviews: 89,
+                image: "https://via.placeholder.com/250x200/059669/ffffff?text=Air+Purifier",
+                category: "air-quality",
+                description: "HEPA air purifier with smart controls and air quality monitoring"
+            },
+            {
+                id: 13,
+                title: "Smart Ceiling Fan",
+                price: 199.99,
+                rating: 4.3,
+                reviews: 67,
+                image: "https://via.placeholder.com/250x200/0ea5e9/ffffff?text=Smart+Fan",
+                category: "smart-home",
+                description: "WiFi ceiling fan with remote control and scheduling"
+            },
+            {
+                id: 14,
+                title: "Smart Doorbell Camera Pro",
+                price: 189.99,
+                rating: 4.7,
+                reviews: 134,
+                image: "https://via.placeholder.com/250x200/dc2626/ffffff?text=Doorbell+Pro",
+                category: "security",
+                description: "Advanced video doorbell with facial recognition and package detection"
+            },
+            {
+                id: 15,
+                title: "Smart Window Blinds",
+                price: 149.99,
+                rating: 4.4,
+                reviews: 45,
+                image: "https://via.placeholder.com/250x200/16a34a/ffffff?text=Smart+Blinds",
+                category: "smart-home",
+                description: "Motorized window blinds with voice and app control"
+            },
+            {
+                id: 16,
+                title: "Smart Sprinkler Controller",
+                price: 99.99,
+                rating: 4.5,
+                reviews: 78,
+                image: "https://via.placeholder.com/250x200/0284c7/ffffff?text=Sprinkler+Control",
+                category: "outdoor",
+                description: "WiFi sprinkler controller with weather-based scheduling"
+            },
+            {
+                id: 17,
+                title: "Smart Door Lock Fingerprint",
+                price: 179.99,
+                rating: 4.6,
+                reviews: 92,
+                image: "https://via.placeholder.com/250x200/be123c/ffffff?text=Fingerprint+Lock",
+                category: "security",
+                description: "Biometric smart lock with fingerprint and keypad access"
+            }
+        ];
 
         function loadProducts() {
             if (typeof nestmateCatalog !== 'undefined') {
@@ -714,7 +897,30 @@
         function addToCart(productId) {
             const product = currentProducts.find(p => p.id === productId);
             if (product) {
-                alert(`Added "${product.title}" to cart!`);
+                // Open Amazon product page in new tab
+                const amazonUrls = [
+                    'https://www.amazon.com/dp/B0FDGGFTYZ/?tag=nestmateusa-20',
+                    'https://www.amazon.com/dp/B0DP96G1YP/?tag=nestmateusa-20',
+                    'https://www.amazon.com/dp/B0BZWRSRWV/?tag=nestmateusa-20',
+                    'https://www.amazon.com/dp/B0CP2H4FSK/?tag=nestmateusa-20',
+                    'https://www.amazon.com/dp/B0D6GJ9222/?tag=nestmateusa-20',
+                    'https://www.amazon.com/dp/B0CGTZPQFS/?tag=nestmateusa-20',
+                    'https://www.amazon.com/dp/B0FDKJB1H5/?tag=nestmateusa-20',
+                    'https://www.amazon.com/dp/B09KT67BL1/?tag=nestmateusa-20',
+                    'https://www.amazon.com/dp/B0BWHJ1FNK/?tag=nestmateusa-20',
+                    'https://www.amazon.com/dp/B0CFGYFCYL/?tag=nestmateusa-20',
+                    'https://www.amazon.com/dp/B0DNTQ2YNT/?tag=nestmateusa-20',
+                    'https://www.amazon.com/dp/B0FPF47C7D/?tag=nestmateusa-20',
+                    'https://www.amazon.com/dp/B0BYX1XT81/?tag=nestmateusa-20',
+                    'https://www.amazon.com/dp/B0C3H9MJQV/?tag=nestmateusa-20',
+                    'https://www.amazon.com/dp/B0FPF5F6NJ/?tag=nestmateusa-20',
+                    'https://www.amazon.com/dp/B0F43B1PM6/?tag=nestmateusa-20',
+                    'https://www.amazon.com/dp/B0FLJBRNCG/?tag=nestmateusa-20'
+                ];
+                
+                const amazonUrl = amazonUrls[productId - 1] || amazonUrls[0];
+                window.open(amazonUrl, '_blank');
+                
                 // Update cart count
                 const cartCount = document.querySelector('.cart-count');
                 cartCount.textContent = parseInt(cartCount.textContent) + 1;
