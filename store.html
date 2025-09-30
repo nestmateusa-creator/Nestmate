@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NestMate Store - Home Products & More</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="nestmate-product-catalog.js"></script>
+    <script src="product-recommendation-engine.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f3f3;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+            color: white;
+            padding: 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-top {
+            background: #0f0f23;
+            padding: 8px 0;
+            font-size: 12px;
+        }
+
+        .header-top .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header-main {
+            padding: 15px 0;
+        }
+
+        .header-main .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            font-weight: 700;
+            text-decoration: none;
+            color: white;
+        }
+
+        .logo i {
+            margin-right: 10px;
+            font-size: 28px;
+        }
+
+        .search-bar {
+            flex: 1;
+            max-width: 600px;
+            margin: 0 20px;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 12px 50px 12px 15px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .search-bar button {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #6366f1;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-actions a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 500;
+        }
+
+        .cart-count {
+            background: #f59e0b;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* Navigation */
+        .nav {
+            background: #1a1a2e;
+            padding: 0;
+        }
+
+        .nav .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .nav-list {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        .nav-list a {
+            color: white;
+            text-decoration: none;
+            padding: 15px 0;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-list a:hover {
+            color: #818cf8;
+        }
+
+        /* Main Content */
+        .main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 30px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            height: fit-content;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .sidebar h3 {
+            margin-bottom: 20px;
+            color: #1a1a2e;
+            font-size: 18px;
+        }
+
+        .filter-group {
+            margin-bottom: 25px;
+        }
+
+        .filter-group h4 {
+            margin-bottom: 10px;
+            color: #374151;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .price-range {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .price-range input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Product Grid */
+        .product-section {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .sort-dropdown {
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 5px;
+            background: white;
+            font-size: 14px;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .product-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 15px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            background: white;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .product-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #1a1a2e;
+            line-height: 1.4;
+        }
+
+        .product-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .stars {
+            color: #fbbf24;
+        }
+
+        .rating-text {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .product-price {
+            font-size: 20px;
+            font-weight: 700;
+            color: #059669;
+            margin-bottom: 15px;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .btn-primary {
+            background: #6366f1;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            background: #4f46e5;
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        .btn-wishlist {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fbbf24;
+        }
+
+        .btn-wishlist:hover {
+            background: #fde68a;
+        }
+
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+        }
+
+        .loading i {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .header-main .container {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .search-bar {
+                margin: 0;
+                max-width: 100%;
+            }
+
+            .nav-list {
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+
+            .product-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 15px;
+            }
+
+            .section-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-top">
+            <div class="container">
+                <div class="header-top-left">
+                    <span>Welcome to NestMate Store - Your Home Improvement Partner</span>
+                </div>
+                <div class="header-top-right">
+                    <span>Free shipping on orders over $25</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="header-main">
+            <div class="container">
+                <div class="header-content">
+                    <a href="index.html" class="logo">
+                        <i class="fas fa-home"></i>
+                        NestMate Store
+                    </a>
+                    
+                    <div class="search-bar">
+                        <input type="text" placeholder="Search for home improvement products...">
+                        <button type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="header-actions">
+                        <a href="#account">
+                            <i class="fas fa-user"></i>
+                            Account
+                        </a>
+                        <a href="#wishlist">
+                            <i class="fas fa-heart"></i>
+                            Wishlist
+                        </a>
+                        <a href="#cart">
+                            <i class="fas fa-shopping-cart"></i>
+                            Cart
+                            <span class="cart-count">0</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <nav class="nav">
+            <div class="container">
+                <ul class="nav-list">
+                    <li><a href="#all">All Products</a></li>
+                    <li><a href="#smart-home">Smart Home</a></li>
+                    <li><a href="#maintenance">Home Maintenance</a></li>
+                    <li><a href="#kitchen">Kitchen</a></li>
+                    <li><a href="#outdoor">Outdoor & Garden</a></li>
+                    <li><a href="#security">Security</a></li>
+                    <li><a href="#energy">Energy Efficiency</a></li>
+                    <li><a href="#cleaning">Cleaning</a></li>
+                    <li><a href="#bathroom">Bathroom</a></li>
+                    <li><a href="#bedroom">Bedroom & Living</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <h3>Filter Products</h3>
+            
+            <div class="filter-group">
+                <h4>Price Range</h4>
+                <div class="price-range">
+                    <input type="number" id="minPrice" placeholder="Min" min="0">
+                    <span>-</span>
+                    <input type="number" id="maxPrice" placeholder="Max" min="0">
+                </div>
+            </div>
+            
+            <div class="filter-group">
+                <h4>Rating</h4>
+                <div class="checkbox-group">
+                    <label>
+                        <input type="checkbox" value="4.5">
+                        4.5+ Stars
+                    </label>
+                    <label>
+                        <input type="checkbox" value="4.0">
+                        4.0+ Stars
+                    </label>
+                    <label>
+                        <input type="checkbox" value="3.5">
+                        3.5+ Stars
+                    </label>
+                </div>
+            </div>
+            
+            <div class="filter-group">
+                <h4>Categories</h4>
+                <div class="checkbox-group">
+                    <label>
+                        <input type="checkbox" value="smart-home">
+                        Smart Home
+                    </label>
+                    <label>
+                        <input type="checkbox" value="maintenance">
+                        Home Maintenance
+                    </label>
+                    <label>
+                        <input type="checkbox" value="kitchen">
+                        Kitchen
+                    </label>
+                    <label>
+                        <input type="checkbox" value="outdoor">
+                        Outdoor & Garden
+                    </label>
+                    <label>
+                        <input type="checkbox" value="security">
+                        Security
+                    </label>
+                    <label>
+                        <input type="checkbox" value="energy">
+                        Energy Efficiency
+                    </label>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Product Section -->
+        <section class="product-section">
+            <div class="section-header">
+                <h2 class="section-title">Recommended for Your Home</h2>
+                <select class="sort-dropdown" id="sortDropdown">
+                    <option value="recommended">Sort by: Recommended</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="price-high">Price: High to Low</option>
+                    <option value="rating">Customer Rating</option>
+                    <option value="newest">Newest</option>
+                </select>
+            </div>
+            
+            <div id="productGrid" class="product-grid">
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading products...</p>
+                </div>
+            </div>
+            
+            <div class="pagination" style="text-align: center; margin-top: 30px;">
+                <button class="btn btn-secondary">Previous</button>
+                <span style="margin: 0 20px;">1</span>
+                <button class="btn btn-secondary">Next</button>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        let currentProducts = [];
+        let filteredProducts = [];
+        let currentPage = 1;
+        const productsPerPage = 12;
+
+        // Sample product data
+        const sampleProducts = [
+            {
+                id: 1,
+                title: "Smart Home Security System",
+                price: 199.99,
+                rating: 4.5,
+                reviews: 128,
+                image: "https://via.placeholder.com/250x200/6366f1/ffffff?text=Security+System",
+                category: "security",
+                description: "Complete home security with smart cameras and sensors"
+            },
+            {
+                id: 2,
+                title: "Energy Efficient LED Light Bulbs",
+                price: 24.99,
+                rating: 4.3,
+                reviews: 89,
+                image: "https://via.placeholder.com/250x200/10b981/ffffff?text=LED+Bulbs",
+                category: "energy",
+                description: "Long-lasting LED bulbs that save energy and money"
+            },
+            {
+                id: 3,
+                title: "Smart Thermostat",
+                price: 149.99,
+                rating: 4.7,
+                reviews: 256,
+                image: "https://via.placeholder.com/250x200/f59e0b/ffffff?text=Thermostat",
+                category: "smart-home",
+                description: "WiFi-enabled thermostat for optimal home temperature control"
+            },
+            {
+                id: 4,
+                title: "Kitchen Faucet with Touch Technology",
+                price: 299.99,
+                rating: 4.4,
+                reviews: 67,
+                image: "https://via.placeholder.com/250x200/8b5cf6/ffffff?text=Kitchen+Faucet",
+                category: "kitchen",
+                description: "Touch-activated kitchen faucet for hands-free operation"
+            },
+            {
+                id: 5,
+                title: "Outdoor Security Camera",
+                price: 89.99,
+                rating: 4.2,
+                reviews: 143,
+                image: "https://via.placeholder.com/250x200/ef4444/ffffff?text=Outdoor+Camera",
+                category: "security",
+                description: "Weather-resistant outdoor security camera with night vision"
+            },
+            {
+                id: 6,
+                title: "Smart Door Lock",
+                price: 179.99,
+                rating: 4.6,
+                reviews: 92,
+                image: "https://via.placeholder.com/250x200/06b6d4/ffffff?text=Smart+Lock",
+                category: "security",
+                description: "Keyless entry smart lock with smartphone control"
+            }
+        ];
+
+        function loadProducts() {
+            if (typeof nestmateCatalog !== 'undefined') {
+                currentProducts = nestmateCatalog.getAllProducts();
+                filteredProducts = [...currentProducts];
+                displayProducts();
+            } else {
+                // Fallback if catalog not loaded
+                currentProducts = sampleProducts;
+                filteredProducts = [...currentProducts];
+                displayProducts();
+            }
+        }
+
+        function displayProducts() {
+            const productGrid = document.getElementById('productGrid');
+            
+            if (filteredProducts.length === 0) {
+                productGrid.innerHTML = '<div class="loading"><i class="fas fa-search"></i><p>No products found matching your criteria.</p></div>';
+                return;
+            }
+
+            const startIndex = (currentPage - 1) * productsPerPage;
+            const endIndex = startIndex + productsPerPage;
+            const productsToShow = filteredProducts.slice(startIndex, endIndex);
+
+            productGrid.innerHTML = productsToShow.map(product => `
+                <div class="product-card">
+                    <img src="${product.image}" alt="${product.title}" class="product-image">
+                    <h3 class="product-title">${product.title}</h3>
+                    <div class="product-rating">
+                        <div class="stars">
+                            ${'★'.repeat(Math.floor(product.rating))}${'☆'.repeat(5 - Math.floor(product.rating))}
+                        </div>
+                        <span class="rating-text">${product.rating} (${product.reviews})</span>
+                    </div>
+                    <div class="product-price">$${product.price}</div>
+                    <div class="product-actions">
+                        <button class="btn btn-primary" onclick="addToCart(${product.id})">
+                            <i class="fas fa-shopping-cart"></i>
+                            Add to Cart
+                        </button>
+                        <button class="btn btn-wishlist" onclick="addToWishlist(${product.id})">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function applyFilters() {
+            const minPrice = parseFloat(document.getElementById('minPrice').value) || 0;
+            const maxPrice = parseFloat(document.getElementById('maxPrice').value) || Infinity;
+            const selectedCategories = Array.from(document.querySelectorAll('.checkbox-group input[type="checkbox"]:checked')).map(cb => cb.value);
+            const selectedRatings = Array.from(document.querySelectorAll('.filter-group:last-of-type input[type="checkbox"]:checked')).map(cb => parseFloat(cb.value));
+
+            filteredProducts = currentProducts.filter(product => {
+                const priceMatch = product.price >= minPrice && product.price <= maxPrice;
+                const categoryMatch = selectedCategories.length === 0 || selectedCategories.includes(product.category);
+                const ratingMatch = selectedRatings.length === 0 || selectedRatings.some(rating => product.rating >= rating);
+                
+                return priceMatch && categoryMatch && ratingMatch;
+            });
+
+            currentPage = 1;
+            displayProducts();
+        }
+
+        function sortProducts(sortBy) {
+            switch(sortBy) {
+                case 'price-low':
+                    filteredProducts.sort((a, b) => a.price - b.price);
+                    break;
+                case 'price-high':
+                    filteredProducts.sort((a, b) => b.price - a.price);
+                    break;
+                case 'rating':
+                    filteredProducts.sort((a, b) => b.rating - a.rating);
+                    break;
+                case 'newest':
+                    filteredProducts.sort((a, b) => b.id - a.id);
+                    break;
+                default:
+                    // Keep original order for recommended
+                    break;
+            }
+            displayProducts();
+        }
+
+        function addToCart(productId) {
+            const product = currentProducts.find(p => p.id === productId);
+            if (product) {
+                alert(`Added "${product.title}" to cart!`);
+                // Update cart count
+                const cartCount = document.querySelector('.cart-count');
+                cartCount.textContent = parseInt(cartCount.textContent) + 1;
+            }
+        }
+
+        function addToWishlist(productId) {
+            const product = currentProducts.find(p => p.id === productId);
+            if (product) {
+                alert(`Added "${product.title}" to wishlist!`);
+            }
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProducts();
+            
+            // Filter event listeners
+            document.querySelectorAll('.checkbox-group input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', applyFilters);
+            });
+            
+            document.getElementById('minPrice').addEventListener('change', applyFilters);
+            document.getElementById('maxPrice').addEventListener('change', applyFilters);
+            
+            // Sort event listener
+            document.getElementById('sortDropdown').addEventListener('change', function() {
+                sortProducts(this.value);
+            });
+        });
+    </script>
+</body>
+</html>
