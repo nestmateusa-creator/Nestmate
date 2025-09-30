@@ -563,8 +563,8 @@
             
             <div id="productGrid" class="product-grid">
                 <div class="loading">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    <p>Loading products...</p>
+                    <i class="fas fa-store"></i>
+                    <p>Store is currently empty. Products will be added soon!</p>
                 </div>
             </div>
             
@@ -582,69 +582,8 @@
         let currentPage = 1;
         const productsPerPage = 12;
 
-        // Sample product data
-        const sampleProducts = [
-            {
-                id: 1,
-                title: "Smart Home Security System",
-                price: 199.99,
-                rating: 4.5,
-                reviews: 128,
-                image: "https://via.placeholder.com/250x200/6366f1/ffffff?text=Security+System",
-                category: "security",
-                description: "Complete home security with smart cameras and sensors"
-            },
-            {
-                id: 2,
-                title: "Energy Efficient LED Light Bulbs",
-                price: 24.99,
-                rating: 4.3,
-                reviews: 89,
-                image: "https://via.placeholder.com/250x200/10b981/ffffff?text=LED+Bulbs",
-                category: "energy",
-                description: "Long-lasting LED bulbs that save energy and money"
-            },
-            {
-                id: 3,
-                title: "Smart Thermostat",
-                price: 149.99,
-                rating: 4.7,
-                reviews: 256,
-                image: "https://via.placeholder.com/250x200/f59e0b/ffffff?text=Thermostat",
-                category: "smart-home",
-                description: "WiFi-enabled thermostat for optimal home temperature control"
-            },
-            {
-                id: 4,
-                title: "Kitchen Faucet with Touch Technology",
-                price: 299.99,
-                rating: 4.4,
-                reviews: 67,
-                image: "https://via.placeholder.com/250x200/8b5cf6/ffffff?text=Kitchen+Faucet",
-                category: "kitchen",
-                description: "Touch-activated kitchen faucet for hands-free operation"
-            },
-            {
-                id: 5,
-                title: "Outdoor Security Camera",
-                price: 89.99,
-                rating: 4.2,
-                reviews: 143,
-                image: "https://via.placeholder.com/250x200/ef4444/ffffff?text=Outdoor+Camera",
-                category: "security",
-                description: "Weather-resistant outdoor security camera with night vision"
-            },
-            {
-                id: 6,
-                title: "Smart Door Lock",
-                price: 179.99,
-                rating: 4.6,
-                reviews: 92,
-                image: "https://via.placeholder.com/250x200/06b6d4/ffffff?text=Smart+Lock",
-                category: "security",
-                description: "Keyless entry smart lock with smartphone control"
-            }
-        ];
+        // Product data - currently empty
+        const sampleProducts = [];
 
         function loadProducts() {
             if (typeof nestmateCatalog !== 'undefined') {
@@ -663,7 +602,7 @@
             const productGrid = document.getElementById('productGrid');
             
             if (filteredProducts.length === 0) {
-                productGrid.innerHTML = '<div class="loading"><i class="fas fa-search"></i><p>No products found matching your criteria.</p></div>';
+                productGrid.innerHTML = '<div class="loading"><i class="fas fa-store"></i><p>Store is currently empty. Products will be added soon!</p></div>';
                 return;
             }
 
