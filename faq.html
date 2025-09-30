@@ -1,372 +1,1183 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FAQ - NestMate | Home Management Questions & Answers</title>
-    <meta name="description" content="Frequently Asked Questions about NestMate home management software. Get answers about features, pricing, support, and more.">
-    <meta name="keywords" content="home management FAQ, NestMate questions, home organization help, property management support, home maintenance software">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;500&family=Inter:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root {
-            --primary: #2563eb;
-            --accent: #facc15;
-            --bg: #f8fafc;
-            --card: #fff;
-            --radius: 18px;
-            --shadow: 0 4px 32px rgba(37,99,235,0.10);
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(120deg, #e0e7ff 0%, #f8fafc 100%);
-            color: #1e293b;
-            line-height: 1.6;
-        }
-        
-        header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 32px 8vw 0 8vw;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            font-size: 2.2rem;
-            font-weight: 800;
-            color: var(--primary);
-            letter-spacing: -1px;
-            text-decoration: none;
-        }
-        
-        nav {
-            display: flex;
-            gap: 18px;
-        }
-        
-        nav a {
-            text-decoration: none;
-            color: var(--primary);
-            font-weight: 700;
-            font-size: 1.1rem;
-            padding: 8px 20px;
-            border-radius: 10px;
-            transition: background 0.18s, color 0.18s;
-        }
-        
-        nav a.cta {
-            background: var(--primary);
-            color: #fff;
-            box-shadow: 0 2px 8px rgba(37,99,235,0.10);
-        }
-        
-        nav a:hover:not(.cta) {
-            background: #e0e7ff;
-            color: #1d4ed8;
-        }
-        
-        .faq-hero {
-            max-width: 900px;
-            margin: 48px auto 0 auto;
-            text-align: center;
-            padding: 0 8vw;
-        }
-        
-        .faq-title {
-            font-size: 2.5rem;
-            font-weight: 900;
-            color: var(--primary);
-            margin-bottom: 16px;
-            letter-spacing: -2px;
-        }
-        
-        .faq-desc {
-            font-size: 1.25rem;
-            color: #334155;
-            margin-bottom: 40px;
-            font-weight: 500;
-        }
-        
-        .faq-container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 0 8vw 80px 8vw;
-        }
-        
-        .faq-item {
-            background: var(--card);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            margin-bottom: 20px;
-            overflow: hidden;
-            border: 1px solid #e5e7eb;
-        }
-        
-        .faq-question {
-            padding: 24px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 700;
-            font-size: 1.1rem;
-            color: var(--primary);
-            transition: background 0.2s;
-        }
-        
-        .faq-question:hover {
-            background: #f8fafc;
-        }
-        
-        .faq-answer {
-            padding: 0 24px 24px 24px;
-            color: #64748b;
-            line-height: 1.7;
-            display: none;
-        }
-        
-        .faq-answer.active {
-            display: block;
-        }
-        
-        .faq-icon {
-            transition: transform 0.2s;
-        }
-        
-        .faq-item.active .faq-icon {
-            transform: rotate(180deg);
-        }
-        
-        .search-box {
-            max-width: 600px;
-            margin: 0 auto 40px auto;
-            position: relative;
-        }
-        
-        .search-input {
-            width: 100%;
-            padding: 16px 20px 16px 50px;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            background: var(--card);
-            transition: border-color 0.2s;
-        }
-        
-        .search-input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-        
-        .search-icon {
-            position: absolute;
-            left: 18px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #9ca3af;
-        }
-        
-        footer {
-            text-align: center;
-            margin: 64px 0 24px 0;
-            color: #64748b;
-            font-size: 1.05rem;
-        }
-        
-        @media (max-width: 768px) {
-            .faq-title {
-                font-size: 2rem;
-            }
-            
-            .faq-question {
-                font-size: 1rem;
-                padding: 20px;
-            }
-            
-            .faq-answer {
-                padding: 0 20px 20px 20px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FAQ - Home Management Questions | NestMate Smart Home Organizer</title>
+  <meta name="description" content="Frequently asked questions about NestMate home management software, property maintenance tracking, home organization system, smart home solutions, and residential property management tools.">
+  <meta name="keywords" content="home management FAQ, property management questions, home maintenance software, smart home organizer, residential property tracking, home organization system, property value increase, maintenance schedule software, home warranty tracking, property documentation, home improvement planning, real estate management, homeowner tools, house maintenance tracker, property care system, home data management, maintenance reminder app, home intelligence platform, property management solutions, smart property tracking, home automation system, residential management software, property maintenance planner, home care organizer, house management system, property value optimizer, home renovation tracker, maintenance scheduling tool, home document storage, property assessment software, homeowner dashboard, house health score, property analytics, home improvement ROI, maintenance cost tracker, property inspection software, home warranty management, residential property tools, smart maintenance system, home efficiency tracker, property value assessment, home management platform, maintenance prediction software, property documentation system, home improvement software, residential care platform, smart home dashboard, property optimization tools, home maintenance planner, house management app, property tracking system, home organization software, maintenance automation tools, property care management, home intelligence software, residential property platform, smart property management, home care solutions, house maintenance system, property management platform, home efficiency software, maintenance tracking app, property care tools, home management solutions, residential optimization software, smart home management, property tracking platform, home care system, house organization tools, property maintenance app, home intelligence system, residential management platform">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --primary-light: #818cf8;
+      --secondary: #f59e0b;
+      --accent: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --success: #10b981;
+      
+      --bg-primary: #0f0f23;
+      --bg-secondary: #1a1a2e;
+      --bg-tertiary: #16213e;
+      --bg-card: #1e293b;
+      --bg-glass: rgba(30, 41, 59, 0.8);
+      
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      
+      --border: #334155;
+      --border-light: #475569;
+      
+      --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+      --gradient-secondary: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+      --gradient-accent: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      --gradient-bg: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+      
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.3);
+      
+      --radius: 12px;
+      --radius-lg: 20px;
+      --radius-xl: 32px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background: var(--gradient-bg);
+    }
+
+    .bg-animation::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 40% 40%, rgba(217, 70, 239, 0.1) 0%, transparent 50%);
+      animation: float 20s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      33% { transform: translateY(-20px) rotate(1deg); }
+      66% { transform: translateY(10px) rotate(-1deg); }
+    }
+
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      transition: all 0.3s ease;
+    }
+
+    .navbar.scrolled {
+      background: rgba(15, 15, 35, 0.95);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .nav-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--gradient-primary);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.2rem;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .nav-links a:hover {
+      color: var(--text-primary);
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--gradient-primary);
+      transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: var(--radius);
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: var(--gradient-primary);
+      color: white;
+      box-shadow: var(--shadow-glow);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-card);
+      border-color: var(--primary);
+    }
+
+    .hero {
+      min-height: 70vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 0 2rem;
+      position: relative;
+    }
+
+    .hero-content {
+      max-width: 1000px;
+      z-index: 10;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      padding: 0.75rem 1.5rem;
+      border-radius: 50px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 2rem;
+    }
+
+    .hero-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(3rem, 8vw, 5rem);
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-subtitle {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      margin-bottom: 3rem;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .search-box {
+      max-width: 600px;
+      margin: 0 auto 4rem;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 1.25rem 1.5rem 1.25rem 3.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      font-size: 1.1rem;
+      color: var(--text-primary);
+      transition: all 0.3s ease;
+    }
+
+    .search-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 1.25rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 1.25rem;
+    }
+
+    .faq-section {
+      padding: 2rem 2rem 6rem;
+    }
+
+    .faq-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .faq-category {
+      margin-bottom: 4rem;
+    }
+
+    .category-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 2rem;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .faq-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .faq-item:hover {
+      border-color: var(--primary);
+    }
+
+    .faq-question {
+      padding: 1.5rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: var(--text-primary);
+      user-select: none;
+    }
+
+    .faq-question:hover {
+      background: var(--bg-tertiary);
+    }
+
+    .faq-icon {
+      color: var(--primary);
+      transition: transform 0.3s ease;
+      font-size: 1.25rem;
+    }
+
+    .faq-item.active .faq-icon {
+      transform: rotate(180deg);
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      padding: 0 1.5rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    .faq-item.active .faq-answer {
+      max-height: 500px;
+      padding: 0 1.5rem 1.5rem;
+    }
+
+    .faq-answer p {
+      margin-bottom: 1rem;
+    }
+
+    .faq-answer ul {
+      margin: 1rem 0;
+      padding-left: 1.5rem;
+    }
+
+    .faq-answer li {
+      margin-bottom: 0.5rem;
+    }
+
+    .cta-section {
+      padding: 4rem 2rem;
+      text-align: center;
+      background: var(--bg-secondary);
+    }
+
+    .cta-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .cta-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .cta-subtitle {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+    }
+
+    .cta-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .footer {
+      padding: 2rem;
+      background: var(--bg-primary);
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    .mobile-menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .mobile-nav {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--bg-primary);
+      z-index: 9999;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+
+    .mobile-nav.active {
+      display: block;
+    }
+
+    .mobile-nav-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .mobile-nav-close {
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      font-size: 2rem;
+      cursor: pointer;
+    }
+
+    .mobile-nav-links {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .mobile-nav-links li {
+      margin-bottom: 1rem;
+    }
+
+    .mobile-nav-links a {
+      color: var(--text-primary);
+      text-decoration: none;
+      font-size: 1.2rem;
+      font-weight: 500;
+      display: block;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .mobile-nav-actions {
+      margin-top: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+
+      .mobile-menu-toggle {
+        display: block;
+      }
+
+      .nav-container {
+        padding: 1rem;
+      }
+
+      .hero {
+        padding: 2rem 1rem;
+        min-height: 60vh;
+      }
+
+      .hero-title {
+        font-size: clamp(2.5rem, 6vw, 3.5rem);
+      }
+
+      .hero-subtitle {
+        font-size: 1.1rem;
+      }
+
+      .faq-section {
+        padding: 2rem 1rem 4rem;
+      }
+
+      .category-title {
+        font-size: 1.8rem;
+      }
+
+      .faq-question {
+        padding: 1.25rem;
+        font-size: 1rem;
+      }
+
+      .faq-answer {
+        font-size: 0.95rem;
+      }
+
+      .cta-title {
+        font-size: 2rem;
+      }
+
+      .cta-actions {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .btn {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+      }
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      display: none;
+    }
+
+    .no-results.active {
+      display: block;
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <a href="index.html" class="brand">
-            <svg viewBox="0 0 64 64" width="36" height="36" fill="currentColor"><path d="M32 4 L4 28 H12 V60 H26 V40 H38 V60 H52 V28 H60 Z"/></svg>
-            NestMate
-        </a>
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="about.html">About</a>
-            <a href="contact.html">Contact</a>
-            <a href="pricing.html">Pricing</a>
-            <a href="signin.html" class="cta">Sign In</a>
-        </nav>
-    </header>
+  <div class="bg-animation"></div>
 
-    <section class="faq-hero">
-        <h1 class="faq-title">Frequently Asked Questions</h1>
-        <p class="faq-desc">Everything you need to know about NestMate home management</p>
-    </section>
-
-    <div class="faq-container">
-        <div class="search-box">
-            <i class="fas fa-search search-icon"></i>
-            <input type="text" class="search-input" placeholder="Search FAQs..." id="searchInput">
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="logo">
+        <div class="logo-icon">
+          <i class="fas fa-home"></i>
         </div>
-
-        <div class="faq-item">
-            <div class="faq-question" onclick="toggleFAQ(this)">
-                <span>What is NestMate?</span>
-                <i class="fas fa-chevron-down faq-icon"></i>
-            </div>
-            <div class="faq-answer">
-                <p>NestMate is a comprehensive home management platform that helps you organize, track, and maintain your home. From basic home details to advanced family collaboration, NestMate provides everything you need to keep your home in perfect condition.</p>
-            </div>
-        </div>
-
-        <div class="faq-item">
-            <div class="faq-question" onclick="toggleFAQ(this)">
-                <span>What are the different pricing plans?</span>
-                <i class="fas fa-chevron-down faq-icon"></i>
-            </div>
-            <div class="faq-answer">
-                <p>We offer three plans: Basic ($5/month) for single home management, Pro ($10/month) for unlimited homes and advanced features, and Advanced Pro ($16/month) for family collaboration and premium services. All plans include a 30-day free trial.</p>
-            </div>
-        </div>
-
-        <div class="faq-item">
-            <div class="faq-question" onclick="toggleFAQ(this)">
-                <span>How does the 30-day free trial work?</span>
-                <i class="fas fa-chevron-down faq-icon"></i>
-            </div>
-            <div class="faq-answer">
-                <p>You can try any of our plans for 30 days completely free. No credit card required to start. You'll have full access to all features of your chosen plan during the trial period.</p>
-            </div>
-        </div>
-
-        <div class="faq-item">
-            <div class="faq-question" onclick="toggleFAQ(this)">
-                <span>Can I manage multiple homes?</span>
-                <i class="fas fa-chevron-down faq-icon"></i>
-            </div>
-            <div class="faq-answer">
-                <p>Yes! Pro and Advanced Pro plans allow you to manage unlimited homes. Basic plan is limited to one home. Perfect for property managers, real estate investors, or families with multiple properties.</p>
-            </div>
-        </div>
-
-        <div class="faq-item">
-            <div class="faq-question" onclick="toggleFAQ(this)">
-                <span>What is the Home Health Score?</span>
-                <i class="fas fa-chevron-down faq-icon"></i>
-            </div>
-            <div class="faq-answer">
-                <p>The Home Health Score is a comprehensive assessment of your home's condition across multiple categories including HVAC, plumbing, electrical, structural, safety, and energy efficiency. Available in Pro and Advanced Pro plans.</p>
-            </div>
-        </div>
-
-        <div class="faq-item">
-            <div class="faq-question" onclick="toggleFAQ(this)">
-                <span>How does family collaboration work?</span>
-                <i class="fas fa-chevron-down faq-icon"></i>
-            </div>
-            <div class="faq-answer">
-                <p>Advanced Pro plan allows up to 5 family members to collaborate. Share tasks, manage budgets together, assign responsibilities, and track family activity in real-time through our family dashboard.</p>
-            </div>
-        </div>
-
-        <div class="faq-item">
-            <div class="faq-question" onclick="toggleFAQ(this)">
-                <span>Can I export my data?</span>
-                <i class="fas fa-chevron-down faq-icon"></i>
-            </div>
-            <div class="faq-answer">
-                <p>Yes! All plans include data export capabilities. Basic plan offers standard export, while Pro and Advanced Pro plans include advanced export options with detailed reports and analytics.</p>
-            </div>
-        </div>
-
-        <div class="faq-item">
-            <div class="faq-question" onclick="toggleFAQ(this)">
-                <span>What kind of support do you offer?</span>
-                <i class="fas fa-chevron-down faq-icon"></i>
-            </div>
-            <div class="faq-answer">
-                <p>Basic plan includes standard support. Pro plan offers VIP priority support for faster response times. Advanced Pro plan provides family-first support with dedicated assistance for family collaboration features.</p>
-            </div>
-        </div>
-
-        <div class="faq-item">
-            <div class="faq-question" onclick="toggleFAQ(this)">
-                <span>Is my data secure?</span>
-                <i class="fas fa-chevron-down faq-icon"></i>
-            </div>
-            <div class="faq-answer">
-                <p>Absolutely! We use enterprise-grade security with encrypted data storage, secure authentication, and regular backups. Your home data is protected with the same security standards used by major financial institutions.</p>
-            </div>
-        </div>
-
-        <div class="faq-item">
-            <div class="faq-question" onclick="toggleFAQ(this)">
-                <span>Can I cancel anytime?</span>
-                <i class="fas fa-chevron-down faq-icon"></i>
-            </div>
-            <div class="faq-answer">
-                <p>Yes! You can cancel your subscription at any time. There are no long-term contracts or cancellation fees. You'll continue to have access until the end of your current billing period.</p>
-            </div>
-        </div>
+        NestMate
+      </a>
+      
+      <ul class="nav-links">
+        <li><a href="index.html#features">Features</a></li>
+        <li><a href="index.html#demo">Demo</a></li>
+        <li><a href="index.html#pricing">Pricing</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+      </ul>
+      
+      <div class="nav-actions">
+        <a href="signin.html" class="btn btn-secondary">Sign In</a>
+        <a href="signin.html?tab=signup" class="btn btn-primary">Get Started</a>
+        <button class="mobile-menu-toggle" id="mobileMenuToggle">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
     </div>
+  </nav>
 
-    <footer>
-        &copy; 2025 NestMate. Your home, organized.
-    </footer>
+  <div class="mobile-nav" id="mobileNav">
+    <div class="mobile-nav-header">
+      <div class="logo">
+        <div class="logo-icon">
+          <i class="fas fa-home"></i>
+        </div>
+        NestMate
+      </div>
+      <button class="mobile-nav-close" id="mobileNavClose">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <ul class="mobile-nav-links">
+      <li><a href="index.html#features" onclick="closeMobileNav()">Features</a></li>
+      <li><a href="index.html#demo" onclick="closeMobileNav()">Demo</a></li>
+      <li><a href="index.html#pricing" onclick="closeMobileNav()">Pricing</a></li>
+      <li><a href="about.html" onclick="closeMobileNav()">About</a></li>
+      <li><a href="faq.html" onclick="closeMobileNav()">FAQ</a></li>
+    </ul>
+    
+    <div class="mobile-nav-actions">
+      <a href="signin.html" class="btn btn-secondary" onclick="closeMobileNav()">Sign In</a>
+      <a href="signin.html?tab=signup" class="btn btn-primary" onclick="closeMobileNav()">Get Started</a>
+    </div>
+  </div>
 
-    <script>
-        function toggleFAQ(element) {
-            const faqItem = element.parentElement;
-            const answer = faqItem.querySelector('.faq-answer');
-            const icon = element.querySelector('.faq-icon');
-            
-            // Close all other FAQ items
-            document.querySelectorAll('.faq-item').forEach(item => {
-                if (item !== faqItem) {
-                    item.classList.remove('active');
-                    item.querySelector('.faq-answer').classList.remove('active');
-                }
-            });
-            
-            // Toggle current FAQ item
-            faqItem.classList.toggle('active');
-            answer.classList.toggle('active');
-        }
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">
+        <i class="fas fa-question-circle"></i>
+        Your Questions Answered
+      </div>
+      
+      <h1 class="hero-title">
+        Frequently Asked<br>
+        Questions
+      </h1>
+      
+      <p class="hero-subtitle">
+        Everything you need to know about NestMate home management software, property tracking, 
+        maintenance scheduling, and smart home organization solutions.
+      </p>
+      
+      <div class="search-box">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" class="search-input" id="searchInput" placeholder="Search FAQs about home management, property tracking, maintenance...">
+      </div>
+    </div>
+  </section>
 
-        // Search functionality
-        document.getElementById('searchInput').addEventListener('input', function(e) {
-            const searchTerm = e.target.value.toLowerCase();
-            const faqItems = document.querySelectorAll('.faq-item');
-            
-            faqItems.forEach(item => {
-                const question = item.querySelector('.faq-question span').textContent.toLowerCase();
-                const answer = item.querySelector('.faq-answer').textContent.toLowerCase();
-                
-                if (question.includes(searchTerm) || answer.includes(searchTerm)) {
-                    item.style.display = 'block';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
+  <section class="faq-section">
+    <div class="faq-container">
+      
+      <!-- Getting Started -->
+      <div class="faq-category">
+        <h2 class="category-title">Getting Started</h2>
+        
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            <span>What is NestMate home management software and how does it work?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </div>
+          <div class="faq-answer">
+            <p>NestMate is a comprehensive home management platform designed for homeowners, property managers, and real estate professionals. Our smart home organization system helps you track every detail of your property including maintenance schedules, warranty information, home improvements, and property documentation.</p>
+            <p>NestMate combines AI-powered insights with professional services to help you increase your property value by 15% or more through proper documentation and proactive maintenance. Our residential property management software features include maintenance reminders, home health scores, budget tracking, and family collaboration tools.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            <span>How do I create a NestMate account and start managing my home?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </div>
+          <div class="faq-answer">
+            <p>Getting started with NestMate home organization software is simple:</p>
+            <ul>
+              <li>Click "Get Started" and choose your property management plan (Basic, Pro, or Advanced Pro)</li>
+              <li>Create your account with email and password for secure home data storage</li>
+              <li>Enter your home details including property information, square footage, and year built</li>
+              <li>Start adding maintenance records, warranty information, and home improvement documentation</li>
+              <li>Set up AI-powered maintenance reminders and track your home health score</li>
+            </ul>
+            <p>All plans include a 30-day free trial with full access to our smart home management features. No credit card required for the trial period.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            <span>What's the difference between Basic, Pro, and Advanced Pro plans?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </div>
+          <div class="faq-answer">
+            <p><strong>Basic Plan ($5/month):</strong> Perfect for single-home management. Includes basic home tracking, 10 tasks, service records, warranty tracking, and standard support. Ideal for first-time homeowners and apartment dwellers.</p>
+            <p><strong>Pro Plan ($10/month):</strong> Best for serious homeowners and property managers. Features unlimited homes, unlimited tasks, home health scores, AI-powered insights, price tracking, professional floor plans, Amazon product recommendations, and VIP support.</p>
+            <p><strong>Advanced Pro Plan ($16/month):</strong> Ultimate property management solution. Includes everything in Pro plus family collaboration (5 members), advanced analytics, premium export options, priority technician services, and dedicated family support.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Features & Functionality -->
+      <div class="faq-category">
+        <h2 class="category-title">Features & Functionality</h2>
+        
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            <span>What is the Home Health Score and how does it help my property maintenance?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </div>
+          <div class="faq-answer">
+            <p>The Home Health Score is our AI-powered property assessment system that analyzes your home's condition across multiple categories:</p>
+            <ul>
+              <li><strong>HVAC Systems:</strong> Heating, cooling, and ventilation maintenance tracking</li>
+              <li><strong>Plumbing:</strong> Water systems, pipes, and fixture condition monitoring</li>
+              <li><strong>Electrical:</strong> Wiring, outlets, and electrical safety assessment</li>
+              <li><strong>Structural:</strong> Foundation, roof, walls, and building integrity</li>
+              <li><strong>Safety:</strong> Smoke detectors, carbon monoxide, and security systems</li>
+              <li><strong>Energy Efficiency:</strong> Insulation, windows, and utility optimization</li>
+            </ul>
+            <p>Your Home Health Score uses predictive analytics to identify potential issues before they become expensive repairs, helping homeowners save an average of $847 annually on maintenance costs.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            <span>How does NestMate's AI-powered maintenance prediction work?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </div>
+          <div class="faq-answer">
+            <p>NestMate's smart maintenance system uses machine learning algorithms with 94% prediction accuracy to analyze your property data:</p>
+            <ul>
+              <li>Analyzes maintenance history and equipment age to predict future service needs</li>
+              <li>Sends automated reminders before warranties expire (saving thousands in replacement costs)</li>
+              <li>Identifies seasonal maintenance requirements for optimal home performance</li>
+              <li>Detects patterns that indicate potential issues (like HVAC efficiency decline)</li>
+              <li>Recommends cost-effective improvements to increase property value</li>
+            </ul>
+            <p>Our AI system learns from over 15,000 homes managed on NestMate, providing you with data-driven insights for proactive property care.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            <span>Can I create and save floor plans for my home or rental property?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </div>
+          <div class="faq-answer">
+            <p>Yes! NestMate includes professional floor plan features:</p>
+            <ul>
+              <li><strong>Basic Plan:</strong> Upload existing floor plans and property blueprints</li>
+              <li><strong>Pro & Advanced Pro Plans:</strong> Interactive floor plan designer with grid-style drawing, architectural symbols for doors and windows, furniture placement tools, electrical outlet mapping, dimension lines (feet/inches), curved wall support, and 3D view capability</li>
+            </ul>
+            <p>Use floor plans for home renovation planning, room measurements, furniture arrangement, contractor communication, and property documentation. Save multiple versions and track changes over time.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            <span>How does family collaboration work for shared home management?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </div>
+          <div class="faq-answer">
+            <p>Advanced Pro plan includes family collaboration features for up to 5 members:</p>
+            <ul>
+              <li>Shared access to all home data, maintenance records, and documents</li>
+              <li>Assign tasks to family members with automated notifications</li>
+              <li>Track who completed which maintenance activities</li>
+              <li>Shared budget tracking and expense management</li>
+              <li>Family activity log for transparency and accountability</li>
+              <li>Individual permissions for sensitive financial information</li>
+            </ul>
+            <p>Perfect for couples, families with adult children, or multigenerational homes managing property together.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pricing & Plans -->
+      <div class="faq-category">
+        <h2 class="category-title">Pricing & Plans</h2>
+        
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            <span>How does the 30-day free trial work for home management software?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </div>
+          <div class="faq-answer">
+            <p>Try NestMate risk-free with our 30-day trial:</p>
+            <ul>
+              <li>Full access to all features in your chosen plan (Basic, Pro, or Advanced Pro)</li>
+              <li>No credit card required to start your home management trial</li>
+              <li>Cancel anytime during the trial period with no charges</li>
+              <li>Keep all your data if you decide to subscribe after the trial</li>
+              <li>24/7 support available even during your free trial</li>
+            </ul>
+            <p>Our 30-day trial gives you plenty of time to experience how NestMate can help you organize your home, save money on maintenance, and increase your property value.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            <span>Can I manage multiple properties with one NestMate account?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </div>
+          <div class="faq-answer">
+            <p>Yes! Pro and Advanced Pro plans support unlimited properties:</p>
+            <ul>
+              <li>Perfect for landlords managing rental properties</li>
+              <li>Ideal for real estate investors tracking multiple homes</li>
+              <li>Great for families with vacation homes or investment properties</li>
+              <li>Each property has separate maintenance records, budgets, and health scores</li>
+              <li>Switch between properties instantly in your dashboard</li>
+            </ul>
+            <p>Basic plan is limited to one home. Upgrade to Pro ($10/month) for unlimited property management capabilities.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            <span>What payment methods do you accept and is billing secure?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </div>
+          <div class="faq-answer">
+            <p>NestMate accepts all major payment methods through Stripe:</p>
+            <ul>
+              <li>Visa, Mastercard, American Express, Discover credit cards</li>
+              <li>Debit cards from major banks</li>
+              <li>Apple Pay and Google Pay for convenient mobile payments</li>
+              <li>Bank account transfers (ACH) for Pro and Advanced Pro plans</li>
+            </ul>
+            <p>All payments are processed securely through Stripe with bank-level 256-bit encryption. We never store your payment information on our servers. You can update or change payment methods anytime in your account settings.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            <span>Can I upgrade, downgrade, or cancel my subscription anytime?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </div>
+          <div class="faq-answer">
+            <p>Absolutely! NestMate offers flexible subscription management:</p>
+            <ul>
+              <li><strong>Upgrade:</strong> Switch to a higher plan instantly and get immediate access to premium features</li>
+              <li><strong>Downgrade:</strong> Move to a lower plan at the end of your current billing cycle</li>
+              <li><strong>Cancel:</strong> Cancel anytime with no fees or penalties</li>
+              <li>Keep access until the end of your paid period even after canceling</li>
+              <li>Export all your home data before canceling (no lock-in)</li>
+            </ul>
+            <p>Manage your subscription through your account settings or Stripe customer portal. No customer service calls required.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Technical & Security -->
+      <div class="faq-category">
+        <h2 class="category-title">Technical & Security</h2>
+        
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            <span>Is my home data secure and how is my personal information protected?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </div>
+          <div class="faq-answer">
+            <p>NestMate takes data security seriously with enterprise-grade protection:</p>
+            <ul>
+              <li><strong>256-bit encryption:</strong> Bank-level security for all data transmission and storage</li>
+              <li><strong>Secure authentication:</strong> Firebase authentication with multi-factor options</li>
+              <li><strong>Regular backups:</strong> Automated daily backups with 99.9% uptime guarantee</li>
+              <li><strong>Privacy controls:</strong> You own your data and can export or delete it anytime</li>
+              <li><strong>Compliance:</strong> SOC 2 Type II certified infrastructure</li>
+              <li><strong>No data selling:</strong> We never sell your home information to third parties</li>
+            </ul>
+            <p>Your property information, maintenance records, and financial data are protected with the same security standards used by major financial institutions.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            <span>Can I access NestMate on mobile devices and tablets?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </div>
+          <div class="faq-answer">
+            <p>Yes! NestMate is fully responsive and mobile-optimized:</p>
+            <ul>
+              <li>Access your home management dashboard from any smartphone or tablet</li>
+              <li>Responsive design works perfectly on iOS (iPhone, iPad) and Android devices</li>
+              <li>Mobile-optimized interface for easy data entry and viewing</li>
+              <li>Sync automatically across all your devices (desktop, mobile, tablet)</li>
+              <li>Available 24/7 from anywhere with internet connection</li>
+            </ul>
+            <p>No app download required - access NestMate directly through your mobile browser. All features work seamlessly on mobile devices.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            <span>Can I export my home maintenance data and property records?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </div>
+          <div class="faq-answer">
+            <p>Yes! All NestMate plans include data export capabilities:</p>
+            <ul>
+              <li><strong>Basic Plan:</strong> Export to CSV and PDF formats</li>
+              <li><strong>Pro Plan:</strong> Advanced export with detailed reports and analytics</li>
+              <li><strong>Advanced Pro Plan:</strong> Premium export options including Excel, JSON, and custom reports</li>
+            </ul>
+            <p>Export options include:</p>
+            <ul>
+              <li>Complete maintenance history and service records</li>
+              <li>Warranty information and expiration dates</li>
+              <li>Budget tracking and expense reports</li>
+              <li>Home improvement documentation</li>
+              <li>Property photos and floor plans</li>
+            </ul>
+            <p>Perfect for real estate transactions, insurance claims, tax deductions, and property management reporting.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Professional Services -->
+      <div class="faq-category">
+        <h2 class="category-title">Professional Services</h2>
+        
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            <span>What is the Professional Home Intelligence Service?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </div>
+          <div class="faq-answer">
+            <p>Don't know anything about your home? No worries! Our certified technicians have you covered.</p>
+            <p>Professional Home Intelligence Service includes:</p>
+            <ul>
+              <li>Complete property assessment and documentation</li>
+              <li>Record all home specifications (windows, doors, trim, flooring, fixtures)</li>
+              <li>Photograph and catalog all major systems and appliances</li>
+              <li>Document warranty information and model numbers</li>
+              <li>Create maintenance schedule based on your home's needs</li>
+              <li>Set up your NestMate dashboard with all collected data</li>
+              <li>Provide home health assessment and improvement recommendations</li>
+            </ul>
+            <p>Pricing: $0.25 per square foot base rate × 2.0 premium service multiplier. For a 1,500 sq ft home, that's $750. Use the interactive slider on our home page to calculate your exact cost.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            <span>How do I schedule a technician visit for home documentation?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </div>
+          <div class="faq-answer">
+            <p>Booking our Professional Home Intelligence Service is easy:</p>
+            <ul>
+              <li>Navigate to the "Technician Service" section in your Pro or Advanced Pro dashboard</li>
+              <li>Use the square footage slider to see your exact service cost</li>
+              <li>Click "Book This Service" to open the booking form</li>
+              <li>Select your preferred date and time slot</li>
+              <li>Add any special instructions or areas of concern</li>
+              <li>Confirm your booking and receive email confirmation</li>
+            </ul>
+            <p>Our certified technicians serve homeowners nationwide. Average visit time is 2-4 hours depending on home size and complexity.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Support & Help -->
+      <div class="faq-category">
+        <h2 class="category-title">Support & Help</h2>
+        
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            <span>What kind of customer support does NestMate provide?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </div>
+          <div class="faq-answer">
+            <p>NestMate offers comprehensive support for all users:</p>
+            <ul>
+              <li><strong>Basic Plan:</strong> Standard email support with 24-48 hour response time</li>
+              <li><strong>Pro Plan:</strong> VIP priority support with 12-hour response guarantee</li>
+              <li><strong>Advanced Pro Plan:</strong> Family-first dedicated support with 4-hour response time</li>
+            </ul>
+            <p>All plans include:</p>
+            <ul>
+              <li>Comprehensive FAQ and knowledge base</li>
+              <li>Video tutorials for all features</li>
+              <li>Email support at support@nestmate.com</li>
+              <li>Community forum for tips and best practices</li>
+            </ul>
+            <p>Our 98% customer satisfaction rate reflects our commitment to helping you succeed with home management.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            <span>How does NestMate help increase my property value?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </div>
+          <div class="faq-answer">
+            <p>NestMate helps homeowners increase property value by 15% or more through:</p>
+            <ul>
+              <li><strong>Complete documentation:</strong> Buyers pay premium for well-documented homes</li>
+              <li><strong>Maintenance records:</strong> Prove consistent care and upkeep</li>
+              <li><strong>Improvement tracking:</strong> Show ROI on renovations and upgrades</li>
+              <li><strong>Warranty transfers:</strong> Transferable warranties add value</li>
+              <li><strong>Energy efficiency:</strong> Track utility costs and improvements</li>
+              <li><strong>Preventive maintenance:</strong> Avoid condition issues that reduce value</li>
+            </ul>
+            <p>Real example: NestMate user David Rodriguez increased his Denver home's value by $45,000 due to complete documentation when selling.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            <span>What if I need help setting up my home management dashboard?</span>
+            <i class="fas fa-chevron-down faq-icon"></i>
+          </div>
+          <div class="faq-answer">
+            <p>We make getting started easy:</p>
+            <ul>
+              <li>Step-by-step onboarding wizard guides you through initial setup</li>
+              <li>Video tutorials show you how to use each feature</li>
+              <li>Email support team helps with any questions (support@nestmate.com)</li>
+              <li>Consider our Professional Home Intelligence Service for complete setup</li>
+            </ul>
+            <p>Most users complete basic setup in under 30 minutes. You can add more details over time as you use the platform.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="no-results" id="noResults">
+        <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+        <p>No questions found matching your search.</p>
+        <p style="margin-top: 0.5rem;">Try different keywords or browse all categories above.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <div class="cta-container">
+      <h2 class="cta-title">Still Have Questions?</h2>
+      <p class="cta-subtitle">
+        Get in touch with our team or start your free trial to experience NestMate home management software firsthand.
+      </p>
+      
+      <div class="cta-actions">
+        <a href="signin.html?tab=signup" class="btn btn-primary">
+          <i class="fas fa-rocket"></i>
+          Start Free Trial
+        </a>
+        <a href="index.html" class="btn btn-secondary">
+          <i class="fas fa-arrow-left"></i>
+          Back to Home
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>&copy; 2025 NestMate. Your home, perfectly managed.</p>
+  </footer>
+
+  <script>
+    // Navbar scroll effect
+    window.addEventListener('scroll', function() {
+      const navbar = document.getElementById('navbar');
+      if (window.scrollY > 100) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    });
+
+    // Toggle FAQ
+    function toggleFAQ(element) {
+      const faqItem = element.parentElement;
+      const isActive = faqItem.classList.contains('active');
+      
+      // Close all FAQ items
+      document.querySelectorAll('.faq-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      
+      // Open clicked item if it wasn't already active
+      if (!isActive) {
+        faqItem.classList.add('active');
+      }
+    }
+
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+      const searchTerm = e.target.value.toLowerCase().trim();
+      const faqItems = document.querySelectorAll('.faq-item');
+      const noResults = document.getElementById('noResults');
+      let visibleCount = 0;
+      
+      if (searchTerm === '') {
+        // Show all items
+        faqItems.forEach(item => {
+          item.style.display = 'block';
         });
-    </script>
+        noResults.classList.remove('active');
+        return;
+      }
+      
+      faqItems.forEach(item => {
+        const question = item.querySelector('.faq-question span').textContent.toLowerCase();
+        const answer = item.querySelector('.faq-answer').textContent.toLowerCase();
+        
+        if (question.includes(searchTerm) || answer.includes(searchTerm)) {
+          item.style.display = 'block';
+          visibleCount++;
+        } else {
+          item.style.display = 'none';
+        }
+      });
+      
+      // Show no results message if nothing found
+      if (visibleCount === 0) {
+        noResults.classList.add('active');
+      } else {
+        noResults.classList.remove('active');
+      }
+    });
+
+    // Mobile navigation
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+    const mobileNav = document.getElementById('mobileNav');
+    const mobileNavClose = document.getElementById('mobileNavClose');
+
+    function openMobileNav() {
+      mobileNav.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeMobileNav() {
+      mobileNav.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    if (mobileMenuToggle) {
+      mobileMenuToggle.addEventListener('click', openMobileNav);
+    }
+
+    if (mobileNavClose) {
+      mobileNavClose.addEventListener('click', closeMobileNav);
+    }
+
+    if (mobileNav) {
+      mobileNav.addEventListener('click', function(e) {
+        if (e.target === mobileNav) {
+          closeMobileNav();
+        }
+      });
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && mobileNav.classList.contains('active')) {
+        closeMobileNav();
+      }
+    });
+
+    // Smooth scrolling
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+  </script>
 </body>
 </html>
