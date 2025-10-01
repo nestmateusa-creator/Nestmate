@@ -7218,7 +7218,15 @@
         }
 
         function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
+            if (modalId) {
+                document.getElementById(modalId).style.display = 'none';
+            } else {
+                // Close any open modal
+                const modals = document.querySelectorAll('.modal');
+                modals.forEach(modal => {
+                    modal.remove();
+                });
+            }
         }
 
         // Tab navigation functions
@@ -11186,21 +11194,21 @@
         }
 
         function loadMultipleHomes() {
-            const homesContainer = document.querySelector('.multiple-homes-container');
+            const homesContainer = document.querySelector('.homes-grid');
             if (!homesContainer) return;
 
             let homesHTML = `
                 <div class="home-card primary-home">
-                    <div class="home-header">
+                    <div class="home-card-header">
                         <h5>Primary Residence</h5>
                         <span class="home-status active">Active</span>
                     </div>
-                    <div class="home-details">
+                    <div class="home-card-content">
                         <p>123 Main Street, City, State</p>
                         <p>2,500 sq ft • 4 bed • 3 bath</p>
                         <p>Built in 2015</p>
                     </div>
-                    <div class="home-actions">
+                    <div class="home-card-actions">
                         <button class="btn btn-primary btn-small" onclick="manageHome('primary')">Manage</button>
                         <button class="btn btn-outline btn-small" onclick="viewHomeDetails('primary')">View Details</button>
                     </div>
@@ -11211,16 +11219,16 @@
                 const age = new Date().getFullYear() - home.yearBuilt;
                 homesHTML += `
                     <div class="home-card">
-                        <div class="home-header">
+                        <div class="home-card-header">
                             <h5>${home.name}</h5>
                             <span class="home-status ${home.isActive ? 'active' : 'inactive'}">${home.isActive ? 'Active' : 'Inactive'}</span>
                         </div>
-                        <div class="home-details">
+                        <div class="home-card-content">
                             <p>${home.address}</p>
                             <p>${home.squareFootage.toLocaleString()} sq ft • ${home.bedrooms} bed • ${home.bathrooms} bath</p>
                             <p>Built in ${home.yearBuilt} (${age} years old)</p>
                         </div>
-                        <div class="home-actions">
+                        <div class="home-card-actions">
                             <button class="btn btn-primary btn-small" onclick="manageHome('${home.id}')">Manage</button>
                             <button class="btn btn-outline btn-small" onclick="viewHomeDetails('${home.id}')">View Details</button>
                         </div>
@@ -11232,30 +11240,50 @@
         }
 
         function saveHomesToFirebase() {
-            if (!currentUser) return;
+            if (!currentUser) {
+                console.log('No current user, cannot save homes');
+                return;
+            }
             
-            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).update({
+            console.log('Saving homes to Firebase:', userHomes);
+            
+            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).set({
                 multipleHomes: userHomes,
                 currentHomeId: currentHomeId
-            }).then(() => {
-                console.log('Multiple homes saved to Firebase');
+            }, { merge: true }).then(() => {
+                console.log('Multiple homes saved to Firebase successfully');
             }).catch(error => {
                 console.error('Error saving multiple homes:', error);
             });
         }
 
         function loadHomesFromFirebase() {
-            if (!currentUser) return;
+            if (!currentUser) {
+                console.log('No current user, cannot load homes');
+                return;
+            }
+            
+            console.log('Loading homes from Firebase for user:', currentUser.uid);
             
             db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get().then(doc => {
                 if (doc.exists) {
                     const data = doc.data();
                     userHomes = data.multipleHomes || [];
                     currentHomeId = data.currentHomeId || 'primary';
+                    console.log('Loaded homes from Firebase:', userHomes);
+                    loadMultipleHomes();
+                } else {
+                    console.log('No homes data found in Firebase, using defaults');
+                    userHomes = [];
+                    currentHomeId = 'primary';
                     loadMultipleHomes();
                 }
             }).catch(error => {
                 console.error('Error loading multiple homes:', error);
+                // Fallback to defaults
+                userHomes = [];
+                currentHomeId = 'primary';
+                loadMultipleHomes();
             });
         }
 
