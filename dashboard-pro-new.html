@@ -3579,15 +3579,7 @@
                         <span>Multiple Homes</span>
                     </button>
                     
-                    <button class="nav-item" onclick="showSection('product-orders', this)">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span>Product Orders</span>
-                    </button>
                     
-                    <button class="nav-item" onclick="showSection('price-tracking', this)">
-                        <i class="fas fa-chart-line"></i>
-                        <span>Price Tracking</span>
-                    </button>
                     
                     <button class="nav-item" onclick="showSection('health-score', this)">
                         <i class="fas fa-heartbeat"></i>
@@ -4030,155 +4022,7 @@
                     </div>
                 </div>
 
-                <!-- Product Orders Section -->
-                <div class="content-section" id="product-orders">
-                    <div class="section-header">
-                        <h4 class="section-title">🛒 Product Orders & Recommendations</h4>
-                        <div class="header-actions">
-                            <button type="button" class="btn btn-primary btn-small" onclick="browseProducts()">
-                                <i class="fas fa-shopping-bag"></i> Browse Products
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="orders-grid">
-                        <div class="order-card">
-                            <div class="order-header">
-                                <h5>Recent Orders</h5>
-                                <span class="order-count">3 items</span>
-                            </div>
-                            <div class="order-list">
-                                <div class="order-item">
-                                    <div class="order-item-info">
-                                        <h6>Smart Thermostat</h6>
-                                        <p>Ordered on Dec 15, 2024</p>
-                                    </div>
-                                    <div class="order-status delivered">Delivered</div>
-                                </div>
-                                <div class="order-item">
-                                    <div class="order-item-info">
-                                        <h6>LED Light Bulbs (Pack of 12)</h6>
-                                        <p>Ordered on Dec 10, 2024</p>
-                                    </div>
-                                    <div class="order-status shipped">Shipped</div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="recommendations-card">
-                            <div class="recommendations-header">
-                                <h5>Recommended for You</h5>
-                                <span class="recommendations-badge">AI Powered</span>
-                            </div>
-                            <div class="recommendations-list">
-                                <div class="recommendation-item">
-                                    <div class="recommendation-info">
-                                        <h6>Smart Door Lock</h6>
-                                        <p>Based on your security needs</p>
-                                        <span class="recommendation-price">$199.99</span>
-                                    </div>
-                                    <button class="btn btn-primary btn-small">Order Now</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Price Tracking Section -->
-                <div class="content-section" id="price-tracking">
-                    <div class="section-header">
-                        <h4 class="section-title">📈 Price Tracking & Alerts</h4>
-                        <div class="header-actions">
-                            <button type="button" class="btn btn-primary btn-small" onclick="addPriceAlert()">
-                                <i class="fas fa-bell"></i> Add Price Alert
-                            </button>
-                            <button type="button" class="btn btn-secondary btn-small" onclick="openAmazonStore()">
-                                <i class="fas fa-store"></i> Visit Store
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Product Recommendations -->
-                    <div id="productRecommendations"></div>
-                    
-                    <div class="price-tracking-grid">
-                        <div class="price-alerts-card">
-                            <div class="price-alerts-header">
-                                <h5>Active Price Alerts</h5>
-                                <span class="alerts-count" id="alertsCount">0 alerts</span>
-                            </div>
-                            <div class="price-alerts-list" id="priceAlertsList">
-                                <div class="price-alert-item">
-                                    <div class="alert-info">
-                                        <h6>Smart Home Hub</h6>
-                                        <p>Target: $150.00</p>
-                                    </div>
-                                    <div class="alert-status">
-                                        <span class="current-price">$175.99</span>
-                                        <span class="price-change down">-5%</span>
-                                    </div>
-                    <div class="alert-actions">
-                        <button class="buy-now-btn" onclick="window.open('https://www.amazon.com/s?k=Smart+Home+Hub&tag=nestmateusa-20', '_blank');">
-                            <i class="fas fa-shopping-cart"></i> Buy Now
-                        </button>
-                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="price-history-card">
-                            <div class="price-history-header">
-                                <h5>Price History</h5>
-                                <select class="form-input">
-                                    <option>Last 30 days</option>
-                                    <option>Last 90 days</option>
-                                    <option>Last year</option>
-                                </select>
-                            </div>
-                            <div class="price-chart">
-                                <div class="chart-placeholder">
-                                    <i class="fas fa-chart-line"></i>
-                                    <p>Price tracking chart will appear here</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Amazon Affiliate Performance -->
-                    <div class="affiliate-performance-section">
-                        <div class="section-header">
-                            <h4 class="section-title">💰 Amazon Affiliate Performance</h4>
-                            <div class="header-actions">
-                                <button type="button" class="btn btn-secondary btn-small" onclick="toggleCommissionDashboard()">
-                                    <i class="fas fa-chart-line"></i> View Performance
-                                </button>
-                            </div>
-                        </div>
-                        <div id="affiliateStats" class="affiliate-stats-grid">
-                            <div class="stat-card">
-                                <div class="stat-icon"><i class="fas fa-mouse-pointer"></i></div>
-                                <div class="stat-content">
-                                    <div class="stat-value" id="totalClicks">0</div>
-                                    <div class="stat-label">Total Clicks</div>
-                                </div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
-                                <div class="stat-content">
-                                    <div class="stat-value" id="totalRevenue">$0.00</div>
-                                    <div class="stat-label">Estimated Revenue</div>
-                                </div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-icon"><i class="fas fa-percentage"></i></div>
-                                <div class="stat-content">
-                                    <div class="stat-value" id="avgCommission">$0.00</div>
-                                    <div class="stat-label">Avg. Commission</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
                 <!-- Home Health Score Section -->
                 <div class="content-section" id="health-score">
@@ -5593,14 +5437,6 @@
                     case 'multiple-homes':
                         console.log('Loading multiple homes content');
                         loadMultipleHomes();
-                        break;
-                    case 'product-orders':
-                        console.log('Loading product orders content');
-                        loadProductOrders();
-                        break;
-                    case 'price-tracking':
-                        console.log('Loading price tracking content');
-                        loadPriceAlerts();
                         break;
                     case 'health-score':
                         console.log('Loading health score content');
@@ -7980,11 +7816,11 @@
         }
 
         function showAddServiceModal() {
-            window.open('service-record.html', '_blank');
+            window.open('service-record.html?returnUrl=dashboard-pro-new.html', '_blank');
         }
 
         function viewServiceRecords() {
-            window.open('service-records.html', '_blank');
+            window.open('service-records.html?returnUrl=dashboard-pro-new.html', '_blank');
         }
 
         function toggleEditMode(section) {
@@ -11499,21 +11335,18 @@
 
         // Enhanced Home Health Score - Pro Feature
         let healthScoreData = {
-            overallScore: 85,
+            overallScore: 0,
             lastUpdated: new Date().toISOString(),
             categories: {
-                hvac: { score: 90, weight: 25, lastMaintenance: '2024-01-15' },
-                plumbing: { score: 80, weight: 20, lastMaintenance: '2024-01-10' },
-                electrical: { score: 95, weight: 20, lastMaintenance: '2024-01-20' },
-                structural: { score: 85, weight: 15, lastMaintenance: '2024-01-05' },
-                safety: { score: 88, weight: 10, lastMaintenance: '2024-01-18' },
-                energy: { score: 75, weight: 10, lastMaintenance: '2024-01-12' }
+                structure: { score: 0, weight: 25, factors: [], lastCalculated: null },
+                systems: { score: 0, weight: 30, factors: [], lastCalculated: null },
+                maintenance: { score: 0, weight: 20, factors: [], lastCalculated: null },
+                safety: { score: 0, weight: 15, factors: [], lastCalculated: null },
+                energy: { score: 0, weight: 10, factors: [], lastCalculated: null }
             },
-            recommendations: [
-                { category: 'energy', priority: 'high', message: 'Consider upgrading to LED lighting to improve energy efficiency' },
-                { category: 'plumbing', priority: 'medium', message: 'Schedule annual water heater maintenance' },
-                { category: 'hvac', priority: 'low', message: 'Replace air filters every 3 months' }
-            ]
+            recommendations: [],
+            riskFactors: [],
+            lastCalculated: null
         };
 
         function updateHealthScore() {

@@ -606,7 +606,7 @@
         <div class="header">
             <h1><i class="fas fa-tools"></i> Service Record</h1>
             <p>Document your home service from roof to foundation with photos, receipts, and detailed notes</p>
-            <a href="dashboard-basic-new.html" class="back-btn">
+            <a href="#" id="backToDashboard" class="back-btn">
                 <i class="fas fa-arrow-left"></i>
                 Back to Dashboard
             </a>
@@ -916,7 +916,14 @@
 
         // Initialize the form
         document.addEventListener('DOMContentLoaded', function() {
-            // Clear any URL parameters to prevent redirect loops
+            // Get return URL from parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const returnUrl = urlParams.get('returnUrl') || 'dashboard-basic-new.html';
+            
+            // Set the back to dashboard link
+            document.getElementById('backToDashboard').href = returnUrl;
+            
+            // Clear URL parameters to prevent redirect loops
             const newUrl = window.location.pathname;
             window.history.replaceState({}, document.title, newUrl);
             

@@ -639,11 +639,11 @@
                 <i class="fas fa-shield-alt"></i> Records are permanent to protect your home's value and history
             </p>
             <div class="header-actions">
-                <a href="dashboard-basic-new.html" class="btn btn-secondary">
+                <a href="#" id="backToDashboard" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i>
                     Back to Dashboard
                 </a>
-                <a href="service-record.html" class="btn btn-primary" target="_blank">
+                <a href="#" id="addNewService" class="btn btn-primary" target="_blank">
                     <i class="fas fa-plus"></i>
                     Add New Service
                 </a>
@@ -765,9 +765,21 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Service records page loaded!');
             
-            // Clear any URL parameters to prevent redirect loops
-            const newUrl = window.location.pathname;
-            window.history.replaceState({}, document.title, newUrl);
+        // Get return URL from parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const returnUrl = urlParams.get('returnUrl') || 'dashboard-basic-new.html';
+        
+        // Set the back to dashboard links
+        document.getElementById('backToDashboard').href = returnUrl;
+        document.getElementById('backToDashboardEmpty').href = returnUrl;
+        
+        // Set the add new service links
+        document.getElementById('addNewService').href = `service-record.html?returnUrl=${encodeURIComponent(returnUrl)}`;
+        document.getElementById('addNewServiceEmpty').href = `service-record.html?returnUrl=${encodeURIComponent(returnUrl)}`;
+        
+        // Clear URL parameters to prevent redirect loops
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
             
             // Always set up event listeners first
             setupEventListeners();
@@ -798,11 +810,11 @@
                             <i class="fas fa-shield-alt"></i> Records are permanent to protect your home's value and history
                         </p>
                         <div class="header-actions">
-                            <a href="dashboard-basic-new.html" class="btn btn-secondary">
+                            <a href="#" id="backToDashboardEmpty" class="btn btn-secondary">
                                 <i class="fas fa-arrow-left"></i>
                                 Back to Dashboard
                             </a>
-                            <a href="service-record.html" class="btn btn-primary" target="_blank">
+                            <a href="#" id="addNewServiceEmpty" class="btn btn-primary" target="_blank">
                                 <i class="fas fa-plus"></i>
                                 Add New Service
                             </a>
