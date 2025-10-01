@@ -5828,15 +5828,7 @@
                 generateCalendar();
                 loadEssentialTasks();
                 loadProductRecommendations();
-                loadHomesFromFirebase(); // Load multiple homes for Pro users
-                loadOrdersFromFirebase(); // Load product orders for Pro users
-                loadAlertsFromFirebase(); // Load price alerts for Pro users
-                loadHealthScoreFromFirebase(); // Load health score data for Pro users
-                loadPhotosFromFirebase(); // Load photos for Pro users
-                loadFamilyDataFromFirebase(); // Load family data for Advanced Pro users
-                loadEmergencyContactsFromFirebase(); // Load emergency contacts for Advanced Pro users
-                loadTeamOrdersFromFirebase(); // Load team orders for Advanced Pro users
-                loadHousePhoto(); // Load house photo
+                // Note: Firebase data loading moved to auth.onAuthStateChanged
                 console.log('Dashboard initialization completed successfully');
             } catch (error) {
                 console.error('Error during dashboard initialization:', error);
@@ -11257,8 +11249,13 @@
 
         // Supporting functions for Pro features
         function loadMultipleHomes() {
+            console.log('loadMultipleHomes called');
             const homesContainer = document.querySelector('.homes-grid');
-            if (!homesContainer) return;
+            console.log('Homes container found:', homesContainer);
+            if (!homesContainer) {
+                console.log('No homes container found, returning');
+                return;
+            }
 
             let homesHTML = `
                 <div class="home-card primary-home">
@@ -11299,7 +11296,9 @@
                 `;
             });
 
+            console.log('Setting homes HTML:', homesHTML);
             homesContainer.innerHTML = homesHTML;
+            console.log('Homes loaded successfully');
         }
 
         function saveHomesToFirebase() {
@@ -12818,6 +12817,17 @@
                 if (user) {
                     currentUser = user;
                     console.log('User authenticated:', user.email);
+                    
+                    // Load Firebase data after authentication
+                    loadHomesFromFirebase(); // Load multiple homes for Pro users
+                    loadOrdersFromFirebase(); // Load product orders for Pro users
+                    loadAlertsFromFirebase(); // Load price alerts for Pro users
+                    loadHealthScoreFromFirebase(); // Load health score data for Pro users
+                    loadPhotosFromFirebase(); // Load photos for Pro users
+                    loadFamilyDataFromFirebase(); // Load family data for Advanced Pro users
+                    loadEmergencyContactsFromFirebase(); // Load emergency contacts for Advanced Pro users
+                    loadTeamOrdersFromFirebase(); // Load team orders for Advanced Pro users
+                    loadHousePhoto(); // Load house photo
                     
                     // Initialize enhanced dashboard
                     setTimeout(() => {
