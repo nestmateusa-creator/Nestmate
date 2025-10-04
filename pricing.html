@@ -175,6 +175,11 @@
       border: 2.5px solid var(--primary);
       box-shadow: 0 8px 32px #2563eb22;
     }
+    .plan-card.enterprise {
+      border: 2.5px solid #7c3aed;
+      box-shadow: 0 8px 32px #7c3aed22;
+      background: linear-gradient(135deg, #faf5ff 0%, #ffffff 100%);
+    }
     .plan-badge {
       position: absolute;
       top: -18px;
@@ -188,6 +193,16 @@
       border-radius: 16px;
       box-shadow: 0 2px 8px #2563eb22;
       letter-spacing: 1px;
+    }
+    .plan-card.enterprise .plan-badge {
+      background: #7c3aed;
+      box-shadow: 0 2px 8px #7c3aed22;
+    }
+    .plan-price-enterprise {
+      color: #7c3aed;
+    }
+    .plan-period-enterprise {
+      color: #7c3aed;
     }
     .plan-title {
       font-size: 1.35rem;
@@ -246,6 +261,12 @@
     }
     .plan-action a:hover {
       background: #1d4ed8;
+    }
+    .plan-card.enterprise .plan-action a {
+      background: #7c3aed;
+    }
+    .plan-card.enterprise .plan-action a:hover {
+      background: #6d28d9;
     }
     .plan-note {
       font-size: 0.98rem;
@@ -625,15 +646,15 @@
       <div class="plan-price plan-price-pro">$10</div>
       <div class="plan-period plan-period-pro">per month</div>
       <ul class="plan-features">
-  <li><span class="check">✔</span> Create unlimited home profiles for every property</li>
+  <li><span class="check">✔</span> Manage up to 5 home profiles for multiple properties</li>
   <li><span class="check">✔</span> Never miss a beat with unlimited tasks & reminders</li>
   <li><span class="check">✔</span> Get your personalized Home Health Score</li>
   <li><span class="check">✔</span> VIP priority support—get help fast</li>
   <li><span class="check">✔</span> Effortlessly export and backup your data</li>
   <li><span class="check">✔</span> All Basic features, supercharged</li>
-  <li><span class="check">✔</span> <b>Order your favorite products directly for your home</b></li>
-  <li><span class="check">✔</span> Real-time price tracking & instant alerts</li>
-  <li><span class="check">✔</span> Next-level product recommendations tailored to you</li>
+  <li><span class="check">✔</span> Advanced home health scoring & analytics</li>
+  <li><span class="check">✔</span> Professional floor plan designer</li>
+  <li><span class="check">✔</span> Photo management & organization</li>
       </ul>
       <div class="plan-action">
         <a href="https://buy.stripe.com/14AeVf4E29IHbLT4Sx1sQ0N" target="_blank">Start Pro</a>
@@ -647,18 +668,42 @@
       <div class="plan-period plan-period-advanced">per month</div>
       <ul class="plan-features">
   <li><span class="check">✔</span> All Pro features, plus more family power</li>
-  <li><span class="check">✔</span> Connect up to 5 family members—everyone’s included</li>
+  <li><span class="check">✔</span> Manage up to 5 home profiles for multiple properties</li>
+  <li><span class="check">✔</span> Connect up to 5 family members—everyone's included</li>
   <li><span class="check">✔</span> Share tasks & reminders for total home harmony</li>
   <li><span class="check">✔</span> Family dashboard for effortless collaboration</li>
   <li><span class="check">✔</span> Dedicated family-first support</li>
-  <li><span class="check">✔</span> <b>Build and share product lists together</b></li>
-  <li><span class="check">✔</span> <b>Order products as a team—collaborate and save</b></li>
+  <li><span class="check">✔</span> Advanced family analytics & insights</li>
+  <li><span class="check">✔</span> Emergency contact management for families</li>
   <li><span class="check">✔</span> Unlimited access to emergency home & contractor services, hand-picked by NestMate experts</li>
       </ul>
       <div class="plan-action">
         <a href="https://buy.stripe.com/9B628t1rQ2gfdU1et71sQ0O" target="_blank">Start Advanced Pro</a>
       </div>
       <div class="plan-note plan-note-advanced">Billed monthly. Cancel anytime.</div>
+    </div>
+    <!-- Enterprise Plan -->
+    <div class="plan-card enterprise">
+      <div class="plan-badge">For Professionals</div>
+      <div class="plan-title">Enterprise</div>
+      <div class="plan-price plan-price-enterprise">$50</div>
+      <div class="plan-period plan-period-enterprise">per month</div>
+      <ul class="plan-features">
+  <li><span class="check">✔</span> <b>Unlimited home profiles</b> for realtors, builders & landlords</li>
+  <li><span class="check">✔</span> <b>Client management system</b> with property portfolios</li>
+  <li><span class="check">✔</span> <b>Team collaboration tools</b> for real estate teams</li>
+  <li><span class="check">✔</span> <b>Property valuation tracking</b> & market analytics</li>
+  <li><span class="check">✔</span> <b>Maintenance scheduling</b> across multiple properties</li>
+  <li><span class="check">✔</span> <b>Tenant management features</b> for landlords</li>
+  <li><span class="check">✔</span> <b>Construction project tracking</b> for builders</li>
+  <li><span class="check">✔</span> <b>White-label reporting</b> for client presentations</li>
+  <li><span class="check">✔</span> <b>Priority enterprise support</b> with dedicated account manager</li>
+  <li><span class="check">✔</span> All Advanced Pro features included</li>
+      </ul>
+      <div class="plan-action">
+        <a href="https://buy.stripe.com/14A9AV2vU1cb3fn4Sx1sQ0Q" target="_blank">Start Enterprise</a>
+      </div>
+      <div class="plan-note plan-note-enterprise">Custom pricing available for large teams. Contact us for details.</div>
     </div>
   </section>
 
@@ -691,87 +736,71 @@
                   <div class="plan-price">$16<span>/month</span></div>
                 </div>
               </th>
+              <th class="plan-column enterprise">
+                <div class="plan-header">
+                  <div class="plan-name">Enterprise</div>
+                  <div class="plan-price">$50<span>/month</span></div>
+                </div>
+              </th>
             </tr>
           </thead>
           <tbody>
             <!-- Home Management -->
             <tr class="category-row">
-              <td colspan="4" class="category-title">🏠 Home Management</td>
+              <td colspan="5" class="category-title">🏠 Home Management</td>
             </tr>
             <tr>
               <td class="feature-name">Number of Homes</td>
               <td class="feature-basic">1 Home</td>
-              <td class="feature-pro">✅ Unlimited Homes</td>
-              <td class="feature-advanced">✅ Unlimited Homes</td>
+              <td class="feature-pro">✅ Up to 5 Homes</td>
+              <td class="feature-advanced">✅ Up to 5 Homes</td>
+              <td class="feature-enterprise">✅ Unlimited Homes</td>
             </tr>
             <tr>
               <td class="feature-name">Home Details & Organization</td>
               <td class="feature-basic">✅ Basic Details</td>
               <td class="feature-pro">✅ Advanced Details</td>
               <td class="feature-advanced">✅ Advanced Details</td>
+              <td class="feature-enterprise">✅ Professional Details</td>
             </tr>
             <tr>
               <td class="feature-name">Room Management</td>
               <td class="feature-basic">✅ Basic Rooms</td>
               <td class="feature-pro">✅ All Rooms</td>
               <td class="feature-advanced">✅ All Rooms</td>
+              <td class="feature-enterprise">✅ All Rooms</td>
             </tr>
 
             <!-- Tasks & Reminders -->
             <tr class="category-row">
-              <td colspan="4" class="category-title">📋 Tasks & Reminders</td>
+              <td colspan="5" class="category-title">📋 Tasks & Reminders</td>
             </tr>
             <tr>
               <td class="feature-name">Task Limit</td>
               <td class="feature-basic">10 Tasks</td>
               <td class="feature-pro">✅ Unlimited Tasks</td>
               <td class="feature-advanced">✅ Unlimited Tasks</td>
+              <td class="feature-enterprise">✅ Unlimited Tasks</td>
             </tr>
             <tr>
               <td class="feature-name">Shared Tasks</td>
               <td class="feature-basic">❌</td>
               <td class="feature-pro">❌</td>
               <td class="feature-advanced">✅ Family Sharing</td>
+              <td class="feature-enterprise">✅ Team Sharing</td>
             </tr>
             <tr>
               <td class="feature-name">Task Assignment</td>
               <td class="feature-basic">❌</td>
               <td class="feature-pro">❌</td>
               <td class="feature-advanced">✅ Assign to Family</td>
+              <td class="feature-enterprise">✅ Assign to Team</td>
             </tr>
 
-            <!-- Product Features -->
-            <tr class="category-row">
-              <td colspan="4" class="category-title">🛒 Product Features</td>
-            </tr>
-            <tr>
-              <td class="feature-name">Product Recommendations</td>
-              <td class="feature-basic">✅ Basic Picks</td>
-              <td class="feature-pro">✅ AI-Powered</td>
-              <td class="feature-advanced">✅ AI-Powered</td>
-            </tr>
-            <tr>
-              <td class="feature-name">Direct Product Orders</td>
-              <td class="feature-basic">❌</td>
-              <td class="feature-pro">✅ Order Directly</td>
-              <td class="feature-advanced">✅ Team Orders</td>
-            </tr>
-            <tr>
-              <td class="feature-name">Price Tracking & Alerts</td>
-              <td class="feature-basic">❌</td>
-              <td class="feature-pro">✅ Real-time Alerts</td>
-              <td class="feature-advanced">✅ Real-time Alerts</td>
-            </tr>
-            <tr>
-              <td class="feature-name">Team Product Lists</td>
-              <td class="feature-basic">❌</td>
-              <td class="feature-pro">❌</td>
-              <td class="feature-advanced">✅ Collaborative Lists</td>
-            </tr>
 
             <!-- Analytics & Health -->
             <tr class="category-row">
-              <td colspan="4" class="category-title">📊 Analytics & Health</td>
+              <td colspan="5" class="category-title">📊 Analytics & Health</td>
             </tr>
             <tr>
               <td class="feature-name">Home Health Score</td>
@@ -877,6 +906,7 @@
           <a href="https://buy.stripe.com/9B600lc6u4oneY50Ch1sQ0M" class="btn-cta basic" target="_blank">Start Basic Free</a>
           <a href="https://buy.stripe.com/14AeVf4E29IHbLT4Sx1sQ0N" class="btn-cta pro" target="_blank">Start Pro Free</a>
           <a href="https://buy.stripe.com/9B628t1rQ2gfdU1et71sQ0O" class="btn-cta advanced" target="_blank">Start Advanced Pro Free</a>
+          <a href="https://buy.stripe.com/14A9AV2vU1cb3fn4Sx1sQ0Q" class="btn-cta enterprise" target="_blank">Start Enterprise</a>
         </div>
       </div>
     </div>
