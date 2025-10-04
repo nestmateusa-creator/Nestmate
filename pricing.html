@@ -571,6 +571,24 @@
         advanced: { monthly: "$16", yearly: "$173" },
         enterprise: { monthly: "$50", yearly: "$540" } // 50*12=600, 10% off = 540
       };
+      const links = {
+        basic: { 
+          monthly: "https://buy.stripe.com/9B600lc6u4oneY50Ch1sQ0M", 
+          yearly: "https://buy.stripe.com/cNi3cx3zY3kj6rzckZ1sQ0R" 
+        },
+        pro: { 
+          monthly: "https://buy.stripe.com/14AeVf4E29IHbLT4Sx1sQ0N", 
+          yearly: "https://buy.stripe.com/bJe6oJ0nMg755nv0Ch1sQ0S" 
+        },
+        advanced: { 
+          monthly: "https://buy.stripe.com/9B628t1rQ2gfdU1et71sQ0O", 
+          yearly: "https://buy.stripe.com/bJe6oJ0nMg755nv0Ch1sQ0S" 
+        },
+        enterprise: { 
+          monthly: "https://buy.stripe.com/14A9AV2vU1cb3fn4Sx1sQ0Q", 
+          yearly: "https://buy.stripe.com/aFa4gB8UiaML3fn1Gl1sQ0U" 
+        }
+      };
       const periods = {
         monthly: { basic: "per month", pro: "per month", advanced: "per month", enterprise: "per month" },
         yearly: { basic: "per year", pro: "per year", advanced: "per year", enterprise: "per year" }
@@ -595,6 +613,32 @@
         document.querySelectorAll('.plan-note-advanced').forEach(e => e.textContent = yearly ? notes.yearly : notes.monthly);
         document.querySelectorAll('.plan-note-enterprise').forEach(e => e.textContent = yearly ? notes.yearly : notes.monthly);
         document.querySelectorAll('.discount-badge').forEach(e => e.style.display = yearly ? 'inline-block' : 'none');
+        
+        // Update plan action links
+        document.querySelectorAll('.plan-action a').forEach(link => {
+          const planCard = link.closest('.plan-card');
+          let planKey = '';
+          
+          if (planCard.classList.contains('basic') || planCard.querySelector('.plan-title').textContent === 'Basic') {
+            planKey = yearly ? 'cNi3cx3zY3kj6rzckZ1sQ0R' : '9B600lc6u4oneY50Ch1sQ0M';
+            link.href = yearly ? links.basic.yearly : links.basic.monthly;
+          } else if (planCard.classList.contains('popular') || planCard.querySelector('.plan-title').textContent === 'Pro') {
+            planKey = yearly ? 'bJe6oJ0nMg755nv0Ch1sQ0S' : '14AeVf4E29IHbLT4Sx1sQ0N';
+            link.href = yearly ? links.pro.yearly : links.pro.monthly;
+          } else if (planCard.querySelector('.plan-title').textContent === 'Advanced Pro') {
+            planKey = yearly ? 'bJe6oJ0nMg755nv0Ch1sQ0S' : '9B628t1rQ2gfdU1et71sQ0O';
+            link.href = yearly ? links.advanced.yearly : links.advanced.monthly;
+          } else if (planCard.classList.contains('enterprise') || planCard.querySelector('.plan-title').textContent === 'Enterprise') {
+            planKey = yearly ? 'aFa4gB8UiaML3fn1Gl1sQ0U' : '14A9AV2vU1cb3fn4Sx1sQ0Q';
+            link.href = yearly ? links.enterprise.yearly : links.enterprise.monthly;
+          }
+          
+          // Store selected plan in localStorage
+          link.addEventListener('click', function() {
+            localStorage.setItem('selectedPlan', planKey);
+            localStorage.setItem('selectedPlanType', yearly ? 'yearly' : 'monthly');
+          });
+        });
       }
       toggle.addEventListener('change', updatePricing);
       updatePricing();

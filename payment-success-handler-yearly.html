@@ -186,62 +186,49 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        // Plan mapping based on Stripe session IDs or other identifiers
+        // Plan mapping based on Stripe links
         const planMapping = {
-            // Yearly plans
-            'cNi3cx3zY3kj6rzckZ1sQ0R': { name: 'Basic', price: '$54', period: 'per year', dashboard: 'dashboard-basic-new.html', accountType: 'basic' },
-            'bJe6oJ0nMg755nv0Ch1sQ0S': { name: 'Pro', price: '$108', period: 'per year', dashboard: 'dashboard-pro-new.html', accountType: 'pro' },
-            'bJe6oJ0nMg755nv0Ch1sQ0S': { name: 'Advanced Pro', price: '$173', period: 'per year', dashboard: 'dashboard-advanced-pro-new.html', accountType: 'advanced' },
-            'aFa4gB8UiaML3fn1Gl1sQ0U': { name: 'Enterprise', price: '$540', period: 'per year', dashboard: 'dashboard-advanced-pro-new.html', accountType: 'enterprise' },
-            
-            // Monthly plans
-            '9B600lc6u4oneY50Ch1sQ0M': { name: 'Basic', price: '$5', period: 'per month', dashboard: 'dashboard-basic-new.html', accountType: 'basic' },
-            '14AeVf4E29IHbLT4Sx1sQ0N': { name: 'Pro', price: '$10', period: 'per month', dashboard: 'dashboard-pro-new.html', accountType: 'pro' },
-            '9B628t1rQ2gfdU1et71sQ0O': { name: 'Advanced Pro', price: '$16', period: 'per month', dashboard: 'dashboard-advanced-pro-new.html', accountType: 'advanced' },
-            '14A9AV2vU1cb3fn4Sx1sQ0Q': { name: 'Enterprise', price: '$50', period: 'per month', dashboard: 'dashboard-advanced-pro-new.html', accountType: 'enterprise' }
+            'cNi3cx3zY3kj6rzckZ1sQ0R': { name: 'Basic', price: '$54', period: 'per year', dashboard: 'dashboard-basic-new.html' },
+            'bJe6oJ0nMg755nv0Ch1sQ0S': { name: 'Pro', price: '$108', period: 'per year', dashboard: 'dashboard-pro-new.html' },
+            'bJe6oJ0nMg755nv0Ch1sQ0S': { name: 'Advanced Pro', price: '$173', period: 'per year', dashboard: 'dashboard-advanced-pro-new.html' },
+            'aFa4gB8UiaML3fn1Gl1sQ0U': { name: 'Enterprise', price: '$540', period: 'per year', dashboard: 'dashboard-advanced-pro-new.html' }
+        };
+
+        // Monthly plan mapping
+        const monthlyPlanMapping = {
+            '9B600lc6u4oneY50Ch1sQ0M': { name: 'Basic', price: '$5', period: 'per month', dashboard: 'dashboard-basic-new.html' },
+            '14AeVf4E29IHbLT4Sx1sQ0N': { name: 'Pro', price: '$10', period: 'per month', dashboard: 'dashboard-pro-new.html' },
+            '9B628t1rQ2gfdU1et71sQ0O': { name: 'Advanced Pro', price: '$16', period: 'per month', dashboard: 'dashboard-advanced-pro-new.html' },
+            '14A9AV2vU1cb3fn4Sx1sQ0Q': { name: 'Enterprise', price: '$50', period: 'per month', dashboard: 'dashboard-advanced-pro-new.html' }
         };
 
         function getPlanFromURL() {
             const urlParams = new URLSearchParams(window.location.search);
             const sessionId = urlParams.get('session_id');
             const success = urlParams.get('success');
-            const plan = urlParams.get('plan');
             
-            console.log('URL Params:', { sessionId, success, plan });
-            
-            if (success === 'true') {
-                // Try to get plan from URL parameter first
-                if (plan && planMapping[plan]) {
-                    return planMapping[plan];
-                }
-                
-                // Try to extract from session ID or other methods
-                if (sessionId) {
-                    // In a real implementation, you'd verify this with Stripe
-                    // For now, we'll use a fallback method
-                    return detectPlanFromContext();
-                }
+            if (success === 'true' && sessionId) {
+                // Extract plan from session ID or use a different method
+                // For now, we'll use a simple approach based on referrer or other indicators
+                return detectPlanFromContext();
             }
             
             return null;
         }
 
         function detectPlanFromContext() {
-            // Check localStorage for plan selection
-            const selectedPlan = localStorage.getItem('selectedPlan');
-            if (selectedPlan && planMapping[selectedPlan]) {
-                return planMapping[selectedPlan];
-            }
-            
-            // Check referrer
+            // This is a simplified approach - in production you'd want to get this from Stripe
             const referrer = document.referrer;
-            if (referrer.includes('pricing.html')) {
-                // Default to Basic if coming from pricing page
-                return planMapping['9B600lc6u4oneY50Ch1sQ0M']; // Basic monthly
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // Check if we can determine the plan from URL parameters
+            const plan = urlParams.get('plan');
+            if (plan) {
+                return planMapping[plan] || monthlyPlanMapping[plan];
             }
             
-            // Default fallback
-            return { name: 'Basic', price: '$5', period: 'per month', dashboard: 'dashboard-basic-new.html', accountType: 'basic' };
+            // Default to Basic plan if we can't determine
+            return { name: 'Basic', price: '$5', period: 'per month', dashboard: 'dashboard-basic-new.html' };
         }
 
         function updatePlanInfo(planInfo) {
@@ -255,60 +242,18 @@
             document.getElementById('errorMessage').style.display = 'block';
         }
 
-        async function saveUserSubscription(planInfo) {
-            try {
-                // Wait for authentication
-                const user = await new Promise((resolve, reject) => {
-                    const unsubscribe = auth.onAuthStateChanged((user) => {
-                        unsubscribe();
-                        if (user) {
-                            resolve(user);
-                        } else {
-                            // If no user is authenticated, create a temporary user record
-                            // In production, you'd want to handle this differently
-                            resolve(null);
-                        }
-                    });
-                });
-
-                if (user) {
-                    // Save subscription info to Firestore
-                    await db.collection('userProfiles').doc(user.uid).set({
-                        accountType: planInfo.accountType,
-                        subscriptionStatus: 'active',
-                        subscriptionPlan: planInfo.name,
-                        subscriptionPrice: planInfo.price,
-                        subscriptionPeriod: planInfo.period,
-                        subscriptionDate: new Date().toISOString(),
-                        lastUpdated: new Date().toISOString()
-                    }, { merge: true });
-
-                    console.log('Subscription saved successfully');
-                } else {
-                    console.log('No authenticated user, skipping Firestore save');
-                }
-            } catch (error) {
-                console.error('Error saving subscription:', error);
-            }
-        }
-
         function redirectToDashboard(planInfo) {
             setTimeout(() => {
                 window.location.href = planInfo.dashboard;
-            }, 3000);
+            }, 2000);
         }
 
         // Initialize the page
-        document.addEventListener('DOMContentLoaded', async function() {
+        document.addEventListener('DOMContentLoaded', function() {
             const planInfo = getPlanFromURL();
             
             if (planInfo) {
                 updatePlanInfo(planInfo);
-                
-                // Save subscription info
-                await saveUserSubscription(planInfo);
-                
-                // Redirect to dashboard
                 redirectToDashboard(planInfo);
             } else {
                 showError();
