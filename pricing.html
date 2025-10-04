@@ -568,11 +568,12 @@
       const prices = {
         basic: { monthly: "$5", yearly: "$54" }, // 5*12=60, 10% off = 54
         pro: { monthly: "$10", yearly: "$108" },
-        advanced: { monthly: "$16", yearly: "$173" }
+        advanced: { monthly: "$16", yearly: "$173" },
+        enterprise: { monthly: "$50", yearly: "$540" } // 50*12=600, 10% off = 540
       };
       const periods = {
-        monthly: { basic: "per month", pro: "per month", advanced: "per month" },
-        yearly: { basic: "per year", pro: "per year", advanced: "per year" }
+        monthly: { basic: "per month", pro: "per month", advanced: "per month", enterprise: "per month" },
+        yearly: { basic: "per year", pro: "per year", advanced: "per year", enterprise: "per year" }
       };
       const notes = {
         monthly: "Billed monthly. Cancel anytime.",
@@ -584,12 +585,15 @@
         document.querySelectorAll('.plan-price-basic').forEach(e => e.textContent = yearly ? prices.basic.yearly : prices.basic.monthly);
         document.querySelectorAll('.plan-price-pro').forEach(e => e.textContent = yearly ? prices.pro.yearly : prices.pro.monthly);
         document.querySelectorAll('.plan-price-advanced').forEach(e => e.textContent = yearly ? prices.advanced.yearly : prices.advanced.monthly);
+        document.querySelectorAll('.plan-price-enterprise').forEach(e => e.textContent = yearly ? prices.enterprise.yearly : prices.enterprise.monthly);
         document.querySelectorAll('.plan-period-basic').forEach(e => e.textContent = yearly ? periods.yearly.basic : periods.monthly.basic);
         document.querySelectorAll('.plan-period-pro').forEach(e => e.textContent = yearly ? periods.yearly.pro : periods.monthly.pro);
         document.querySelectorAll('.plan-period-advanced').forEach(e => e.textContent = yearly ? periods.yearly.advanced : periods.monthly.advanced);
+        document.querySelectorAll('.plan-period-enterprise').forEach(e => e.textContent = yearly ? periods.yearly.enterprise : periods.monthly.enterprise);
         document.querySelectorAll('.plan-note-basic').forEach(e => e.textContent = yearly ? notes.yearly : notes.monthly);
         document.querySelectorAll('.plan-note-pro').forEach(e => e.textContent = yearly ? notes.yearly : notes.monthly);
         document.querySelectorAll('.plan-note-advanced').forEach(e => e.textContent = yearly ? notes.yearly : notes.monthly);
+        document.querySelectorAll('.plan-note-enterprise').forEach(e => e.textContent = yearly ? notes.yearly : notes.monthly);
         document.querySelectorAll('.discount-badge').forEach(e => e.style.display = yearly ? 'inline-block' : 'none');
       }
       toggle.addEventListener('change', updatePricing);
@@ -704,7 +708,7 @@
   <li><span class="check">✔</span> <b>Property valuation tracking</b> & market analytics</li>
   <li><span class="check">✔</span> <b>Maintenance scheduling</b> across multiple properties</li>
   <li><span class="check">✔</span> <b>Tenant management features</b> for landlords</li>
-  <li><span class="check">✔</span> <b>Construction project tracking</b> for builders</li>
+  <li><span class="check">✔</span> <b>Professional floor plan designer</b> with advanced tools</li>
   <li><span class="check">✔</span> <b>White-label reporting</b> for client presentations</li>
   <li><span class="check">✔</span> <b>Priority enterprise support</b> with dedicated account manager</li>
   <li><span class="check">✔</span> All Advanced Pro features included</li>
