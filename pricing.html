@@ -153,17 +153,17 @@
     }
     .pricing-table {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 36px;
-      max-width: 1000px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      max-width: 1400px;
       margin: 0 auto 48px auto;
-      padding: 0 8vw;
+      padding: 0 4vw;
     }
     .plan-card {
       background: var(--card);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      padding: 36px 28px 32px 28px;
+      padding: 24px 20px 20px 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -205,37 +205,37 @@
       color: #7c3aed;
     }
     .plan-title {
-      font-size: 1.35rem;
+      font-size: 1.2rem;
       font-weight: 800;
       color: var(--primary);
-      margin-bottom: 8px;
-      margin-top: 8px;
+      margin-bottom: 6px;
+      margin-top: 6px;
     }
     .plan-price {
-      font-size: 2.2rem;
+      font-size: 1.8rem;
       font-weight: 900;
       color: #1e293b;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
     .plan-period {
-      font-size: 1.05rem;
+      font-size: 0.95rem;
       color: #64748b;
-      margin-bottom: 18px;
+      margin-bottom: 12px;
     }
     .plan-features {
       list-style: none;
       padding: 0;
-      margin: 0 0 28px 0;
+      margin: 0 0 20px 0;
       text-align: left;
       width: 100%;
     }
     .plan-features li {
-      font-size: 1.08rem;
+      font-size: 0.95rem;
       color: #334155;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 6px;
     }
     .plan-features li .check {
       color: #22c55e;
@@ -291,8 +291,17 @@
       color: #64748b;
       font-size: 1.05rem;
     }
+    @media (max-width: 1200px) {
+      .pricing-table {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+        padding: 0 4vw;
+      }
+    }
     @media (max-width: 900px) {
       .pricing-table {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
         padding: 0 4vw;
       }
       header {
