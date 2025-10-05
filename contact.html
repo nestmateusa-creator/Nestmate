@@ -7,6 +7,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    
     <style>
         :root {
             --primary: #2563eb;
@@ -527,16 +530,17 @@
                         <span id="errorText">There was an error sending your message. Please try again.</span>
                     </div>
                     
-                    <form id="contactForm">
+                    <form id="contactForm" netlify name="contact" action="/contact-success.html">
                         <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label" for="firstName">First Name</label>
-                                <input type="text" id="firstName" name="firstName" class="form-input" required>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label" for="lastName">Last Name</label>
-                                <input type="text" id="lastName" name="lastName" class="form-input" required>
-                            </div>
+                        <input type="hidden" name="form-name" value="contact">
+                        <div class="form-group">
+                            <label class="form-label" for="firstName">First Name</label>
+                            <input type="text" id="firstName" name="firstName" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="lastName">Last Name</label>
+                            <input type="text" id="lastName" name="lastName" class="form-input" required>
+                        </div>
                         </div>
                         
                         <div class="form-group">
@@ -659,6 +663,12 @@
     </footer>
 
     <script>
+        // Initialize EmailJS
+        (function() {
+            // You'll need to replace 'YOUR_PUBLIC_KEY' with your actual EmailJS public key
+            emailjs.init('YOUR_PUBLIC_KEY');
+        })();
+
         // Contact form handling
         document.getElementById('contactForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -681,27 +691,34 @@
             try {
                 // Get form data
                 const formData = new FormData(this);
-                const data = {
-                    firstName: formData.get('firstName'),
-                    lastName: formData.get('lastName'),
-                    email: formData.get('email'),
+                const templateParams = {
+                    from_name: `${formData.get('firstName')} ${formData.get('lastName')}`,
+                    from_email: formData.get('email'),
                     subject: formData.get('subject'),
-                    message: formData.get('message')
+                    message: formData.get('message'),
+                    to_email: 'support@nestmateusa.com'
                 };
                 
-                // Simulate sending email (in a real app, you'd send this to your backend)
-                await new Promise(resolve => setTimeout(resolve, 2000));
+                // Send email using EmailJS
+                // You'll need to replace 'YOUR_SERVICE_ID' and 'YOUR_TEMPLATE_ID' with your actual values
+                const response = await emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams);
                 
-                // Show success message
-                successMessage.style.display = 'block';
-                this.reset();
-                
-                // Scroll to success message
-                successMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                if (response.status === 200) {
+                    // Show success message
+                    successMessage.style.display = 'block';
+                    this.reset();
+                    
+                    // Scroll to success message
+                    successMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else {
+                    throw new Error('Email service returned non-200 status');
+                }
                 
             } catch (error) {
+                console.error('Email sending error:', error);
+                
                 // Show error message
-                errorText.textContent = 'There was an error sending your message. Please try again.';
+                errorText.textContent = 'There was an error sending your message. Please try again or email us directly at support@nestmateusa.com';
                 errorMessage.style.display = 'block';
                 
                 // Scroll to error message
