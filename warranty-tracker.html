@@ -7,19 +7,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, query, where, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+        // AWS Configuration
+        AWS.config.update({
+            region: 'us-east-2',
+            accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
+            secretAccessKey: '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'
+        });
 
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyBxGUhxqQqQqQqQqQqQqQqQqQqQqQqQqQ",
-            authDomain: "nestmate-app.firebaseapp.com",
-            projectId: "nestmate-app",
-            storageBucket: "nestmate-app.appspot.com",
-            messagingSenderId: "123456789",
-            appId: "1:123456789:web:abcdefghijklmnop"
-        };
+        const dynamodb = new AWS.DynamoDB.DocumentClient();
+        // AWS Configuration already set above
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
@@ -27,18 +23,9 @@
         const db = getFirestore(app);
 
         // Make Firebase services available globally
-        window.firebaseServices = {
-            collection,
-            addDoc,
-            getDocs,
-            query,
-            where,
-            doc,
-            updateDoc,
-            deleteDoc
-        };
-        window.firebaseDB = db;
-        window.firebaseAuth = auth;
+        // AWS services available via AWS SDK
+        // AWS DynamoDB via dynamodb variable
+        // AWS Cognito auth via auth-aws.js
 
         // Check authentication state
         onAuthStateChanged(auth, (user) => {
@@ -47,7 +34,7 @@
                 loadWarranties();
             } else {
                 console.log('User is signed out');
-                window.location.href = 'signin.html';
+                window.location.href = 'login-aws.html';
             }
         });
     </script>
@@ -528,7 +515,7 @@
         // Load warranties from Firebase
         async function loadWarranties() {
             try {
-                const user = window.firebaseAuth.currentUser;
+                const user = nestMateAuth.currentUser;
                 if (!user) return;
 
                 const warrantiesRef = window.firebaseServices.collection(window.firebaseDB, 'warranties');
@@ -553,7 +540,7 @@
         // Add new warranty
         async function addWarranty(warrantyData) {
             try {
-                const user = window.firebaseAuth.currentUser;
+                const user = nestMateAuth.currentUser;
                 if (!user) return;
 
                 const warrantyRef = window.firebaseServices.collection(window.firebaseDB, 'warranties');

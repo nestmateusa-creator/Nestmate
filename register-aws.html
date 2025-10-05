@@ -325,6 +325,12 @@
 
     <script src="auth-aws.js"></script>
     <script>
+        // AWS Configuration for registration
+        AWS.config.update({
+            region: 'us-east-2',
+            accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
+            secretAccessKey: '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'
+        });
         // Form elements
         const signupForm = document.getElementById('signupForm');
         const confirmationForm = document.getElementById('confirmationForm');
@@ -431,11 +437,21 @@
                 return;
             }
 
+            // Normalize optional phone to E.164 (+15551234567) or omit if invalid
+            function normalizePhone(phoneRaw) {
+                const digits = phoneRaw.replace(/\D/g, '');
+                if (digits.length === 0) return '';
+                if (digits.length === 10) return `+1${digits}`; // assume US if 10 digits
+                if (digits.startsWith('1') && digits.length === 11) return `+${digits}`;
+                if (phoneRaw.startsWith('+') && digits.length >= 8) return phoneRaw; // already E.164-like
+                return '';
+            }
+
             // Get form data
             const formData = {
                 name: nameInput.value.trim(),
                 email: emailInput.value.trim().toLowerCase(),
-                phone: phoneInput.value.trim(),
+                phone: normalizePhone(phoneInput.value.trim()),
                 password: passwordInput.value
             };
 
@@ -459,8 +475,11 @@
                     confirmationSection.classList.add('show');
                     
                     showMessage(result.message, 'success');
+                    
+                    // Stay on confirmation screen; user must confirm before proceeding
                 } else {
-                    showMessage(result.message, 'error');
+                    const detail = result.error || 'Unknown error';
+                    showMessage(`Signup failed: ${detail}`, 'error');
                 }
             } catch (error) {
                 console.error('Signup error:', error);
@@ -490,9 +509,9 @@
                 if (result.success) {
                     showMessage(result.message, 'success');
                     
-                    // Redirect to login after 2 seconds
+                    // Redirect to pricing to choose a plan
                     setTimeout(() => {
-                        window.location.href = 'login-aws.html';
+                        window.location.href = 'pricing.html?from=confirmed';
                     }, 2000);
                 } else {
                     showMessage(result.message, 'error');

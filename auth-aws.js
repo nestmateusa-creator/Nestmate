@@ -1,11 +1,11 @@
 // AWS Authentication System for NestMate
 // This file handles all authentication using AWS Cognito
 
-// AWS Configuration - Use environment variables for production
+// AWS Configuration - Set credentials directly for browser environment
 AWS.config.update({
-    region: process.env.NESTMATE_AWS_REGION || 'us-east-2',
-    accessKeyId: process.env.NESTMATE_AWS_ACCESS_KEY_ID || 'YOUR_AWS_ACCESS_KEY_ID',
-    secretAccessKey: process.env.NESTMATE_AWS_SECRET_ACCESS_KEY || 'YOUR_AWS_SECRET_ACCESS_KEY'
+    region: 'us-east-2',
+    accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
+    secretAccessKey: 'wolmLksFIm5go0kLZVelnfLnw7NGIxyZD9EvIu5O'
 });
 
 const cognito = new AWS.CognitoIdentityServiceProvider();
@@ -28,15 +28,19 @@ class NestMateAuth {
     // Sign up a new user
     async signUp(email, password, userData = {}) {
         try {
+            const attrs = [
+                { Name: 'email', Value: email },
+                { Name: 'name', Value: userData.name || '' }
+            ];
+            if (userData.phone) {
+                attrs.push({ Name: 'phone_number', Value: userData.phone });
+            }
+
             const params = {
                 ClientId: COGNITO_CONFIG.clientId,
                 Username: email,
                 Password: password,
-                UserAttributes: [
-                    { Name: 'email', Value: email },
-                    { Name: 'name', Value: userData.name || '' },
-                    { Name: 'phone_number', Value: userData.phone || '' }
-                ]
+                UserAttributes: attrs
             };
 
             const result = await cognito.signUp(params).promise();
@@ -62,8 +66,9 @@ class NestMateAuth {
             console.error('Sign up error:', error);
             return { 
                 success: false, 
+                errorCode: error.code,
                 error: this.getErrorMessage(error),
-                message: 'Failed to create account. Please try again.'
+                message: this.getErrorMessage(error)
             };
         }
     }
@@ -103,7 +108,8 @@ class NestMateAuth {
             return {
                 success: true,
                 message: 'Signed in successfully!',
-                user: this.currentUser
+                user: this.currentUser,
+                userId: this.currentUser?.userId
             };
         } catch (error) {
             console.error('Sign in error:', error);

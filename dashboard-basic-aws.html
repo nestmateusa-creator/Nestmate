@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Basic Dashboard - NestMate AWS</title>
+    <script>
+        // Redirect old AWS dashboard to the new version
+        (function(){
+            try { if (location.pathname.endsWith('dashboard-basic-aws.html')) {
+                window.location.replace('dashboard-basic-new.html');
+            }} catch(e) {}
+        })();
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1491.0.min.js"></script>
@@ -342,12 +350,23 @@
     </div>
 
     <script>
-        // AWS Configuration - Use environment variables for production
+        // AWS Configuration - Use your actual credentials for now
         AWS.config.update({
             region: 'us-east-2',
-            accessKeyId: 'YOUR_AWS_ACCESS_KEY_ID', // Set via Netlify environment variables
-            secretAccessKey: 'YOUR_AWS_SECRET_ACCESS_KEY' // Set via Netlify environment variables
+            accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
+            secretAccessKey: 'wolmLksFIm5go0kLZVelnfLnw7NGIxyZD9EvIu5O'
         });
+        // Subscription gate: redirect if not active
+        (async function(){
+            try{
+                const currentUser = JSON.parse(localStorage.getItem('currentUser')||'null');
+                if(!currentUser){ window.location.href='login-aws.html'; return; }
+                const ddb = new AWS.DynamoDB.DocumentClient();
+                const rec = await ddb.get({TableName:'nestmate-users', Key:{userId: currentUser.userId}}).promise();
+                const st = rec.Item && rec.Item.subscriptionStatus ? rec.Item.subscriptionStatus : 'inactive';
+                if(st !== 'active'){ window.location.href='pricing.html?from=dashboard'; }
+            }catch(e){}
+        })();
 
         const dynamodb = new AWS.DynamoDB.DocumentClient();
         const cognito = new AWS.CognitoIdentityServiceProvider();
@@ -368,7 +387,7 @@
                 const token = localStorage.getItem('awsAccessToken');
                 if (!token) {
                     // Redirect to login if no token
-                    window.location.href = 'register.html';
+                    window.location.href = 'register-aws.html';
                     return;
                 }
 
@@ -406,7 +425,7 @@
                 console.error('Token validation error:', error);
                 // Token is invalid, redirect to login
                 localStorage.removeItem('awsAccessToken');
-                window.location.href = 'register.html';
+                window.location.href = 'register-aws.html';
             }
         }
 

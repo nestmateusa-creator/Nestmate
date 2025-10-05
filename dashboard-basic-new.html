@@ -6,9 +6,8 @@
     <title>Basic Dashboard - NestMate</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1491.0.min.js"></script>
+    <script src="auth-aws.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC_dBBCQ9R3n0KiZ6RodccRsUHoBov7GSA&libraries=places&callback=initGooglePlaces" async defer></script>
     <script>
         // Error handler for Google Maps API loading
@@ -18,7 +17,7 @@
         };
     </script>
     
-    <!-- Firebase Configuration moved to main JavaScript section -->
+    <!-- AWS Configuration moved to main JavaScript section -->
     <style>
         * {
             margin: 0;
@@ -4085,9 +4084,9 @@
                                     displayTasks();
                                     console.log('displayTasks called for form task');
                                 }
-                                if (typeof saveTasksToFirebase === 'function') {
-                                    saveTasksToFirebase();
-                                    console.log('saveTasksToFirebase called for form task');
+                                if (typeof saveTasksToAWS === 'function') {
+                                    saveTasksToAWS();
+                                    console.log('saveTasksToAWS called for form task');
                                 }
                                 
                                 // Clear form
@@ -4285,21 +4284,14 @@
     </div>
 
     <script>
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
-            authDomain: "nestmate-167ed.firebaseapp.com",
-            projectId: "nestmate-167ed",
-            storageBucket: "nestmate-167ed.appspot.com",
-            messagingSenderId: "865171535257",
-            appId: "1:865171535257:web:nextmate-web-app",
-            measurementId: "G-NEXTMATE-ANALYTICS"
-        };
+        // AWS Configuration for dashboard
+        AWS.config.update({
+            region: 'us-east-2',
+            accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
+            secretAccessKey: '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'
+        });
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const auth = firebase.auth();
+        const dynamodb = new AWS.DynamoDB.DocumentClient();
 
         // Global variables
         let currentUser = null;
@@ -4365,8 +4357,8 @@
                 generateCalendar();
                 loadEssentialTasks();
                 loadProductRecommendations();
-                loadFavoritesFromFirebase();
-                loadPhotosFromFirebase();
+                loadFavoritesFromAWS();
+                loadPhotosFromAWS();
                 loadHousePhoto();
                 console.log('Dashboard initialization completed successfully');
             } catch (error) {
@@ -5699,7 +5691,7 @@
                 }
             });
             
-            saveHomeDataToFirebase(homeData);
+            saveHomeDataToAWS(homeData);
         }
 
         // Edit Mode Functions (moved to complete functions section)
@@ -5708,7 +5700,7 @@
         function loadBasicInfoData() {
             if (!currentUser) return;
             
-            const db = firebase.firestore();
+            // AWS DynamoDB already configured at top of file
             db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
                 .then(doc => {
                     if (doc.exists) {
@@ -5730,7 +5722,7 @@
         function loadStructureData() {
             if (!currentUser) return;
             
-            const db = firebase.firestore();
+            // AWS DynamoDB already configured at top of file
             db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
                 .then(doc => {
                     if (doc.exists) {
@@ -5752,7 +5744,7 @@
         function loadSystemsData() {
             if (!currentUser) return;
             
-            const db = firebase.firestore();
+            // AWS DynamoDB already configured at top of file
             db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
                 .then(doc => {
                     if (doc.exists) {
@@ -5774,7 +5766,7 @@
         function loadBedroomsData() {
             if (!currentUser) return;
             
-            const db = firebase.firestore();
+            // AWS DynamoDB already configured at top of file
             db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
                 .then(doc => {
                     if (doc.exists) {
@@ -5805,7 +5797,7 @@
         function loadBathroomsData() {
             if (!currentUser) return;
             
-            const db = firebase.firestore();
+            // AWS DynamoDB already configured at top of file
             db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
                 .then(doc => {
                     if (doc.exists) {
@@ -5828,7 +5820,7 @@
         function loadKitchenData() {
             if (!currentUser) return;
             
-            const db = firebase.firestore();
+            // AWS DynamoDB already configured at top of file
             db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
                 .then(doc => {
                     if (doc.exists) {
@@ -5850,7 +5842,7 @@
         function loadLivingData() {
             if (!currentUser) return;
             
-            const db = firebase.firestore();
+            // AWS DynamoDB already configured at top of file
             db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
                 .then(doc => {
                     if (doc.exists) {
@@ -5873,7 +5865,7 @@
         function loadGarageData() {
             if (!currentUser) return;
             
-            const db = firebase.firestore();
+            // AWS DynamoDB already configured at top of file
             db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
                 .then(doc => {
                     if (doc.exists) {
@@ -5895,7 +5887,7 @@
         function loadExteriorData() {
             if (!currentUser) return;
             
-            const db = firebase.firestore();
+            // AWS DynamoDB already configured at top of file
             db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
                 .then(doc => {
                     if (doc.exists) {
@@ -5917,7 +5909,7 @@
         function loadAppliancesData() {
             if (!currentUser) return;
             
-            const db = firebase.firestore();
+            // AWS DynamoDB already configured at top of file
             db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
                 .then(doc => {
                     if (doc.exists) {
@@ -5939,7 +5931,7 @@
         function loadServiceHistory(section = null) {
             if (!currentUser) return;
             
-            const db = firebase.firestore();
+            // AWS DynamoDB already configured at top of file
             let query = db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).collection('serviceHistory');
             
             // If section is specified, filter by section
@@ -6056,7 +6048,7 @@
         function saveServiceRecord(serviceData) {
             if (!currentUser) return;
             
-            const db = firebase.firestore();
+            // AWS DynamoDB already configured at top of file
             db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).collection('serviceHistory').add(serviceData)
                 .then(() => {
                     console.log('Service record saved successfully');
@@ -6074,7 +6066,7 @@
             if (confirm('Are you sure you want to delete this service record?')) {
                 if (!currentUser) return;
                 
-                const db = firebase.firestore();
+                // AWS DynamoDB already configured at top of file
                 db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).collection('serviceHistory').doc(docId).delete()
                     .then(() => {
                         console.log('Service record deleted successfully');
@@ -6425,7 +6417,7 @@
                     delete task.completedDate;
                 }
                 displayTasks();
-                saveTasksToFirebase();
+                saveTasksToAWS();
             }
         }
 
@@ -6486,7 +6478,7 @@
                 }
             });
             
-            saveHomeDataToFirebase(homeData);
+            saveHomeDataToAWS(homeData);
         }
 
         // Test function to manually add a task
@@ -6508,7 +6500,7 @@
             console.log('Tasks array after:', tasks);
             
             displayTasks();
-            saveTasksToFirebase();
+            saveTasksToAWS();
             
             alert('Test task added! Check the Tasks tab to see it.');
         }
@@ -6545,7 +6537,7 @@
             console.log('Tasks array after:', tasks);
             
             displayTasks();
-            saveTasksToFirebase();
+            saveTasksToAWS();
             
             // Clear form
             document.getElementById('taskTitle').value = '';
@@ -6608,7 +6600,7 @@
             }
             
             displayTasks();
-            saveTasksToFirebase();
+            saveTasksToAWS();
             
             // Reset form and switch back to tasks list
             e.target.reset();
@@ -6635,25 +6627,26 @@
                 timestamp: new Date().toISOString()
             };
             
-            saveContactToFirebase(contactData);
+            saveContactToAWS(contactData);
             
             // Reset form
             e.target.reset();
             alert('Emergency contact added successfully!');
         }
 
-        // Firebase functions
-        function loadUserData() {
-            auth.onAuthStateChanged(user => {
-                if (user) {
-                    currentUser = user;
-                    loadHomeDataFromFirebase();
-                    loadTasksFromFirebase();
-                }
-            });
+        // AWS functions
+        async function loadUserData() {
+            const isAuthenticated = await nestMateAuth.isAuthenticated();
+            if (isAuthenticated) {
+                currentUser = nestMateAuth.currentUser;
+                await loadHomeDataFromAWS();
+                await loadTasksFromAWS();
+            } else {
+                window.location.href = 'login-aws.html';
+            }
         }
 
-        function saveHomeDataToFirebase(data) {
+        function saveHomeDataToAWS(data) {
             if (!currentUser) return;
             
             const userRef = db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid);
@@ -7053,7 +7046,7 @@
         function loadBedroomDataForEditing(index) {
             if (!currentUser) return;
             
-            const db = firebase.firestore();
+            // AWS DynamoDB already configured at top of file
             db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
                 .then(doc => {
                     if (doc.exists) {
@@ -7219,7 +7212,7 @@
         function loadBathroomDataForEditing(index) {
             if (!currentUser) return;
             
-            const db = firebase.firestore();
+            // AWS DynamoDB already configured at top of file
             db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
                 .then(doc => {
                     if (doc.exists) {
@@ -7497,7 +7490,7 @@
 
         // exportHomeData function moved to complete functions section
 
-        function loadHomeDataFromFirebase() {
+        function loadHomeDataFromAWS() {
             if (!currentUser) {
                 console.log('No current user, cannot load home data');
                 return;
@@ -7534,14 +7527,14 @@
             loadLivingData();
         }
 
-        function saveTasksToFirebase() {
+        function saveTasksToAWS() {
             if (!currentUser) return;
             
-            console.log('Saving tasks to Firebase:', tasks);
+            console.log('Saving tasks to AWS');
             db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).update({
                 tasks: tasks
             }).then(() => {
-                console.log('Tasks saved successfully to Firebase');
+                console.log('Tasks saved successfully to AWS');
                 // Update dashboard widgets after saving tasks
                 loadMiniCalendar();
                 loadUpcomingTasks();
@@ -7550,18 +7543,18 @@
             });
         }
 
-        function loadTasksFromFirebase() {
+        function loadTasksFromAWS() {
             if (!currentUser) return;
             
-            console.log('Loading tasks from Firebase...');
+            console.log('Loading tasks from AWS');
             db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
                 .then(doc => {
                     if (doc.exists && doc.data().tasks) {
-                        console.log('Tasks loaded from Firebase:', doc.data().tasks);
+                        console.log('Tasks loaded from AWS:', doc.data().tasks);
                         tasks = doc.data().tasks;
                         displayTasks();
                     } else {
-                        console.log('No tasks found in Firebase, using default tasks');
+                        console.log('No tasks found in AWS, using default tasks');
                         loadDefaultTasks();
                     }
                 })
@@ -7571,7 +7564,7 @@
                 });
         }
 
-        function saveContactToFirebase(contactData) {
+        function saveContactToAWS(contactData) {
             if (!currentUser) return;
             
             db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).collection('emergencyContacts').add(contactData)
@@ -7695,7 +7688,7 @@
         function signOut() {
             if (confirm('Are you sure you want to sign out?')) {
                 auth.signOut().then(() => {
-                    window.location.href = 'signin.html';
+                    window.location.href = 'login-aws.html';
                 });
             }
         }
@@ -8570,16 +8563,16 @@
                     // Remove from DOM
                     roomSection.remove();
                     
-                    // Update Firebase with the specific room index removed
-                    updateFirebaseAfterRoomRemoval(roomType, roomIndex);
+                    // Update AWS with the specific room index removed
+                    updateAWSAfterRoomRemoval(roomType, roomIndex);
                 }
             }
         }
 
-        function updateFirebaseAfterRoomRemoval(roomType, removedIndex) {
+        function updateAWSAfterRoomRemoval(roomType, removedIndex) {
             if (!currentUser) return;
             
-            const db = firebase.firestore();
+            // AWS DynamoDB already configured at top of file
             db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
                 .then(doc => {
                     if (doc.exists) {
@@ -8589,11 +8582,11 @@
                             const updatedRooms = [...data[roomType]];
                             updatedRooms.splice(removedIndex, 1);
                             
-                            // Update Firebase with the new array
+                            // Update AWS with the new array
                             const updateData = { [roomType]: updatedRooms };
                             db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).update(updateData)
                                 .then(() => {
-                                    console.log(`${roomType} updated in Firebase after removal. Removed index ${removedIndex}. New count: ${updatedRooms.length}`);
+                                    console.log(`${roomType} updated in AWS after removal. Removed index ${removedIndex}. New count: ${updatedRooms.length}`);
                                     // Reload the data to ensure UI is in sync
                                     if (roomType === 'bedrooms') {
                                         loadBedroomsData();
@@ -8604,7 +8597,7 @@
                                     }
                                 })
                                 .catch(error => {
-                                    console.error('Error updating Firebase after room removal:', error);
+                                    console.error('Error updating AWS');
                                     alert('Error removing room. Please try again.');
                                 });
                         }
@@ -8769,7 +8762,7 @@
         function loadDashboardData() {
             if (!currentUser) return;
             
-            const db = firebase.firestore();
+            // AWS DynamoDB already configured at top of file
             
             // Load home data for age and square footage
             db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
@@ -9584,28 +9577,28 @@
             }
         };
 
-        // Test function to check Firebase data
-        window.checkFirebaseData = function() {
-            console.log('=== CHECKING FIREBASE DATA ===');
+        // Test function to check AWS data
+        window.checkAWSData = function() {
+            console.log('=== CHECKING AWS DATA ===');
             if (!currentUser) {
                 console.log('No current user logged in');
                 return;
             }
             
-            const db = firebase.firestore();
+            // AWS DynamoDB already configured at top of file
             db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
                 .then(doc => {
                     if (doc.exists) {
                         const data = doc.data();
-                        console.log('Full Firebase document:', data);
+                        console.log('Full AWS document:', data);
                         console.log('Bedrooms data:', data.bedrooms);
                         console.log('Bathrooms data:', data.bathrooms);
                         console.log('Living areas data:', data.livingAreas);
                     } else {
-                        console.log('No document found in Firebase');
+                        console.log('No document found in AWS');
                     }
                 })
-                .catch(error => console.error('Error reading Firebase:', error));
+                .catch(error => console.error('Error reading AWS:', error));
         };
 
         // Test function for Google Places API (can be called from browser console)
@@ -9710,37 +9703,35 @@
             
             // Firebase already initialized at the top of the file
 
-            auth.onAuthStateChanged(function(user) {
-                if (user) {
-                    currentUser = user;
-                    console.log('User authenticated:', user.email);
+            // Check AWS authentication
+            loadUserData().then(() => {
+                console.log('User authenticated:', currentUser.email);
+                
+                // Initialize enhanced dashboard
+                setTimeout(() => {
+                    initializeDashboard();
+                }, 1000);
+                
+                // Initialize autocomplete after a longer delay to ensure all content is loaded
+                setTimeout(() => {
+                    initializeAddressAutocomplete();
+                    setupAddressFieldObserver();
                     
-                    // Initialize enhanced dashboard
-                    setTimeout(() => {
-                        initializeDashboard();
-                    }, 1000);
-                    
-                    // Initialize autocomplete after a longer delay to ensure all content is loaded
-                    setTimeout(() => {
-                        initializeAddressAutocomplete();
-                        setupAddressFieldObserver();
-                        
-                        // Add click event listener to address field for manual trigger
-                        const addressField = document.getElementById('homeAddress');
-                        if (addressField) {
-                            addressField.addEventListener('click', function() {
-                                console.log('Address field clicked, checking autocomplete status');
-                                if (!addressField.hasAttribute('data-autocomplete-initialized')) {
-                                    console.log('Autocomplete not initialized, triggering manually');
-                                    enableAddressAutocomplete();
-                                }
-                            });
-                        }
-                    }, 2000);
-                } else {
-                    console.log('No user authenticated, redirecting to signin');
-                    window.location.href = 'signin.html';
-                }
+                    // Add click event listener to address field for manual trigger
+                    const addressField = document.getElementById('homeAddress');
+                    if (addressField) {
+                        addressField.addEventListener('click', function() {
+                            console.log('Address field clicked, checking autocomplete status');
+                            if (!addressField.hasAttribute('data-autocomplete-initialized')) {
+                                console.log('Autocomplete not initialized, triggering manually');
+                                enableAddressAutocomplete();
+                            }
+                        });
+                    }
+                }, 2000);
+            }).catch(error => {
+                console.error('Authentication error:', error);
+                window.location.href = 'login-aws.html';
             });
         });
 
@@ -9944,7 +9935,7 @@
             });
         }
 
-        function loadFavoritesFromFirebase() {
+        function loadFavoritesFromAWS() {
             if (!currentUser) return;
             
             db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get().then(doc => {
@@ -10128,7 +10119,7 @@
                         };
                         
                         photos.push(photo);
-                        savePhotosToFirebase();
+                        savePhotosToAWS();
                         loadPhotos();
                     };
                     reader.readAsDataURL(file);
@@ -10233,7 +10224,7 @@
             photo.room = document.getElementById('editPhotoRoom').value;
             photo.description = document.getElementById('editPhotoDescription').value;
             
-            savePhotosToFirebase();
+            savePhotosToAWS();
             loadPhotos();
             closeModal();
             showSuccess('Photo updated successfully!');
@@ -10242,7 +10233,7 @@
         function deletePhoto(photoId) {
             if (confirm('Are you sure you want to delete this photo?')) {
                 photos = photos.filter(p => p.id !== photoId);
-                savePhotosToFirebase();
+                savePhotosToAWS();
                 loadPhotos();
                 showSuccess('Photo deleted successfully!');
             }
@@ -10274,19 +10265,19 @@
             return names[room] || 'Unknown';
         }
 
-        function savePhotosToFirebase() {
+        function savePhotosToAWS() {
             if (!currentUser) return;
             
             db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).update({
                 photos: photos
             }).then(() => {
-                console.log('Photos saved to Firebase');
+                console.log('Photos saved to AWS');
             }).catch(error => {
                 console.error('Error saving photos:', error);
             });
         }
 
-        function loadPhotosFromFirebase() {
+        function loadPhotosFromAWS() {
             if (!currentUser) return;
             
             db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get().then(doc => {
@@ -10646,7 +10637,7 @@
             };
             
             tasks.push(newTask);
-            saveTasksToFirebase();
+            saveTasksToAWS();
             displayTasks();
             
             // Show success message with upgrade option

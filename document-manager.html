@@ -7,28 +7,26 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
-    <!-- Firebase SDK -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+    <!-- AWS SDK -->
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1491.0.min.js"></script>
+    <script src="auth-aws.js"></script>
+    <script>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
-            authDomain: "data-41fa8.firebaseapp.com",
-            projectId: "data-41fa8",
-            storageBucket: "data-41fa8.firebasestorage.app",
-            messagingSenderId: "865171535257",
-            appId: "1:865171535257:web:9944a48a952e99f55f0f08",
-            measurementId: "G-1DYR2RGY4G"
-        };
+        // AWS Configuration
+        AWS.config.update({
+            region: 'us-east-2',
+            accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
+            secretAccessKey: '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'
+        });
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        const dynamodb = new AWS.DynamoDB.DocumentClient();
 
-        window.firebaseAuth = auth;
-        window.firebaseDb = db;
+        // AWS DynamoDB already configured above
+        // AWS Cognito auth via auth-aws.js
+        // AWS DynamoDB already configured above
+
+        // AWS Cognito auth via auth-aws.js
+        // AWS DynamoDB available via dynamodb variable
     </script>
 
     <style>
@@ -912,7 +910,7 @@
                 category: document.getElementById('documentCategory').value,
                 description: document.getElementById('documentDescription').value,
                 fileName: document.getElementById('documentFile').files[0]?.name,
-                userId: window.firebaseAuth?.currentUser?.uid || 'anonymous',
+                userId: nestMateAuth?.currentUser?.uid || 'anonymous',
                 timestamp: new Date().toISOString()
             };
 
@@ -940,11 +938,11 @@
 
         // Check authentication
         document.addEventListener('DOMContentLoaded', function() {
-            if (window.firebaseAuth) {
-                window.firebaseAuth.onAuthStateChanged(function(user) {
+            if (nestMateAuth) {
+                nestMateAuth.onAuthStateChanged(function(user) {
                     if (!user) {
                         // Redirect to sign in if not authenticated
-                        window.location.href = 'signin.html';
+                        window.location.href = 'login-aws.html';
                     }
                 });
             }

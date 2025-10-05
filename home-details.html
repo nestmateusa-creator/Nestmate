@@ -7,10 +7,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
-    <!-- Firebase CDN -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <!-- AWS SDK -->
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1491.0.min.js"></script>
+    <script src="auth-aws.js"></script>
     
     
     <style>
@@ -1607,28 +1606,22 @@
             console.log('Home Details page loaded');
         });
 
-        // Firebase configuration - CORRECTED PROJECT ID
-        const firebaseConfig = {
-            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
-            authDomain: "nestmate-167ed.firebaseapp.com",
-            projectId: "nestmate-167ed",
-            storageBucket: "nestmate-167ed.appspot.com",
-            messagingSenderId: "865171535257",
-            appId: "1:865171535257:web:9944a48a952e99f55f0f08",
-            measurementId: "G-1DYR2RGY4G"
-        };
+        // AWS Configuration
+        AWS.config.update({
+            region: 'us-east-2',
+            accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
+            secretAccessKey: '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'
+        });
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+        const dynamodb = new AWS.DynamoDB.DocumentClient();
+        // AWS DynamoDB already configured at top of file
 
         // Go back to correct dashboard based on user's account type
         async function goBackToDashboard() {
             try {
                 const user = auth.currentUser;
                 if (!user) {
-                    window.location.href = 'signin.html';
+                    window.location.href = 'login-aws.html';
                     return;
                 }
 

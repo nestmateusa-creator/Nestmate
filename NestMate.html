@@ -13,55 +13,25 @@
     <!-- Account Manager Script -->
     <script src="account-manager.js"></script>
     
-    <!-- Firebase SDK v12 -->
-    <script type="module">
-        // Import the functions you need from the SDKs you need
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics.js";
-        import { getAuth, signOut, onAuthStateChanged, updateProfile, EmailAuthProvider, reauthenticateWithCredential, deleteUser } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
-        import { getFirestore, collection, doc, getDocs, addDoc, updateDoc, deleteDoc, query, orderBy, where, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+    <!-- AWS SDK -->
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1491.0.min.js"></script>
+    <script src="auth-aws.js"></script>
+    <script>
+        // AWS Configuration
+        AWS.config.update({
+            region: 'us-east-2',
+            accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
+            secretAccessKey: 'wolmLksFIm5go0kLZVelnfLnw7NGIxyZD9EvIu5O'
+        });
 
-        // Your web app's Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
-            authDomain: "nestmate-167ed.firebaseapp.com",
-            projectId: "nestmate-167ed",
-            storageBucket: "nestmate-167ed.appspot.com",
-            messagingSenderId: "865171535257",
-            appId: "1:865171535257:web:9944a48a952e99f55f0f08",
-            measurementId: "G-1DYR2RGY4G"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        const dynamodb = new AWS.DynamoDB.DocumentClient();
 
         // Make Firebase services available globally
-        window.firebaseAuth = auth;
-        window.firebaseDB = db;
-        window.firebaseServices = {
-            signOut,
-            onAuthStateChanged,
-            updateProfile,
-            EmailAuthProvider,
-            reauthenticateWithCredential,
-            deleteUser,
-            collection,
-            doc,
-            getDocs,
-            addDoc,
-            updateDoc,
-            deleteDoc,
-            query,
-            orderBy,
-            where,
-            getDoc,
-            setDoc
-        };
+        // AWS Cognito auth via auth-aws.js
+        // AWS DynamoDB via dynamodb variable
+        // AWS services available via AWS SDK
 
-        console.log('Firebase initialized successfully in NestMate.html');
+        console.log('AWS initialized successfully');
     </script>
     
     <style>
@@ -3996,10 +3966,10 @@
         let currentDate = new Date();
         let selectedDate = new Date();
 
-        // Load homes from Firebase
-        async function loadHomesFromFirebase() {
-            if (!currentUserId || !window.firebaseDB || !window.firebaseServices) {
-                console.log('User not authenticated or Firebase not ready');
+        // Load homes from AWS
+        async function loadHomesFromAWS() {
+            if (!currentUserId || !dynamodb) {
+                console.log('User not authenticated or AWS not ready');
                 return;
             }
 
@@ -4032,14 +4002,14 @@
         }
 
         // Load tasks from Firebase
-        async function loadTasksFromFirebase() {
-            if (!currentUserId || !window.firebaseDB || !window.firebaseServices) {
-                console.log('User not authenticated or Firebase not ready');
+        async function loadTasksFromAWS() {
+            if (!currentUserId || !dynamodb) {
+                console.log('User not authenticated or AWS not ready');
                 return;
             }
 
             try {
-                console.log('Loading tasks from Firebase for user:', currentUserId);
+                console.log('Loading tasks from AWS');
                 
                 const tasksQuery = window.firebaseServices.query(
                     window.firebaseServices.collection(window.firebaseDB, 'tasks'),
@@ -4068,8 +4038,8 @@
 
         // Load home details sections from Firebase
         async function loadHomeDetailsFromFirebase() {
-            if (!currentUserId || !window.firebaseDB || !window.firebaseServices) {
-                console.log('User not authenticated or Firebase not ready');
+            if (!currentUserId || !dynamodb) {
+                console.log('User not authenticated or AWS not ready');
                 return;
             }
 
@@ -4506,7 +4476,7 @@
 
         // Save home to Firebase
         async function saveHomeToFirebase(homeData) {
-            if (!currentUserId || !window.firebaseDB || !window.firebaseServices) {
+            if (!currentUserId || !dynamodb) {
                 console.error('User not authenticated or Firebase not ready');
                 return null;
             }
@@ -4555,7 +4525,7 @@
 
         // Save task to Firebase
         async function saveTaskToFirebase(taskData) {
-            if (!currentUserId || !window.firebaseDB || !window.firebaseServices) {
+            if (!currentUserId || !dynamodb) {
                 console.error('User not authenticated or Firebase not ready');
                 return null;
             }
@@ -4618,7 +4588,7 @@
             console.log('🔍 firebaseDB:', window.firebaseDB);
             console.log('🔍 firebaseServices:', window.firebaseServices);
             
-            if (!currentUserId || !window.firebaseDB || !window.firebaseServices) {
+            if (!currentUserId || !dynamodb) {
                 console.error('❌ User not authenticated or Firebase not ready');
                 console.error('❌ currentUserId:', currentUserId);
                 console.error('❌ firebaseDB:', window.firebaseDB);
@@ -4776,7 +4746,7 @@
 
         // Update home in Firebase
         async function updateHomeInFirebase(homeId, homeData) {
-            if (!currentUserId || !window.firebaseDB || !window.firebaseServices) {
+            if (!currentUserId || !dynamodb) {
                 console.error('User not authenticated or Firebase not ready');
                 return false;
             }
@@ -4793,7 +4763,7 @@
                 const homeRef = window.firebaseServices.doc(window.firebaseDB, 'homes', homeId);
                 await window.firebaseServices.updateDoc(homeRef, homeWithUserId);
                 
-                console.log('Home updated in Firebase successfully');
+                console.log('Updated in AWS');
                 
                 // Update local homes object
                 homes[homeId] = { ...homes[homeId], ...homeWithUserId };
@@ -4807,7 +4777,7 @@
 
         // Delete home from Firebase
         async function deleteHomeFromFirebase(homeId) {
-            if (!currentUserId || !window.firebaseDB || !window.firebaseServices) {
+            if (!currentUserId || !dynamodb) {
                 console.error('User not authenticated or Firebase not ready');
                 return false;
             }
@@ -5025,8 +4995,8 @@
 
         // Load user profile data
         async function loadUserProfile() {
-            if (!currentUserId || !window.firebaseDB || !window.firebaseServices) {
-                console.log('User not authenticated or Firebase not ready');
+            if (!currentUserId || !dynamodb) {
+                console.log('User not authenticated or AWS not ready');
                 return;
             }
 
@@ -5107,7 +5077,7 @@
             console.log('firebaseServices available:', !!window.firebaseServices);
             console.log('profileData:', profileData);
             
-            if (!currentUserId || !window.firebaseDB || !window.firebaseServices) {
+            if (!currentUserId || !dynamodb) {
                 console.error('User not authenticated or Firebase not ready');
                 console.error('currentUserId:', currentUserId);
                 console.error('firebaseDB:', window.firebaseDB);
@@ -5633,7 +5603,7 @@
                 // Show success message and redirect
                 console.log('Showing success message and redirecting...');
                 alert('Your profile and all associated data have been permanently deleted. You will be redirected to the sign-in page.');
-                window.location.href = 'signin.html';
+                window.location.href = 'login-aws.html';
                 
             } catch (error) {
                 console.error('Error in deleteUserProfile:', error);
@@ -6271,7 +6241,7 @@
         }
 
         async function loadRemindersFromFirebase() {
-            if (!currentUserId || !window.firebaseDB || !window.firebaseServices) {
+            if (!currentUserId || !dynamodb) {
                 return;
             }
 
@@ -6368,7 +6338,7 @@
         }
 
         async function loadCalendarSettingsFromFirebase() {
-            if (!currentUserId || !window.firebaseDB || !window.firebaseServices) {
+            if (!currentUserId || !dynamodb) {
                 return;
             }
 
@@ -7265,7 +7235,7 @@
                         console.log('User not authenticated, redirecting to signin');
                         // Add a small delay to prevent rapid redirects
                         setTimeout(() => {
-                        window.location.href = 'signin.html';
+                        window.location.href = 'login-aws.html';
                         }, 1000);
                     } else {
                         // User is signed in, check if they're a sales rep
@@ -7339,7 +7309,7 @@
                         console.log('About to load homes from Firebase...');
                         // Load user's homes from Firebase
                         try {
-                        await loadHomesFromFirebase();
+                        await loadHomesFromAWS();
                         } catch (error) {
                             console.error('Error loading homes:', error);
                             // Continue anyway - don't let this break the authentication
@@ -7356,7 +7326,7 @@
                         console.log('About to load tasks from Firebase...');
                         // Load user's tasks from Firebase
                         try {
-                        await loadTasksFromFirebase();
+                        await loadTasksFromAWS();
                         } catch (error) {
                             console.error('Error loading tasks:', error);
                         }
@@ -7408,8 +7378,8 @@
             console.log('firebaseDB available:', !!window.firebaseDB);
             console.log('firebaseServices available:', !!window.firebaseServices);
             
-            if (!currentUserId || !window.firebaseDB || !window.firebaseServices) {
-                console.log('User not authenticated or Firebase not ready');
+            if (!currentUserId || !dynamodb) {
+                console.log('User not authenticated or AWS not ready');
                 console.log('currentUserId:', currentUserId);
                 console.log('firebaseDB:', window.firebaseDB);
                 console.log('firebaseServices:', window.firebaseServices);
@@ -7518,7 +7488,7 @@
             console.log('firebaseDB available:', !!window.firebaseDB);
             console.log('firebaseServices available:', !!window.firebaseServices);
             
-            if (!currentUserId || !window.firebaseDB || !window.firebaseServices) {
+            if (!currentUserId || !dynamodb) {
                 console.error('User not authenticated or Firebase not ready');
                 console.error('currentUserId:', currentUserId);
                 console.error('firebaseDB:', window.firebaseDB);
@@ -7598,7 +7568,7 @@
             console.log('firebaseDB available:', !!window.firebaseDB);
             console.log('firebaseServices available:', !!window.firebaseServices);
             
-            if (!currentUserId || !window.firebaseDB || !window.firebaseServices) {
+            if (!currentUserId || !dynamodb) {
                 console.error('User not authenticated or Firebase not ready');
                 console.error('currentUserId:', currentUserId);
                 console.error('firebaseDB:', window.firebaseDB);
@@ -7691,7 +7661,7 @@
 
         // Delete room from Firebase
         async function deleteRoomFromFirebase(roomId) {
-            if (!currentUserId || !window.firebaseDB || !window.firebaseServices) {
+            if (!currentUserId || !dynamodb) {
                 console.error('User not authenticated or Firebase not ready');
                 return false;
             }

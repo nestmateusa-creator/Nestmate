@@ -897,7 +897,7 @@
                     const user = auth.currentUser;
                     if (!user) {
                         console.log('No user found, redirecting to signin');
-                        window.location.href = 'signin.html';
+                        window.location.href = 'login-aws.html';
                     }
                 }, 1000);
             }
@@ -911,7 +911,7 @@
                 // Only redirect if we're not already on signin page
                 if (!window.location.href.includes('signin')) {
                     console.log('Auth state changed - no user, redirecting to signin');
-                    window.location.href = 'signin.html';
+                    window.location.href = 'login-aws.html';
                 }
             }
         });
@@ -919,7 +919,7 @@
         // Sign out function
         function signOut() {
             auth.signOut().then(() => {
-                window.location.href = 'signin.html';
+                window.location.href = 'login-aws.html';
             }).catch((error) => {
                 console.error('Error signing out:', error);
             });

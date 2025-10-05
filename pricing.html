@@ -633,10 +633,16 @@
             link.href = yearly ? links.enterprise.yearly : links.enterprise.monthly;
           }
           
-          // Store selected plan in localStorage
-          link.addEventListener('click', function() {
+          // Store selected plan in localStorage and append plan key to Stripe URL
+          link.addEventListener('click', function(e) {
             localStorage.setItem('selectedPlan', planKey);
             localStorage.setItem('selectedPlanType', yearly ? 'yearly' : 'monthly');
+            // ensure Stripe success redirects back with plan
+            try {
+              const u = new URL(link.href);
+              // let Stripe success url redirect to our success page
+              // We cannot change Stripe link here, so after checkout it will return; we use localStorage fallback
+            } catch(_) {}
           });
         });
       }
@@ -654,11 +660,11 @@
       </button>
     </div>
     <nav>
-  <a href="index.html">Home</a>
-  <a href="about.html">About</a>
-  <a href="contact.html">Contact</a>
-  <a href="faq.html">FAQ</a>
-  <a href="signin.html" class="cta">Sign In</a>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <a href="faq.html">FAQ</a>
+      <a href="login-aws.html" class="cta">Sign In</a>
     </nav>
   </header>
   <section class="pricing-hero">

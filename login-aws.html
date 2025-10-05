@@ -255,6 +255,12 @@
 
     <script src="auth-aws.js"></script>
     <script>
+        // AWS Configuration for login
+        AWS.config.update({
+            region: 'us-east-2',
+            accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
+            secretAccessKey: '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'
+        });
         // Form elements
         const loginForm = document.getElementById('loginForm');
         const loading = document.getElementById('loading');
@@ -311,12 +317,21 @@
                 const result = await nestMateAuth.signIn(email, password);
 
                 if (result.success) {
+                    // Fetch user record to decide destination
+                    const userRec = await nestMateAuth.getUserRecord(result.userId || nestMateAuth.currentUser?.userId);
+                    const sub = userRec?.user?.subscription || 'basic';
+
+                    let dest = 'dashboard-basic-new.html';
+                    if (sub === 'pro') dest = 'dashboard-pro-new.html';
+                    if (sub === 'advanced') dest = 'dashboard-advanced-pro-new.html';
+                    if (sub === 'enterprise') dest = 'dashboard-advanced-pro-new.html';
+
+                    // If no active subscription, send to pricing
+                    const status = userRec?.user?.subscriptionStatus || 'inactive';
+                    if (status !== 'active') dest = 'pricing.html?from=login';
+
                     showMessage('Signed in successfully! Redirecting...', 'success');
-                    
-                    // Redirect to dashboard after 1 second
-                    setTimeout(() => {
-                        window.location.href = 'dashboard-basic-aws.html';
-                    }, 1000);
+                    setTimeout(() => { window.location.href = dest; }, 800);
                 } else {
                     showMessage(result.message, 'error');
                 }

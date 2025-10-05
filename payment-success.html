@@ -6,9 +6,7 @@
     <title>Payment Successful - NestMate</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -172,19 +170,7 @@
     </div>
 
     <script>
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
-            authDomain: "nestmate-167ed.firebaseapp.com",
-            projectId: "nestmate-167ed",
-            storageBucket: "nestmate-167ed.appspot.com",
-            messagingSenderId: "865171535257",
-            appId: "1:865171535257:web:abcdef123456"
-        };
-        
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const auth = firebase.auth();
+        // Replaced Firebase usage; see payment-success-aws.html for AWS flow
 
         // Plan mapping based on Stripe session IDs or other identifiers
         const planMapping = {
@@ -271,22 +257,7 @@
                     });
                 });
 
-                if (user) {
-                    // Save subscription info to Firestore
-                    await db.collection('userProfiles').doc(user.uid).set({
-                        accountType: planInfo.accountType,
-                        subscriptionStatus: 'active',
-                        subscriptionPlan: planInfo.name,
-                        subscriptionPrice: planInfo.price,
-                        subscriptionPeriod: planInfo.period,
-                        subscriptionDate: new Date().toISOString(),
-                        lastUpdated: new Date().toISOString()
-                    }, { merge: true });
-
-                    console.log('Subscription saved successfully');
-                } else {
-                    console.log('No authenticated user, skipping Firestore save');
-                }
+                // Deprecated: Firebase save removed
             } catch (error) {
                 console.error('Error saving subscription:', error);
             }
