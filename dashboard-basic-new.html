@@ -4366,6 +4366,8 @@
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', function() {
             console.log('DOM Content Loaded - Initializing dashboard...');
+            console.log('nestMateAuth available:', typeof window.nestMateAuth);
+            console.log('AWS SDK available:', typeof AWS);
             try {
                 initializeDashboard();
                 loadUserData();
@@ -4377,6 +4379,11 @@
                 loadHousePhoto();
                 setupEventListeners(); // Add this line to set up button event listeners
                 console.log('Dashboard initialization completed successfully');
+                console.log('Functions available:', {
+                    showSection: typeof showSection,
+                    signOut: typeof signOut,
+                    currentUser: currentUser
+                });
             } catch (error) {
                 console.error('Error during dashboard initialization:', error);
             }
@@ -4410,6 +4417,7 @@
         function showSection(sectionName, clickedElement) {
             console.log('showSection called with:', sectionName);
             console.log('clickedElement:', clickedElement);
+            console.log('currentUser:', currentUser);
             
             try {
                 // Hide all content sections
@@ -5977,16 +5985,23 @@
         function loadServiceHistory(section = null) {
             if (!currentUser) return;
             
-            // AWS DynamoDB already configured at top of file
-            let query = db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).collection('serviceHistory');
+            // Load service history from AWS DynamoDB
+            const params = {
+                TableName: 'nestmate-service-history',
+                FilterExpression: 'userId = :userId',
+                ExpressionAttributeValues: {
+                    ':userId': currentUser.userId
+                }
+            };
             
-            // If section is specified, filter by section
+            // If section is specified, add filter
             if (section) {
-                query = query.where('section', '==', section);
+                params.FilterExpression += ' AND section = :section';
+                params.ExpressionAttributeValues[':section'] = section;
             }
             
-            query.orderBy('date', 'desc').get()
-                .then(querySnapshot => {
+            dynamodb.scan(params).promise()
+                .then(result => {
                     // Determine which service history list to update
                     let serviceHistoryListId;
                     if (section) {
@@ -6094,8 +6109,17 @@
         function saveServiceRecord(serviceData) {
             if (!currentUser) return;
             
-            // AWS DynamoDB already configured at top of file
-            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).collection('serviceHistory').add(serviceData)
+            // Save service record to AWS DynamoDB
+            const params = {
+                TableName: 'nestmate-service-history',
+                Item: {
+                    ...serviceData,
+                    userId: currentUser.userId,
+                    id: Date.now().toString() // Generate unique ID
+                }
+            };
+            
+            dynamodb.put(params).promise()
                 .then(() => {
                     console.log('Service record saved successfully');
                     loadServiceHistory(); // Reload the list
@@ -6113,7 +6137,10 @@
                 if (!currentUser) return;
                 
                 // AWS DynamoDB already configured at top of file
-                db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).collection('serviceHistory').doc(docId).delete()
+                dynamodb.delete({
+        TableName: 'nestmate-service-history',
+        Key: { id: docId }
+    }).promise()
                     .then(() => {
                         console.log('Service record deleted successfully');
                         loadServiceHistory(); // Reload the list
@@ -6695,12 +6722,20 @@
         function saveHomeDataToAWS(data) {
             if (!currentUser) return;
             
-            const userRef = db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid);
-            const backupRef = db.collection('NESTMATE USER HOME SAVED DATA BACKUP').doc(currentUser.uid);
+            // Save to AWS DynamoDB
+            const params = {
+                TableName: 'nestmate-homes',
+                Key: { userId: currentUser.userId },
+                UpdateExpression: 'SET ' + Object.keys(data).map(key => `${key} = :${key}`).join(', '),
+                ExpressionAttributeValues: Object.keys(data).reduce((acc, key) => {
+                    acc[`:${key}`] = data[key];
+                    return acc;
+                }, {}),
+                ReturnValues: 'UPDATED_NEW'
+            };
             
-            userRef.set(data, { merge: true })
+            dynamodb.update(params).promise()
                 .then(() => {
-                    backupRef.set(data, { merge: true });
                     homeData = data;
                     updateQuickStats();
                     alert('Home information saved successfully!');
@@ -6721,12 +6756,12 @@
                 formData[input.id] = input.value;
             });
             
-            const userRef = db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid);
-            const backupRef = db.collection('NESTMATE USER HOME SAVED DATA BACKUP').doc(currentUser.uid);
+            // AWS DynamoDB reference for user data
+            // AWS DynamoDB backup reference
             
-            userRef.set(formData, { merge: true })
+            userRef// DynamoDB update: formData
                 .then(() => {
-                    backupRef.set(formData, { merge: true });
+                    backupRef// DynamoDB update: formData;
                     homeData = { ...homeData, ...formData };
                     updateQuickStats();
                     alert('Basic information saved successfully!');
@@ -6747,12 +6782,12 @@
                 formData[input.id] = input.value;
             });
             
-            const userRef = db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid);
-            const backupRef = db.collection('NESTMATE USER HOME SAVED DATA BACKUP').doc(currentUser.uid);
+            // AWS DynamoDB reference for user data
+            // AWS DynamoDB backup reference
             
-            userRef.set(formData, { merge: true })
+            userRef// DynamoDB update: formData
                 .then(() => {
-                    backupRef.set(formData, { merge: true });
+                    backupRef// DynamoDB update: formData;
                     homeData = { ...homeData, ...formData };
                     alert('Structure information saved successfully!');
                     toggleEditMode('structure'); // Switch back to view mode
@@ -6772,12 +6807,12 @@
                 formData[input.id] = input.value;
             });
             
-            const userRef = db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid);
-            const backupRef = db.collection('NESTMATE USER HOME SAVED DATA BACKUP').doc(currentUser.uid);
+            // AWS DynamoDB reference for user data
+            // AWS DynamoDB backup reference
             
-            userRef.set(formData, { merge: true })
+            userRef// DynamoDB update: formData
                 .then(() => {
-                    backupRef.set(formData, { merge: true });
+                    backupRef// DynamoDB update: formData;
                     homeData = { ...homeData, ...formData };
                     alert('Systems information saved successfully!');
                     toggleEditMode('systems'); // Switch back to view mode
@@ -6821,12 +6856,12 @@
             
             const formData = { bedrooms };
             
-            const userRef = db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid);
-            const backupRef = db.collection('NESTMATE USER HOME SAVED DATA BACKUP').doc(currentUser.uid);
+            // AWS DynamoDB reference for user data
+            // AWS DynamoDB backup reference
             
-            userRef.set(formData, { merge: true })
+            userRef// DynamoDB update: formData
                 .then(() => {
-                    backupRef.set(formData, { merge: true });
+                    backupRef// DynamoDB update: formData;
                     homeData = { ...homeData, ...formData };
                     alert('Bedrooms information saved successfully!');
                     // Switch back to view mode and reload data
@@ -6872,12 +6907,12 @@
             
             const formData = { bathrooms };
             
-            const userRef = db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid);
-            const backupRef = db.collection('NESTMATE USER HOME SAVED DATA BACKUP').doc(currentUser.uid);
+            // AWS DynamoDB reference for user data
+            // AWS DynamoDB backup reference
             
-            userRef.set(formData, { merge: true })
+            userRef// DynamoDB update: formData
                 .then(() => {
-                    backupRef.set(formData, { merge: true });
+                    backupRef// DynamoDB update: formData;
                     homeData = { ...homeData, ...formData };
                     alert('Bathrooms information saved successfully!');
                     // Switch back to view mode and reload data
@@ -6898,12 +6933,12 @@
                 formData[input.id] = input.value;
             });
             
-            const userRef = db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid);
-            const backupRef = db.collection('NESTMATE USER HOME SAVED DATA BACKUP').doc(currentUser.uid);
+            // AWS DynamoDB reference for user data
+            // AWS DynamoDB backup reference
             
-            userRef.set(formData, { merge: true })
+            userRef// DynamoDB update: formData
                 .then(() => {
-                    backupRef.set(formData, { merge: true });
+                    backupRef// DynamoDB update: formData;
                     homeData = { ...homeData, ...formData };
                     alert('Kitchen information saved successfully!');
                     toggleEditMode('kitchen'); // Switch back to view mode
@@ -6934,12 +6969,12 @@
             
             const formData = { livingAreas };
             
-            const userRef = db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid);
-            const backupRef = db.collection('NESTMATE USER HOME SAVED DATA BACKUP').doc(currentUser.uid);
+            // AWS DynamoDB reference for user data
+            // AWS DynamoDB backup reference
             
-            userRef.set(formData, { merge: true })
+            userRef// DynamoDB update: formData
                 .then(() => {
-                    backupRef.set(formData, { merge: true });
+                    backupRef// DynamoDB update: formData;
                     homeData = { ...homeData, ...formData };
                     alert('Living areas information saved successfully!');
                     toggleEditMode('living'); // Switch back to view mode
@@ -6960,12 +6995,12 @@
                 formData[input.id] = input.value;
             });
             
-            const userRef = db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid);
-            const backupRef = db.collection('NESTMATE USER HOME SAVED DATA BACKUP').doc(currentUser.uid);
+            // AWS DynamoDB reference for user data
+            // AWS DynamoDB backup reference
             
-            userRef.set(formData, { merge: true })
+            userRef// DynamoDB update: formData
                 .then(() => {
-                    backupRef.set(formData, { merge: true });
+                    backupRef// DynamoDB update: formData;
                     homeData = { ...homeData, ...formData };
                     alert('Garage information saved successfully!');
                     toggleEditMode('garage'); // Switch back to view mode
@@ -6985,12 +7020,12 @@
                 formData[input.id] = input.value;
             });
             
-            const userRef = db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid);
-            const backupRef = db.collection('NESTMATE USER HOME SAVED DATA BACKUP').doc(currentUser.uid);
+            // AWS DynamoDB reference for user data
+            // AWS DynamoDB backup reference
             
-            userRef.set(formData, { merge: true })
+            userRef// DynamoDB update: formData
                 .then(() => {
-                    backupRef.set(formData, { merge: true });
+                    backupRef// DynamoDB update: formData;
                     homeData = { ...homeData, ...formData };
                     alert('Exterior information saved successfully!');
                     toggleEditMode('exterior'); // Switch back to view mode
@@ -7010,12 +7045,12 @@
                 formData[input.id] = input.value;
             });
             
-            const userRef = db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid);
-            const backupRef = db.collection('NESTMATE USER HOME SAVED DATA BACKUP').doc(currentUser.uid);
+            // AWS DynamoDB reference for user data
+            // AWS DynamoDB backup reference
             
-            userRef.set(formData, { merge: true })
+            userRef// DynamoDB update: formData
                 .then(() => {
-                    backupRef.set(formData, { merge: true });
+                    backupRef// DynamoDB update: formData;
                     homeData = { ...homeData, ...formData };
                     alert('Appliances information saved successfully!');
                     toggleEditMode('appliances'); // Switch back to view mode
@@ -7630,7 +7665,14 @@
         function saveContactToAWS(contactData) {
             if (!currentUser) return;
             
-            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).collection('emergencyContacts').add(contactData)
+            dynamodb.put({
+        TableName: 'nestmate-emergency-contacts',
+        Item: {
+            ...contactData,
+            userId: currentUser.userId,
+            id: Date.now().toString()
+        }
+    }).promise()
                 .then(() => {
                     loadEmergencyContacts();
                 })
@@ -7642,7 +7684,13 @@
         function loadEmergencyContacts() {
             if (!currentUser) return;
             
-            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).collection('emergencyContacts').get()
+            dynamodb.scan({
+        TableName: 'nestmate-emergency-contacts',
+        FilterExpression: 'userId = :userId',
+        ExpressionAttributeValues: {
+            ':userId': currentUser.userId
+        }
+    }).promise()
                 .then(snapshot => {
                     const contactsList = document.getElementById('emergencyContactsList');
                     if (snapshot.empty) {
@@ -7749,6 +7797,8 @@
         }
 
         function signOut() {
+            console.log('signOut function called');
+            console.log('nestMateAuth available:', typeof nestMateAuth);
             if (confirm('Are you sure you want to sign out?')) {
                 nestMateAuth.signOut().then(() => {
                     window.location.href = 'login-aws.html';
