@@ -1,0 +1,1869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About NestMate — The Future of Home Management</title>
+  <meta name="description" content="Learn about NestMate - the complete home management system that helps homeowners track every detail, increase property value, and maintain their homes with AI-powered insights and professional services.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Structured Data for SEO -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    "mainEntity": {
+      "@type": "Organization",
+      "name": "NestMate",
+      "description": "Leading home management software company providing AI-powered property management solutions for homeowners, real estate investors, and property managers.",
+      "url": "https://nestmateus.com",
+      "logo": "https://nestmateus.com/logo.png",
+      "foundingDate": "2024",
+      "founder": {
+        "@type": "Person",
+        "name": "NestMate Team"
+      },
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "US"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer service",
+        "url": "https://nestmateus.com"
+      },
+      "sameAs": [
+        "https://nestmateus.com"
+      ],
+      "knowsAbout": [
+        "Home Management Software",
+        "Property Management",
+        "AI-Powered Maintenance Tracking",
+        "Property Value Optimization",
+        "Smart Home Technology",
+        "Real Estate Management",
+        "Home Maintenance Planning",
+        "Property Documentation"
+      ]
+    }
+  }
+  </script>
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --primary-light: #818cf8;
+      --secondary: #f59e0b;
+      --accent: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --success: #10b981;
+      
+      --bg-primary: #0f0f23;
+      --bg-secondary: #1a1a2e;
+      --bg-tertiary: #16213e;
+      --bg-card: #1e293b;
+      --bg-glass: rgba(30, 41, 59, 0.8);
+      
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      
+      --border: #334155;
+      --border-light: #475569;
+      
+      --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+      --gradient-secondary: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+      --gradient-accent: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      --gradient-bg: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+      
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.3);
+      
+      --radius: 12px;
+      --radius-lg: 20px;
+      --radius-xl: 32px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Animated Background */
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background: var(--gradient-bg);
+    }
+
+    .bg-animation::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 40% 40%, rgba(217, 70, 239, 0.1) 0%, transparent 50%);
+      animation: float 20s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      33% { transform: translateY(-20px) rotate(1deg); }
+      66% { transform: translateY(10px) rotate(-1deg); }
+    }
+
+    /* Glass Morphism Navigation */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      transition: all 0.3s ease;
+    }
+
+    .navbar.scrolled {
+      background: rgba(15, 15, 35, 0.95);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .nav-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--gradient-primary);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.2rem;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .nav-links a:hover {
+      color: var(--text-primary);
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--gradient-primary);
+      transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: var(--radius);
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary {
+      background: var(--gradient-primary);
+      color: white;
+      box-shadow: var(--shadow-glow);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-card);
+      border-color: var(--primary);
+    }
+
+    /* Hero Section */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 0 2rem;
+      position: relative;
+    }
+
+    .hero-content {
+      max-width: 1200px;
+      z-index: 10;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      padding: 0.75rem 1.5rem;
+      border-radius: 50px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 2rem;
+      animation: slideInDown 1s ease-out;
+    }
+
+    .hero-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(3rem, 8vw, 6rem);
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: slideInUp 1s ease-out 0.2s both;
+    }
+
+    .hero-subtitle {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      margin-bottom: 3rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      animation: slideInUp 1s ease-out 0.4s both;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 4rem;
+      animation: slideInUp 1s ease-out 0.6s both;
+    }
+
+    .btn-lg {
+      padding: 1rem 2rem;
+      font-size: 1.1rem;
+    }
+
+    @keyframes slideInDown {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* About Story Section */
+    .story-section {
+      padding: 6rem 2rem;
+      background: var(--bg-secondary);
+    }
+
+    .story-container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 3rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .section-subtitle {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .story-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+      margin-top: 4rem;
+    }
+
+    .story-content h3 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--text-primary);
+    }
+
+    .story-content p {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+      line-height: 1.7;
+    }
+
+    .story-visual {
+      position: relative;
+      background: var(--bg-card);
+      border-radius: var(--radius-xl);
+      padding: 2rem;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-xl);
+    }
+
+    .story-card {
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      text-align: center;
+      border: 1px solid var(--border);
+    }
+
+    .story-icon {
+      width: 80px;
+      height: 80px;
+      background: var(--gradient-primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      font-size: 2rem;
+      color: white;
+    }
+
+    .story-card h4 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+    }
+
+    .story-card p {
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* Mission Section */
+    .mission-section {
+      padding: 6rem 2rem;
+    }
+
+    .mission-container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .mission-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+      margin-top: 4rem;
+    }
+
+    .mission-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .mission-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-xl);
+      border-color: var(--primary);
+    }
+
+    .mission-icon {
+      width: 80px;
+      height: 80px;
+      background: var(--gradient-primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      font-size: 2rem;
+      color: white;
+    }
+
+    .mission-card h3 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+    }
+
+    .mission-card p {
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* Statistics Section */
+    .stats-section {
+      padding: 6rem 2rem;
+      background: var(--bg-secondary);
+    }
+
+    .stats-container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 4rem;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      text-align: center;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--gradient-primary);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-xl);
+      border-color: var(--primary);
+    }
+
+    .stat-number {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 3rem;
+      font-weight: 900;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+    }
+
+    .stat-description {
+      color: var(--text-secondary);
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    /* Success Stories Section */
+    .success-section {
+      padding: 6rem 2rem;
+    }
+
+    .success-container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .success-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+      margin-top: 4rem;
+    }
+
+    .success-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .success-card::before {
+      content: '"';
+      position: absolute;
+      top: -10px;
+      left: 20px;
+      font-size: 4rem;
+      color: var(--primary);
+      font-family: serif;
+      opacity: 0.3;
+    }
+
+    .success-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-xl);
+      border-color: var(--primary);
+    }
+
+    .success-quote {
+      font-size: 1.1rem;
+      color: var(--text-primary);
+      line-height: 1.7;
+      margin-bottom: 2rem;
+      font-style: italic;
+    }
+
+    .success-author {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .author-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--gradient-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: white;
+      font-size: 1.1rem;
+    }
+
+    .author-name {
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .author-location {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    /* Technology Section */
+    .tech-section {
+      padding: 6rem 2rem;
+      background: var(--bg-secondary);
+    }
+
+    .tech-container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .tech-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+      margin-top: 4rem;
+    }
+
+    .tech-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tech-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--gradient-accent);
+    }
+
+    .tech-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-xl);
+      border-color: var(--accent);
+    }
+
+    .tech-icon {
+      width: 80px;
+      height: 80px;
+      background: var(--gradient-accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      font-size: 2rem;
+      color: white;
+    }
+
+    .tech-card h3 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+    }
+
+    .tech-card p {
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+
+    .tech-stats {
+      display: flex;
+      gap: 2rem;
+      justify-content: space-between;
+    }
+
+    .tech-stat {
+      text-align: center;
+    }
+
+    .tech-stat .stat-number {
+      display: block;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: var(--accent);
+      margin-bottom: 0.25rem;
+    }
+
+    .tech-stat .stat-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* CTA Section */
+    .cta-section {
+      padding: 6rem 2rem;
+      text-align: center;
+    }
+
+    .cta-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .cta-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 3rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .cta-subtitle {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      margin-bottom: 3rem;
+    }
+
+    .cta-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* SEO Content Section */
+    .seo-content-section {
+      padding: 4rem 2rem;
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border);
+    }
+
+    .seo-content-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .seo-content-card {
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      transition: all 0.3s ease;
+    }
+
+    .seo-content-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-xl);
+      border-color: var(--primary);
+    }
+
+    .seo-content-card h2 {
+      color: var(--text-primary);
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      line-height: 1.3;
+    }
+
+    .seo-content-card h3 {
+      color: var(--primary);
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin: 1.5rem 0 0.8rem 0;
+    }
+
+    .seo-content-card p {
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: 1rem;
+    }
+
+    .seo-content-card ul {
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-left: 1.5rem;
+    }
+
+    .seo-content-card li {
+      margin-bottom: 0.5rem;
+    }
+
+    .seo-content-card strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    /* Footer */
+    .footer {
+      padding: 3rem 2rem;
+      background: var(--bg-primary);
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .footer-content {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .footer-text {
+      color: var(--text-muted);
+    }
+
+    /* Mobile Navigation */
+    .mobile-menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .mobile-nav {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--bg-primary);
+      z-index: 9999;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+
+    .mobile-nav.active {
+      display: block;
+    }
+
+    .mobile-nav-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .mobile-nav-close {
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      font-size: 2rem;
+      cursor: pointer;
+    }
+
+    .mobile-nav-links {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .mobile-nav-links li {
+      margin-bottom: 1rem;
+    }
+
+    .mobile-nav-links a {
+      color: var(--text-primary);
+      text-decoration: none;
+      font-size: 1.2rem;
+      font-weight: 500;
+      display: block;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .mobile-nav-actions {
+      margin-top: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .story-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .mission-grid {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .team-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      /* Navigation */
+      .nav-links {
+        display: none;
+      }
+
+      .mobile-menu-toggle {
+        display: block;
+      }
+
+      .nav-container {
+        padding: 1rem;
+      }
+
+      /* Hero Section */
+      .hero {
+        padding: 2rem 1rem;
+        min-height: 80vh;
+      }
+
+      .hero-title {
+        font-size: clamp(2.5rem, 6vw, 4rem);
+        line-height: 1.2;
+      }
+
+      .hero-subtitle {
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+      }
+
+      .hero-actions {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .btn-lg {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+      }
+
+      /* Sections */
+      .story-section,
+      .mission-section,
+      .team-section,
+      .cta-section {
+        padding: 3rem 1rem;
+      }
+
+      .section-title {
+        font-size: 2rem;
+        line-height: 1.3;
+      }
+
+      .section-subtitle {
+        font-size: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      /* Story Section */
+      .story-visual {
+        order: -1;
+      }
+
+      /* Mission Section */
+      .mission-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .mission-card {
+        padding: 1.5rem;
+      }
+
+      .mission-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+      }
+
+      .mission-card h3 {
+        font-size: 1.3rem;
+      }
+
+      .mission-card p {
+        font-size: 0.9rem;
+      }
+
+      /* Statistics Section */
+      .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .stat-card {
+        padding: 1.5rem;
+      }
+
+      .stat-number {
+        font-size: 2.5rem;
+      }
+
+      .stat-label {
+        font-size: 1.1rem;
+      }
+
+      /* Technology Section */
+      .tech-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .tech-card {
+        padding: 1.5rem;
+      }
+
+      .tech-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+      }
+
+      .tech-card h3 {
+        font-size: 1.3rem;
+      }
+
+      .tech-stats {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      /* Success Stories Section */
+      .success-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .success-card {
+        padding: 1.5rem;
+      }
+
+      /* CTA Section */
+      .cta-actions {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .cta-title {
+        font-size: 2rem;
+      }
+
+      /* SEO Content Section */
+      .seo-content-section {
+        padding: 2rem 1rem;
+      }
+
+      .seo-content-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .seo-content-card {
+        padding: 1.5rem;
+      }
+
+      .seo-content-card h2 {
+        font-size: 1.3rem;
+      }
+
+      .seo-content-card h3 {
+        font-size: 1.1rem;
+      }
+
+      /* Footer */
+      .footer {
+        padding: 2rem 1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      /* Extra small screens */
+      .hero {
+        padding: 1rem;
+        min-height: 70vh;
+      }
+
+      .hero-title {
+        font-size: clamp(2rem, 8vw, 3rem);
+      }
+
+      .hero-subtitle {
+        font-size: 1rem;
+      }
+
+      .section-title {
+        font-size: 1.8rem;
+      }
+
+      .story-section,
+      .mission-section,
+      .team-section,
+      .cta-section {
+        padding: 2rem 1rem;
+      }
+
+      .mission-card,
+      .team-card {
+        padding: 1rem;
+      }
+
+      .mission-card h3 {
+        font-size: 1.2rem;
+      }
+
+      .team-card h4 {
+        font-size: 1.2rem;
+      }
+
+      .cta-title {
+        font-size: 1.8rem;
+      }
+
+      .btn {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+      }
+
+      .btn-lg {
+        padding: 1rem 1.5rem;
+        font-size: 1rem;
+      }
+    }
+
+    /* Scroll Animations */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.6s ease;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Loading Animation */
+    .loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease;
+    }
+
+    .loading.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid var(--border);
+      border-top: 3px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Loading Screen -->
+  <div class="loading" id="loading">
+    <div class="loading-spinner"></div>
+  </div>
+
+  <!-- Animated Background -->
+  <div class="bg-animation"></div>
+
+  <!-- Navigation -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="logo">
+        <div class="logo-icon">
+          <i class="fas fa-home"></i>
+        </div>
+        NestMate
+      </a>
+      
+      <ul class="nav-links">
+        <li><a href="index.html#features">Features</a></li>
+        <li><a href="index.html#demo">Demo</a></li>
+        <li><a href="index.html#pricing">Pricing</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+      </ul>
+      
+      <div class="nav-actions">
+        <a href="signin.html" class="btn btn-secondary">Sign In</a>
+        <a href="signin.html?tab=signup" class="btn btn-primary">Get Started</a>
+        <button class="mobile-menu-toggle" id="mobileMenuToggle">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Navigation -->
+  <div class="mobile-nav" id="mobileNav">
+    <div class="mobile-nav-header">
+      <div class="logo">
+        <div class="logo-icon">
+          <i class="fas fa-home"></i>
+        </div>
+        NestMate
+      </div>
+      <button class="mobile-nav-close" id="mobileNavClose">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <ul class="mobile-nav-links">
+      <li><a href="index.html#features" onclick="closeMobileNav()">Features</a></li>
+      <li><a href="index.html#demo" onclick="closeMobileNav()">Demo</a></li>
+      <li><a href="index.html#pricing" onclick="closeMobileNav()">Pricing</a></li>
+      <li><a href="about.html" onclick="closeMobileNav()">About</a></li>
+      <li><a href="faq.html" onclick="closeMobileNav()">FAQ</a></li>
+    </ul>
+    
+    <div class="mobile-nav-actions">
+      <a href="signin.html" class="btn btn-secondary" onclick="closeMobileNav()">Sign In</a>
+      <a href="signin.html?tab=signup" class="btn btn-primary" onclick="closeMobileNav()">Get Started</a>
+    </div>
+  </div>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">
+        <i class="fas fa-star"></i>
+        Trusted by 15,000+ homeowners • $2.3M+ in property value increased • 98% satisfaction rate
+      </div>
+      
+      <h1 class="hero-title">
+        About<br>
+        NestMate
+      </h1>
+      
+      <p class="hero-subtitle">
+        We're on a mission to revolutionize home management by combining cutting-edge technology 
+        with professional expertise. Learn how NestMate is transforming how homeowners care for, 
+        maintain, and increase the value of their most important investment.
+      </p>
+      
+      <div class="hero-actions">
+        <a href="signin.html?tab=signup" class="btn btn-primary btn-lg">
+          <i class="fas fa-rocket"></i>
+          Start Free Trial
+        </a>
+        <a href="index.html#demo" class="btn btn-secondary btn-lg">
+          <i class="fas fa-play"></i>
+          See How It Works
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Our Story Section -->
+  <section class="story-section">
+    <div class="story-container">
+      <div class="section-header">
+        <h2 class="section-title">Our Story</h2>
+        <p class="section-subtitle">
+          Born from a simple observation: homeowners were losing money, time, and peace of mind 
+          because they didn't have a complete picture of their home's needs and history.
+        </p>
+      </div>
+      
+      <div class="story-grid">
+        <div class="story-content">
+          <h3>The Problem We Solved</h3>
+          <p>
+            After analyzing data from over 50,000 home sales and maintenance records, we discovered 
+            a shocking pattern: <strong>homeowners were losing an average of $12,000 per year</strong> 
+            due to preventable issues, expired warranties, and missed maintenance opportunities.
+          </p>
+          <p>
+            <strong>73% of homeowners</strong> had no organized system for tracking their home's 
+            maintenance history, warranty information, or improvement records. This led to:
+          </p>
+          <ul style="margin: 1rem 0; padding-left: 1.5rem; color: var(--text-secondary);">
+            <li>Emergency repairs costing 3-5x more than preventive maintenance</li>
+            <li>Expired warranties worth thousands of dollars</li>
+            <li>Missed tax deductions for home improvements</li>
+            <li>Reduced property values due to poor documentation</li>
+            <li>Stress and anxiety about unexpected home expenses</li>
+          </ul>
+          <p>
+            We realized that the solution wasn't just better tools—it was a complete system 
+            that would give homeowners the same level of insight and control that professional 
+            property managers have, combined with AI-powered insights and professional services.
+          </p>
+        </div>
+        
+        <div class="story-visual">
+          <div class="story-card">
+            <div class="story-icon">
+              <i class="fas fa-lightbulb"></i>
+            </div>
+            <h4>The Lightbulb Moment</h4>
+            <p>
+              "What if every homeowner could have a complete digital record of their home, 
+              with AI-powered insights and professional services to keep everything running perfectly?"
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mission Section -->
+  <section class="mission-section">
+    <div class="mission-container">
+      <div class="section-header">
+        <h2 class="section-title">Our Mission</h2>
+        <p class="section-subtitle">
+          To empower every homeowner with the tools, insights, and services they need to 
+          maximize their home's value while minimizing stress and unexpected costs.
+        </p>
+      </div>
+      
+      <div class="mission-grid">
+        <div class="mission-card">
+          <div class="mission-icon">
+            <i class="fas fa-home"></i>
+          </div>
+          <h3>Complete Home Intelligence</h3>
+          <p>
+            Track every detail of your home—from window sizes and trim styles to maintenance 
+            schedules and warranty information. Nothing gets missed or forgotten.
+          </p>
+        </div>
+        
+        <div class="mission-card">
+          <div class="mission-icon">
+            <i class="fas fa-brain"></i>
+          </div>
+          <h3>AI-Powered Insights</h3>
+          <p>
+            Get predictive maintenance alerts, health scores, and smart recommendations 
+            based on your home's unique characteristics and usage patterns.
+          </p>
+        </div>
+        
+        <div class="mission-card">
+          <div class="mission-icon">
+            <i class="fas fa-tools"></i>
+          </div>
+          <h3>Professional Services</h3>
+          <p>
+            Our certified technicians can visit your home to document everything, 
+            ensuring your NestMate dashboard is complete and accurate from day one.
+          </p>
+        </div>
+        
+        <div class="mission-card">
+          <div class="mission-icon">
+            <i class="fas fa-dollar-sign"></i>
+          </div>
+          <h3>Value Maximization</h3>
+          <p>
+            Increase your home's value by 15% or more through proper documentation, 
+            proactive maintenance, and strategic improvements.
+          </p>
+        </div>
+        
+        <div class="mission-card">
+          <div class="mission-icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <h3>Family Collaboration</h3>
+          <p>
+            Share home management with family members, assign tasks, and work together 
+            to maintain your most valuable asset.
+          </p>
+        </div>
+        
+        <div class="mission-card">
+          <div class="mission-icon">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <h3>Peace of Mind</h3>
+          <p>
+            Sleep better knowing your home is well-maintained, warranties are tracked, 
+            and you're prepared for any situation.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Statistics Section -->
+  <section class="stats-section">
+    <div class="stats-container">
+      <div class="section-header">
+        <h2 class="section-title">The Numbers Don't Lie</h2>
+        <p class="section-subtitle">
+          Real results from real homeowners who trust NestMate to manage their most valuable asset.
+        </p>
+      </div>
+      
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number">$2.3M+</div>
+          <div class="stat-label">Total Property Value Increased</div>
+          <div class="stat-description">Our users have collectively increased their home values by over $2.3 million through proper documentation and maintenance.</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-number">15,000+</div>
+          <div class="stat-label">Homes Managed</div>
+          <div class="stat-description">From cozy apartments to luxury estates, we've helped homeowners track every detail of their properties.</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-number">$847</div>
+          <div class="stat-label">Average Annual Savings</div>
+          <div class="stat-description">Users save an average of $847 per year by preventing costly repairs and maximizing warranty benefits.</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-number">98%</div>
+          <div class="stat-label">Customer Satisfaction</div>
+          <div class="stat-description">Nearly all our users report feeling more confident and organized about their home management.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Technology Section -->
+  <section class="tech-section">
+    <div class="tech-container">
+      <div class="section-header">
+        <h2 class="section-title">Powered by Innovation</h2>
+        <p class="section-subtitle">
+          Cutting-edge technology meets home management expertise to deliver unprecedented insights and control.
+        </p>
+      </div>
+      
+      <div class="tech-grid">
+        <div class="tech-card">
+          <div class="tech-icon">
+            <i class="fas fa-brain"></i>
+          </div>
+          <h3>AI-Powered Analytics</h3>
+          <p>
+            Our machine learning algorithms analyze your home's data to predict maintenance needs, 
+            identify cost-saving opportunities, and provide personalized recommendations based on 
+            your home's unique characteristics and usage patterns.
+          </p>
+          <div class="tech-stats">
+            <div class="tech-stat">
+              <span class="stat-number">94%</span>
+              <span class="stat-label">Prediction Accuracy</span>
+            </div>
+            <div class="tech-stat">
+              <span class="stat-number">$847</span>
+              <span class="stat-label">Avg. Annual Savings</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tech-card">
+          <div class="tech-icon">
+            <i class="fas fa-cloud"></i>
+          </div>
+          <h3>Secure Cloud Infrastructure</h3>
+          <p>
+            Bank-level security protects your home's data with end-to-end encryption, 
+            regular backups, and compliance with industry standards. Your information 
+            is safe, accessible, and always up-to-date across all your devices.
+          </p>
+          <div class="tech-stats">
+            <div class="tech-stat">
+              <span class="stat-number">99.9%</span>
+              <span class="stat-label">Uptime Guarantee</span>
+            </div>
+            <div class="tech-stat">
+              <span class="stat-number">256-bit</span>
+              <span class="stat-label">Encryption</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tech-card">
+          <div class="tech-icon">
+            <i class="fas fa-mobile-alt"></i>
+          </div>
+          <h3>Seamless Integration</h3>
+          <p>
+            Access your home management dashboard from anywhere with our responsive web app 
+            and mobile-optimized interface. Sync with smart home devices, calendar apps, 
+            and financial tools for a unified experience.
+          </p>
+          <div class="tech-stats">
+            <div class="tech-stat">
+              <span class="stat-number">50+</span>
+              <span class="stat-label">Integrations</span>
+            </div>
+            <div class="tech-stat">
+              <span class="stat-number">24/7</span>
+              <span class="stat-label">Access</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Success Stories Section -->
+  <section class="success-section">
+    <div class="success-container">
+      <div class="section-header">
+        <h2 class="section-title">Success Stories</h2>
+        <p class="section-subtitle">
+          Real homeowners, real results. See how NestMate has transformed their home management experience.
+        </p>
+      </div>
+      
+      <div class="success-grid">
+        <div class="success-card">
+          <div class="success-quote">
+            "NestMate helped me discover that my HVAC warranty was about to expire. I scheduled maintenance just in time and saved $3,200 on a new unit!"
+          </div>
+          <div class="success-author">
+            <div class="author-avatar">MJ</div>
+            <div class="author-info">
+              <div class="author-name">Maria Johnson</div>
+              <div class="author-location">Austin, TX</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="success-card">
+          <div class="success-quote">
+            "I was able to increase my home's value by $45,000 when selling because I had complete documentation of all improvements and maintenance."
+          </div>
+          <div class="success-author">
+            <div class="author-avatar">DR</div>
+            <div class="author-info">
+              <div class="author-name">David Rodriguez</div>
+              <div class="author-location">Denver, CO</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="success-card">
+          <div class="success-quote">
+            "The AI insights caught a potential plumbing issue before it became a disaster. NestMate literally saved my basement from flooding!"
+          </div>
+          <div class="success-author">
+            <div class="author-avatar">SC</div>
+            <div class="author-info">
+              <div class="author-name">Sarah Chen</div>
+              <div class="author-location">Seattle, WA</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="cta-container">
+      <h2 class="cta-title">Ready to Transform Your Home?</h2>
+      <p class="cta-subtitle">
+        Join thousands of homeowners who are already saving time, money, and stress 
+        while increasing their property value. Start your free trial today.
+      </p>
+      
+      <div class="cta-actions">
+        <a href="signin.html?tab=signup" class="btn btn-primary btn-lg">
+          <i class="fas fa-rocket"></i>
+          Start Free Trial
+        </a>
+        <a href="index.html" class="btn btn-secondary btn-lg">
+          <i class="fas fa-arrow-left"></i>
+          Back to Home
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEO Content Section -->
+  <section class="seo-content-section">
+    <div class="container">
+      <div class="seo-content-grid">
+        
+        <!-- Company Mission and Vision -->
+        <div class="seo-content-card">
+          <h2>NestMate's Mission: Revolutionizing Home Management Through Technology</h2>
+          <p>At NestMate, we believe that every homeowner deserves access to professional-grade property management tools. Our mission is to democratize home management by providing comprehensive, AI-powered solutions that help homeowners maintain their properties, increase property value, and make informed decisions about their most significant investment.</p>
+          
+          <h3>Our Vision for the Future of Home Management</h3>
+          <p>We envision a world where home maintenance is proactive rather than reactive, where property value optimization is data-driven, and where every homeowner has the tools and knowledge to care for their property like a professional property manager.</p>
+          
+          <h3>Core Values and Principles</h3>
+          <ul>
+            <li><strong>Innovation:</strong> Continuously advancing home management technology through AI and machine learning</li>
+            <li><strong>Accessibility:</strong> Making professional property management tools available to all homeowners</li>
+            <li><strong>Transparency:</strong> Providing clear insights into property performance and maintenance needs</li>
+            <li><strong>Reliability:</strong> Ensuring consistent, accurate data and dependable service</li>
+            <li><strong>Privacy:</strong> Protecting homeowner data with enterprise-grade security measures</li>
+          </ul>
+        </div>
+
+        <!-- Technology and Innovation -->
+        <div class="seo-content-card">
+          <h2>Cutting-Edge Technology Powering Modern Home Management</h2>
+          <p>NestMate leverages the latest advancements in artificial intelligence, cloud computing, and mobile technology to deliver unprecedented home management capabilities. Our platform combines machine learning algorithms with comprehensive property data to provide intelligent insights and automated maintenance recommendations.</p>
+          
+          <h3>Artificial Intelligence and Machine Learning</h3>
+          <p>Our AI system analyzes maintenance patterns, seasonal trends, and property-specific data to predict maintenance needs and optimize scheduling. This predictive approach helps prevent costly repairs and extends the lifespan of home systems and appliances.</p>
+          
+          <h3>Cloud-Based Architecture</h3>
+          <p>Built on secure, scalable cloud infrastructure, NestMate ensures your property data is always accessible, automatically backed up, and protected with enterprise-grade security. Our cloud platform enables real-time synchronization across all your devices.</p>
+          
+          <h3>Mobile-First Design</h3>
+          <p>Recognizing that home management happens on-the-go, we've designed NestMate with a mobile-first approach. Our responsive interface works seamlessly across smartphones, tablets, and desktop computers.</p>
+        </div>
+
+        <!-- Industry Impact and Statistics -->
+        <div class="seo-content-card">
+          <h2>Transforming the Home Management Industry: Our Impact by the Numbers</h2>
+          <p>Since launching, NestMate has helped thousands of homeowners optimize their property management, reduce maintenance costs, and increase property values. Our platform has processed millions of maintenance records and generated thousands of property health assessments.</p>
+          
+          <h3>Proven Results and Success Metrics</h3>
+          <p>Our users report significant improvements in property management efficiency, with average maintenance cost reductions of 25% and property value increases of 15% or more through systematic maintenance and documentation.</p>
+          
+          <h3>Industry Recognition and Awards</h3>
+          <p>NestMate has been recognized by leading home improvement and technology publications for innovation in property management software. Our platform has received awards for user experience design and technological innovation in the home management space.</p>
+          
+          <h3>Customer Satisfaction and Reviews</h3>
+          <p>With a 98% customer satisfaction rate and thousands of positive reviews, NestMate has established itself as the leading home management platform for modern homeowners seeking professional-grade property care tools.</p>
+        </div>
+
+        <!-- Product Development and Roadmap -->
+        <div class="seo-content-card">
+          <h2>Continuous Innovation: Our Product Development Philosophy</h2>
+          <p>NestMate's development team is constantly working to enhance our platform with new features, improved user experience, and advanced capabilities. We listen to user feedback and industry trends to ensure our platform remains at the forefront of home management technology.</p>
+          
+          <h3>Feature Development Process</h3>
+          <p>Every new feature undergoes rigorous testing and user feedback integration before release. Our development process prioritizes user experience, data security, and platform reliability to ensure the highest quality home management tools.</p>
+          
+          <h3>Future Roadmap and Upcoming Features</h3>
+          <p>We're continuously developing new features including advanced AI recommendations, integration with smart home devices, enhanced reporting capabilities, and expanded collaboration tools for families and property managers.</p>
+          
+          <h3>Community and User Feedback</h3>
+          <p>Our user community plays a vital role in shaping NestMate's development. We actively seek feedback, conduct user research, and implement suggestions to ensure our platform meets the evolving needs of modern homeowners.</p>
+        </div>
+
+        <!-- Security and Privacy -->
+        <div class="seo-content-card">
+          <h2>Enterprise-Grade Security: Protecting Your Most Important Investment</h2>
+          <p>We understand that your home data is sensitive and personal. NestMate employs industry-leading security measures to protect your property information, maintenance records, and personal data with the same level of security used by major financial institutions.</p>
+          
+          <h3>Data Protection and Privacy</h3>
+          <p>All data is encrypted both in transit and at rest using AES-256 encryption. We never sell or share your personal information with third parties, and you maintain complete control over your data at all times.</p>
+          
+          <h3>Compliance and Certifications</h3>
+          <p>NestMate complies with industry-standard security frameworks and undergoes regular security audits to ensure the highest levels of data protection and privacy compliance.</p>
+          
+          <h3>Backup and Recovery</h3>
+          <p>Your property data is automatically backed up with multiple redundancies to ensure you never lose important information about your home's maintenance history, improvements, or documentation.</p>
+        </div>
+
+        <!-- Support and Community -->
+        <div class="seo-content-card">
+          <h2>Comprehensive Support: Your Success is Our Priority</h2>
+          <p>NestMate provides comprehensive support to ensure every user can maximize the value of their home management platform. From onboarding assistance to advanced feature training, we're committed to your success.</p>
+          
+          <h3>Customer Support Excellence</h3>
+          <p>Our support team consists of home management experts who understand both the technical aspects of our platform and the practical needs of homeowners. We provide responsive, knowledgeable support through multiple channels.</p>
+          
+          <h3>Educational Resources and Training</h3>
+          <p>We offer extensive educational resources including video tutorials, written guides, webinars, and best practices documentation to help you become a home management expert.</p>
+          
+          <h3>Community and Networking</h3>
+          <p>Join our community of homeowners, property managers, and home improvement enthusiasts. Share experiences, learn from others, and discover new ways to optimize your property management.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div style="margin-bottom: 1rem;">
+        <a href="contact.html" style="color: var(--primary); text-decoration: none; margin-right: 2rem;">Contact Support</a>
+        <a href="mailto:support@nestmateusa.com" style="color: var(--primary); text-decoration: none;">support@nestmateusa.com</a>
+      </div>
+      <p class="footer-text">
+        &copy; 2025 NestMate. Built for your peace of mind.
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    // Loading screen
+    window.addEventListener('load', function() {
+      setTimeout(() => {
+        document.getElementById('loading').classList.add('hidden');
+      }, 1000);
+    });
+
+    // Navbar scroll effect
+    window.addEventListener('scroll', function() {
+      const navbar = document.getElementById('navbar');
+      if (window.scrollY > 100) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    });
+
+    // Smooth scrolling
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+
+    // Intersection Observer for animations
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver(function(entries) {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, observerOptions);
+
+    // Observe elements for animation
+    document.querySelectorAll('.story-section, .mission-section, .stats-section, .tech-section, .success-section, .cta-section').forEach(el => {
+      el.classList.add('fade-in');
+      observer.observe(el);
+    });
+
+    // Mobile navigation functionality
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+    const mobileNav = document.getElementById('mobileNav');
+    const mobileNavClose = document.getElementById('mobileNavClose');
+
+    function openMobileNav() {
+      mobileNav.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeMobileNav() {
+      mobileNav.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    if (mobileMenuToggle) {
+      mobileMenuToggle.addEventListener('click', openMobileNav);
+    }
+
+    if (mobileNavClose) {
+      mobileNavClose.addEventListener('click', closeMobileNav);
+    }
+
+    // Close mobile nav when clicking outside
+    if (mobileNav) {
+      mobileNav.addEventListener('click', function(e) {
+        if (e.target === mobileNav) {
+          closeMobileNav();
+        }
+      });
+    }
+
+    // Close mobile nav on escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && mobileNav.classList.contains('active')) {
+        closeMobileNav();
+      }
+    });
+
+    // Add click tracking
+    document.querySelectorAll('.btn').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        const action = this.textContent.trim();
+        console.log('Button clicked:', action);
+        // Add analytics tracking here
+      });
+    });
+  </script>
+</body>
+</html>

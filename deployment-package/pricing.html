@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>NestMate — Pricing & Plans</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;500&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --accent: #facc15;
+      --bg: #f8fafc;
+      --card: #fff;
+      --radius: 18px;
+      --shadow: 0 4px 32px rgba(37,99,235,0.10);
+    }
+    body {
+      margin: 0;
+      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+      background: linear-gradient(120deg, #e0e7ff 0%, #f8fafc 100%);
+      color: #1e293b;
+      min-height: 100vh;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 32px 8vw 0 8vw;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: -1px;
+    }
+    nav {
+      display: flex;
+      gap: 18px;
+    }
+    nav a {
+      text-decoration: none;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 1.1rem;
+      padding: 8px 20px;
+      border-radius: 10px;
+      transition: background 0.18s, color 0.18s;
+    }
+    nav a.cta {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(37,99,235,0.10);
+    }
+    nav a.cta:hover {
+      background: #1d4ed8;
+    }
+    nav a:hover:not(.cta) {
+      background: #e0e7ff;
+      color: #1d4ed8;
+    }
+    .pricing-hero {
+      max-width: 900px;
+      margin: 48px auto 0 auto;
+      text-align: center;
+      padding: 0 8vw;
+    }
+    .pricing-title {
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: var(--primary);
+      margin-bottom: 16px;
+      letter-spacing: -2px;
+    }
+    .pricing-desc {
+      font-size: 1.25rem;
+      color: #334155;
+      margin-bottom: 40px;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+    .toggle-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 36px;
+    }
+    .toggle-label {
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: #334155;
+      cursor: pointer;
+      user-select: none;
+    }
+    .toggle-switch {
+      position: relative;
+      width: 56px;
+      height: 28px;
+      display: inline-block;
+    }
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #e0e7ff;
+      transition: .3s;
+      border-radius: 18px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 22px;
+      width: 22px;
+      left: 4px;
+      bottom: 3px;
+      background-color: var(--primary);
+      transition: .3s;
+      border-radius: 50%;
+    }
+    .toggle-switch input:checked + .slider {
+      background-color: #dbeafe;
+    }
+    .toggle-switch input:checked + .slider:before {
+      transform: translateX(28px);
+      background-color: #facc15;
+    }
+    .toggle-yearly {
+      color: #facc15;
+      font-weight: 800;
+      margin-left: 6px;
+      font-size: 1.05rem;
+    }
+    .discount-badge {
+      background: #facc15;
+      color: #1e293b;
+      font-weight: 800;
+      font-size: 0.95rem;
+      border-radius: 12px;
+      padding: 3px 12px;
+      margin-left: 8px;
+      vertical-align: middle;
+      display: inline-block;
+    }
+    .pricing-table {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      max-width: 1400px;
+      margin: 0 auto 48px auto;
+      padding: 0 4vw;
+    }
+    .plan-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 24px 20px 20px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border: 2.5px solid #e5e7eb;
+      transition: box-shadow 0.18s, border 0.18s;
+      position: relative;
+    }
+    .plan-card.popular {
+      border: 2.5px solid var(--primary);
+      box-shadow: 0 8px 32px #2563eb22;
+    }
+    .plan-card.enterprise {
+      border: 2.5px solid #7c3aed;
+      box-shadow: 0 8px 32px #7c3aed22;
+      background: linear-gradient(135deg, #faf5ff 0%, #ffffff 100%);
+    }
+    .plan-badge {
+      position: absolute;
+      top: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--primary);
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 800;
+      padding: 6px 22px;
+      border-radius: 16px;
+      box-shadow: 0 2px 8px #2563eb22;
+      letter-spacing: 1px;
+    }
+    .plan-card.enterprise .plan-badge {
+      background: #7c3aed;
+      box-shadow: 0 2px 8px #7c3aed22;
+    }
+    .plan-price-enterprise {
+      color: #7c3aed;
+    }
+    .plan-period-enterprise {
+      color: #7c3aed;
+    }
+    .plan-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 6px;
+      margin-top: 6px;
+    }
+    .plan-price {
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: #1e293b;
+      margin-bottom: 4px;
+    }
+    .plan-period {
+      font-size: 0.95rem;
+      color: #64748b;
+      margin-bottom: 12px;
+    }
+    .plan-features {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 20px 0;
+      text-align: left;
+      width: 100%;
+    }
+    .plan-features li {
+      font-size: 0.95rem;
+      color: #334155;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .plan-features li .check {
+      color: #22c55e;
+      font-size: 1.2em;
+    }
+    .plan-action {
+      margin-top: auto;
+      width: 100%;
+      text-align: center;
+    }
+    .plan-action a {
+      display: inline-block;
+      padding: 14px 0;
+      width: 100%;
+      background: var(--primary);
+      color: #fff;
+      font-size: 1.15rem;
+      font-weight: 800;
+      border-radius: 12px;
+      text-decoration: none;
+      box-shadow: 0 2px 12px rgba(37,99,235,0.10);
+      transition: background 0.18s;
+    }
+    .plan-action a:hover {
+      background: #1d4ed8;
+    }
+    .plan-card.enterprise .plan-action a {
+      background: #7c3aed;
+    }
+    .plan-card.enterprise .plan-action a:hover {
+      background: #6d28d9;
+    }
+    .plan-note {
+      font-size: 0.98rem;
+      color: #64748b;
+      margin-top: 18px;
+      text-align: center;
+    }
+    .trial-badge {
+      background: #22c55e;
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.95rem;
+      border-radius: 12px;
+      padding: 3px 12px;
+      margin-bottom: 12px;
+      display: inline-block;
+      letter-spacing: 1px;
+    }
+    footer {
+      text-align: center;
+      margin: 64px 0 24px 0;
+      color: #64748b;
+      font-size: 1.05rem;
+    }
+    @media (max-width: 1200px) {
+      .pricing-table {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+        padding: 0 4vw;
+      }
+    }
+    @media (max-width: 900px) {
+      .pricing-table {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        padding: 0 4vw;
+      }
+      header {
+        padding: 32px 4vw 0 4vw;
+      }
+    }
+    @media (max-width: 600px) {
+      .pricing-title {
+        font-size: 1.5rem;
+      }
+      .plan-card {
+        padding: 20px 10px 18px 10px;
+      }
+      header {
+        flex-direction: column;
+        gap: 12px;
+        padding: 18px 2vw 0 2vw;
+      }
+    }
+
+    /* Comparison Table Styles */
+    .comparison-section {
+      padding: 80px 8vw;
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .comparison-title {
+      text-align: center;
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 1rem;
+      letter-spacing: -1px;
+    }
+
+    .comparison-subtitle {
+      text-align: center;
+      font-size: 1.2rem;
+      color: #64748b;
+      margin-bottom: 3rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .comparison-table-container {
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 3rem;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 1rem;
+    }
+
+    .comparison-table th {
+      padding: 0;
+      border: none;
+    }
+
+    .feature-column {
+      background: #f8fafc;
+      text-align: left;
+      font-weight: 700;
+      color: #1e293b;
+      padding: 1.5rem;
+      width: 30%;
+    }
+
+    .plan-column {
+      text-align: center;
+      padding: 0;
+      width: 23.33%;
+    }
+
+    .plan-column.basic {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+
+    .plan-column.pro {
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    }
+
+    .plan-column.advanced {
+      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    }
+
+    .plan-header {
+      padding: 2rem 1rem;
+      color: white;
+    }
+
+    .plan-name {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+
+    .plan-price {
+      font-size: 2rem;
+      font-weight: 800;
+    }
+
+    .plan-price span {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+
+    .comparison-table td {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid #e2e8f0;
+      vertical-align: middle;
+    }
+
+    .category-row td {
+      background: #f1f5f9;
+      font-weight: 700;
+      color: var(--primary);
+      font-size: 1.1rem;
+      padding: 1.5rem;
+    }
+
+    .category-title {
+      text-align: left !important;
+    }
+
+    .feature-name {
+      font-weight: 600;
+      color: #374151;
+      text-align: left;
+    }
+
+    .feature-basic, .feature-pro, .feature-advanced {
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .feature-basic {
+      color: #6b7280;
+    }
+
+    .feature-pro {
+      color: #1d4ed8;
+    }
+
+    .feature-advanced {
+      color: #7c3aed;
+    }
+
+    .comparison-cta {
+      text-align: center;
+      background: white;
+      padding: 3rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .comparison-cta h3 {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+
+    .comparison-cta p {
+      font-size: 1.1rem;
+      color: #64748b;
+      margin-bottom: 2rem;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-cta {
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .btn-cta.basic {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+    }
+
+    .btn-cta.basic:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-cta.pro {
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      color: white;
+    }
+
+    .btn-cta.pro:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-cta.advanced {
+      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+      color: white;
+    }
+
+    .btn-cta.advanced:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+    }
+
+    /* Mobile Responsive for Comparison Table */
+    @media (max-width: 768px) {
+      .comparison-section {
+        padding: 40px 4vw;
+      }
+
+      .comparison-title {
+        font-size: 2rem;
+      }
+
+      .comparison-subtitle {
+        font-size: 1rem;
+      }
+
+      .comparison-table-container {
+        overflow-x: auto;
+      }
+
+      .comparison-table {
+        min-width: 600px;
+      }
+
+      .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .btn-cta {
+        width: 100%;
+        max-width: 300px;
+      }
+    }
+  </style>
+  <script>
+    // Pricing toggle logic
+    document.addEventListener('DOMContentLoaded', function () {
+      const toggle = document.getElementById('pricing-toggle');
+      const prices = {
+        basic: { monthly: "$5", yearly: "$54" }, // 5*12=60, 10% off = 54
+        pro: { monthly: "$10", yearly: "$108" },
+        advanced: { monthly: "$16", yearly: "$173" },
+        enterprise: { monthly: "$50", yearly: "$540" } // 50*12=600, 10% off = 540
+      };
+      const links = {
+        basic: { 
+          monthly: "https://buy.stripe.com/9B600lc6u4oneY50Ch1sQ0M", 
+          yearly: "https://buy.stripe.com/cNi3cx3zY3kj6rzckZ1sQ0R" 
+        },
+        pro: { 
+          monthly: "https://buy.stripe.com/14AeVf4E29IHbLT4Sx1sQ0N", 
+          yearly: "https://buy.stripe.com/bJe6oJ0nMg755nv0Ch1sQ0S" 
+        },
+        advanced: { 
+          monthly: "https://buy.stripe.com/9B628t1rQ2gfdU1et71sQ0O", 
+          yearly: "https://buy.stripe.com/14AcN7eeC8ED3fn4Sx1sQ0T" 
+        },
+        enterprise: { 
+          monthly: "https://buy.stripe.com/14A9AV2vU1cb3fn4Sx1sQ0Q", 
+          yearly: "https://buy.stripe.com/aFa4gB8UiaML3fn1Gl1sQ0U" 
+        }
+      };
+      const periods = {
+        monthly: { basic: "per month", pro: "per month", advanced: "per month", enterprise: "per month" },
+        yearly: { basic: "per year", pro: "per year", advanced: "per year", enterprise: "per year" }
+      };
+      const notes = {
+        monthly: "Billed monthly. Cancel anytime.",
+        yearly: "Billed yearly. Cancel anytime. Save 10%!"
+      };
+
+      function updatePricing() {
+        const yearly = toggle.checked;
+        document.querySelectorAll('.plan-price-basic').forEach(e => e.textContent = yearly ? prices.basic.yearly : prices.basic.monthly);
+        document.querySelectorAll('.plan-price-pro').forEach(e => e.textContent = yearly ? prices.pro.yearly : prices.pro.monthly);
+        document.querySelectorAll('.plan-price-advanced').forEach(e => e.textContent = yearly ? prices.advanced.yearly : prices.advanced.monthly);
+        document.querySelectorAll('.plan-price-enterprise').forEach(e => e.textContent = yearly ? prices.enterprise.yearly : prices.enterprise.monthly);
+        document.querySelectorAll('.plan-period-basic').forEach(e => e.textContent = yearly ? periods.yearly.basic : periods.monthly.basic);
+        document.querySelectorAll('.plan-period-pro').forEach(e => e.textContent = yearly ? periods.yearly.pro : periods.monthly.pro);
+        document.querySelectorAll('.plan-period-advanced').forEach(e => e.textContent = yearly ? periods.yearly.advanced : periods.monthly.advanced);
+        document.querySelectorAll('.plan-period-enterprise').forEach(e => e.textContent = yearly ? periods.yearly.enterprise : periods.monthly.enterprise);
+        document.querySelectorAll('.plan-note-basic').forEach(e => e.textContent = yearly ? notes.yearly : notes.monthly);
+        document.querySelectorAll('.plan-note-pro').forEach(e => e.textContent = yearly ? notes.yearly : notes.monthly);
+        document.querySelectorAll('.plan-note-advanced').forEach(e => e.textContent = yearly ? notes.yearly : notes.monthly);
+        document.querySelectorAll('.plan-note-enterprise').forEach(e => e.textContent = yearly ? notes.yearly : notes.monthly);
+        document.querySelectorAll('.discount-badge').forEach(e => e.style.display = yearly ? 'inline-block' : 'none');
+        
+        // Update plan action links
+        document.querySelectorAll('.plan-action a').forEach(link => {
+          const planCard = link.closest('.plan-card');
+          let planKey = '';
+          
+          if (planCard.classList.contains('basic') || planCard.querySelector('.plan-title').textContent === 'Basic') {
+            planKey = yearly ? 'cNi3cx3zY3kj6rzckZ1sQ0R' : '9B600lc6u4oneY50Ch1sQ0M';
+            link.href = yearly ? links.basic.yearly : links.basic.monthly;
+          } else if (planCard.classList.contains('popular') || planCard.querySelector('.plan-title').textContent === 'Pro') {
+            planKey = yearly ? 'bJe6oJ0nMg755nv0Ch1sQ0S' : '14AeVf4E29IHbLT4Sx1sQ0N';
+            link.href = yearly ? links.pro.yearly : links.pro.monthly;
+          } else if (planCard.querySelector('.plan-title').textContent === 'Advanced Pro') {
+            planKey = yearly ? '14AcN7eeC8ED3fn4Sx1sQ0T' : '9B628t1rQ2gfdU1et71sQ0O';
+            link.href = yearly ? links.advanced.yearly : links.advanced.monthly;
+          } else if (planCard.classList.contains('enterprise') || planCard.querySelector('.plan-title').textContent === 'Enterprise') {
+            planKey = yearly ? 'aFa4gB8UiaML3fn1Gl1sQ0U' : '14A9AV2vU1cb3fn4Sx1sQ0Q';
+            link.href = yearly ? links.enterprise.yearly : links.enterprise.monthly;
+          }
+          
+          // Store selected plan in localStorage
+          link.addEventListener('click', function() {
+            localStorage.setItem('selectedPlan', planKey);
+            localStorage.setItem('selectedPlanType', yearly ? 'yearly' : 'monthly');
+          });
+        });
+      }
+      toggle.addEventListener('change', updatePricing);
+      updatePricing();
+    });
+  </script>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <button onclick="location.href='index.html'" style="background:none;border:none;display:flex;align-items:center;gap:14px;font-size:2.2rem;font-weight:800;color:var(--primary);letter-spacing:-1px;cursor:pointer;padding:0;">
+        <svg viewBox="0 0 64 64" width="36" height="36" fill="currentColor"><path d="M32 4 L4 28 H12 V60 H26 V40 H38 V60 H52 V28 H60 Z"/></svg>
+        NestMate
+      </button>
+    </div>
+    <nav>
+  <a href="index.html">Home</a>
+  <a href="about.html">About</a>
+  <a href="contact.html">Contact</a>
+  <a href="faq.html">FAQ</a>
+  <a href="signin.html" class="cta">Sign In</a>
+    </nav>
+  </header>
+  <section class="pricing-hero">
+    <div class="pricing-title">Simple, Transparent Pricing</div>
+    <div class="pricing-desc">
+      Choose the plan that fits your home and lifestyle.<br>
+      No hidden fees. Cancel anytime.
+    </div>
+    <div class="toggle-row">
+      <span class="toggle-label">Monthly</span>
+      <label class="toggle-switch">
+        <input type="checkbox" id="pricing-toggle" />
+        <span class="slider"></span>
+      </label>
+      <span class="toggle-label">Yearly <span class="discount-badge" style="display:none;">Save 10%</span></span>
+    </div>
+  </section>
+  <section class="pricing-table">
+    <!-- Basic Plan -->
+    <div class="plan-card">
+      <span class="trial-badge">30 Day Free Trial</span>
+      <div class="plan-title">Basic</div>
+      <div class="plan-price plan-price-basic">$5</div>
+      <div class="plan-period plan-period-basic">per month</div>
+      <ul class="plan-features">
+  <li><span class="check">✔</span> Manage your first home with ease</li>
+  <li><span class="check">✔</span> Stay on top of 10 essential tasks & reminders</li>
+  <li><span class="check">✔</span> Instantly organize key home details</li>
+  <li><span class="check">✔</span> Rock-solid cloud backup for peace of mind</li>
+  <li><span class="check">✔</span> Save and revisit your favorite finds</li>
+  <li><span class="check">✔</span> Discover smart product picks just for you</li>
+      </ul>
+      <div class="plan-action">
+        <a href="https://buy.stripe.com/9B600lc6u4oneY50Ch1sQ0M" target="_blank">Start Free</a>
+      </div>
+      <div class="plan-note plan-note-basic">Enjoy all Basic features free for 14 days. No credit card required.</div>
+    </div>
+    <!-- Pro Plan -->
+    <div class="plan-card popular">
+      <div class="plan-badge">Most Popular</div>
+      <div class="plan-title">Pro</div>
+      <div class="plan-price plan-price-pro">$10</div>
+      <div class="plan-period plan-period-pro">per month</div>
+      <ul class="plan-features">
+  <li><span class="check">✔</span> Manage up to 5 home profiles for multiple properties</li>
+  <li><span class="check">✔</span> Never miss a beat with unlimited tasks & reminders</li>
+  <li><span class="check">✔</span> Get your personalized Home Health Score</li>
+  <li><span class="check">✔</span> VIP priority support—get help fast</li>
+  <li><span class="check">✔</span> Effortlessly export and backup your data</li>
+  <li><span class="check">✔</span> All Basic features, supercharged</li>
+  <li><span class="check">✔</span> Advanced home health scoring & analytics</li>
+  <li><span class="check">✔</span> Professional floor plan designer</li>
+  <li><span class="check">✔</span> Photo management & organization</li>
+      </ul>
+      <div class="plan-action">
+        <a href="https://buy.stripe.com/14AeVf4E29IHbLT4Sx1sQ0N" target="_blank">Start Pro</a>
+      </div>
+      <div class="plan-note plan-note-pro">Billed monthly. Cancel anytime.</div>
+    </div>
+    <!-- Advanced Pro Plan -->
+    <div class="plan-card">
+      <div class="plan-title">Advanced Pro</div>
+      <div class="plan-price plan-price-advanced">$16</div>
+      <div class="plan-period plan-period-advanced">per month</div>
+      <ul class="plan-features">
+  <li><span class="check">✔</span> All Pro features, plus more family power</li>
+  <li><span class="check">✔</span> Manage up to 5 home profiles for multiple properties</li>
+  <li><span class="check">✔</span> Connect up to 5 family members—everyone's included</li>
+  <li><span class="check">✔</span> Share tasks & reminders for total home harmony</li>
+  <li><span class="check">✔</span> Family dashboard for effortless collaboration</li>
+  <li><span class="check">✔</span> Dedicated family-first support</li>
+  <li><span class="check">✔</span> Advanced family analytics & insights</li>
+  <li><span class="check">✔</span> Emergency contact management for families</li>
+  <li><span class="check">✔</span> Unlimited access to emergency home & contractor services, hand-picked by NestMate experts</li>
+      </ul>
+      <div class="plan-action">
+        <a href="https://buy.stripe.com/9B628t1rQ2gfdU1et71sQ0O" target="_blank">Start Advanced Pro</a>
+      </div>
+      <div class="plan-note plan-note-advanced">Billed monthly. Cancel anytime.</div>
+    </div>
+    <!-- Enterprise Plan -->
+    <div class="plan-card enterprise">
+      <div class="plan-badge">For Professionals</div>
+      <div class="plan-title">Enterprise</div>
+      <div class="plan-price plan-price-enterprise">$50</div>
+      <div class="plan-period plan-period-enterprise">per month</div>
+      <ul class="plan-features">
+  <li><span class="check">✔</span> <b>Unlimited home profiles</b> for realtors, builders & landlords</li>
+  <li><span class="check">✔</span> <b>Client management system</b> with property portfolios</li>
+  <li><span class="check">✔</span> <b>Team collaboration tools</b> for real estate teams</li>
+  <li><span class="check">✔</span> <b>Property valuation tracking</b> & market analytics</li>
+  <li><span class="check">✔</span> <b>Maintenance scheduling</b> across multiple properties</li>
+  <li><span class="check">✔</span> <b>Tenant management features</b> for landlords</li>
+  <li><span class="check">✔</span> <b>Professional floor plan designer</b> with advanced tools</li>
+  <li><span class="check">✔</span> <b>White-label reporting</b> for client presentations</li>
+  <li><span class="check">✔</span> <b>Priority enterprise support</b> with dedicated account manager</li>
+  <li><span class="check">✔</span> All Advanced Pro features included</li>
+      </ul>
+      <div class="plan-action">
+        <a href="https://buy.stripe.com/14A9AV2vU1cb3fn4Sx1sQ0Q" target="_blank">Start Enterprise</a>
+      </div>
+      <div class="plan-note plan-note-enterprise">Custom pricing available for large teams. Contact us for details.</div>
+    </div>
+  </section>
+
+  <!-- Subscription Tier Comparison Table -->
+  <section class="comparison-section">
+    <div class="container">
+      <h2 class="comparison-title">Complete Feature Comparison</h2>
+      <p class="comparison-subtitle">See exactly what each plan includes and choose the perfect fit for your home management needs</p>
+      
+      <div class="comparison-table-container">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th class="feature-column">Features</th>
+              <th class="plan-column basic">
+                <div class="plan-header">
+                  <div class="plan-name">Basic</div>
+                  <div class="plan-price">$5<span>/month</span></div>
+                </div>
+              </th>
+              <th class="plan-column pro">
+                <div class="plan-header">
+                  <div class="plan-name">Pro</div>
+                  <div class="plan-price">$10<span>/month</span></div>
+                </div>
+              </th>
+              <th class="plan-column advanced">
+                <div class="plan-header">
+                  <div class="plan-name">Advanced Pro</div>
+                  <div class="plan-price">$16<span>/month</span></div>
+                </div>
+              </th>
+              <th class="plan-column enterprise">
+                <div class="plan-header">
+                  <div class="plan-name">Enterprise</div>
+                  <div class="plan-price">$50<span>/month</span></div>
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Home Management -->
+            <tr class="category-row">
+              <td colspan="5" class="category-title">🏠 Home Management</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Number of Homes</td>
+              <td class="feature-basic">1 Home</td>
+              <td class="feature-pro">✅ Up to 5 Homes</td>
+              <td class="feature-advanced">✅ Up to 5 Homes</td>
+              <td class="feature-enterprise">✅ Unlimited Homes</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Home Details & Organization</td>
+              <td class="feature-basic">✅ Basic Details</td>
+              <td class="feature-pro">✅ Advanced Details</td>
+              <td class="feature-advanced">✅ Advanced Details</td>
+              <td class="feature-enterprise">✅ Professional Details</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Room Management</td>
+              <td class="feature-basic">✅ Basic Rooms</td>
+              <td class="feature-pro">✅ All Rooms</td>
+              <td class="feature-advanced">✅ All Rooms</td>
+              <td class="feature-enterprise">✅ All Rooms</td>
+            </tr>
+
+            <!-- Tasks & Reminders -->
+            <tr class="category-row">
+              <td colspan="5" class="category-title">📋 Tasks & Reminders</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Task Limit</td>
+              <td class="feature-basic">10 Tasks</td>
+              <td class="feature-pro">✅ Unlimited Tasks</td>
+              <td class="feature-advanced">✅ Unlimited Tasks</td>
+              <td class="feature-enterprise">✅ Unlimited Tasks</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Shared Tasks</td>
+              <td class="feature-basic">❌</td>
+              <td class="feature-pro">❌</td>
+              <td class="feature-advanced">✅ Family Sharing</td>
+              <td class="feature-enterprise">✅ Team Sharing</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Task Assignment</td>
+              <td class="feature-basic">❌</td>
+              <td class="feature-pro">❌</td>
+              <td class="feature-advanced">✅ Assign to Family</td>
+              <td class="feature-enterprise">✅ Assign to Team</td>
+            </tr>
+
+
+            <!-- Analytics & Health -->
+            <tr class="category-row">
+              <td colspan="5" class="category-title">📊 Analytics & Health</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Home Health Score</td>
+              <td class="feature-basic">❌</td>
+              <td class="feature-pro">✅ Detailed Score</td>
+              <td class="feature-advanced">✅ Detailed Score</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Maintenance Analytics</td>
+              <td class="feature-basic">✅ Basic</td>
+              <td class="feature-pro">✅ Advanced</td>
+              <td class="feature-advanced">✅ Advanced</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Cost Savings Tracking</td>
+              <td class="feature-basic">✅ Basic</td>
+              <td class="feature-pro">✅ Detailed</td>
+              <td class="feature-advanced">✅ Family Savings</td>
+            </tr>
+
+            <!-- Family Features -->
+            <tr class="category-row">
+              <td colspan="4" class="category-title">👨‍👩‍👧‍👦 Family Features</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Family Members</td>
+              <td class="feature-basic">1 User</td>
+              <td class="feature-pro">1 User</td>
+              <td class="feature-advanced">✅ Up to 5 Members</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Family Dashboard</td>
+              <td class="feature-basic">❌</td>
+              <td class="feature-pro">❌</td>
+              <td class="feature-advanced">✅ Collaboration Hub</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Shared Budget Management</td>
+              <td class="feature-basic">❌</td>
+              <td class="feature-pro">❌</td>
+              <td class="feature-advanced">✅ Team Budget</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Family Activity Tracking</td>
+              <td class="feature-basic">❌</td>
+              <td class="feature-pro">❌</td>
+              <td class="feature-advanced">✅ Real-time Activity</td>
+            </tr>
+
+            <!-- Emergency Services -->
+            <tr class="category-row">
+              <td colspan="4" class="category-title">🚨 Emergency Services</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Emergency Contacts</td>
+              <td class="feature-basic">✅ Basic</td>
+              <td class="feature-pro">✅ Basic</td>
+              <td class="feature-advanced">✅ 24/7 Premium</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Contractor Services</td>
+              <td class="feature-basic">❌</td>
+              <td class="feature-pro">❌</td>
+              <td class="feature-advanced">✅ Hand-picked Experts</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Emergency Response Time</td>
+              <td class="feature-basic">Standard</td>
+              <td class="feature-pro">Standard</td>
+              <td class="feature-advanced">✅ Priority Response</td>
+            </tr>
+
+            <!-- Support -->
+            <tr class="category-row">
+              <td colspan="4" class="category-title">🎧 Support</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Support Level</td>
+              <td class="feature-basic">Standard</td>
+              <td class="feature-pro">✅ VIP Priority</td>
+              <td class="feature-advanced">✅ Family-First</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Data Export</td>
+              <td class="feature-basic">✅ Basic</td>
+              <td class="feature-pro">✅ Advanced</td>
+              <td class="feature-advanced">✅ Advanced</td>
+            </tr>
+            <tr>
+              <td class="feature-name">Cloud Backup</td>
+              <td class="feature-basic">✅ Standard</td>
+              <td class="feature-pro">✅ Premium</td>
+              <td class="feature-advanced">✅ Premium</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="comparison-cta">
+        <h3>Ready to Get Started?</h3>
+        <p>Choose the plan that fits your home and lifestyle. Basic plan includes a 14-day free trial.</p>
+        <div class="cta-buttons">
+          <a href="https://buy.stripe.com/9B600lc6u4oneY50Ch1sQ0M" class="btn-cta basic" target="_blank">Start Basic Free</a>
+          <a href="https://buy.stripe.com/14AeVf4E29IHbLT4Sx1sQ0N" class="btn-cta pro" target="_blank">Start Pro Free</a>
+          <a href="https://buy.stripe.com/9B628t1rQ2gfdU1et71sQ0O" class="btn-cta advanced" target="_blank">Start Advanced Pro Free</a>
+          <a href="https://buy.stripe.com/14A9AV2vU1cb3fn4Sx1sQ0Q" class="btn-cta enterprise" target="_blank">Start Enterprise</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div style="margin-bottom: 1rem;">
+      <a href="contact.html" style="color: #2563eb; text-decoration: none; margin-right: 2rem;">Contact Support</a>
+      <a href="mailto:support@nestmateusa.com" style="color: #2563eb; text-decoration: none;">support@nestmateusa.com</a>
+    </div>
+    &copy; 2025 NestMate. Your home, organized.
+  </footer>
+</body>
+</html>

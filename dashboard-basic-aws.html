@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic Dashboard - NestMate AWS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1491.0.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC_dBBCQ9R3n0KiZ6RodccRsUHoBov7GSA&libraries=places&callback=initGooglePlaces" async defer></script>
+    <script>
+        // Error handler for Google Maps API loading
+        window.gm_authFailure = function() {
+            console.error('Google Maps API authentication failed. Please check the API key.');
+            alert('Google Maps API authentication failed. Please check the API key.');
+        };
+    </script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #e2e8f0;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(15px);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #60a5fa;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo i {
+            font-size: 1.8rem;
+            color: #3b82f6;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .card-icon.homes { background: linear-gradient(135deg, #10b981, #059669); }
+        .card-icon.tasks { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .card-icon.maintenance { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .card-icon.emergency { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #f8fafc;
+        }
+
+        .card-content {
+            color: #cbd5e1;
+            line-height: 1.6;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, #1d4ed8, #1e40af);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #4b5563, #374151);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #60a5fa;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            color: #94a3b8;
+        }
+
+        .error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #6ee7b7;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .header {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="index.html" class="logo">
+            <i class="fas fa-home"></i>
+            NestMate
+        </a>
+        <div class="user-info">
+            <div class="user-avatar" id="userAvatar">U</div>
+            <div>
+                <div id="userName">Loading...</div>
+                <div style="font-size: 0.875rem; color: #94a3b8;" id="userEmail">Loading...</div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalHomes">0</div>
+                <div class="stat-label">Total Homes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalTasks">0</div>
+                <div class="stat-label">Active Tasks</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="completedTasks">0</div>
+                <div class="stat-label">Completed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="pendingTasks">0</div>
+                <div class="stat-label">Pending</div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon homes">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <div class="card-title">My Homes</div>
+                </div>
+                <div class="card-content">
+                    <p>Manage your home profiles and property details.</p>
+                    <div id="homesList" class="loading">Loading homes...</div>
+                    <a href="home-details.html" class="btn" style="margin-top: 1rem;">Add New Home</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon tasks">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <div class="card-title">Tasks & Maintenance</div>
+                </div>
+                <div class="card-content">
+                    <p>Track maintenance tasks and home improvements.</p>
+                    <div id="tasksList" class="loading">Loading tasks...</div>
+                    <a href="service-records.html" class="btn" style="margin-top: 1rem;">View All Tasks</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon maintenance">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <div class="card-title">Service Records</div>
+                </div>
+                <div class="card-content">
+                    <p>Keep track of all maintenance and service history.</p>
+                    <div id="serviceRecordsList" class="loading">Loading service records...</div>
+                    <a href="service-records.html" class="btn" style="margin-top: 1rem;">Add Service Record</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon emergency">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div class="card-title">Emergency Contacts</div>
+                </div>
+                <div class="card-content">
+                    <p>Quick access to emergency services and contacts.</p>
+                    <div style="margin-bottom: 1rem;">
+                        <div style="margin-bottom: 0.5rem;">
+                            <strong>Emergency:</strong> 911
+                        </div>
+                        <div style="margin-bottom: 0.5rem;">
+                            <strong>Poison Control:</strong> 1-800-222-1222
+                        </div>
+                        <div style="margin-bottom: 0.5rem;">
+                            <strong>Gas Emergency:</strong> 1-800-427-2200
+                        </div>
+                    </div>
+                    <a href="contact.html" class="btn">Contact Support</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // AWS Configuration
+        AWS.config.update({
+            region: 'us-east-2',
+            accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
+            secretAccessKey: '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'
+        });
+
+        const dynamodb = new AWS.DynamoDB.DocumentClient();
+        const cognito = new AWS.CognitoIdentityServiceProvider();
+
+        // Global variables
+        let currentUser = null;
+        let userHomes = [];
+        let userTasks = [];
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDashboard();
+        });
+
+        async function initializeDashboard() {
+            try {
+                // Check if user is authenticated
+                const token = localStorage.getItem('awsAccessToken');
+                if (!token) {
+                    // Redirect to login if no token
+                    window.location.href = 'register.html';
+                    return;
+                }
+
+                // Validate token and get user info
+                await validateUserToken(token);
+                
+                // Load dashboard data
+                await loadDashboardData();
+                
+            } catch (error) {
+                console.error('Dashboard initialization error:', error);
+                showError('Failed to initialize dashboard. Please try again.');
+            }
+        }
+
+        async function validateUserToken(token) {
+            try {
+                const params = {
+                    AccessToken: token
+                };
+
+                const result = await cognito.getUser(params).promise();
+                currentUser = {
+                    userId: result.Username,
+                    email: result.UserAttributes.find(attr => attr.Name === 'email')?.Value,
+                    name: result.UserAttributes.find(attr => attr.Name === 'name')?.Value || 'User'
+                };
+
+                // Update UI with user info
+                document.getElementById('userName').textContent = currentUser.name;
+                document.getElementById('userEmail').textContent = currentUser.email;
+                document.getElementById('userAvatar').textContent = currentUser.name.charAt(0).toUpperCase();
+
+            } catch (error) {
+                console.error('Token validation error:', error);
+                // Token is invalid, redirect to login
+                localStorage.removeItem('awsAccessToken');
+                window.location.href = 'register.html';
+            }
+        }
+
+        async function loadDashboardData() {
+            try {
+                // Load user's homes
+                await loadUserHomes();
+                
+                // Load user's tasks
+                await loadUserTasks();
+                
+                // Update statistics
+                updateStatistics();
+                
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+                showError('Failed to load dashboard data.');
+            }
+        }
+
+        async function loadUserHomes() {
+            try {
+                const params = {
+                    TableName: 'nestmate-homes',
+                    FilterExpression: 'userId = :userId',
+                    ExpressionAttributeValues: {
+                        ':userId': currentUser.userId
+                    }
+                };
+
+                const result = await dynamodb.scan(params).promise();
+                userHomes = result.Items || [];
+
+                // Update homes list
+                const homesList = document.getElementById('homesList');
+                if (userHomes.length === 0) {
+                    homesList.innerHTML = '<p style="color: #94a3b8;">No homes added yet. Click "Add New Home" to get started.</p>';
+                } else {
+                    homesList.innerHTML = userHomes.map(home => `
+                        <div style="margin-bottom: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 6px;">
+                            <strong>${home.name}</strong><br>
+                            <small style="color: #94a3b8;">${home.address}</small>
+                        </div>
+                    `).join('');
+                }
+
+            } catch (error) {
+                console.error('Error loading homes:', error);
+                document.getElementById('homesList').innerHTML = '<div class="error">Failed to load homes</div>';
+            }
+        }
+
+        async function loadUserTasks() {
+            try {
+                // Get tasks for all user's homes
+                const homeIds = userHomes.map(home => home.homeId);
+                
+                if (homeIds.length === 0) {
+                    userTasks = [];
+                    return;
+                }
+
+                const params = {
+                    TableName: 'nestmate-tasks',
+                    FilterExpression: 'homeId IN (:homeIds)',
+                    ExpressionAttributeValues: {
+                        ':homeIds': homeIds
+                    }
+                };
+
+                const result = await dynamodb.scan(params).promise();
+                userTasks = result.Items || [];
+
+                // Update tasks list
+                const tasksList = document.getElementById('tasksList');
+                if (userTasks.length === 0) {
+                    tasksList.innerHTML = '<p style="color: #94a3b8;">No tasks yet. Add a home first to start tracking tasks.</p>';
+                } else {
+                    const recentTasks = userTasks.slice(0, 3);
+                    tasksList.innerHTML = recentTasks.map(task => `
+                        <div style="margin-bottom: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 6px;">
+                            <strong>${task.title}</strong><br>
+                            <small style="color: #94a3b8;">Status: ${task.status} | Priority: ${task.priority}</small>
+                        </div>
+                    `).join('');
+                }
+
+            } catch (error) {
+                console.error('Error loading tasks:', error);
+                document.getElementById('tasksList').innerHTML = '<div class="error">Failed to load tasks</div>';
+            }
+        }
+
+        function updateStatistics() {
+            // Update home count
+            document.getElementById('totalHomes').textContent = userHomes.length;
+            
+            // Update task counts
+            const activeTasks = userTasks.filter(task => task.status === 'pending' || task.status === 'in_progress');
+            const completedTasks = userTasks.filter(task => task.status === 'completed');
+            const pendingTasks = userTasks.filter(task => task.status === 'pending');
+            
+            document.getElementById('totalTasks').textContent = activeTasks.length;
+            document.getElementById('completedTasks').textContent = completedTasks.length;
+            document.getElementById('pendingTasks').textContent = pendingTasks.length;
+        }
+
+        function showError(message) {
+            const container = document.querySelector('.container');
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error';
+            errorDiv.textContent = message;
+            container.insertBefore(errorDiv, container.firstChild);
+            
+            // Remove error after 5 seconds
+            setTimeout(() => {
+                if (errorDiv.parentNode) {
+                    errorDiv.parentNode.removeChild(errorDiv);
+                }
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            const container = document.querySelector('.container');
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success';
+            successDiv.textContent = message;
+            container.insertBefore(successDiv, container.firstChild);
+            
+            // Remove success message after 3 seconds
+            setTimeout(() => {
+                if (successDiv.parentNode) {
+                    successDiv.parentNode.removeChild(successDiv);
+                }
+            }, 3000);
+        }
+
+        // Google Places API callback
+        function initGooglePlaces() {
+            console.log('Google Places API loaded');
+        }
+    </script>
+</body>
+</html>
