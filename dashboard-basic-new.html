@@ -4489,33 +4489,6 @@
         }
 
         // Sidebar Navigation Functions (already defined above)
-                
-                // Show selected section
-                const targetSection = document.getElementById(sectionName + 'Section');
-                console.log('Looking for section:', sectionName + 'Section');
-                console.log('Target section found:', targetSection);
-                
-                if (targetSection) {
-                    targetSection.classList.add('active');
-                    console.log('Section activated:', sectionName + 'Section');
-                    console.log('Section content:', targetSection.innerHTML);
-                } else {
-                    console.error('Section not found:', sectionName + 'Section');
-                    console.log('Available sections:', document.querySelectorAll('[id$="Section"]'));
-                }
-                
-                // Add active class to clicked nav item
-                if (clickedElement) {
-                    clickedElement.classList.add('active');
-                    console.log('Nav item activated');
-                }
-                
-                // Load section content
-                loadSectionContent(sectionName);
-            } catch (error) {
-                console.error('Error in showSection:', error);
-            }
-        }
 
         function loadSectionContent(sectionName) {
             console.log('loadSectionContent called with:', sectionName);
