@@ -4414,7 +4414,7 @@
         }
 
         // Sidebar Navigation Functions
-        function showSection(sectionName, clickedElement) {
+        window.showSection = function(sectionName, clickedElement) {
             console.log('showSection called with:', sectionName);
             console.log('clickedElement:', clickedElement);
             console.log('currentUser:', currentUser);
@@ -6709,13 +6709,23 @@
 
         // AWS functions
         async function loadUserData() {
-            const isAuthenticated = await nestMateAuth.isAuthenticated();
-            if (isAuthenticated) {
-                currentUser = nestMateAuth.currentUser;
-                await loadHomeDataFromAWS();
-                await loadTasksFromAWS();
-            } else {
-                window.location.href = 'login-aws.html';
+            console.log('loadUserData called');
+            try {
+                const isAuthenticated = await nestMateAuth.isAuthenticated();
+                console.log('Authentication status:', isAuthenticated);
+                
+                if (isAuthenticated) {
+                    currentUser = nestMateAuth.currentUser;
+                    console.log('Current user set:', currentUser);
+                    await loadHomeDataFromAWS();
+                    await loadTasksFromAWS();
+                } else {
+                    console.log('User not authenticated, redirecting to login');
+                    window.location.href = 'login-aws.html';
+                }
+            } catch (error) {
+                console.error('Error in loadUserData:', error);
+                // Don't redirect on error, just log it
             }
         }
 
@@ -7595,38 +7605,10 @@
                         loadHomeData();
                         updateQuickStats(); // Add this to update the dashboard stats
                     } else {
-                        console.log('No home data document found for user - creating sample data');
-                        // Create sample data for new users
-                        homeData = {
-                            yearBuilt: 2020,
-                            squareFootage: 2500,
-                            address: '123 Main Street',
-                            city: 'Your City',
-                            state: 'Your State',
-                            zipCode: '12345'
-                        };
-                        
-                        // Save the sample data to DynamoDB
-                        const params = {
-                            TableName: 'nestmate-homes',
-                            Item: {
-                                userId: currentUser.userId,
-                                ...homeData,
-                                createdAt: new Date().toISOString(),
-                                updatedAt: new Date().toISOString()
-                            }
-                        };
-                        
-                        dynamodb.put(params).promise()
-                            .then(() => {
-                                console.log('Sample home data created for new user');
-                                loadHomeData();
-                                updateQuickStats();
-                            })
-                            .catch(error => {
-                                console.error('Error creating sample data:', error);
-                                updateQuickStats(); // Still update stats even if save fails
-                            });
+                        console.log('No home data document found for user');
+                        // Initialize with empty data - user needs to fill out forms first
+                        homeData = {};
+                        updateQuickStats(); // This will show "--" until user enters data
                     }
                 })
                 .catch(error => {
@@ -7828,7 +7810,7 @@
             }
         }
 
-        function signOut() {
+        window.signOut = function() {
             console.log('signOut function called');
             console.log('nestMateAuth available:', typeof nestMateAuth);
             if (confirm('Are you sure you want to sign out?')) {
