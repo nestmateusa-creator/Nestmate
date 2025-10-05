@@ -4,11 +4,11 @@
 const AWS = require('aws-sdk');
 const { AWS_CONFIG, DYNAMODB_CONFIG, COGNITO_CONFIG, S3_CONFIG } = require('./aws-config');
 
-// Configure AWS SDK with credentials
+// Configure AWS SDK with credentials from environment variables
 AWS.config.update({
     region: 'us-east-2',
-    accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
-    secretAccessKey: 'wolmLksFIm5go0kLZVelnfLnw7NGIxyZD9EvIu5O'
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID || 'YOUR_AWS_ACCESS_KEY_ID',
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || 'YOUR_AWS_SECRET_ACCESS_KEY'
 });
 
 // Initialize AWS services

@@ -1,11 +1,11 @@
 // AWS Authentication System for NestMate
 // This file handles all authentication using AWS Cognito
 
-// AWS Configuration
+// AWS Configuration - Use environment variables for production
 AWS.config.update({
     region: 'us-east-2',
-    accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
-    secretAccessKey: 'wolmLksFIm5go0kLZVelnfLnw7NGIxyZD9EvIu5O'
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID || 'YOUR_AWS_ACCESS_KEY_ID',
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || 'YOUR_AWS_SECRET_ACCESS_KEY'
 });
 
 const cognito = new AWS.CognitoIdentityServiceProvider();

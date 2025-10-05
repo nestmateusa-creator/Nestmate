@@ -44,8 +44,8 @@
 
 2. **Set Environment Variables in Netlify:**
    - Go to Site Settings > Environment Variables
-   - Add: `AWS_ACCESS_KEY_ID` = `AKIAXBLPTGPR44FNAHUL`
-   - Add: `AWS_SECRET_ACCESS_KEY` = `wolmLksFIm5go0kLZVelnfLnw7NGIxyZD9EvIu5O`
+   - Add: `AWS_ACCESS_KEY_ID` = `[Your AWS Access Key ID]`
+   - Add: `AWS_SECRET_ACCESS_KEY` = `[Your AWS Secret Access Key]`
 
 ### **Option 2: Deploy to AWS S3 + CloudFront**
 

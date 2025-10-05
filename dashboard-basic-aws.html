@@ -342,11 +342,11 @@
     </div>
 
     <script>
-        // AWS Configuration
+        // AWS Configuration - Use environment variables for production
         AWS.config.update({
             region: 'us-east-2',
-            accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
-            secretAccessKey: 'wolmLksFIm5go0kLZVelnfLnw7NGIxyZD9EvIu5O'
+            accessKeyId: 'YOUR_AWS_ACCESS_KEY_ID', // Set via environment variables in production
+            secretAccessKey: 'YOUR_AWS_SECRET_ACCESS_KEY' // Set via environment variables in production
         });
 
         const dynamodb = new AWS.DynamoDB.DocumentClient();
