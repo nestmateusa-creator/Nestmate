@@ -7583,7 +7583,7 @@
                 return;
             }
             
-            console.log('Loading home data for user:', currentUser.uid);
+            console.log('Loading home data for user:', currentUser.userId);
             dynamodb.get({
                 TableName: 'nestmate-homes',
                 Key: { userId: currentUser.userId }
@@ -7593,8 +7593,40 @@
                         homeData = result.Item;
                         console.log('Home data loaded:', homeData);
                         loadHomeData();
+                        updateQuickStats(); // Add this to update the dashboard stats
                     } else {
-                        console.log('No home data document found for user');
+                        console.log('No home data document found for user - creating sample data');
+                        // Create sample data for new users
+                        homeData = {
+                            yearBuilt: 2020,
+                            squareFootage: 2500,
+                            address: '123 Main Street',
+                            city: 'Your City',
+                            state: 'Your State',
+                            zipCode: '12345'
+                        };
+                        
+                        // Save the sample data to DynamoDB
+                        const params = {
+                            TableName: 'nestmate-homes',
+                            Item: {
+                                userId: currentUser.userId,
+                                ...homeData,
+                                createdAt: new Date().toISOString(),
+                                updatedAt: new Date().toISOString()
+                            }
+                        };
+                        
+                        dynamodb.put(params).promise()
+                            .then(() => {
+                                console.log('Sample home data created for new user');
+                                loadHomeData();
+                                updateQuickStats();
+                            })
+                            .catch(error => {
+                                console.error('Error creating sample data:', error);
+                                updateQuickStats(); // Still update stats even if save fails
+                            });
                     }
                 })
                 .catch(error => {
