@@ -4285,9 +4285,11 @@
 
     <script>
         console.log('🚀 DASHBOARD SCRIPT STARTING...');
+        alert('Dashboard script starting...');
         
         // Simple button functions first
         function showSection(sectionName, clickedElement) {
+            alert('showSection called: ' + sectionName);
             console.log('showSection called with:', sectionName);
             
             // Hide all sections
@@ -4313,6 +4315,7 @@
         }
         
         function signOut() {
+            alert('signOut called');
             console.log('signOut called');
             if (confirm('Are you sure you want to sign out?')) {
                 window.location.href = 'login-aws.html';
@@ -4324,6 +4327,7 @@
         window.signOut = signOut;
         
         console.log('✅ Basic functions loaded');
+        alert('Functions defined and ready!');
         
         // AWS Configuration for dashboard
         try {
