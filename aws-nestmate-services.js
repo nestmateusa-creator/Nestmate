@@ -6,9 +6,9 @@ const { AWS_CONFIG, DYNAMODB_CONFIG, COGNITO_CONFIG, S3_CONFIG } = require('./aw
 
 // Configure AWS SDK with credentials from environment variables
 AWS.config.update({
-    region: 'us-east-2',
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID || 'YOUR_AWS_ACCESS_KEY_ID',
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || 'YOUR_AWS_SECRET_ACCESS_KEY'
+    region: process.env.NESTMATE_AWS_REGION || 'us-east-2',
+    accessKeyId: process.env.NESTMATE_AWS_ACCESS_KEY_ID || 'YOUR_AWS_ACCESS_KEY_ID',
+    secretAccessKey: process.env.NESTMATE_AWS_SECRET_ACCESS_KEY || 'YOUR_AWS_SECRET_ACCESS_KEY'
 });
 
 // Initialize AWS services

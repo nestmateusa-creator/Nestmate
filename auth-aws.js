@@ -3,9 +3,9 @@
 
 // AWS Configuration - Use environment variables for production
 AWS.config.update({
-    region: 'us-east-2',
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID || 'YOUR_AWS_ACCESS_KEY_ID',
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || 'YOUR_AWS_SECRET_ACCESS_KEY'
+    region: process.env.NESTMATE_AWS_REGION || 'us-east-2',
+    accessKeyId: process.env.NESTMATE_AWS_ACCESS_KEY_ID || 'YOUR_AWS_ACCESS_KEY_ID',
+    secretAccessKey: process.env.NESTMATE_AWS_SECRET_ACCESS_KEY || 'YOUR_AWS_SECRET_ACCESS_KEY'
 });
 
 const cognito = new AWS.CognitoIdentityServiceProvider();
