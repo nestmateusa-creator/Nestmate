@@ -4380,10 +4380,35 @@
                 setupEventListeners(); // Add this line to set up button event listeners
                 console.log('Dashboard initialization completed successfully');
                 console.log('Functions available:', {
-                    showSection: typeof showSection,
-                    signOut: typeof signOut,
+                    showSection: typeof window.showSection,
+                    signOut: typeof window.signOut,
                     currentUser: currentUser
                 });
+                
+                // Test if functions are accessible
+                console.log('Testing function accessibility...');
+                if (typeof window.showSection === 'function') {
+                    console.log('✅ showSection function is accessible');
+                } else {
+                    console.log('❌ showSection function is NOT accessible');
+                }
+                
+                if (typeof window.signOut === 'function') {
+                    console.log('✅ signOut function is accessible');
+                } else {
+                    console.log('❌ signOut function is NOT accessible');
+                }
+                
+                // Test button click events
+                setTimeout(() => {
+                    const testButton = document.querySelector('.nav-item');
+                    if (testButton) {
+                        console.log('Testing button click event...');
+                        testButton.addEventListener('click', function(e) {
+                            console.log('Button clicked via addEventListener:', e.target);
+                        });
+                    }
+                }, 1000);
             } catch (error) {
                 console.error('Error during dashboard initialization:', error);
             }
