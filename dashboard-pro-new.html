@@ -5251,10 +5251,14 @@
         function saveHousePhoto(photoData) {
             if (!currentUser) return;
             
-            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).set({
-                housePhoto: photoData,
-                updatedAt: new Date().toISOString()
-            }, { merge: true }).then(() => {
+            dynamodb.put({
+                TableName: 'nestmate-homes',
+                Item: {
+                    userId: currentUser.userId,
+                    housePhoto: photoData,
+                    updatedAt: new Date().toISOString()
+                }
+            }).promise().then(() => {
                 showToast('House photo saved successfully!', 'success');
             }).catch(error => {
                 console.error('Error saving house photo:', error);
@@ -5265,10 +5269,13 @@
         function loadHousePhoto() {
             if (!currentUser) return;
             
-            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get().then(doc => {
-                if (doc.exists && doc.data().housePhoto) {
+            dynamodb.get({
+                TableName: 'nestmate-homes',
+                Key: { userId: currentUser.userId }
+            }).promise().then(result => {
+                if (result.Item && result.Item.housePhoto) {
                     const housePhoto = document.getElementById('housePhoto');
-                    housePhoto.src = doc.data().housePhoto;
+                    housePhoto.src = result.Item.housePhoto;
                 }
             }).catch(error => {
                 console.error('Error loading house photo:', error);
@@ -5289,6 +5296,7 @@
                 generateCalendar();
                 loadEssentialTasks();
                 loadProductRecommendations();
+                setupEventListeners(); // Add this line to set up button event listeners
                 // Note: AWS data loading moved to loadUserData()
                 console.log('Dashboard initialization completed successfully');
             } catch (error) {
@@ -6643,10 +6651,13 @@
             if (!currentUser) return;
             
             // AWS DynamoDB already configured at top of file
-            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
-                .then(doc => {
-                    if (doc.exists) {
-                        const data = doc.data();
+            dynamodb.get({
+                TableName: 'nestmate-homes',
+                Key: { userId: currentUser.userId }
+            }).promise()
+                .then(result => {
+                if (result.Item) {
+                        const data = result.Item;
                         const inputs = document.querySelectorAll('#basicInfoForm input, #basicInfoForm select, #basicInfoForm textarea');
                         inputs.forEach(input => {
                             if (data[input.id]) {
@@ -6665,10 +6676,13 @@
             if (!currentUser) return;
             
             // AWS DynamoDB already configured at top of file
-            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
-                .then(doc => {
-                    if (doc.exists) {
-                        const data = doc.data();
+            dynamodb.get({
+                TableName: 'nestmate-homes',
+                Key: { userId: currentUser.userId }
+            }).promise()
+                .then(result => {
+                if (result.Item) {
+                        const data = result.Item;
                         const inputs = document.querySelectorAll('#structureForm input, #structureForm select, #structureForm textarea');
                         inputs.forEach(input => {
                             if (data[input.id]) {
@@ -6687,10 +6701,13 @@
             if (!currentUser) return;
             
             // AWS DynamoDB already configured at top of file
-            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
-                .then(doc => {
-                    if (doc.exists) {
-                        const data = doc.data();
+            dynamodb.get({
+                TableName: 'nestmate-homes',
+                Key: { userId: currentUser.userId }
+            }).promise()
+                .then(result => {
+                if (result.Item) {
+                        const data = result.Item;
                         const inputs = document.querySelectorAll('#systemsForm input, #systemsForm select, #systemsForm textarea');
                         inputs.forEach(input => {
                             if (data[input.id]) {
@@ -6709,10 +6726,13 @@
             if (!currentUser) return;
             
             // AWS DynamoDB already configured at top of file
-            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
-                .then(doc => {
-                    if (doc.exists) {
-                        const data = doc.data();
+            dynamodb.get({
+                TableName: 'nestmate-homes',
+                Key: { userId: currentUser.userId }
+            }).promise()
+                .then(result => {
+                if (result.Item) {
+                        const data = result.Item;
                         // Load bedrooms data if it exists
                         if (data.bedrooms && Array.isArray(data.bedrooms)) {
                             const bedroomsList = document.getElementById('bedroomsList');
@@ -6730,10 +6750,13 @@
             if (!currentUser) return;
             
             // AWS DynamoDB already configured at top of file
-            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
-                .then(doc => {
-                    if (doc.exists) {
-                        const data = doc.data();
+            dynamodb.get({
+                TableName: 'nestmate-homes',
+                Key: { userId: currentUser.userId }
+            }).promise()
+                .then(result => {
+                if (result.Item) {
+                        const data = result.Item;
                         // Load bathrooms data if it exists
                         if (data.bathrooms && Array.isArray(data.bathrooms)) {
                             const bathroomsList = document.getElementById('bathroomsList');
@@ -6751,10 +6774,13 @@
             if (!currentUser) return;
             
             // AWS DynamoDB already configured at top of file
-            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
-                .then(doc => {
-                    if (doc.exists) {
-                        const data = doc.data();
+            dynamodb.get({
+                TableName: 'nestmate-homes',
+                Key: { userId: currentUser.userId }
+            }).promise()
+                .then(result => {
+                if (result.Item) {
+                        const data = result.Item;
                         const inputs = document.querySelectorAll('#kitchenForm input, #kitchenForm select, #kitchenForm textarea');
                         inputs.forEach(input => {
                             if (data[input.id]) {
@@ -6773,10 +6799,13 @@
             if (!currentUser) return;
             
             // AWS DynamoDB already configured at top of file
-            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
-                .then(doc => {
-                    if (doc.exists) {
-                        const data = doc.data();
+            dynamodb.get({
+                TableName: 'nestmate-homes',
+                Key: { userId: currentUser.userId }
+            }).promise()
+                .then(result => {
+                if (result.Item) {
+                        const data = result.Item;
                         // Load living areas data if it exists
                         if (data.livingAreas && Array.isArray(data.livingAreas)) {
                             const livingAreasList = document.getElementById('livingAreasList');
@@ -6794,10 +6823,13 @@
             if (!currentUser) return;
             
             // AWS DynamoDB already configured at top of file
-            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
-                .then(doc => {
-                    if (doc.exists) {
-                        const data = doc.data();
+            dynamodb.get({
+                TableName: 'nestmate-homes',
+                Key: { userId: currentUser.userId }
+            }).promise()
+                .then(result => {
+                if (result.Item) {
+                        const data = result.Item;
                         const inputs = document.querySelectorAll('#garageForm input, #garageForm select, #garageForm textarea');
                         inputs.forEach(input => {
                             if (data[input.id]) {
@@ -6816,10 +6848,13 @@
             if (!currentUser) return;
             
             // AWS DynamoDB already configured at top of file
-            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
-                .then(doc => {
-                    if (doc.exists) {
-                        const data = doc.data();
+            dynamodb.get({
+                TableName: 'nestmate-homes',
+                Key: { userId: currentUser.userId }
+            }).promise()
+                .then(result => {
+                if (result.Item) {
+                        const data = result.Item;
                         const inputs = document.querySelectorAll('#exteriorForm input, #exteriorForm select, #exteriorForm textarea');
                         inputs.forEach(input => {
                             if (data[input.id]) {
@@ -6838,10 +6873,13 @@
             if (!currentUser) return;
             
             // AWS DynamoDB already configured at top of file
-            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
-                .then(doc => {
-                    if (doc.exists) {
-                        const data = doc.data();
+            dynamodb.get({
+                TableName: 'nestmate-homes',
+                Key: { userId: currentUser.userId }
+            }).promise()
+                .then(result => {
+                if (result.Item) {
+                        const data = result.Item;
                         const inputs = document.querySelectorAll('#appliancesForm input, #appliancesForm select, #appliancesForm textarea');
                         inputs.forEach(input => {
                             if (data[input.id]) {
@@ -6897,7 +6935,7 @@
                     }
                     
                     querySnapshot.forEach(doc => {
-                        const service = doc.data();
+                        const service = result.Item;
                         const serviceRecord = createServiceRecordHTML(service, doc.id);
                         serviceHistoryList.innerHTML += serviceRecord;
                     });
@@ -7873,10 +7911,13 @@
         function loadHomeDataFromAWS() {
             if (!currentUser) return;
             
-            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
-                .then(doc => {
-                    if (doc.exists) {
-                        homeData = doc.data();
+            dynamodb.get({
+                TableName: 'nestmate-homes',
+                Key: { userId: currentUser.userId }
+            }).promise()
+                .then(result => {
+                if (result.Item) {
+                        homeData = result.Item;
                         loadHomeData();
                     }
                 })
@@ -7898,9 +7939,15 @@
         function saveTasksToAWS() {
             if (!currentUser) return;
             
-            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).update({
-                tasks: tasks
-            }).then(() => {
+            dynamodb.update({
+                TableName: 'nestmate-homes',
+                Key: { userId: currentUser.userId },
+                UpdateExpression: 'SET tasks = :tasks',
+                ExpressionAttributeValues: {
+                    ':tasks': tasks
+                
+                }
+            }).promise().then(() => {
                 console.log('Tasks saved successfully to AWS');
                 // Update dashboard widgets after saving tasks
                 loadMiniCalendar();
@@ -7913,10 +7960,13 @@
         function loadTasksFromAWS() {
             if (!currentUser) return;
             
-            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
-                .then(doc => {
-                    if (doc.exists && doc.data().tasks) {
-                        tasks = doc.data().tasks;
+            dynamodb.get({
+                TableName: 'nestmate-homes',
+                Key: { userId: currentUser.userId }
+            }).promise()
+                .then(result => {
+                if (result.Item && result.Item.tasks) {
+                        tasks = result.Item.tasks;
                         displayTasks();
                     }
                 })
@@ -8256,9 +8306,15 @@
         function savePhotosToAWS() {
             if (!currentUser) return;
             
-            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).update({
-                photos: photos
-            }).then(() => {
+            dynamodb.update({
+                TableName: 'nestmate-homes',
+                Key: { userId: currentUser.userId },
+                UpdateExpression: 'SET photos = :photos',
+                ExpressionAttributeValues: {
+                    ':photos': photos
+                
+                }
+            }).promise().then(() => {
                 console.log('Photos saved to AWS');
             }).catch(error => {
                 console.error('Error saving photos:', error);
@@ -8268,9 +8324,12 @@
         function loadPhotosFromAWS() {
             if (!currentUser) return;
             
-            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get().then(doc => {
-                if (doc.exists) {
-                    const data = doc.data();
+            dynamodb.get({
+                TableName: 'nestmate-homes',
+                Key: { userId: currentUser.userId }
+            }).promise().then(result => {
+                if (result.Item) {
+                    const data = result.Item;
                     photos = data.photos || [];
                     loadPhotos();
                 }
@@ -8289,7 +8348,7 @@
                         contactsList.innerHTML = '<p style="color: rgba(255,255,255,0.7); text-align: center; padding: 2rem;">No custom emergency contacts added yet</p>';
                     } else {
                         contactsList.innerHTML = snapshot.docs.map(doc => {
-                            const contact = doc.data();
+                            const contact = result.Item;
                             return `
                                 <div class="contact-item">
                                     <div class="contact-info">
@@ -8382,7 +8441,7 @@
 
         function signOut() {
             if (confirm('Are you sure you want to sign out?')) {
-                auth.signOut().then(() => {
+                nestMateAuth.signOut().then(() => {
                     window.location.href = 'login-aws.html';
                 });
             }
@@ -9226,10 +9285,13 @@
             if (!currentUser) return;
             
             // AWS DynamoDB already configured at top of file
-            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
-                .then(doc => {
-                    if (doc.exists) {
-                        const data = doc.data();
+            dynamodb.get({
+                TableName: 'nestmate-homes',
+                Key: { userId: currentUser.userId }
+            }).promise()
+                .then(result => {
+                if (result.Item) {
+                        const data = result.Item;
                         if (data[roomType] && Array.isArray(data[roomType])) {
                             // Remove the specific room from the array
                             const updatedRooms = [...data[roomType]];
@@ -9237,7 +9299,14 @@
                             
                             // Update AWS with the new array
                             const updateData = { [roomType]: updatedRooms };
-                            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).update(updateData)
+                            dynamodb.update({
+                TableName: 'nestmate-homes',
+                Key: { userId: currentUser.userId },
+                UpdateExpression: `SET ${roomType} = :${roomType}`,
+                ExpressionAttributeValues: {
+                    [`:${roomType}`]: updatedRooms
+                }
+            }).promise()
                                 .then(() => {
                                     console.log(`${roomType} updated in AWS after removal. Removed index ${removedIndex}. New count: ${updatedRooms.length}`);
                                     // Reload the data to ensure UI is in sync
@@ -9418,10 +9487,13 @@
             // AWS DynamoDB already configured at top of file
             
             // Load home data for age and square footage
-            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get()
-                .then(doc => {
-                    if (doc.exists) {
-                        const homeData = doc.data();
+            dynamodb.get({
+                TableName: 'nestmate-homes',
+                Key: { userId: currentUser.userId }
+            }).promise()
+                .then(result => {
+                if (result.Item) {
+                        const homeData = result.Item;
                         
                         // Calculate home age
                         if (homeData.yearBuilt) {
@@ -10442,9 +10514,15 @@
         function saveOrdersToAWS() {
             if (!currentUser) return;
             
-            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).update({
-                productOrders: productOrders
-            }).then(() => {
+            dynamodb.update({
+                TableName: 'nestmate-homes',
+                Key: { userId: currentUser.userId },
+                UpdateExpression: 'SET productOrders = :productOrders',
+                ExpressionAttributeValues: {
+                    ':productOrders': productOrders
+                
+                }
+            }).promise().then(() => {
                 console.log('Product orders saved to AWS');
             }).catch(error => {
                 console.error('Error saving product orders:', error);
@@ -10454,9 +10532,12 @@
         function loadOrdersFromAWS() {
             if (!currentUser) return;
             
-            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get().then(doc => {
-                if (doc.exists) {
-                    const data = doc.data();
+            dynamodb.get({
+                TableName: 'nestmate-homes',
+                Key: { userId: currentUser.userId }
+            }).promise().then(result => {
+                if (result.Item) {
+                    const data = result.Item;
                     productOrders = data.productOrders || [];
                     loadProductOrders();
                 }
@@ -11084,10 +11165,15 @@
             
             console.log('Saving homes to AWS:', userHomes);
             
-            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).set({
-                multipleHomes: userHomes,
-                currentHomeId: currentHomeId
-            }, { merge: true }).then(() => {
+            dynamodb.put({
+                TableName: 'nestmate-homes',
+                Item: {
+                    userId: currentUser.userId,
+                    
+                multipleHomes:  userHomes,
+                currentHomeId:  currentHomeId
+            
+                }, { merge: true }).then(() => {
                 console.log('Multiple homes saved to AWS successfully');
             }).catch(error => {
                 console.error('Error saving multiple homes:', error);
@@ -11100,11 +11186,14 @@
                 return;
             }
             
-            console.log('Loading homes from Firebase for user:', currentUser.uid);
+            console.log('Loading homes from AWS for user:', currentUser.uid);
             
-            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get().then(doc => {
-                if (doc.exists) {
-                    const data = doc.data();
+            dynamodb.get({
+                TableName: 'nestmate-homes',
+                Key: { userId: currentUser.userId }
+            }).promise().then(result => {
+                if (result.Item) {
+                    const data = result.Item;
                     userHomes = data.multipleHomes || [];
                     currentHomeId = data.currentHomeId || 'primary';
                     console.log('Loaded homes from Firebase:', userHomes);
@@ -11307,10 +11396,16 @@
         function saveAlertsToFirebase() {
             if (!currentUser) return;
             
-            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).update({
-                priceAlerts: priceAlerts,
-                priceHistory: priceHistory
-            }).then(() => {
+            dynamodb.update({
+                TableName: 'nestmate-homes',
+                Key: { userId: currentUser.userId },
+                UpdateExpression: 'SET priceAlerts = :priceAlerts, priceHistory = :priceHistory',
+                ExpressionAttributeValues: {
+                    ':priceAlerts': priceAlerts,
+                    ':priceHistory': priceHistory
+                
+                }
+            }).promise().then(() => {
                 console.log('Price alerts saved to Firebase');
             }).catch(error => {
                 console.error('Error saving price alerts:', error);
@@ -11320,9 +11415,12 @@
         function loadAlertsFromAWS() {
             if (!currentUser) return;
             
-            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get().then(doc => {
-                if (doc.exists) {
-                    const data = doc.data();
+            dynamodb.get({
+                TableName: 'nestmate-homes',
+                Key: { userId: currentUser.userId }
+            }).promise().then(result => {
+                if (result.Item) {
+                    const data = result.Item;
                     priceAlerts = data.priceAlerts || [];
                     priceHistory = data.priceHistory || {};
                     loadPriceAlerts();
@@ -11550,9 +11648,15 @@
         function saveHealthScoreToFirebase() {
             if (!currentUser) return;
             
-            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).update({
-                healthScoreData: healthScoreData
-            }).then(() => {
+            dynamodb.update({
+                TableName: 'nestmate-homes',
+                Key: { userId: currentUser.userId },
+                UpdateExpression: 'SET healthScoreData = :healthScoreData',
+                ExpressionAttributeValues: {
+                    ':healthScoreData': healthScoreData
+                
+                }
+            }).promise().then(() => {
                 console.log('Health score data saved to Firebase');
             }).catch(error => {
                 console.error('Error saving health score data:', error);
@@ -11562,9 +11666,12 @@
         function loadHealthScoreFromAWS() {
             if (!currentUser) return;
             
-            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).get().then(doc => {
-                if (doc.exists) {
-                    const data = doc.data();
+            dynamodb.get({
+                TableName: 'nestmate-homes',
+                Key: { userId: currentUser.userId }
+            }).promise().then(result => {
+                if (result.Item) {
+                    const data = result.Item;
                     if (data.healthScoreData) {
                         healthScoreData = { ...healthScoreData, ...data.healthScoreData };
                     }
@@ -12314,11 +12421,16 @@
             // Update the homeData object
             homeData[field] = value;
             
-            // Save to Firebase
-            db.collection('NESTMATE USER HOME SAVED DATA').doc(currentUser.uid).set({
-                [field]: value,
-                updatedAt: new Date().toISOString()
-            }, { merge: true }).then(() => {
+            // Save to AWS DynamoDB
+            dynamodb.put({
+                TableName: 'nestmate-homes',
+                Item: {
+                    userId: currentUser.userId,
+                    
+                [field]:  value,
+                updatedAt:  new Date().toISOString()
+            
+                }, { merge: true }).then(() => {
                 console.log(`Saved ${field}: ${value}`);
             }).catch(error => {
                 console.error(`Error saving ${field}:`, error);
