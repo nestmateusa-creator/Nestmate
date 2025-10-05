@@ -4284,16 +4284,56 @@
     </div>
 
     <script>
-        // Test if script is running
         console.log('🚀 DASHBOARD SCRIPT STARTING...');
-        alert('Dashboard script is loading...');
+        
+        // Simple button functions first
+        function showSection(sectionName, clickedElement) {
+            console.log('showSection called with:', sectionName);
+            
+            // Hide all sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => section.classList.remove('active'));
+            
+            // Remove active from all nav items
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+            
+            // Show selected section
+            const targetSection = document.getElementById(sectionName);
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+            
+            // Add active to clicked nav item
+            if (clickedElement) {
+                clickedElement.classList.add('active');
+            }
+        }
+        
+        function signOut() {
+            console.log('signOut called');
+            if (confirm('Are you sure you want to sign out?')) {
+                window.location.href = 'login-aws.html';
+            }
+        }
+        
+        // Make functions globally accessible
+        window.showSection = showSection;
+        window.signOut = signOut;
+        
+        console.log('✅ Basic functions loaded');
         
         // AWS Configuration for dashboard
-        AWS.config.update({
-            region: 'us-east-2',
-            accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
-            secretAccessKey: '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'
-        });
+        try {
+            AWS.config.update({
+                region: 'us-east-2',
+                accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
+                secretAccessKey: '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'
+            });
+            console.log('✅ AWS configured');
+        } catch (error) {
+            console.error('AWS configuration error:', error);
+        }
 
         const dynamodb = new AWS.DynamoDB.DocumentClient();
 
@@ -4442,25 +4482,7 @@
             }
         }
 
-        // Sidebar Navigation Functions
-        window.showSection = function(sectionName, clickedElement) {
-            console.log('showSection called with:', sectionName);
-            console.log('clickedElement:', clickedElement);
-            console.log('currentUser:', currentUser);
-            
-            try {
-                // Hide all content sections
-                const sections = document.querySelectorAll('.content-section');
-                console.log('Found sections:', sections.length);
-                sections.forEach(section => {
-                    section.classList.remove('active');
-                    console.log('Removed active from:', section.id);
-                });
-                
-                // Remove active class from all nav items
-                const navItems = document.querySelectorAll('.nav-item');
-                console.log('Found nav items:', navItems.length);
-                navItems.forEach(item => item.classList.remove('active'));
+        // Sidebar Navigation Functions (already defined above)
                 
                 // Show selected section
                 const targetSection = document.getElementById(sectionName + 'Section');
@@ -7839,19 +7861,7 @@
             }
         }
 
-        window.signOut = function() {
-            console.log('signOut function called');
-            console.log('nestMateAuth available:', typeof nestMateAuth);
-            if (confirm('Are you sure you want to sign out?')) {
-                nestMateAuth.signOut().then(() => {
-                    window.location.href = 'login-aws.html';
-                }).catch(error => {
-                    console.error('Sign out error:', error);
-                    // Force redirect even if sign out fails
-                    window.location.href = 'login-aws.html';
-                });
-            }
-        }
+        // signOut function already defined above
 
         // Room Management Functions
         let bedroomCount = 0;
