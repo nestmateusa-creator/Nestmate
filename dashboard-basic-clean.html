@@ -6,9 +6,8 @@
     <title>Basic Dashboard - NestMate</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Temporarily disable external scripts to test -->
-    <!-- <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1491.0.min.js"></script> -->
-    <!-- <script src="auth-aws.js"></script> -->
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1491.0.min.js"></script>
+    <script src="auth-aws.js"></script>
     
     <style>
         * {
@@ -771,13 +770,64 @@
                 <h2 class="section-title">
                     <i class="fas fa-info-circle"></i> Basic Info
                 </h2>
+                
                 <div class="card">
-                    <h3>Home Information</h3>
-                    <p>Address: 123 Main Street, Anytown, USA</p>
-                    <p>Year Built: 2015</p>
-                    <p>Square Footage: 2,500 sq ft</p>
-                    <p>Bedrooms: 4</p>
-                    <p>Bathrooms: 3</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3>Home Information</h3>
+                        <button class="btn" onclick="editBasicInfo()">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                    </div>
+                    
+                    <div id="basicInfoDisplay">
+                        <p><strong>Address:</strong> <span id="displayAddress">Not set</span></p>
+                        <p><strong>Year Built:</strong> <span id="displayYearBuilt">Not set</span></p>
+                        <p><strong>Square Footage:</strong> <span id="displaySquareFootage">Not set</span></p>
+                        <p><strong>Bedrooms:</strong> <span id="displayBedrooms">Not set</span></p>
+                        <p><strong>Bathrooms:</strong> <span id="displayBathrooms">Not set</span></p>
+                        <p><strong>Home Type:</strong> <span id="displayHomeType">Not set</span></p>
+                    </div>
+                    
+                    <div id="basicInfoForm" style="display: none;">
+                        <div class="form-group">
+                            <label for="address">Address</label>
+                            <input type="text" id="address" placeholder="Enter home address">
+                        </div>
+                        <div class="form-group">
+                            <label for="yearBuilt">Year Built</label>
+                            <input type="number" id="yearBuilt" placeholder="Enter year built">
+                        </div>
+                        <div class="form-group">
+                            <label for="squareFootage">Square Footage</label>
+                            <input type="number" id="squareFootage" placeholder="Enter square footage">
+                        </div>
+                        <div class="form-group">
+                            <label for="bedrooms">Number of Bedrooms</label>
+                            <input type="number" id="bedrooms" placeholder="Enter number of bedrooms">
+                        </div>
+                        <div class="form-group">
+                            <label for="bathrooms">Number of Bathrooms</label>
+                            <input type="number" id="bathrooms" placeholder="Enter number of bathrooms">
+                        </div>
+                        <div class="form-group">
+                            <label for="homeType">Home Type</label>
+                            <select id="homeType">
+                                <option value="">Select home type</option>
+                                <option value="single-family">Single Family</option>
+                                <option value="condo">Condo</option>
+                                <option value="townhouse">Townhouse</option>
+                                <option value="apartment">Apartment</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; gap: 1rem;">
+                            <button class="btn" onclick="saveBasicInfo()">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                            <button class="btn btn-secondary" onclick="cancelEditBasicInfo()">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1053,20 +1103,68 @@
         window.openChatbot = openChatbot;
         window.signOut = signOut;
 
+        // AWS Configuration
+        AWS.config.update({
+            region: 'us-east-2',
+            accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
+            secretAccessKey: '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'
+        });
+
+        const dynamodb = new AWS.DynamoDB.DocumentClient();
+        let currentUser = null;
+
         // Initialize dashboard
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             console.log('🚀 Command Center Dashboard Starting...');
             
-            // Set user info (temporarily hardcoded for testing)
-            document.getElementById('userName').textContent = 'Test User';
-            document.getElementById('userEmail').textContent = 'test@example.com';
-            document.getElementById('userAvatar').textContent = 'T';
+            // Check authentication
+            const isAuthenticated = await nestMateAuth.isAuthenticated();
+            if (!isAuthenticated) {
+                window.location.href = 'login-aws.html';
+                return;
+            }
+
+            // Get current user
+            currentUser = nestMateAuth.currentUser;
+            if (currentUser) {
+                document.getElementById('userName').textContent = currentUser.name || 'User';
+                document.getElementById('userEmail').textContent = currentUser.email || 'user@example.com';
+                document.getElementById('userAvatar').textContent = (currentUser.name || 'U').charAt(0).toUpperCase();
+            }
+            
+            // Load user data
+            await loadUserData();
             
             // Load dashboard data
             loadDashboardData();
             
             console.log('✅ Command Center Dashboard initialized successfully');
         });
+
+        // Load user data from AWS
+        async function loadUserData() {
+            try {
+                const userRecord = await nestMateAuth.getUserRecord(currentUser.userId);
+                if (userRecord.success && userRecord.user) {
+                    const user = userRecord.user;
+                    
+                    // Load basic info
+                    if (user.basicInfo) {
+                        document.getElementById('displayAddress').textContent = user.basicInfo.address || 'Not set';
+                        document.getElementById('displayYearBuilt').textContent = user.basicInfo.yearBuilt || 'Not set';
+                        document.getElementById('displaySquareFootage').textContent = user.basicInfo.squareFootage || 'Not set';
+                        document.getElementById('displayBedrooms').textContent = user.basicInfo.bedrooms || 'Not set';
+                        document.getElementById('displayBathrooms').textContent = user.basicInfo.bathrooms || 'Not set';
+                        document.getElementById('displayHomeType').textContent = user.basicInfo.homeType || 'Not set';
+                    }
+                    
+                    // Load other sections as needed
+                    // Add more section loading here...
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
+        }
 
         // Load dashboard data (simplified for testing)
         function loadDashboardData() {
@@ -1100,6 +1198,71 @@
                     </div>
                 `;
             }
+        }
+
+        // Basic Info CRUD Functions
+        function editBasicInfo() {
+            document.getElementById('basicInfoDisplay').style.display = 'none';
+            document.getElementById('basicInfoForm').style.display = 'block';
+        }
+
+        function cancelEditBasicInfo() {
+            document.getElementById('basicInfoDisplay').style.display = 'block';
+            document.getElementById('basicInfoForm').style.display = 'none';
+        }
+
+        async function saveBasicInfo() {
+            const basicInfo = {
+                address: document.getElementById('address').value,
+                yearBuilt: document.getElementById('yearBuilt').value,
+                squareFootage: document.getElementById('squareFootage').value,
+                bedrooms: document.getElementById('bedrooms').value,
+                bathrooms: document.getElementById('bathrooms').value,
+                homeType: document.getElementById('homeType').value
+            };
+
+            try {
+                await nestMateAuth.updateUserRecord(currentUser.userId, { basicInfo });
+                
+                // Update display
+                document.getElementById('displayAddress').textContent = basicInfo.address || 'Not set';
+                document.getElementById('displayYearBuilt').textContent = basicInfo.yearBuilt || 'Not set';
+                document.getElementById('displaySquareFootage').textContent = basicInfo.squareFootage || 'Not set';
+                document.getElementById('displayBedrooms').textContent = basicInfo.bedrooms || 'Not set';
+                document.getElementById('displayBathrooms').textContent = basicInfo.bathrooms || 'Not set';
+                document.getElementById('displayHomeType').textContent = basicInfo.homeType || 'Not set';
+                
+                // Hide form
+                document.getElementById('basicInfoDisplay').style.display = 'block';
+                document.getElementById('basicInfoForm').style.display = 'none';
+                
+                showAlert('Basic info saved successfully!', 'success');
+            } catch (error) {
+                console.error('Error saving basic info:', error);
+                showAlert('Error saving basic info', 'error');
+            }
+        }
+
+        // Show alert function
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            alertDiv.style.position = 'fixed';
+            alertDiv.style.top = '20px';
+            alertDiv.style.right = '20px';
+            alertDiv.style.zIndex = '10000';
+            alertDiv.style.padding = '1rem';
+            alertDiv.style.borderRadius = '0.5rem';
+            alertDiv.style.color = type === 'success' ? '#065f46' : '#991b1b';
+            alertDiv.style.backgroundColor = type === 'success' ? '#d1fae5' : '#fee2e2';
+            alertDiv.style.border = type === 'success' ? '1px solid #a7f3d0' : '1px solid #fca5a5';
+            
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 3000);
         }
 
         // Calculate health score
