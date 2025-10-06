@@ -18,104 +18,407 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: #f8fafc;
-            color: #334155;
+            background: #1a1d29;
+            color: #ffffff;
             line-height: 1.6;
+            overflow-x: hidden;
         }
 
         .dashboard-container {
-            display: flex;
             min-height: 100vh;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
-        /* Sidebar */
-        .sidebar {
-            width: 280px;
-            background: #1e293b;
-            color: white;
-            padding: 2rem 0;
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
+        /* Header */
+        .dashboard-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
         }
 
-        .sidebar-header {
-            padding: 0 2rem 2rem;
-            border-bottom: 1px solid #334155;
-        }
-
-        .sidebar-header h1 {
-            font-size: 1.5rem;
+        .dashboard-header h1 {
+            font-size: 2.5rem;
             font-weight: 700;
-            color: #f1f5f9;
+            color: #00d4aa;
+            margin-left: 1rem;
         }
 
-        .sidebar-header p {
+        .dashboard-header i {
+            font-size: 3rem;
+            color: #00d4aa;
+        }
+
+        .dashboard-subtitle {
             color: #94a3b8;
-            font-size: 0.875rem;
+            font-size: 1.1rem;
+            margin-left: 4.5rem;
+            margin-top: -0.5rem;
+        }
+
+        /* Main Content Grid */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Cards */
+        .card {
+            background: #2d3748;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid #4a5568;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+        }
+
+        .card-title i {
+            margin-right: 0.75rem;
+            color: #00d4aa;
+        }
+
+        .card-info {
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        /* Home Health Score */
+        .health-score-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .health-score-gauge {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin-bottom: 1.5rem;
+        }
+
+        .gauge-circle {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(#00d4aa 0deg 306deg, #4a5568 306deg 360deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .gauge-circle::before {
+            content: '';
+            position: absolute;
+            width: 80%;
+            height: 80%;
+            background: #2d3748;
+            border-radius: 50%;
+        }
+
+        .gauge-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .gauge-score {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1;
+        }
+
+        .gauge-label {
+            font-size: 1rem;
+            color: #94a3b8;
             margin-top: 0.5rem;
         }
 
-        .nav-menu {
-            padding: 1rem 0;
-        }
-
-        .nav-item {
-            display: block;
-            padding: 0.75rem 2rem;
-            color: #cbd5e1;
-            text-decoration: none;
-            transition: all 0.2s;
-            cursor: pointer;
-            border: none;
-            background: none;
+        /* Progress Bars */
+        .progress-section {
             width: 100%;
-            text-align: left;
-            font-size: 0.875rem;
         }
 
-        .nav-item:hover {
-            background: #334155;
-            color: white;
-        }
-
-        .nav-item.active {
-            background: #3b82f6;
-            color: white;
-        }
-
-        .nav-item i {
-            width: 20px;
-            margin-right: 0.75rem;
-        }
-
-        .sidebar-footer {
-            padding: 2rem;
-            border-top: 1px solid #334155;
-            margin-top: auto;
-        }
-
-        .user-info {
+        .progress-item {
             display: flex;
+            justify-content: space-between;
             align-items: center;
             margin-bottom: 1rem;
+        }
+
+        .progress-label {
+            color: #ffffff;
+            font-weight: 500;
+            min-width: 100px;
+        }
+
+        .progress-bar-container {
+            flex: 1;
+            height: 8px;
+            background: #4a5568;
+            border-radius: 4px;
+            margin: 0 1rem;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: #00d4aa;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-percentage {
+            color: #00d4aa;
+            font-weight: 600;
+            min-width: 40px;
+            text-align: right;
+        }
+
+        /* Quick Actions */
+        .quick-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .action-button {
+            background: #4a5568;
+            border: none;
+            border-radius: 0.75rem;
+            padding: 1.5rem 1rem;
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            min-height: 120px;
+        }
+
+        .action-button:hover {
+            background: #00d4aa;
+            transform: translateY(-2px);
+        }
+
+        .action-button i {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .action-button.emergency i {
+            color: #ef4444;
+        }
+
+        .action-button.emergency:hover i {
+            color: #ffffff;
+        }
+
+        .action-button-text {
+            font-size: 0.875rem;
+            font-weight: 500;
+            line-height: 1.2;
+        }
+
+        .export-button {
+            width: 100%;
+            background: #4a5568;
+            border: none;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+        }
+
+        .export-button:hover {
+            background: #00d4aa;
+        }
+
+        .export-button i {
+            margin-right: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        /* Bottom Sections */
+        .bottom-sections {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .bottom-section {
+            background: #2d3748;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid #4a5568;
+        }
+
+        .bottom-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .bottom-section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+        }
+
+        .bottom-section-title i {
+            margin-right: 0.5rem;
+            color: #00d4aa;
+        }
+
+        .external-link {
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        /* Chatbot Button */
+        .chatbot-button {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            background: #00d4aa;
+            border: none;
+            border-radius: 50%;
+            color: #ffffff;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 212, 170, 0.3);
+            transition: all 0.2s;
+            z-index: 1000;
+        }
+
+        .chatbot-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(0, 212, 170, 0.4);
+        }
+
+        .chatbot-button i {
+            font-size: 1.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .bottom-sections {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding: 1rem;
+            }
+            
+            .quick-actions-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .health-score-gauge {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .gauge-score {
+                font-size: 2.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .quick-actions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Loading States */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            color: #94a3b8;
+        }
+
+        .loading i {
+            margin-right: 0.5rem;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* User Info */
+        .user-info {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: #2d3748;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            border: 1px solid #4a5568;
+            display: flex;
+            align-items: center;
+            z-index: 1000;
         }
 
         .user-avatar {
             width: 40px;
             height: 40px;
-            background: #3b82f6;
+            background: #00d4aa;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-right: 0.75rem;
             font-weight: 600;
+            color: #ffffff;
         }
 
         .user-details h3 {
             font-size: 0.875rem;
             font-weight: 600;
+            color: #ffffff;
         }
 
         .user-details p {
@@ -131,568 +434,167 @@
             border-radius: 0.375rem;
             cursor: pointer;
             font-size: 0.875rem;
-            width: 100%;
+            margin-left: 0.75rem;
             transition: background 0.2s;
         }
 
         .sign-out-btn:hover {
             background: #dc2626;
         }
-
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            margin-left: 280px;
-            padding: 2rem;
-        }
-
-        .content-header {
-            background: white;
-            padding: 2rem;
-            border-radius: 0.75rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
-        }
-
-        .content-header h2 {
-            font-size: 1.875rem;
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 0.5rem;
-        }
-
-        .content-header p {
-            color: #64748b;
-        }
-
-        .content-section {
-            display: none;
-            background: white;
-            border-radius: 0.75rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
-        }
-
-        .content-section.active {
-            display: block;
-        }
-
-        .section-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-        }
-
-        .section-title i {
-            margin-right: 0.75rem;
-            color: #3b82f6;
-        }
-
-        /* Cards */
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .card {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.5rem;
-            padding: 1.5rem;
-        }
-
-        .card h3 {
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 0.75rem;
-        }
-
-        .card p {
-            color: #64748b;
-            font-size: 0.875rem;
-        }
-
-        /* Forms */
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: 500;
-            color: #374151;
-            margin-bottom: 0.5rem;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.375rem;
-            font-size: 0.875rem;
-            transition: border-color 0.2s;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-
-        .btn {
-            background: #3b82f6;
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.375rem;
-            cursor: pointer;
-            font-size: 0.875rem;
-            font-weight: 500;
-            transition: background 0.2s;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .btn:hover {
-            background: #2563eb;
-        }
-
-        .btn-secondary {
-            background: #6b7280;
-        }
-
-        .btn-secondary:hover {
-            background: #4b5563;
-        }
-
-        .btn-danger {
-            background: #ef4444;
-        }
-
-        .btn-danger:hover {
-            background: #dc2626;
-        }
-
-        /* Lists */
-        .list {
-            list-style: none;
-        }
-
-        .list-item {
-            padding: 1rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.375rem;
-            margin-bottom: 0.75rem;
-            background: #f8fafc;
-        }
-
-        .list-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .list-item h4 {
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 0.5rem;
-        }
-
-        .list-item p {
-            color: #64748b;
-            font-size: 0.875rem;
-        }
-
-        /* Alerts */
-        .alert {
-            padding: 1rem;
-            border-radius: 0.375rem;
-            margin-bottom: 1rem;
-        }
-
-        .alert-success {
-            background: #d1fae5;
-            color: #065f46;
-            border: 1px solid #a7f3d0;
-        }
-
-        .alert-error {
-            background: #fee2e2;
-            color: #991b1b;
-            border: 1px solid #fca5a5;
-        }
-
-        .alert-info {
-            background: #dbeafe;
-            color: #1e40af;
-            border: 1px solid #93c5fd;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.3s;
-            }
-
-            .sidebar.open {
-                transform: translateX(0);
-            }
-
-            .main-content {
-                margin-left: 0;
-                padding: 1rem;
-            }
-
-            .cards-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .loading {
-            text-align: center;
-            padding: 2rem;
-            color: #64748b;
-        }
-
-        .hidden {
-            display: none !important;
-        }
     </style>
 </head>
 <body>
     <div class="dashboard-container">
-        <!-- Sidebar -->
-        <nav class="sidebar">
-            <div class="sidebar-header">
-                <h1>NestMate</h1>
-                <p>Basic Plan Dashboard</p>
+        <!-- User Info -->
+        <div class="user-info">
+            <div class="user-avatar" id="userAvatar">U</div>
+            <div class="user-details">
+                <h3 id="userName">User</h3>
+                <p id="userEmail">user@example.com</p>
             </div>
+            <button class="sign-out-btn" onclick="signOut()">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
+            </button>
+        </div>
 
-            <div class="nav-menu">
-                <button class="nav-item active" onclick="showSection('overview')">
-                    <i class="fas fa-home"></i> Overview
-                </button>
-                <button class="nav-item" onclick="showSection('home')">
-                    <i class="fas fa-house"></i> Home Details
-                </button>
-                <button class="nav-item" onclick="showSection('tasks')">
-                    <i class="fas fa-tasks"></i> Tasks
-                </button>
-                <button class="nav-item" onclick="showSection('maintenance')">
-                    <i class="fas fa-wrench"></i> Maintenance
-                </button>
-                <button class="nav-item" onclick="showSection('emergency')">
-                    <i class="fas fa-phone"></i> Emergency Contacts
-                </button>
-                <button class="nav-item" onclick="showSection('service')">
-                    <i class="fas fa-clipboard-list"></i> Service Records
-                </button>
-                <button class="nav-item" onclick="showSection('profile')">
-                    <i class="fas fa-user"></i> Profile
-                </button>
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+            <i class="fas fa-home"></i>
+            <div>
+                <h1>Your Home Command Center</h1>
+                <p class="dashboard-subtitle">Complete home intelligence from foundation to roof</p>
             </div>
-
-            <div class="sidebar-footer">
-                <div class="user-info">
-                    <div class="user-avatar" id="userAvatar">U</div>
-                    <div class="user-details">
-                        <h3 id="userName">User</h3>
-                        <p id="userEmail">user@example.com</p>
-                    </div>
-                </div>
-                <button class="sign-out-btn" onclick="signOut()">
-                    <i class="fas fa-sign-out-alt"></i> Sign Out
-                </button>
-            </div>
-        </nav>
+        </div>
 
         <!-- Main Content -->
-        <main class="main-content">
-            <!-- Overview Section -->
-            <div id="overviewSection" class="content-section active">
-                <div class="content-header">
-                    <h2>Welcome to Your Dashboard</h2>
-                    <p>Manage your home and tasks efficiently with NestMate Basic Plan</p>
+        <div class="main-content">
+            <!-- Home Health Score Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-heart"></i>
+                        Home Health Score
+                    </h2>
+                    <i class="fas fa-info-circle card-info"></i>
                 </div>
 
-                <div class="cards-grid">
-                    <div class="card">
-                        <h3><i class="fas fa-house"></i> Home Profile</h3>
-                        <p>Manage your home details, photos, and basic information.</p>
-                        <button class="btn" onclick="showSection('home')">Manage Home</button>
+                <div class="health-score-container">
+                    <div class="health-score-gauge">
+                        <div class="gauge-circle">
+                            <div class="gauge-content">
+                                <div class="gauge-score" id="healthScore">85</div>
+                                <div class="gauge-label">Health Score</div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="card">
-                        <h3><i class="fas fa-tasks"></i> Tasks</h3>
-                        <p>Create and track home maintenance tasks and reminders.</p>
-                        <button class="btn" onclick="showSection('tasks')">View Tasks</button>
-                    </div>
-
-                    <div class="card">
-                        <h3><i class="fas fa-wrench"></i> Maintenance</h3>
-                        <p>Schedule and track home maintenance activities.</p>
-                        <button class="btn" onclick="showSection('maintenance')">Schedule Maintenance</button>
-                    </div>
-
-                    <div class="card">
-                        <h3><i class="fas fa-phone"></i> Emergency Contacts</h3>
-                        <p>Store important emergency contact information.</p>
-                        <button class="btn" onclick="showSection('emergency')">Manage Contacts</button>
-                    </div>
-
-                    <div class="card">
-                        <h3><i class="fas fa-clipboard-list"></i> Service Records</h3>
-                        <p>Keep track of service appointments and records.</p>
-                        <button class="btn" onclick="showSection('service')">View Records</button>
-                    </div>
-
-                    <div class="card">
-                        <h3><i class="fas fa-user"></i> Profile</h3>
-                        <p>Update your account information and preferences.</p>
-                        <button class="btn" onclick="showSection('profile')">Edit Profile</button>
+                    <div class="progress-section">
+                        <div class="progress-item">
+                            <span class="progress-label">Structure</span>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: 90%"></div>
+                            </div>
+                            <span class="progress-percentage">90%</span>
+                        </div>
+                        <div class="progress-item">
+                            <span class="progress-label">Systems</span>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: 85%"></div>
+                            </div>
+                            <span class="progress-percentage">85%</span>
+                        </div>
+                        <div class="progress-item">
+                            <span class="progress-label">Maintenance</span>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: 80%"></div>
+                            </div>
+                            <span class="progress-percentage">80%</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Home Details Section -->
-            <div id="homeSection" class="content-section">
-                <h2 class="section-title">
-                    <i class="fas fa-house"></i> Home Details
-                </h2>
-
-                <div class="form-group">
-                    <label for="homeAddress">Home Address</label>
-                    <input type="text" id="homeAddress" placeholder="Enter your home address">
+            <!-- Quick Actions Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-bolt"></i>
+                        Quick Actions
+                    </h2>
                 </div>
 
-                <div class="form-group">
-                    <label for="homeType">Home Type</label>
-                    <select id="homeType">
-                        <option value="">Select home type</option>
-                        <option value="single-family">Single Family</option>
-                        <option value="condo">Condo</option>
-                        <option value="townhouse">Townhouse</option>
-                        <option value="apartment">Apartment</option>
-                    </select>
+                <div class="quick-actions-grid">
+                    <button class="action-button" onclick="openTasksCalendar()">
+                        <i class="fas fa-calendar-check"></i>
+                        <span class="action-button-text">Tasks & Calendar</span>
+                    </button>
+                    <button class="action-button" onclick="openProducts()">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span class="action-button-text">Products</span>
+                    </button>
+                    <button class="action-button emergency" onclick="openEmergency()">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span class="action-button-text">Emergency</span>
+                    </button>
+                    <button class="action-button" onclick="addService()">
+                        <i class="fas fa-wrench"></i>
+                        <span class="action-button-text">Add Service</span>
+                    </button>
+                    <button class="action-button" onclick="viewRecords()">
+                        <i class="fas fa-clipboard-list"></i>
+                        <span class="action-button-text">View Records</span>
+                    </button>
+                    <button class="action-button" onclick="openHomeDetails()">
+                        <i class="fas fa-file-alt"></i>
+                        <span class="action-button-text">Home Details</span>
+                    </button>
                 </div>
 
-                <div class="form-group">
-                    <label for="homeSize">Home Size (sq ft)</label>
-                    <input type="number" id="homeSize" placeholder="Enter square footage">
-                </div>
-
-                <div class="form-group">
-                    <label for="homeYear">Year Built</label>
-                    <input type="number" id="homeYear" placeholder="Enter year built">
-                </div>
-
-                <button class="btn" onclick="saveHomeDetails()">Save Home Details</button>
+                <button class="export-button" onclick="exportData()">
+                    <i class="fas fa-chart-bar"></i>
+                    Export Data
+                </button>
             </div>
+        </div>
 
-            <!-- Tasks Section -->
-            <div id="tasksSection" class="content-section">
-                <h2 class="section-title">
-                    <i class="fas fa-tasks"></i> Tasks
-                </h2>
-
-                <div class="form-group">
-                    <label for="taskTitle">Task Title</label>
-                    <input type="text" id="taskTitle" placeholder="Enter task title">
+        <!-- Bottom Sections -->
+        <div class="bottom-sections">
+            <!-- Recent Activity -->
+            <div class="bottom-section">
+                <div class="bottom-section-header">
+                    <h3 class="bottom-section-title">
+                        <i class="fas fa-clock"></i>
+                        Recent Activity
+                    </h3>
+                    <i class="fas fa-external-link-alt external-link"></i>
                 </div>
-
-                <div class="form-group">
-                    <label for="taskDescription">Description</label>
-                    <textarea id="taskDescription" rows="3" placeholder="Enter task description"></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="taskPriority">Priority</label>
-                    <select id="taskPriority">
-                        <option value="low">Low</option>
-                        <option value="medium">Medium</option>
-                        <option value="high">High</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="taskDueDate">Due Date</label>
-                    <input type="date" id="taskDueDate">
-                </div>
-
-                <button class="btn" onclick="addTask()">Add Task</button>
-
-                <div id="tasksList" class="mt-4">
-                    <!-- Tasks will be displayed here -->
+                <div class="loading">
+                    <i class="fas fa-spinner"></i>
+                    Loading recent activity...
                 </div>
             </div>
 
-            <!-- Maintenance Section -->
-            <div id="maintenanceSection" class="content-section">
-                <h2 class="section-title">
-                    <i class="fas fa-wrench"></i> Maintenance
-                </h2>
-
-                <div class="form-group">
-                    <label for="maintenanceType">Maintenance Type</label>
-                    <select id="maintenanceType">
-                        <option value="">Select type</option>
-                        <option value="hvac">HVAC</option>
-                        <option value="plumbing">Plumbing</option>
-                        <option value="electrical">Electrical</option>
-                        <option value="appliance">Appliance</option>
-                        <option value="exterior">Exterior</option>
-                        <option value="interior">Interior</option>
-                    </select>
+            <!-- Energy & Savings -->
+            <div class="bottom-section">
+                <div class="bottom-section-header">
+                    <h3 class="bottom-section-title">
+                        <i class="fas fa-dollar-sign"></i>
+                        Energy & Savings
+                    </h3>
+                    <i class="fas fa-external-link-alt external-link"></i>
                 </div>
-
-                <div class="form-group">
-                    <label for="maintenanceDescription">Description</label>
-                    <textarea id="maintenanceDescription" rows="3" placeholder="Describe the maintenance needed"></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="maintenanceDate">Scheduled Date</label>
-                    <input type="date" id="maintenanceDate">
-                </div>
-
-                <button class="btn" onclick="scheduleMaintenance()">Schedule Maintenance</button>
-
-                <div id="maintenanceList" class="mt-4">
-                    <!-- Maintenance items will be displayed here -->
+                <div class="loading">
+                    <i class="fas fa-spinner"></i>
+                    Loading energy data...
                 </div>
             </div>
-
-            <!-- Emergency Contacts Section -->
-            <div id="emergencySection" class="content-section">
-                <h2 class="section-title">
-                    <i class="fas fa-phone"></i> Emergency Contacts
-                </h2>
-
-                <div class="form-group">
-                    <label for="contactName">Contact Name</label>
-                    <input type="text" id="contactName" placeholder="Enter contact name">
-                </div>
-
-                <div class="form-group">
-                    <label for="contactPhone">Phone Number</label>
-                    <input type="tel" id="contactPhone" placeholder="Enter phone number">
-                </div>
-
-                <div class="form-group">
-                    <label for="contactType">Contact Type</label>
-                    <select id="contactType">
-                        <option value="">Select type</option>
-                        <option value="emergency">Emergency</option>
-                        <option value="plumber">Plumber</option>
-                        <option value="electrician">Electrician</option>
-                        <option value="hvac">HVAC</option>
-                        <option value="contractor">Contractor</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-
-                <button class="btn" onclick="addEmergencyContact()">Add Contact</button>
-
-                <div id="contactsList" class="mt-4">
-                    <!-- Contacts will be displayed here -->
-                </div>
-            </div>
-
-            <!-- Service Records Section -->
-            <div id="serviceSection" class="content-section">
-                <h2 class="section-title">
-                    <i class="fas fa-clipboard-list"></i> Service Records
-                </h2>
-
-                <div class="form-group">
-                    <label for="serviceProvider">Service Provider</label>
-                    <input type="text" id="serviceProvider" placeholder="Enter service provider name">
-                </div>
-
-                <div class="form-group">
-                    <label for="serviceType">Service Type</label>
-                    <select id="serviceType">
-                        <option value="">Select service type</option>
-                        <option value="repair">Repair</option>
-                        <option value="maintenance">Maintenance</option>
-                        <option value="inspection">Inspection</option>
-                        <option value="installation">Installation</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="serviceDate">Service Date</label>
-                    <input type="date" id="serviceDate">
-                </div>
-
-                <div class="form-group">
-                    <label for="serviceCost">Cost</label>
-                    <input type="number" id="serviceCost" placeholder="Enter cost" step="0.01">
-                </div>
-
-                <div class="form-group">
-                    <label for="serviceNotes">Notes</label>
-                    <textarea id="serviceNotes" rows="3" placeholder="Enter service notes"></textarea>
-                </div>
-
-                <button class="btn" onclick="addServiceRecord()">Add Service Record</button>
-
-                <div id="serviceRecordsList" class="mt-4">
-                    <!-- Service records will be displayed here -->
-                </div>
-            </div>
-
-            <!-- Profile Section -->
-            <div id="profileSection" class="content-section">
-                <h2 class="section-title">
-                    <i class="fas fa-user"></i> Profile
-                </h2>
-
-                <div class="form-group">
-                    <label for="profileName">Full Name</label>
-                    <input type="text" id="profileName" placeholder="Enter your full name">
-                </div>
-
-                <div class="form-group">
-                    <label for="profileEmail">Email</label>
-                    <input type="email" id="profileEmail" placeholder="Enter your email">
-                </div>
-
-                <div class="form-group">
-                    <label for="profilePhone">Phone</label>
-                    <input type="tel" id="profilePhone" placeholder="Enter your phone number">
-                </div>
-
-                <div class="form-group">
-                    <label for="currentPassword">Current Password</label>
-                    <input type="password" id="currentPassword" placeholder="Enter current password">
-                </div>
-
-                <div class="form-group">
-                    <label for="newPassword">New Password</label>
-                    <input type="password" id="newPassword" placeholder="Enter new password">
-                </div>
-
-                <div class="form-group">
-                    <label for="confirmPassword">Confirm New Password</label>
-                    <input type="password" id="confirmPassword" placeholder="Confirm new password">
-                </div>
-
-                <button class="btn" onclick="updateProfile()">Update Profile</button>
-                <button class="btn btn-secondary" onclick="changePassword()">Change Password</button>
-            </div>
-        </main>
+        </div>
     </div>
+
+    <!-- Chatbot Button -->
+    <button class="chatbot-button" onclick="openChatbot()">
+        <i class="fas fa-robot"></i>
+    </button>
 
     <script>
         // AWS Configuration
@@ -707,7 +609,7 @@
 
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', async function() {
-            console.log('🚀 Clean Dashboard Starting...');
+            console.log('🚀 Command Center Dashboard Starting...');
             
             // Check authentication
             const isAuthenticated = await nestMateAuth.isAuthenticated();
@@ -724,32 +626,224 @@
                 document.getElementById('userAvatar').textContent = (currentUser.name || 'U').charAt(0).toUpperCase();
             }
 
-            // Load user data
-            await loadUserData();
+            // Load dashboard data
+            await loadDashboardData();
             
-            console.log('✅ Dashboard initialized successfully');
+            console.log('✅ Command Center Dashboard initialized successfully');
         });
 
-        // Navigation function
-        function showSection(sectionName) {
-            console.log('Showing section:', sectionName);
+        // Load dashboard data
+        async function loadDashboardData() {
+            try {
+                const userRecord = await nestMateAuth.getUserRecord(currentUser.userId);
+                if (userRecord.success && userRecord.user) {
+                    const user = userRecord.user;
+                    
+                    // Calculate health score based on user data
+                    calculateHealthScore(user);
+                    
+                    // Load recent activity
+                    loadRecentActivity(user);
+                    
+                    // Load energy & savings data
+                    loadEnergySavings(user);
+                }
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+            }
+        }
+
+        // Calculate health score
+        function calculateHealthScore(user) {
+            let score = 85; // Default score
             
-            // Hide all sections
-            const sections = document.querySelectorAll('.content-section');
-            sections.forEach(section => section.classList.remove('active'));
-            
-            // Remove active from all nav items
-            const navItems = document.querySelectorAll('.nav-item');
-            navItems.forEach(item => item.classList.remove('active'));
-            
-            // Show selected section
-            const targetSection = document.getElementById(sectionName + 'Section');
-            if (targetSection) {
-                targetSection.classList.add('active');
+            // Adjust based on maintenance records
+            if (user.maintenance && user.maintenance.length > 0) {
+                const recentMaintenance = user.maintenance.filter(m => {
+                    const maintenanceDate = new Date(m.scheduledDate);
+                    const sixMonthsAgo = new Date();
+                    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+                    return maintenanceDate > sixMonthsAgo;
+                });
+                
+                if (recentMaintenance.length > 0) {
+                    score += 5;
+                }
             }
             
-            // Add active to clicked nav item
-            event.target.classList.add('active');
+            // Adjust based on tasks completion
+            if (user.tasks && user.tasks.length > 0) {
+                const completedTasks = user.tasks.filter(t => t.status === 'completed');
+                const completionRate = completedTasks.length / user.tasks.length;
+                score += Math.round(completionRate * 10);
+            }
+            
+            // Ensure score is between 0-100
+            score = Math.min(100, Math.max(0, score));
+            
+            // Update UI
+            document.getElementById('healthScore').textContent = score;
+            
+            // Update progress bars based on score
+            const structureScore = Math.min(100, score + 5);
+            const systemsScore = score;
+            const maintenanceScore = Math.max(0, score - 5);
+            
+            updateProgressBar('Structure', structureScore);
+            updateProgressBar('Systems', systemsScore);
+            updateProgressBar('Maintenance', maintenanceScore);
+        }
+
+        // Update progress bar
+        function updateProgressBar(label, percentage) {
+            const progressItems = document.querySelectorAll('.progress-item');
+            progressItems.forEach(item => {
+                const labelElement = item.querySelector('.progress-label');
+                if (labelElement.textContent === label) {
+                    const progressBar = item.querySelector('.progress-bar');
+                    const percentageElement = item.querySelector('.progress-percentage');
+                    
+                    progressBar.style.width = percentage + '%';
+                    percentageElement.textContent = percentage + '%';
+                }
+            });
+        }
+
+        // Load recent activity
+        function loadRecentActivity(user) {
+            const activitySection = document.querySelector('.bottom-section:first-of-type .loading');
+            if (!activitySection) return;
+            
+            let activities = [];
+            
+            // Add recent tasks
+            if (user.tasks && user.tasks.length > 0) {
+                const recentTasks = user.tasks
+                    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                    .slice(0, 3);
+                
+                activities = activities.concat(recentTasks.map(task => ({
+                    type: 'task',
+                    title: task.title,
+                    date: task.createdAt,
+                    icon: 'fas fa-tasks',
+                    color: task.status === 'completed' ? '#00d4aa' : '#f59e0b'
+                })));
+            }
+            
+            // Add recent maintenance
+            if (user.maintenance && user.maintenance.length > 0) {
+                const recentMaintenance = user.maintenance
+                    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                    .slice(0, 2);
+                
+                activities = activities.concat(recentMaintenance.map(maintenance => ({
+                    type: 'maintenance',
+                    title: maintenance.type + ' - ' + maintenance.description,
+                    date: maintenance.createdAt,
+                    icon: 'fas fa-wrench',
+                    color: '#3b82f6'
+                })));
+            }
+            
+            // Sort by date and take top 5
+            activities = activities
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 5);
+            
+            if (activities.length === 0) {
+                activitySection.innerHTML = '<p style="color: #94a3b8; text-align: center;">No recent activity</p>';
+                return;
+            }
+            
+            activitySection.innerHTML = activities.map(activity => `
+                <div style="display: flex; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #4a5568;">
+                    <i class="${activity.icon}" style="color: ${activity.color}; margin-right: 0.75rem; width: 20px;"></i>
+                    <div style="flex: 1;">
+                        <div style="color: #ffffff; font-weight: 500;">${activity.title}</div>
+                        <div style="color: #94a3b8; font-size: 0.875rem;">${new Date(activity.date).toLocaleDateString()}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Load energy & savings data
+        function loadEnergySavings(user) {
+            const energySection = document.querySelector('.bottom-section:last-of-type .loading');
+            if (!energySection) return;
+            
+            // Calculate savings from service records
+            let totalSavings = 0;
+            let serviceCount = 0;
+            
+            if (user.serviceRecords && user.serviceRecords.length > 0) {
+                const thisYear = new Date().getFullYear();
+                const thisYearServices = user.serviceRecords.filter(record => {
+                    const recordYear = new Date(record.date).getFullYear();
+                    return recordYear === thisYear;
+                });
+                
+                serviceCount = thisYearServices.length;
+                // Estimate savings (this would be calculated based on actual energy data)
+                totalSavings = serviceCount * 150; // $150 average savings per service
+            }
+            
+            energySection.innerHTML = `
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div style="text-align: center; padding: 1rem; background: #4a5568; border-radius: 0.5rem;">
+                        <div style="color: #00d4aa; font-size: 1.5rem; font-weight: 700;">$${totalSavings}</div>
+                        <div style="color: #94a3b8; font-size: 0.875rem;">Saved This Year</div>
+                    </div>
+                    <div style="text-align: center; padding: 1rem; background: #4a5568; border-radius: 0.5rem;">
+                        <div style="color: #00d4aa; font-size: 1.5rem; font-weight: 700;">${serviceCount}</div>
+                        <div style="color: #94a3b8; font-size: 0.875rem;">Services This Year</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Quick Action Functions
+        function openTasksCalendar() {
+            // Redirect to tasks section or open modal
+            console.log('Opening Tasks & Calendar');
+            // You can implement this to show a tasks modal or redirect
+        }
+
+        function openProducts() {
+            console.log('Opening Products');
+            // Redirect to products page or show modal
+        }
+
+        function openEmergency() {
+            console.log('Opening Emergency Contacts');
+            // Show emergency contacts modal or redirect
+        }
+
+        function addService() {
+            console.log('Adding Service');
+            // Open add service modal or redirect
+        }
+
+        function viewRecords() {
+            console.log('Viewing Records');
+            // Show service records modal or redirect
+        }
+
+        function openHomeDetails() {
+            console.log('Opening Home Details');
+            // Show home details modal or redirect
+        }
+
+        function exportData() {
+            console.log('Exporting Data');
+            // Implement data export functionality
+            alert('Data export feature coming soon!');
+        }
+
+        function openChatbot() {
+            console.log('Opening Chatbot');
+            // Open chatbot modal or redirect
+            alert('Chatbot feature coming soon!');
         }
 
         // Sign out function
@@ -760,454 +854,16 @@
             }
         }
 
-        // Load user data from AWS
-        async function loadUserData() {
-            try {
-                const userRecord = await nestMateAuth.getUserRecord(currentUser.userId);
-                if (userRecord.success && userRecord.user) {
-                    const user = userRecord.user;
-                    
-                    // Load home details
-                    if (user.homeDetails) {
-                        document.getElementById('homeAddress').value = user.homeDetails.address || '';
-                        document.getElementById('homeType').value = user.homeDetails.type || '';
-                        document.getElementById('homeSize').value = user.homeDetails.size || '';
-                        document.getElementById('homeYear').value = user.homeDetails.year || '';
-                    }
-                    
-                    // Load profile details
-                    document.getElementById('profileName').value = user.name || '';
-                    document.getElementById('profileEmail').value = user.email || '';
-                    document.getElementById('profilePhone').value = user.phone || '';
-                    
-                    // Load tasks
-                    if (user.tasks) {
-                        displayTasks(user.tasks);
-                    }
-                    
-                    // Load maintenance
-                    if (user.maintenance) {
-                        displayMaintenance(user.maintenance);
-                    }
-                    
-                    // Load emergency contacts
-                    if (user.emergencyContacts) {
-                        displayEmergencyContacts(user.emergencyContacts);
-                    }
-                    
-                    // Load service records
-                    if (user.serviceRecords) {
-                        displayServiceRecords(user.serviceRecords);
-                    }
-                }
-            } catch (error) {
-                console.error('Error loading user data:', error);
-            }
-        }
-
-        // Save home details
-        async function saveHomeDetails() {
-            const homeDetails = {
-                address: document.getElementById('homeAddress').value,
-                type: document.getElementById('homeType').value,
-                size: document.getElementById('homeSize').value,
-                year: document.getElementById('homeYear').value
-            };
-
-            try {
-                await nestMateAuth.updateUserRecord(currentUser.userId, { homeDetails });
-                showAlert('Home details saved successfully!', 'success');
-            } catch (error) {
-                console.error('Error saving home details:', error);
-                showAlert('Error saving home details', 'error');
-            }
-        }
-
-        // Add task
-        async function addTask() {
-            const task = {
-                id: Date.now().toString(),
-                title: document.getElementById('taskTitle').value,
-                description: document.getElementById('taskDescription').value,
-                priority: document.getElementById('taskPriority').value,
-                dueDate: document.getElementById('taskDueDate').value,
-                status: 'pending',
-                createdAt: new Date().toISOString()
-            };
-
-            try {
-                const userRecord = await nestMateAuth.getUserRecord(currentUser.userId);
-                const tasks = userRecord.user.tasks || [];
-                tasks.push(task);
-                
-                await nestMateAuth.updateUserRecord(currentUser.userId, { tasks });
-                
-                // Clear form
-                document.getElementById('taskTitle').value = '';
-                document.getElementById('taskDescription').value = '';
-                document.getElementById('taskPriority').value = 'low';
-                document.getElementById('taskDueDate').value = '';
-                
-                displayTasks(tasks);
-                showAlert('Task added successfully!', 'success');
-            } catch (error) {
-                console.error('Error adding task:', error);
-                showAlert('Error adding task', 'error');
-            }
-        }
-
-        // Display tasks
-        function displayTasks(tasks) {
-            const tasksList = document.getElementById('tasksList');
-            if (!tasks || tasks.length === 0) {
-                tasksList.innerHTML = '<p>No tasks yet. Add your first task above!</p>';
-                return;
-            }
-
-            tasksList.innerHTML = tasks.map(task => `
-                <div class="list-item">
-                    <h4>${task.title}</h4>
-                    <p>${task.description}</p>
-                    <p><strong>Priority:</strong> ${task.priority} | <strong>Due:</strong> ${task.dueDate}</p>
-                    <button class="btn btn-secondary" onclick="completeTask('${task.id}')">Complete</button>
-                    <button class="btn btn-danger" onclick="deleteTask('${task.id}')">Delete</button>
-                </div>
-            `).join('');
-        }
-
-        // Complete task
-        async function completeTask(taskId) {
-            try {
-                const userRecord = await nestMateAuth.getUserRecord(currentUser.userId);
-                const tasks = userRecord.user.tasks || [];
-                const taskIndex = tasks.findIndex(task => task.id === taskId);
-                
-                if (taskIndex !== -1) {
-                    tasks[taskIndex].status = 'completed';
-                    tasks[taskIndex].completedAt = new Date().toISOString();
-                    
-                    await nestMateAuth.updateUserRecord(currentUser.userId, { tasks });
-                    displayTasks(tasks);
-                    showAlert('Task completed!', 'success');
-                }
-            } catch (error) {
-                console.error('Error completing task:', error);
-                showAlert('Error completing task', 'error');
-            }
-        }
-
-        // Delete task
-        async function deleteTask(taskId) {
-            if (confirm('Are you sure you want to delete this task?')) {
-                try {
-                    const userRecord = await nestMateAuth.getUserRecord(currentUser.userId);
-                    const tasks = userRecord.user.tasks || [];
-                    const filteredTasks = tasks.filter(task => task.id !== taskId);
-                    
-                    await nestMateAuth.updateUserRecord(currentUser.userId, { tasks: filteredTasks });
-                    displayTasks(filteredTasks);
-                    showAlert('Task deleted!', 'success');
-                } catch (error) {
-                    console.error('Error deleting task:', error);
-                    showAlert('Error deleting task', 'error');
-                }
-            }
-        }
-
-        // Schedule maintenance
-        async function scheduleMaintenance() {
-            const maintenance = {
-                id: Date.now().toString(),
-                type: document.getElementById('maintenanceType').value,
-                description: document.getElementById('maintenanceDescription').value,
-                scheduledDate: document.getElementById('maintenanceDate').value,
-                status: 'scheduled',
-                createdAt: new Date().toISOString()
-            };
-
-            try {
-                const userRecord = await nestMateAuth.getUserRecord(currentUser.userId);
-                const maintenanceList = userRecord.user.maintenance || [];
-                maintenanceList.push(maintenance);
-                
-                await nestMateAuth.updateUserRecord(currentUser.userId, { maintenance: maintenanceList });
-                
-                // Clear form
-                document.getElementById('maintenanceType').value = '';
-                document.getElementById('maintenanceDescription').value = '';
-                document.getElementById('maintenanceDate').value = '';
-                
-                displayMaintenance(maintenanceList);
-                showAlert('Maintenance scheduled successfully!', 'success');
-            } catch (error) {
-                console.error('Error scheduling maintenance:', error);
-                showAlert('Error scheduling maintenance', 'error');
-            }
-        }
-
-        // Display maintenance
-        function displayMaintenance(maintenanceList) {
-            const maintenanceListEl = document.getElementById('maintenanceList');
-            if (!maintenanceList || maintenanceList.length === 0) {
-                maintenanceListEl.innerHTML = '<p>No maintenance scheduled yet. Schedule your first maintenance above!</p>';
-                return;
-            }
-
-            maintenanceListEl.innerHTML = maintenanceList.map(item => `
-                <div class="list-item">
-                    <h4>${item.type}</h4>
-                    <p>${item.description}</p>
-                    <p><strong>Scheduled:</strong> ${item.scheduledDate}</p>
-                    <button class="btn btn-secondary" onclick="completeMaintenance('${item.id}')">Complete</button>
-                    <button class="btn btn-danger" onclick="deleteMaintenance('${item.id}')">Delete</button>
-                </div>
-            `).join('');
-        }
-
-        // Complete maintenance
-        async function completeMaintenance(maintenanceId) {
-            try {
-                const userRecord = await nestMateAuth.getUserRecord(currentUser.userId);
-                const maintenanceList = userRecord.user.maintenance || [];
-                const maintenanceIndex = maintenanceList.findIndex(item => item.id === maintenanceId);
-                
-                if (maintenanceIndex !== -1) {
-                    maintenanceList[maintenanceIndex].status = 'completed';
-                    maintenanceList[maintenanceIndex].completedAt = new Date().toISOString();
-                    
-                    await nestMateAuth.updateUserRecord(currentUser.userId, { maintenance: maintenanceList });
-                    displayMaintenance(maintenanceList);
-                    showAlert('Maintenance completed!', 'success');
-                }
-            } catch (error) {
-                console.error('Error completing maintenance:', error);
-                showAlert('Error completing maintenance', 'error');
-            }
-        }
-
-        // Delete maintenance
-        async function deleteMaintenance(maintenanceId) {
-            if (confirm('Are you sure you want to delete this maintenance item?')) {
-                try {
-                    const userRecord = await nestMateAuth.getUserRecord(currentUser.userId);
-                    const maintenanceList = userRecord.user.maintenance || [];
-                    const filteredMaintenance = maintenanceList.filter(item => item.id !== maintenanceId);
-                    
-                    await nestMateAuth.updateUserRecord(currentUser.userId, { maintenance: filteredMaintenance });
-                    displayMaintenance(filteredMaintenance);
-                    showAlert('Maintenance deleted!', 'success');
-                } catch (error) {
-                    console.error('Error deleting maintenance:', error);
-                    showAlert('Error deleting maintenance', 'error');
-                }
-            }
-        }
-
-        // Add emergency contact
-        async function addEmergencyContact() {
-            const contact = {
-                id: Date.now().toString(),
-                name: document.getElementById('contactName').value,
-                phone: document.getElementById('contactPhone').value,
-                type: document.getElementById('contactType').value,
-                createdAt: new Date().toISOString()
-            };
-
-            try {
-                const userRecord = await nestMateAuth.getUserRecord(currentUser.userId);
-                const contacts = userRecord.user.emergencyContacts || [];
-                contacts.push(contact);
-                
-                await nestMateAuth.updateUserRecord(currentUser.userId, { emergencyContacts: contacts });
-                
-                // Clear form
-                document.getElementById('contactName').value = '';
-                document.getElementById('contactPhone').value = '';
-                document.getElementById('contactType').value = '';
-                
-                displayEmergencyContacts(contacts);
-                showAlert('Emergency contact added successfully!', 'success');
-            } catch (error) {
-                console.error('Error adding emergency contact:', error);
-                showAlert('Error adding emergency contact', 'error');
-            }
-        }
-
-        // Display emergency contacts
-        function displayEmergencyContacts(contacts) {
-            const contactsList = document.getElementById('contactsList');
-            if (!contacts || contacts.length === 0) {
-                contactsList.innerHTML = '<p>No emergency contacts yet. Add your first contact above!</p>';
-                return;
-            }
-
-            contactsList.innerHTML = contacts.map(contact => `
-                <div class="list-item">
-                    <h4>${contact.name}</h4>
-                    <p><strong>Phone:</strong> ${contact.phone}</p>
-                    <p><strong>Type:</strong> ${contact.type}</p>
-                    <button class="btn btn-danger" onclick="deleteEmergencyContact('${contact.id}')">Delete</button>
-                </div>
-            `).join('');
-        }
-
-        // Delete emergency contact
-        async function deleteEmergencyContact(contactId) {
-            if (confirm('Are you sure you want to delete this emergency contact?')) {
-                try {
-                    const userRecord = await nestMateAuth.getUserRecord(currentUser.userId);
-                    const contacts = userRecord.user.emergencyContacts || [];
-                    const filteredContacts = contacts.filter(contact => contact.id !== contactId);
-                    
-                    await nestMateAuth.updateUserRecord(currentUser.userId, { emergencyContacts: filteredContacts });
-                    displayEmergencyContacts(filteredContacts);
-                    showAlert('Emergency contact deleted!', 'success');
-                } catch (error) {
-                    console.error('Error deleting emergency contact:', error);
-                    showAlert('Error deleting emergency contact', 'error');
-                }
-            }
-        }
-
-        // Add service record
-        async function addServiceRecord() {
-            const serviceRecord = {
-                id: Date.now().toString(),
-                provider: document.getElementById('serviceProvider').value,
-                type: document.getElementById('serviceType').value,
-                date: document.getElementById('serviceDate').value,
-                cost: document.getElementById('serviceCost').value,
-                notes: document.getElementById('serviceNotes').value,
-                createdAt: new Date().toISOString()
-            };
-
-            try {
-                const userRecord = await nestMateAuth.getUserRecord(currentUser.userId);
-                const serviceRecords = userRecord.user.serviceRecords || [];
-                serviceRecords.push(serviceRecord);
-                
-                await nestMateAuth.updateUserRecord(currentUser.userId, { serviceRecords });
-                
-                // Clear form
-                document.getElementById('serviceProvider').value = '';
-                document.getElementById('serviceType').value = '';
-                document.getElementById('serviceDate').value = '';
-                document.getElementById('serviceCost').value = '';
-                document.getElementById('serviceNotes').value = '';
-                
-                displayServiceRecords(serviceRecords);
-                showAlert('Service record added successfully!', 'success');
-            } catch (error) {
-                console.error('Error adding service record:', error);
-                showAlert('Error adding service record', 'error');
-            }
-        }
-
-        // Display service records
-        function displayServiceRecords(serviceRecords) {
-            const serviceRecordsList = document.getElementById('serviceRecordsList');
-            if (!serviceRecords || serviceRecords.length === 0) {
-                serviceRecordsList.innerHTML = '<p>No service records yet. Add your first record above!</p>';
-                return;
-            }
-
-            serviceRecordsList.innerHTML = serviceRecords.map(record => `
-                <div class="list-item">
-                    <h4>${record.provider}</h4>
-                    <p><strong>Type:</strong> ${record.type}</p>
-                    <p><strong>Date:</strong> ${record.date}</p>
-                    <p><strong>Cost:</strong> $${record.cost}</p>
-                    <p><strong>Notes:</strong> ${record.notes}</p>
-                    <button class="btn btn-danger" onclick="deleteServiceRecord('${record.id}')">Delete</button>
-                </div>
-            `).join('');
-        }
-
-        // Delete service record
-        async function deleteServiceRecord(recordId) {
-            if (confirm('Are you sure you want to delete this service record?')) {
-                try {
-                    const userRecord = await nestMateAuth.getUserRecord(currentUser.userId);
-                    const serviceRecords = userRecord.user.serviceRecords || [];
-                    const filteredRecords = serviceRecords.filter(record => record.id !== recordId);
-                    
-                    await nestMateAuth.updateUserRecord(currentUser.userId, { serviceRecords: filteredRecords });
-                    displayServiceRecords(filteredRecords);
-                    showAlert('Service record deleted!', 'success');
-                } catch (error) {
-                    console.error('Error deleting service record:', error);
-                    showAlert('Error deleting service record', 'error');
-                }
-            }
-        }
-
-        // Update profile
-        async function updateProfile() {
-            const profileData = {
-                name: document.getElementById('profileName').value,
-                email: document.getElementById('profileEmail').value,
-                phone: document.getElementById('profilePhone').value
-            };
-
-            try {
-                await nestMateAuth.updateUserRecord(currentUser.userId, profileData);
-                showAlert('Profile updated successfully!', 'success');
-            } catch (error) {
-                console.error('Error updating profile:', error);
-                showAlert('Error updating profile', 'error');
-            }
-        }
-
-        // Change password
-        async function changePassword() {
-            const currentPassword = document.getElementById('currentPassword').value;
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-
-            if (newPassword !== confirmPassword) {
-                showAlert('New passwords do not match', 'error');
-                return;
-            }
-
-            try {
-                // This would need to be implemented in auth-aws.js
-                showAlert('Password change functionality needs to be implemented', 'info');
-            } catch (error) {
-                console.error('Error changing password:', error);
-                showAlert('Error changing password', 'error');
-            }
-        }
-
-        // Show alert
-        function showAlert(message, type) {
-            const alertDiv = document.createElement('div');
-            alertDiv.className = `alert alert-${type}`;
-            alertDiv.textContent = message;
-            
-            const contentHeader = document.querySelector('.content-header');
-            contentHeader.insertAdjacentElement('afterend', alertDiv);
-            
-            setTimeout(() => {
-                alertDiv.remove();
-            }, 5000);
-        }
-
         // Make functions globally accessible
-        window.showSection = showSection;
         window.signOut = signOut;
-        window.saveHomeDetails = saveHomeDetails;
-        window.addTask = addTask;
-        window.completeTask = completeTask;
-        window.deleteTask = deleteTask;
-        window.scheduleMaintenance = scheduleMaintenance;
-        window.completeMaintenance = completeMaintenance;
-        window.deleteMaintenance = deleteMaintenance;
-        window.addEmergencyContact = addEmergencyContact;
-        window.deleteEmergencyContact = deleteEmergencyContact;
-        window.addServiceRecord = addServiceRecord;
-        window.deleteServiceRecord = deleteServiceRecord;
-        window.updateProfile = updateProfile;
-        window.changePassword = changePassword;
+        window.openTasksCalendar = openTasksCalendar;
+        window.openProducts = openProducts;
+        window.openEmergency = openEmergency;
+        window.addService = addService;
+        window.viewRecords = viewRecords;
+        window.openHomeDetails = openHomeDetails;
+        window.exportData = exportData;
+        window.openChatbot = openChatbot;
     </script>
 </body>
 </html>
