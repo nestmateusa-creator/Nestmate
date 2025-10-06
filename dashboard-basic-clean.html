@@ -543,6 +543,66 @@
             display: block;
         }
 
+        /* Polished edit panel styling (applies to all sections) */
+        .card {
+            position: relative;
+        }
+        .content-section [id$='Form'] {
+            /* hidden by default; visibility toggled via JS */
+            margin-top: 1rem;
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            background: rgba(148, 163, 184, 0.08);
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(4px);
+        }
+        .content-section .form-group {
+            margin-bottom: 0.9rem;
+        }
+        .content-section .form-group label {
+            display: block;
+            margin-bottom: 0.35rem;
+            font-weight: 600;
+            color: #d1d5db;
+        }
+        .content-section .form-group input,
+        .content-section .form-group select,
+        .content-section .form-group textarea {
+            width: 100%;
+            padding: 0.65rem 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid #475569;
+            background: #1f2937;
+            color: #e5e7eb;
+            outline: none;
+            transition: border-color 140ms ease, box-shadow 140ms ease;
+        }
+        .content-section .form-group input::placeholder,
+        .content-section .form-group textarea::placeholder {
+            color: #94a3b8;
+        }
+        .content-section .form-group input:focus,
+        .content-section .form-group select:focus,
+        .content-section .form-group textarea:focus {
+            border-color: #22d3ee;
+            box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.18);
+        }
+        .content-section [id$='Form'] {
+            display: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1rem 1.25rem;
+        }
+        .content-section [id$='Form'] > div[style*='display: flex'] {
+            grid-column: 1 / -1;
+            margin-top: 0.25rem;
+        }
+        .card.editing {
+            border: 1px solid rgba(34, 211, 238, 0.35);
+            box-shadow: 0 8px 32px rgba(34, 211, 238, 0.12);
+        }
+
         .section-title {
             font-size: 2rem;
             font-weight: 700;
@@ -1454,9 +1514,9 @@
                 </h2>
                 
                 <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <div class="edit-panel-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                         <h3>Exterior Information</h3>
-                        <button class="btn" onclick="editExterior()">
+                        <button class="btn" onclick="editExterior(); this.closest('.card').classList.add('editing');">
                             <i class="fas fa-edit"></i> Edit
                         </button>
                     </div>
@@ -1535,10 +1595,10 @@
                             </select>
                         </div>
                         <div style="display: flex; gap: 1rem;">
-                            <button class="btn" onclick="saveExterior()">
+                            <button class="btn" onclick="saveExterior(); this.closest('.card').classList.remove('editing');">
                                 <i class="fas fa-save"></i> Save
                             </button>
-                            <button class="btn btn-secondary" onclick="cancelEditExterior()">
+                            <button class="btn btn-secondary" onclick="cancelEditExterior(); this.closest('.card').classList.remove('editing');">
                                 <i class="fas fa-times"></i> Cancel
                             </button>
                         </div>
@@ -1553,9 +1613,9 @@
                 </h2>
                 
                 <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <div class="edit-panel-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                         <h3>Appliance Information</h3>
-                        <button class="btn" onclick="editAppliances()">
+                        <button class="btn" onclick="editAppliances(); this.closest('.card').classList.add('editing');">
                             <i class="fas fa-edit"></i> Edit
                         </button>
                     </div>
@@ -1595,10 +1655,10 @@
                             <input type="date" id="applianceService">
                         </div>
                         <div style="display: flex; gap: 1rem;">
-                            <button class="btn" onclick="saveAppliances()">
+                            <button class="btn" onclick="saveAppliances(); this.closest('.card').classList.remove('editing');">
                                 <i class="fas fa-save"></i> Save
                             </button>
-                            <button class="btn btn-secondary" onclick="cancelEditAppliances()">
+                            <button class="btn btn-secondary" onclick="cancelEditAppliances(); this.closest('.card').classList.remove('editing');">
                                 <i class="fas fa-times"></i> Cancel
                             </button>
                         </div>
@@ -1612,9 +1672,9 @@
                     <i class="fas fa-heart"></i> Favorites
                 </h2>
                 <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <div class="edit-panel-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                         <h3>Favorite Items</h3>
-                        <button class="btn" onclick="editFavorites()">
+                        <button class="btn" onclick="editFavorites(); this.closest('.card').classList.add('editing');">
                             <i class="fas fa-edit"></i> Edit
                         </button>
                     </div>
@@ -1632,8 +1692,8 @@
                             <button class="btn btn-secondary" onclick="clearFavorites()"><i class="fas fa-trash"></i> Clear All</button>
                         </div>
                         <div style="display:flex; gap: 1rem;">
-                            <button class="btn" onclick="saveFavorites()"><i class="fas fa-save"></i> Save</button>
-                            <button class="btn btn-secondary" onclick="cancelEditFavorites()"><i class="fas fa-times"></i> Cancel</button>
+                            <button class="btn" onclick="saveFavorites(); this.closest('.card').classList.remove('editing');"><i class="fas fa-save"></i> Save</button>
+                            <button class="btn btn-secondary" onclick="cancelEditFavorites(); this.closest('.card').classList.remove('editing');"><i class="fas fa-times"></i> Cancel</button>
                         </div>
                     </div>
                 </div>
@@ -1645,9 +1705,9 @@
                     <i class="fas fa-camera"></i> Photos
                 </h2>
                 <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <div class="edit-panel-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                         <h3>Home Photos</h3>
-                        <button class="btn" onclick="editPhotos()">
+                        <button class="btn" onclick="editPhotos(); this.closest('.card').classList.add('editing');">
                             <i class="fas fa-edit"></i> Edit
                         </button>
                     </div>
@@ -1665,8 +1725,8 @@
                             <button class="btn btn-secondary" onclick="clearPhotos()"><i class="fas fa-trash"></i> Clear All</button>
                         </div>
                         <div style="display:flex; gap: 1rem;">
-                            <button class="btn" onclick="savePhotos()"><i class="fas fa-save"></i> Save</button>
-                            <button class="btn btn-secondary" onclick="cancelEditPhotos()"><i class="fas fa-times"></i> Cancel</button>
+                            <button class="btn" onclick="savePhotos(); this.closest('.card').classList.remove('editing');"><i class="fas fa-save"></i> Save</button>
+                            <button class="btn btn-secondary" onclick="cancelEditPhotos(); this.closest('.card').classList.remove('editing');"><i class="fas fa-times"></i> Cancel</button>
                         </div>
                     </div>
                 </div>
@@ -1678,9 +1738,9 @@
                     <i class="fas fa-drafting-compass"></i> Floor Plan
                 </h2>
                 <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <div class="edit-panel-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                         <h3>Floor Plan</h3>
-                        <button class="btn" onclick="editFloorplan()">
+                        <button class="btn" onclick="editFloorplan(); this.closest('.card').classList.add('editing');">
                             <i class="fas fa-edit"></i> Edit
                         </button>
                     </div>
@@ -1693,8 +1753,8 @@
                             <input type="url" id="floorplanUrl" placeholder="Paste an image or PDF URL">
                         </div>
                         <div style="display:flex; gap: 1rem;">
-                            <button class="btn" onclick="saveFloorplan()"><i class="fas fa-save"></i> Save</button>
-                            <button class="btn btn-secondary" onclick="cancelEditFloorplan()"><i class="fas fa-times"></i> Cancel</button>
+                            <button class="btn" onclick="saveFloorplan(); this.closest('.card').classList.remove('editing');"><i class="fas fa-save"></i> Save</button>
+                            <button class="btn btn-secondary" onclick="cancelEditFloorplan(); this.closest('.card').classList.remove('editing');"><i class="fas fa-times"></i> Cancel</button>
                         </div>
                     </div>
                 </div>
@@ -1706,9 +1766,9 @@
                     <i class="fas fa-phone"></i> Emergency
                 </h2>
                 <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <div class="edit-panel-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                         <h3>Emergency Contacts</h3>
-                        <button class="btn" onclick="editEmergency()">
+                        <button class="btn" onclick="editEmergency(); this.closest('.card').classList.add('editing');">
                             <i class="fas fa-edit"></i> Edit
                         </button>
                     </div>
@@ -1726,8 +1786,8 @@
                         <div class="form-group"><label for="plumber">Plumber</label><input type="text" id="plumber" placeholder="Phone"></div>
                         <div class="form-group"><label for="emergencyNotes">Notes</label><input type="text" id="emergencyNotes" placeholder="Any special notes"></div>
                         <div style="display:flex; gap: 1rem;">
-                            <button class="btn" onclick="saveEmergency()"><i class="fas fa-save"></i> Save</button>
-                            <button class="btn btn-secondary" onclick="cancelEditEmergency()"><i class="fas fa-times"></i> Cancel</button>
+                            <button class="btn" onclick="saveEmergency(); this.closest('.card').classList.remove('editing');"><i class="fas fa-save"></i> Save</button>
+                            <button class="btn btn-secondary" onclick="cancelEditEmergency(); this.closest('.card').classList.remove('editing');"><i class="fas fa-times"></i> Cancel</button>
                         </div>
                 </div>
                 </div>
