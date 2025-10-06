@@ -759,6 +759,7 @@
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('🚀 Command Center Dashboard Starting...');
+            alert('Dashboard loading...');
             
             // Check authentication
             const isAuthenticated = await nestMateAuth.isAuthenticated();
@@ -779,6 +780,7 @@
             await loadDashboardData();
             
             console.log('✅ Command Center Dashboard initialized successfully');
+            alert('Dashboard loaded! Buttons should work now.');
         });
 
         // Load dashboard data
@@ -953,14 +955,17 @@
 
         // Navigation function
         function showSection(sectionName) {
-            console.log('Showing section:', sectionName);
+            console.log('showSection called with:', sectionName);
+            alert(`showSection called: ${sectionName}`);
             
             // Remove active from all nav items
             const navItems = document.querySelectorAll('.nav-item');
             navItems.forEach(item => item.classList.remove('active'));
             
             // Add active to clicked nav item
-            event.target.classList.add('active');
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
             
             // For now, just show an alert - you can implement actual section switching later
             alert(`Opening ${sectionName} section`);
@@ -968,49 +973,52 @@
 
         // Quick Action Functions
         function openTasksCalendar() {
-            console.log('Opening Tasks & Calendar');
+            console.log('openTasksCalendar called');
+            alert('openTasksCalendar called!');
             showSection('tasks');
         }
 
         function openProducts() {
-            console.log('Opening Products');
-            alert('Products feature coming soon!');
+            console.log('openProducts called');
+            alert('openProducts called!');
         }
 
         function openEmergency() {
-            console.log('Opening Emergency Contacts');
+            console.log('openEmergency called');
+            alert('openEmergency called!');
             showSection('emergency');
         }
 
         function addService() {
-            console.log('Adding Service');
-            alert('Add Service feature coming soon!');
+            console.log('addService called');
+            alert('addService called!');
         }
 
         function viewRecords() {
-            console.log('Viewing Records');
-            alert('View Records feature coming soon!');
+            console.log('viewRecords called');
+            alert('viewRecords called!');
         }
 
         function openHomeDetails() {
-            console.log('Opening Home Details');
+            console.log('openHomeDetails called');
+            alert('openHomeDetails called!');
             showSection('basic');
         }
 
         function exportData() {
-            console.log('Exporting Data');
-            // Implement data export functionality
-            alert('Data export feature coming soon!');
+            console.log('exportData called');
+            alert('exportData called!');
         }
 
         function openChatbot() {
-            console.log('Opening Chatbot');
-            // Open chatbot modal or redirect
-            alert('Chatbot feature coming soon!');
+            console.log('openChatbot called');
+            alert('openChatbot called!');
         }
 
         // Sign out function
         function signOut() {
+            console.log('signOut called');
+            alert('signOut called!');
             if (confirm('Are you sure you want to sign out?')) {
                 nestMateAuth.signOut();
                 window.location.href = 'login-aws.html';
