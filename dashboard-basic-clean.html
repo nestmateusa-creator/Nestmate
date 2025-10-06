@@ -6,8 +6,9 @@
     <title>Basic Dashboard - NestMate</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1491.0.min.js"></script>
-    <script src="auth-aws.js"></script>
+    <!-- Temporarily disable external scripts to test -->
+    <!-- <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1491.0.min.js"></script> -->
+    <!-- <script src="auth-aws.js"></script> -->
     
     <style>
         * {
@@ -801,59 +802,52 @@
         window.openChatbot = openChatbot;
         window.signOut = signOut;
 
-        // AWS Configuration
-        AWS.config.update({
-            region: 'us-east-2',
-            accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
-            secretAccessKey: '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'
-        });
-
-        const dynamodb = new AWS.DynamoDB.DocumentClient();
-        let currentUser = null;
-
         // Initialize dashboard
-        document.addEventListener('DOMContentLoaded', async function() {
+        document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 Command Center Dashboard Starting...');
             
-            // Check authentication
-            const isAuthenticated = await nestMateAuth.isAuthenticated();
-            if (!isAuthenticated) {
-                window.location.href = 'login-aws.html';
-                return;
-            }
-
-            // Get current user
-            currentUser = nestMateAuth.currentUser;
-            if (currentUser) {
-                document.getElementById('userName').textContent = currentUser.name || 'User';
-                document.getElementById('userEmail').textContent = currentUser.email || 'user@example.com';
-                document.getElementById('userAvatar').textContent = (currentUser.name || 'U').charAt(0).toUpperCase();
-            }
-
+            // Set user info (temporarily hardcoded for testing)
+            document.getElementById('userName').textContent = 'Test User';
+            document.getElementById('userEmail').textContent = 'test@example.com';
+            document.getElementById('userAvatar').textContent = 'T';
+            
             // Load dashboard data
-            await loadDashboardData();
+            loadDashboardData();
             
             console.log('✅ Command Center Dashboard initialized successfully');
         });
 
-        // Load dashboard data
-        async function loadDashboardData() {
-            try {
-                const userRecord = await nestMateAuth.getUserRecord(currentUser.userId);
-                if (userRecord.success && userRecord.user) {
-                    const user = userRecord.user;
-                    
-                    // Calculate health score based on user data
-                    calculateHealthScore(user);
-                    
-                    // Load recent activity
-                    loadRecentActivity(user);
-                    
-                    // Load energy & savings data
-                    loadEnergySavings(user);
-                }
-            } catch (error) {
-                console.error('Error loading dashboard data:', error);
+        // Load dashboard data (simplified for testing)
+        function loadDashboardData() {
+            // Set default health score
+            document.getElementById('healthScore').textContent = '85';
+            
+            // Set default progress bars
+            updateProgressBar('Structure', 90);
+            updateProgressBar('Systems', 85);
+            updateProgressBar('Maintenance', 80);
+            
+            // Set default activity
+            const activitySection = document.querySelector('.bottom-section:first-of-type .loading');
+            if (activitySection) {
+                activitySection.innerHTML = '<p style="color: #94a3b8; text-align: center;">No recent activity</p>';
+            }
+            
+            // Set default energy data
+            const energySection = document.querySelector('.bottom-section:last-of-type .loading');
+            if (energySection) {
+                energySection.innerHTML = `
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div style="text-align: center; padding: 1rem; background: #4a5568; border-radius: 0.5rem;">
+                            <div style="color: #00d4aa; font-size: 1.5rem; font-weight: 700;">$450</div>
+                            <div style="color: #94a3b8; font-size: 0.875rem;">Saved This Year</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: #4a5568; border-radius: 0.5rem;">
+                            <div style="color: #00d4aa; font-size: 1.5rem; font-weight: 700;">3</div>
+                            <div style="color: #94a3b8; font-size: 0.875rem;">Services This Year</div>
+                        </div>
+                    </div>
+                `;
             }
         }
 
