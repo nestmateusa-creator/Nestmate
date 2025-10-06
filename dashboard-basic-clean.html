@@ -1276,11 +1276,79 @@
                 <h2 class="section-title">
                     <i class="fas fa-couch"></i> Living Areas
                 </h2>
+                
                 <div class="card">
-                    <h3>Living Space Information</h3>
-                    <p>Living Room: 16' x 14'</p>
-                    <p>Dining Room: 12' x 10'</p>
-                    <p>Family Room: 15' x 12'</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3>Living Space Information</h3>
+                        <button class="btn" onclick="editLivingAreas()">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                    </div>
+                    
+                    <div id="livingDisplay">
+                        <p><strong>Living Room:</strong> <span id="displayLivingRoom">Not set</span></p>
+                        <p><strong>Dining Room:</strong> <span id="displayDiningRoom">Not set</span></p>
+                        <p><strong>Family Room:</strong> <span id="displayFamilyRoom">Not set</span></p>
+                        <p><strong>Flooring:</strong> <span id="displayLivingFlooring">Not set</span></p>
+                        <p><strong>Ceiling Height:</strong> <span id="displayCeilingHeight">Not set</span></p>
+                        <p><strong>Fireplace:</strong> <span id="displayFireplace">Not set</span></p>
+                    </div>
+                    
+                    <div id="livingForm" style="display: none;">
+                        <div class="form-group">
+                            <label for="livingRoom">Living Room Size</label>
+                            <input type="text" id="livingRoom" placeholder="e.g., 16' x 14'">
+                        </div>
+                        <div class="form-group">
+                            <label for="diningRoom">Dining Room Size</label>
+                            <input type="text" id="diningRoom" placeholder="e.g., 12' x 10'">
+                        </div>
+                        <div class="form-group">
+                            <label for="familyRoom">Family Room Size</label>
+                            <input type="text" id="familyRoom" placeholder="e.g., 15' x 12'">
+                        </div>
+                        <div class="form-group">
+                            <label for="livingFlooring">Flooring Type</label>
+                            <select id="livingFlooring">
+                                <option value="">Select flooring type</option>
+                                <option value="hardwood">Hardwood</option>
+                                <option value="carpet">Carpet</option>
+                                <option value="tile">Tile</option>
+                                <option value="laminate">Laminate</option>
+                                <option value="vinyl">Vinyl</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="ceilingHeight">Ceiling Height</label>
+                            <select id="ceilingHeight">
+                                <option value="">Select ceiling height</option>
+                                <option value="8-ft">8 feet</option>
+                                <option value="9-ft">9 feet</option>
+                                <option value="10-ft">10 feet</option>
+                                <option value="vaulted">Vaulted</option>
+                                <option value="cathedral">Cathedral</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="fireplace">Fireplace</label>
+                            <select id="fireplace">
+                                <option value="">Select fireplace type</option>
+                                <option value="none">No fireplace</option>
+                                <option value="wood-burning">Wood Burning</option>
+                                <option value="gas">Gas</option>
+                                <option value="electric">Electric</option>
+                                <option value="pellet">Pellet</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; gap: 1rem;">
+                            <button class="btn" onclick="saveLivingAreas()">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                            <button class="btn btn-secondary" onclick="cancelEditLivingAreas()">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1289,11 +1357,93 @@
                 <h2 class="section-title">
                     <i class="fas fa-car"></i> Garage
                 </h2>
+                
                 <div class="card">
-                    <h3>Garage Information</h3>
-                    <p>Type: 2-car attached garage</p>
-                    <p>Size: 20' x 20'</p>
-                    <p>Door: Automatic opener</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3>Garage Information</h3>
+                        <button class="btn" onclick="editGarage()">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                    </div>
+                    
+                    <div id="garageDisplay">
+                        <p><strong>Type:</strong> <span id="displayGarageType">Not set</span></p>
+                        <p><strong>Size:</strong> <span id="displayGarageSize">Not set</span></p>
+                        <p><strong>Door:</strong> <span id="displayGarageDoor">Not set</span></p>
+                        <p><strong>Flooring:</strong> <span id="displayGarageFlooring">Not set</span></p>
+                        <p><strong>Storage:</strong> <span id="displayGarageStorage">Not set</span></p>
+                        <p><strong>Electrical:</strong> <span id="displayGarageElectrical">Not set</span></p>
+                    </div>
+                    
+                    <div id="garageForm" style="display: none;">
+                        <div class="form-group">
+                            <label for="garageType">Garage Type</label>
+                            <select id="garageType">
+                                <option value="">Select garage type</option>
+                                <option value="1-car-attached">1-car attached</option>
+                                <option value="2-car-attached">2-car attached</option>
+                                <option value="3-car-attached">3-car attached</option>
+                                <option value="1-car-detached">1-car detached</option>
+                                <option value="2-car-detached">2-car detached</option>
+                                <option value="carport">Carport</option>
+                                <option value="none">No garage</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="garageSize">Garage Size</label>
+                            <input type="text" id="garageSize" placeholder="e.g., 20' x 20'">
+                        </div>
+                        <div class="form-group">
+                            <label for="garageDoor">Door Type</label>
+                            <select id="garageDoor">
+                                <option value="">Select door type</option>
+                                <option value="automatic-opener">Automatic opener</option>
+                                <option value="manual">Manual</option>
+                                <option value="keypad">Keypad entry</option>
+                                <option value="smart">Smart garage door</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="garageFlooring">Flooring Type</label>
+                            <select id="garageFlooring">
+                                <option value="">Select flooring type</option>
+                                <option value="concrete">Concrete</option>
+                                <option value="epoxy">Epoxy coating</option>
+                                <option value="tile">Tile</option>
+                                <option value="rubber">Rubber mats</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="garageStorage">Storage Features</label>
+                            <select id="garageStorage">
+                                <option value="">Select storage features</option>
+                                <option value="none">No storage</option>
+                                <option value="shelving">Shelving</option>
+                                <option value="cabinets">Cabinets</option>
+                                <option value="overhead">Overhead storage</option>
+                                <option value="workbench">Workbench</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="garageElectrical">Electrical Outlets</label>
+                            <select id="garageElectrical">
+                                <option value="">Select electrical setup</option>
+                                <option value="basic">Basic outlets</option>
+                                <option value="multiple">Multiple outlets</option>
+                                <option value="220v">220V outlet</option>
+                                <option value="workshop">Workshop setup</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; gap: 1rem;">
+                            <button class="btn" onclick="saveGarage()">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                            <button class="btn btn-secondary" onclick="cancelEditGarage()">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1673,6 +1823,85 @@
         window.cancelEditKitchen = cancelEditKitchen;
         window.saveKitchen = saveKitchen;
 
+        // Living Areas CRUD Functions
+        function editLivingAreas() {
+            document.getElementById('livingDisplay').style.display = 'none';
+            document.getElementById('livingForm').style.display = 'block';
+        }
+
+        function cancelEditLivingAreas() {
+            document.getElementById('livingDisplay').style.display = 'block';
+            document.getElementById('livingForm').style.display = 'none';
+        }
+
+        function saveLivingAreas() {
+            const livingData = {
+                livingRoom: document.getElementById('livingRoom').value,
+                diningRoom: document.getElementById('diningRoom').value,
+                familyRoom: document.getElementById('familyRoom').value,
+                livingFlooring: document.getElementById('livingFlooring').value,
+                ceilingHeight: document.getElementById('ceilingHeight').value,
+                fireplace: document.getElementById('fireplace').value
+            };
+
+            // Update display
+            document.getElementById('displayLivingRoom').textContent = livingData.livingRoom || 'Not set';
+            document.getElementById('displayDiningRoom').textContent = livingData.diningRoom || 'Not set';
+            document.getElementById('displayFamilyRoom').textContent = livingData.familyRoom || 'Not set';
+            document.getElementById('displayLivingFlooring').textContent = livingData.livingFlooring || 'Not set';
+            document.getElementById('displayCeilingHeight').textContent = livingData.ceilingHeight || 'Not set';
+            document.getElementById('displayFireplace').textContent = livingData.fireplace || 'Not set';
+            
+            // Hide form
+            document.getElementById('livingDisplay').style.display = 'block';
+            document.getElementById('livingForm').style.display = 'none';
+            
+            showAlert('Living areas information saved successfully!', 'success');
+        }
+
+        // Garage CRUD Functions
+        function editGarage() {
+            document.getElementById('garageDisplay').style.display = 'none';
+            document.getElementById('garageForm').style.display = 'block';
+        }
+
+        function cancelEditGarage() {
+            document.getElementById('garageDisplay').style.display = 'block';
+            document.getElementById('garageForm').style.display = 'none';
+        }
+
+        function saveGarage() {
+            const garageData = {
+                garageType: document.getElementById('garageType').value,
+                garageSize: document.getElementById('garageSize').value,
+                garageDoor: document.getElementById('garageDoor').value,
+                garageFlooring: document.getElementById('garageFlooring').value,
+                garageStorage: document.getElementById('garageStorage').value,
+                garageElectrical: document.getElementById('garageElectrical').value
+            };
+
+            // Update display
+            document.getElementById('displayGarageType').textContent = garageData.garageType || 'Not set';
+            document.getElementById('displayGarageSize').textContent = garageData.garageSize || 'Not set';
+            document.getElementById('displayGarageDoor').textContent = garageData.garageDoor || 'Not set';
+            document.getElementById('displayGarageFlooring').textContent = garageData.garageFlooring || 'Not set';
+            document.getElementById('displayGarageStorage').textContent = garageData.garageStorage || 'Not set';
+            document.getElementById('displayGarageElectrical').textContent = garageData.garageElectrical || 'Not set';
+            
+            // Hide form
+            document.getElementById('garageDisplay').style.display = 'block';
+            document.getElementById('garageForm').style.display = 'none';
+            
+            showAlert('Garage information saved successfully!', 'success');
+        }
+
+        window.editLivingAreas = editLivingAreas;
+        window.cancelEditLivingAreas = cancelEditLivingAreas;
+        window.saveLivingAreas = saveLivingAreas;
+        window.editGarage = editGarage;
+        window.cancelEditGarage = cancelEditGarage;
+        window.saveGarage = saveGarage;
+
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 Command Center Dashboard Starting...');
@@ -1737,6 +1966,22 @@
             document.getElementById('displayKitchenCabinets').textContent = 'Oak';
             document.getElementById('displayKitchenFlooring').textContent = 'Tile';
             document.getElementById('displayKitchenRenovation').textContent = '2021-08-20';
+            
+            // Set default living areas values
+            document.getElementById('displayLivingRoom').textContent = '16\' x 14\'';
+            document.getElementById('displayDiningRoom').textContent = '12\' x 10\'';
+            document.getElementById('displayFamilyRoom').textContent = '15\' x 12\'';
+            document.getElementById('displayLivingFlooring').textContent = 'Hardwood';
+            document.getElementById('displayCeilingHeight').textContent = '9 feet';
+            document.getElementById('displayFireplace').textContent = 'Gas';
+            
+            // Set default garage values
+            document.getElementById('displayGarageType').textContent = '2-car attached';
+            document.getElementById('displayGarageSize').textContent = '20\' x 20\'';
+            document.getElementById('displayGarageDoor').textContent = 'Automatic opener';
+            document.getElementById('displayGarageFlooring').textContent = 'Concrete';
+            document.getElementById('displayGarageStorage').textContent = 'Shelving';
+            document.getElementById('displayGarageElectrical').textContent = 'Multiple outlets';
         }
 
         // Load dashboard data (simplified for testing)
