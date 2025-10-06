@@ -1612,8 +1612,30 @@
                     <i class="fas fa-heart"></i> Favorites
                 </h2>
                 <div class="card">
-                    <h3>Favorite Items</h3>
-                    <p>No favorites added yet</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3>Favorite Items</h3>
+                        <button class="btn" onclick="editFavorites()">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                    </div>
+                    <div id="favoritesDisplay">
+                        <ul id="favoritesList" style="list-style: disc; padding-left: 1.25rem; color: #cbd5e1;"></ul>
+                        <p id="favoritesEmpty" style="color:#94a3b8;">No favorites added yet</p>
+                    </div>
+                    <div id="favoritesForm" style="display:none;">
+                        <div class="form-group">
+                            <label for="favoriteItem">Add Favorite</label>
+                            <input type="text" id="favoriteItem" placeholder="e.g., Water heater manual URL or note">
+                        </div>
+                        <div style="display:flex; gap: 0.75rem; margin-bottom: 0.75rem;">
+                            <button class="btn" onclick="addFavorite()"><i class="fas fa-plus"></i> Add</button>
+                            <button class="btn btn-secondary" onclick="clearFavorites()"><i class="fas fa-trash"></i> Clear All</button>
+                        </div>
+                        <div style="display:flex; gap: 1rem;">
+                            <button class="btn" onclick="saveFavorites()"><i class="fas fa-save"></i> Save</button>
+                            <button class="btn btn-secondary" onclick="cancelEditFavorites()"><i class="fas fa-times"></i> Cancel</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1623,8 +1645,30 @@
                     <i class="fas fa-camera"></i> Photos
                 </h2>
                 <div class="card">
-                    <h3>Home Photos</h3>
-                    <p>No photos uploaded yet</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3>Home Photos</h3>
+                        <button class="btn" onclick="editPhotos()">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                    </div>
+                    <div id="photosDisplay">
+                        <div id="photosGrid" style="display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 0.75rem;"></div>
+                        <p id="photosEmpty" style="color:#94a3b8;">No photos uploaded yet</p>
+                    </div>
+                    <div id="photosForm" style="display:none;">
+                        <div class="form-group">
+                            <label for="photoUrl">Photo URL</label>
+                            <input type="url" id="photoUrl" placeholder="Paste an image URL">
+                        </div>
+                        <div style="display:flex; gap: 0.75rem; margin-bottom: 0.75rem;">
+                            <button class="btn" onclick="addPhoto()"><i class="fas fa-plus"></i> Add</button>
+                            <button class="btn btn-secondary" onclick="clearPhotos()"><i class="fas fa-trash"></i> Clear All</button>
+                        </div>
+                        <div style="display:flex; gap: 1rem;">
+                            <button class="btn" onclick="savePhotos()"><i class="fas fa-save"></i> Save</button>
+                            <button class="btn btn-secondary" onclick="cancelEditPhotos()"><i class="fas fa-times"></i> Cancel</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1634,8 +1678,25 @@
                     <i class="fas fa-drafting-compass"></i> Floor Plan
                 </h2>
                 <div class="card">
-                    <h3>Floor Plan</h3>
-                    <p>Floor plan not available</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3>Floor Plan</h3>
+                        <button class="btn" onclick="editFloorplan()">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                    </div>
+                    <div id="floorplanDisplay">
+                        <div id="floorplanPreview" style="width:100%; aspect-ratio: 16/9; background:#334155; border:1px dashed #475569; border-radius: 0.5rem; display:flex; align-items:center; justify-content:center; color:#94a3b8;">Floor plan not available</div>
+                    </div>
+                    <div id="floorplanForm" style="display:none;">
+                        <div class="form-group">
+                            <label for="floorplanUrl">Floor Plan URL</label>
+                            <input type="url" id="floorplanUrl" placeholder="Paste an image or PDF URL">
+                        </div>
+                        <div style="display:flex; gap: 1rem;">
+                            <button class="btn" onclick="saveFloorplan()"><i class="fas fa-save"></i> Save</button>
+                            <button class="btn btn-secondary" onclick="cancelEditFloorplan()"><i class="fas fa-times"></i> Cancel</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1645,11 +1706,30 @@
                     <i class="fas fa-phone"></i> Emergency
                 </h2>
                 <div class="card">
-                    <h3>Emergency Contacts</h3>
-                    <p>Police: 911</p>
-                    <p>Fire Department: 911</p>
-                    <p>Emergency Electrician: (555) 123-4567</p>
-                    <p>Emergency Plumber: (555) 987-6543</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3>Emergency Contacts</h3>
+                        <button class="btn" onclick="editEmergency()">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                    </div>
+                    <div id="emergencyDisplay">
+                        <p><strong>Police:</strong> <span id="displayPolice">911</span></p>
+                        <p><strong>Fire Department:</strong> <span id="displayFire">911</span></p>
+                        <p><strong>Electrician:</strong> <span id="displayElectrician">(555) 123-4567</span></p>
+                        <p><strong>Plumber:</strong> <span id="displayPlumber">(555) 987-6543</span></p>
+                        <p><strong>Emergency Notes:</strong> <span id="displayEmergencyNotes">None</span></p>
+                    </div>
+                    <div id="emergencyForm" style="display:none;">
+                        <div class="form-group"><label for="police">Police</label><input type="text" id="police" placeholder="e.g., 911"></div>
+                        <div class="form-group"><label for="fire">Fire Department</label><input type="text" id="fire" placeholder="e.g., 911"></div>
+                        <div class="form-group"><label for="electrician">Electrician</label><input type="text" id="electrician" placeholder="Phone"></div>
+                        <div class="form-group"><label for="plumber">Plumber</label><input type="text" id="plumber" placeholder="Phone"></div>
+                        <div class="form-group"><label for="emergencyNotes">Notes</label><input type="text" id="emergencyNotes" placeholder="Any special notes"></div>
+                        <div style="display:flex; gap: 1rem;">
+                            <button class="btn" onclick="saveEmergency()"><i class="fas fa-save"></i> Save</button>
+                            <button class="btn btn-secondary" onclick="cancelEditEmergency()"><i class="fas fa-times"></i> Cancel</button>
+                        </div>
+                </div>
                 </div>
             </div>
         </div>
@@ -2111,6 +2191,139 @@
         window.editAppliances = editAppliances;
         window.cancelEditAppliances = cancelEditAppliances;
         window.saveAppliances = saveAppliances;
+
+        // Favorites CRUD Functions
+        function editFavorites() {
+            document.getElementById('favoritesDisplay').style.display = 'none';
+            document.getElementById('favoritesForm').style.display = 'block';
+        }
+
+        function cancelEditFavorites() {
+            document.getElementById('favoritesDisplay').style.display = 'block';
+            document.getElementById('favoritesForm').style.display = 'none';
+        }
+
+        function addFavorite() {
+            const input = document.getElementById('favoriteItem');
+            const value = (input.value || '').trim();
+            if (!value) return;
+            const list = document.getElementById('favoritesList');
+            const li = document.createElement('li');
+            li.textContent = value;
+            list.appendChild(li);
+            input.value = '';
+            document.getElementById('favoritesEmpty').style.display = 'none';
+        }
+
+        function clearFavorites() {
+            const list = document.getElementById('favoritesList');
+            list.innerHTML = '';
+            document.getElementById('favoritesEmpty').style.display = '';
+        }
+
+        function saveFavorites() {
+            // Nothing persisted yet; just close form
+            document.getElementById('favoritesDisplay').style.display = 'block';
+            document.getElementById('favoritesForm').style.display = 'none';
+            showAlert('Favorites saved!', 'success');
+        }
+
+        // Photos CRUD Functions
+        function editPhotos() {
+            document.getElementById('photosDisplay').style.display = 'none';
+            document.getElementById('photosForm').style.display = 'block';
+        }
+
+        function cancelEditPhotos() {
+            document.getElementById('photosDisplay').style.display = 'block';
+            document.getElementById('photosForm').style.display = 'none';
+        }
+
+        function addPhoto() {
+            const input = document.getElementById('photoUrl');
+            const url = (input.value || '').trim();
+            if (!url) return;
+            const grid = document.getElementById('photosGrid');
+            const img = document.createElement('img');
+            img.src = url;
+            img.alt = 'Home Photo';
+            img.style.width = '100%';
+            img.style.height = '120px';
+            img.style.objectFit = 'cover';
+            img.style.borderRadius = '0.375rem';
+            grid.appendChild(img);
+            input.value = '';
+            document.getElementById('photosEmpty').style.display = 'none';
+        }
+
+        function clearPhotos() {
+            const grid = document.getElementById('photosGrid');
+            grid.innerHTML = '';
+            document.getElementById('photosEmpty').style.display = '';
+        }
+
+        function savePhotos() {
+            document.getElementById('photosDisplay').style.display = 'block';
+            document.getElementById('photosForm').style.display = 'none';
+            showAlert('Photos saved!', 'success');
+        }
+
+        // Floorplan CRUD Functions
+        function editFloorplan() {
+            document.getElementById('floorplanDisplay').style.display = 'none';
+            document.getElementById('floorplanForm').style.display = 'block';
+        }
+
+        function cancelEditFloorplan() {
+            document.getElementById('floorplanDisplay').style.display = 'block';
+            document.getElementById('floorplanForm').style.display = 'none';
+        }
+
+        function saveFloorplan() {
+            const url = (document.getElementById('floorplanUrl').value || '').trim();
+            const preview = document.getElementById('floorplanPreview');
+            if (url) {
+                if (url.match(/\.(png|jpg|jpeg|gif|webp)$/i)) {
+                    preview.innerHTML = '';
+                    const img = document.createElement('img');
+                    img.src = url;
+                    img.alt = 'Floor Plan';
+                    img.style.maxWidth = '100%';
+                    img.style.maxHeight = '100%';
+                    img.style.objectFit = 'contain';
+                    preview.appendChild(img);
+                } else {
+                    preview.innerHTML = `<a href="${url}" target="_blank" style="color:#93c5fd;">Open Floor Plan</a>`;
+                }
+            } else {
+                preview.textContent = 'Floor plan not available';
+            }
+            document.getElementById('floorplanDisplay').style.display = 'block';
+            document.getElementById('floorplanForm').style.display = 'none';
+            showAlert('Floor plan saved!', 'success');
+        }
+
+        // Emergency CRUD Functions
+        function editEmergency() {
+            document.getElementById('emergencyDisplay').style.display = 'none';
+            document.getElementById('emergencyForm').style.display = 'block';
+        }
+
+        function cancelEditEmergency() {
+            document.getElementById('emergencyDisplay').style.display = 'block';
+            document.getElementById('emergencyForm').style.display = 'none';
+        }
+
+        function saveEmergency() {
+            document.getElementById('displayPolice').textContent = document.getElementById('police').value || '911';
+            document.getElementById('displayFire').textContent = document.getElementById('fire').value || '911';
+            document.getElementById('displayElectrician').textContent = document.getElementById('electrician').value || '(555) 123-4567';
+            document.getElementById('displayPlumber').textContent = document.getElementById('plumber').value || '(555) 987-6543';
+            document.getElementById('displayEmergencyNotes').textContent = document.getElementById('emergencyNotes').value || 'None';
+            document.getElementById('emergencyDisplay').style.display = 'block';
+            document.getElementById('emergencyForm').style.display = 'none';
+            showAlert('Emergency contacts saved!', 'success');
+        }
 
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', function() {
