@@ -837,12 +837,90 @@
                 <h2 class="section-title">
                     <i class="fas fa-building"></i> Structure
                 </h2>
+                
                 <div class="card">
-                    <h3>Structural Information</h3>
-                    <p>Foundation: Concrete slab</p>
-                    <p>Roof Type: Asphalt shingles</p>
-                    <p>Exterior: Vinyl siding</p>
-                    <p>Windows: Double-pane vinyl</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3>Structural Information</h3>
+                        <button class="btn" onclick="editStructure()">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                    </div>
+                    
+                    <div id="structureDisplay">
+                        <p><strong>Foundation:</strong> <span id="displayFoundation">Not set</span></p>
+                        <p><strong>Roof Type:</strong> <span id="displayRoofType">Not set</span></p>
+                        <p><strong>Exterior:</strong> <span id="displayExterior">Not set</span></p>
+                        <p><strong>Windows:</strong> <span id="displayWindows">Not set</span></p>
+                        <p><strong>Insulation:</strong> <span id="displayInsulation">Not set</span></p>
+                        <p><strong>Last Inspection:</strong> <span id="displayLastInspection">Not set</span></p>
+                    </div>
+                    
+                    <div id="structureForm" style="display: none;">
+                        <div class="form-group">
+                            <label for="foundation">Foundation Type</label>
+                            <select id="foundation">
+                                <option value="">Select foundation type</option>
+                                <option value="concrete-slab">Concrete Slab</option>
+                                <option value="crawl-space">Crawl Space</option>
+                                <option value="basement">Basement</option>
+                                <option value="pier-beam">Pier & Beam</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="roofType">Roof Type</label>
+                            <select id="roofType">
+                                <option value="">Select roof type</option>
+                                <option value="asphalt-shingles">Asphalt Shingles</option>
+                                <option value="metal">Metal</option>
+                                <option value="tile">Tile</option>
+                                <option value="slate">Slate</option>
+                                <option value="flat">Flat</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="exterior">Exterior Material</label>
+                            <select id="exterior">
+                                <option value="">Select exterior material</option>
+                                <option value="vinyl-siding">Vinyl Siding</option>
+                                <option value="brick">Brick</option>
+                                <option value="wood-siding">Wood Siding</option>
+                                <option value="stucco">Stucco</option>
+                                <option value="stone">Stone</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="windows">Window Type</label>
+                            <select id="windows">
+                                <option value="">Select window type</option>
+                                <option value="single-pane">Single Pane</option>
+                                <option value="double-pane">Double Pane</option>
+                                <option value="triple-pane">Triple Pane</option>
+                                <option value="energy-efficient">Energy Efficient</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="insulation">Insulation Type</label>
+                            <select id="insulation">
+                                <option value="">Select insulation type</option>
+                                <option value="fiberglass">Fiberglass</option>
+                                <option value="cellulose">Cellulose</option>
+                                <option value="spray-foam">Spray Foam</option>
+                                <option value="rigid-board">Rigid Board</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastInspection">Last Inspection Date</label>
+                            <input type="date" id="lastInspection">
+                        </div>
+                        <div style="display: flex; gap: 1rem;">
+                            <button class="btn" onclick="saveStructure()">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                            <button class="btn btn-secondary" onclick="cancelEditStructure()">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -851,12 +929,92 @@
                 <h2 class="section-title">
                     <i class="fas fa-cogs"></i> Systems
                 </h2>
+                
                 <div class="card">
-                    <h3>Home Systems</h3>
-                    <p>HVAC: Central air conditioning and heating</p>
-                    <p>Electrical: 200 amp service</p>
-                    <p>Plumbing: Copper pipes</p>
-                    <p>Water Heater: Gas, 50 gallon</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3>Home Systems</h3>
+                        <button class="btn" onclick="editSystems()">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                    </div>
+                    
+                    <div id="systemsDisplay">
+                        <p><strong>HVAC:</strong> <span id="displayHVAC">Not set</span></p>
+                        <p><strong>Electrical:</strong> <span id="displayElectrical">Not set</span></p>
+                        <p><strong>Plumbing:</strong> <span id="displayPlumbing">Not set</span></p>
+                        <p><strong>Water Heater:</strong> <span id="displayWaterHeater">Not set</span></p>
+                        <p><strong>Security System:</strong> <span id="displaySecurity">Not set</span></p>
+                        <p><strong>Last Service:</strong> <span id="displayLastService">Not set</span></p>
+                    </div>
+                    
+                    <div id="systemsForm" style="display: none;">
+                        <div class="form-group">
+                            <label for="hvac">HVAC System</label>
+                            <select id="hvac">
+                                <option value="">Select HVAC system</option>
+                                <option value="central-air-heat">Central Air & Heat</option>
+                                <option value="heat-pump">Heat Pump</option>
+                                <option value="gas-furnace">Gas Furnace</option>
+                                <option value="electric-heat">Electric Heat</option>
+                                <option value="window-units">Window Units</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="electrical">Electrical Service</label>
+                            <select id="electrical">
+                                <option value="">Select electrical service</option>
+                                <option value="100-amp">100 Amp</option>
+                                <option value="200-amp">200 Amp</option>
+                                <option value="400-amp">400 Amp</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="plumbing">Plumbing Material</label>
+                            <select id="plumbing">
+                                <option value="">Select plumbing material</option>
+                                <option value="copper">Copper</option>
+                                <option value="pvc">PVC</option>
+                                <option value="pex">PEX</option>
+                                <option value="galvanized">Galvanized Steel</option>
+                                <option value="mixed">Mixed</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="waterHeater">Water Heater</label>
+                            <select id="waterHeater">
+                                <option value="">Select water heater</option>
+                                <option value="gas-40">Gas, 40 gallon</option>
+                                <option value="gas-50">Gas, 50 gallon</option>
+                                <option value="electric-40">Electric, 40 gallon</option>
+                                <option value="electric-50">Electric, 50 gallon</option>
+                                <option value="tankless-gas">Tankless Gas</option>
+                                <option value="tankless-electric">Tankless Electric</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="security">Security System</label>
+                            <select id="security">
+                                <option value="">Select security system</option>
+                                <option value="none">None</option>
+                                <option value="basic-alarm">Basic Alarm</option>
+                                <option value="monitored">Monitored System</option>
+                                <option value="smart-home">Smart Home System</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastService">Last Service Date</label>
+                            <input type="date" id="lastService">
+                        </div>
+                        <div style="display: flex; gap: 1rem;">
+                            <button class="btn" onclick="saveSystems()">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                            <button class="btn btn-secondary" onclick="cancelEditSystems()">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1093,6 +1251,78 @@
         }
 
         // Make functions globally accessible IMMEDIATELY
+        // Structure CRUD Functions
+        function editStructure() {
+            document.getElementById('structureDisplay').style.display = 'none';
+            document.getElementById('structureForm').style.display = 'block';
+        }
+
+        function cancelEditStructure() {
+            document.getElementById('structureDisplay').style.display = 'block';
+            document.getElementById('structureForm').style.display = 'none';
+        }
+
+        function saveStructure() {
+            const structureData = {
+                foundation: document.getElementById('foundation').value,
+                roofType: document.getElementById('roofType').value,
+                exterior: document.getElementById('exterior').value,
+                windows: document.getElementById('windows').value,
+                insulation: document.getElementById('insulation').value,
+                lastInspection: document.getElementById('lastInspection').value
+            };
+
+            // Update display
+            document.getElementById('displayFoundation').textContent = structureData.foundation || 'Not set';
+            document.getElementById('displayRoofType').textContent = structureData.roofType || 'Not set';
+            document.getElementById('displayExterior').textContent = structureData.exterior || 'Not set';
+            document.getElementById('displayWindows').textContent = structureData.windows || 'Not set';
+            document.getElementById('displayInsulation').textContent = structureData.insulation || 'Not set';
+            document.getElementById('displayLastInspection').textContent = structureData.lastInspection || 'Not set';
+            
+            // Hide form
+            document.getElementById('structureDisplay').style.display = 'block';
+            document.getElementById('structureForm').style.display = 'none';
+            
+            showAlert('Structure information saved successfully!', 'success');
+        }
+
+        // Systems CRUD Functions
+        function editSystems() {
+            document.getElementById('systemsDisplay').style.display = 'none';
+            document.getElementById('systemsForm').style.display = 'block';
+        }
+
+        function cancelEditSystems() {
+            document.getElementById('systemsDisplay').style.display = 'block';
+            document.getElementById('systemsForm').style.display = 'none';
+        }
+
+        function saveSystems() {
+            const systemsData = {
+                hvac: document.getElementById('hvac').value,
+                electrical: document.getElementById('electrical').value,
+                plumbing: document.getElementById('plumbing').value,
+                waterHeater: document.getElementById('waterHeater').value,
+                security: document.getElementById('security').value,
+                lastService: document.getElementById('lastService').value
+            };
+
+            // Update display
+            document.getElementById('displayHVAC').textContent = systemsData.hvac || 'Not set';
+            document.getElementById('displayElectrical').textContent = systemsData.electrical || 'Not set';
+            document.getElementById('displayPlumbing').textContent = systemsData.plumbing || 'Not set';
+            document.getElementById('displayWaterHeater').textContent = systemsData.waterHeater || 'Not set';
+            document.getElementById('displaySecurity').textContent = systemsData.security || 'Not set';
+            document.getElementById('displayLastService').textContent = systemsData.lastService || 'Not set';
+            
+            // Hide form
+            document.getElementById('systemsDisplay').style.display = 'block';
+            document.getElementById('systemsForm').style.display = 'none';
+            
+            showAlert('Systems information saved successfully!', 'success');
+        }
+
         window.showSection = showSection;
         window.openTasksCalendar = openTasksCalendar;
         window.openProducts = openProducts;
@@ -1103,6 +1333,15 @@
         window.exportData = exportData;
         window.openChatbot = openChatbot;
         window.signOut = signOut;
+        window.editBasicInfo = editBasicInfo;
+        window.cancelEditBasicInfo = cancelEditBasicInfo;
+        window.saveBasicInfo = saveBasicInfo;
+        window.editStructure = editStructure;
+        window.cancelEditStructure = cancelEditStructure;
+        window.saveStructure = saveStructure;
+        window.editSystems = editSystems;
+        window.cancelEditSystems = cancelEditSystems;
+        window.saveSystems = saveSystems;
 
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', function() {
@@ -1128,6 +1367,22 @@
             document.getElementById('displayBedrooms').textContent = '4';
             document.getElementById('displayBathrooms').textContent = '3';
             document.getElementById('displayHomeType').textContent = 'Single Family';
+            
+            // Set default structure values
+            document.getElementById('displayFoundation').textContent = 'Concrete Slab';
+            document.getElementById('displayRoofType').textContent = 'Asphalt Shingles';
+            document.getElementById('displayExterior').textContent = 'Vinyl Siding';
+            document.getElementById('displayWindows').textContent = 'Double Pane';
+            document.getElementById('displayInsulation').textContent = 'Fiberglass';
+            document.getElementById('displayLastInspection').textContent = '2023-01-15';
+            
+            // Set default systems values
+            document.getElementById('displayHVAC').textContent = 'Central Air & Heat';
+            document.getElementById('displayElectrical').textContent = '200 Amp';
+            document.getElementById('displayPlumbing').textContent = 'Copper';
+            document.getElementById('displayWaterHeater').textContent = 'Gas, 50 gallon';
+            document.getElementById('displaySecurity').textContent = 'Basic Alarm';
+            document.getElementById('displayLastService').textContent = '2023-06-01';
         }
 
         // Load dashboard data (simplified for testing)
