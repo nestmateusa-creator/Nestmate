@@ -1452,12 +1452,97 @@
                 <h2 class="section-title">
                     <i class="fas fa-home"></i> Exterior
                 </h2>
+                
                 <div class="card">
-                    <h3>Exterior Information</h3>
-                    <p>Lot Size: 0.25 acres</p>
-                    <p>Landscaping: Mature trees and shrubs</p>
-                    <p>Driveway: Asphalt</p>
-                    <p>Patio: Concrete</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3>Exterior Information</h3>
+                        <button class="btn" onclick="editExterior()">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                    </div>
+                    
+                    <div id="exteriorDisplay">
+                        <p><strong>Lot Size:</strong> <span id="displayLotSize">Not set</span></p>
+                        <p><strong>Landscaping:</strong> <span id="displayLandscaping">Not set</span></p>
+                        <p><strong>Driveway:</strong> <span id="displayDriveway">Not set</span></p>
+                        <p><strong>Patio/Deck:</strong> <span id="displayPatio">Not set</span></p>
+                        <p><strong>Fencing:</strong> <span id="displayFencing">Not set</span></p>
+                        <p><strong>Pool:</strong> <span id="displayPool">Not set</span></p>
+                    </div>
+                    
+                    <div id="exteriorForm" style="display: none;">
+                        <div class="form-group">
+                            <label for="lotSize">Lot Size</label>
+                            <input type="text" id="lotSize" placeholder="e.g., 0.25 acres">
+                        </div>
+                        <div class="form-group">
+                            <label for="landscaping">Landscaping</label>
+                            <select id="landscaping">
+                                <option value="">Select landscaping type</option>
+                                <option value="mature-trees">Mature trees and shrubs</option>
+                                <option value="minimal">Minimal landscaping</option>
+                                <option value="desert">Desert landscaping</option>
+                                <option value="tropical">Tropical landscaping</option>
+                                <option value="formal">Formal gardens</option>
+                                <option value="native">Native plants</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="driveway">Driveway Material</label>
+                            <select id="driveway">
+                                <option value="">Select driveway material</option>
+                                <option value="asphalt">Asphalt</option>
+                                <option value="concrete">Concrete</option>
+                                <option value="gravel">Gravel</option>
+                                <option value="pavers">Pavers</option>
+                                <option value="brick">Brick</option>
+                                <option value="none">No driveway</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="patio">Patio/Deck</label>
+                            <select id="patio">
+                                <option value="">Select patio/deck type</option>
+                                <option value="none">No patio/deck</option>
+                                <option value="concrete-patio">Concrete patio</option>
+                                <option value="wood-deck">Wood deck</option>
+                                <option value="composite-deck">Composite deck</option>
+                                <option value="stone-patio">Stone patio</option>
+                                <option value="paver-patio">Paver patio</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="fencing">Fencing</label>
+                            <select id="fencing">
+                                <option value="">Select fencing type</option>
+                                <option value="none">No fencing</option>
+                                <option value="wood">Wood fence</option>
+                                <option value="vinyl">Vinyl fence</option>
+                                <option value="chain-link">Chain link</option>
+                                <option value="wrought-iron">Wrought iron</option>
+                                <option value="privacy">Privacy fence</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="pool">Pool</label>
+                            <select id="pool">
+                                <option value="">Select pool type</option>
+                                <option value="none">No pool</option>
+                                <option value="in-ground">In-ground pool</option>
+                                <option value="above-ground">Above-ground pool</option>
+                                <option value="hot-tub">Hot tub/spa</option>
+                                <option value="swim-spa">Swim spa</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; gap: 1rem;">
+                            <button class="btn" onclick="saveExterior()">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                            <button class="btn btn-secondary" onclick="cancelEditExterior()">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1466,12 +1551,58 @@
                 <h2 class="section-title">
                     <i class="fas fa-tv"></i> Appliances
                 </h2>
+                
                 <div class="card">
-                    <h3>Appliance Information</h3>
-                    <p>Refrigerator: Samsung, 2020</p>
-                    <p>Dishwasher: Bosch, 2019</p>
-                    <p>Washer/Dryer: LG, 2021</p>
-                    <p>Stove: GE, 2020</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3>Appliance Information</h3>
+                        <button class="btn" onclick="editAppliances()">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                    </div>
+                    
+                    <div id="appliancesDisplay">
+                        <p><strong>Refrigerator:</strong> <span id="displayRefrigerator">Not set</span></p>
+                        <p><strong>Dishwasher:</strong> <span id="displayDishwasher">Not set</span></p>
+                        <p><strong>Washer/Dryer:</strong> <span id="displayWasherDryer">Not set</span></p>
+                        <p><strong>Stove/Oven:</strong> <span id="displayStove">Not set</span></p>
+                        <p><strong>Microwave:</strong> <span id="displayMicrowave">Not set</span></p>
+                        <p><strong>Last Service:</strong> <span id="displayApplianceService">Not set</span></p>
+                    </div>
+                    
+                    <div id="appliancesForm" style="display: none;">
+                        <div class="form-group">
+                            <label for="refrigerator">Refrigerator</label>
+                            <input type="text" id="refrigerator" placeholder="e.g., Samsung, 2020">
+                        </div>
+                        <div class="form-group">
+                            <label for="dishwasher">Dishwasher</label>
+                            <input type="text" id="dishwasher" placeholder="e.g., Bosch, 2019">
+                        </div>
+                        <div class="form-group">
+                            <label for="washerDryer">Washer/Dryer</label>
+                            <input type="text" id="washerDryer" placeholder="e.g., LG, 2021">
+                        </div>
+                        <div class="form-group">
+                            <label for="stove">Stove/Oven</label>
+                            <input type="text" id="stove" placeholder="e.g., GE, 2020">
+                        </div>
+                        <div class="form-group">
+                            <label for="microwave">Microwave</label>
+                            <input type="text" id="microwave" placeholder="e.g., Whirlpool, 2019">
+                        </div>
+                        <div class="form-group">
+                            <label for="applianceService">Last Service Date</label>
+                            <input type="date" id="applianceService">
+                        </div>
+                        <div style="display: flex; gap: 1rem;">
+                            <button class="btn" onclick="saveAppliances()">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                            <button class="btn btn-secondary" onclick="cancelEditAppliances()">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1902,6 +2033,85 @@
         window.cancelEditGarage = cancelEditGarage;
         window.saveGarage = saveGarage;
 
+        // Exterior CRUD Functions
+        function editExterior() {
+            document.getElementById('exteriorDisplay').style.display = 'none';
+            document.getElementById('exteriorForm').style.display = 'block';
+        }
+
+        function cancelEditExterior() {
+            document.getElementById('exteriorDisplay').style.display = 'block';
+            document.getElementById('exteriorForm').style.display = 'none';
+        }
+
+        function saveExterior() {
+            const exteriorData = {
+                lotSize: document.getElementById('lotSize').value,
+                landscaping: document.getElementById('landscaping').value,
+                driveway: document.getElementById('driveway').value,
+                patio: document.getElementById('patio').value,
+                fencing: document.getElementById('fencing').value,
+                pool: document.getElementById('pool').value
+            };
+
+            // Update display
+            document.getElementById('displayLotSize').textContent = exteriorData.lotSize || 'Not set';
+            document.getElementById('displayLandscaping').textContent = exteriorData.landscaping || 'Not set';
+            document.getElementById('displayDriveway').textContent = exteriorData.driveway || 'Not set';
+            document.getElementById('displayPatio').textContent = exteriorData.patio || 'Not set';
+            document.getElementById('displayFencing').textContent = exteriorData.fencing || 'Not set';
+            document.getElementById('displayPool').textContent = exteriorData.pool || 'Not set';
+            
+            // Hide form
+            document.getElementById('exteriorDisplay').style.display = 'block';
+            document.getElementById('exteriorForm').style.display = 'none';
+            
+            showAlert('Exterior information saved successfully!', 'success');
+        }
+
+        // Appliances CRUD Functions
+        function editAppliances() {
+            document.getElementById('appliancesDisplay').style.display = 'none';
+            document.getElementById('appliancesForm').style.display = 'block';
+        }
+
+        function cancelEditAppliances() {
+            document.getElementById('appliancesDisplay').style.display = 'block';
+            document.getElementById('appliancesForm').style.display = 'none';
+        }
+
+        function saveAppliances() {
+            const appliancesData = {
+                refrigerator: document.getElementById('refrigerator').value,
+                dishwasher: document.getElementById('dishwasher').value,
+                washerDryer: document.getElementById('washerDryer').value,
+                stove: document.getElementById('stove').value,
+                microwave: document.getElementById('microwave').value,
+                applianceService: document.getElementById('applianceService').value
+            };
+
+            // Update display
+            document.getElementById('displayRefrigerator').textContent = appliancesData.refrigerator || 'Not set';
+            document.getElementById('displayDishwasher').textContent = appliancesData.dishwasher || 'Not set';
+            document.getElementById('displayWasherDryer').textContent = appliancesData.washerDryer || 'Not set';
+            document.getElementById('displayStove').textContent = appliancesData.stove || 'Not set';
+            document.getElementById('displayMicrowave').textContent = appliancesData.microwave || 'Not set';
+            document.getElementById('displayApplianceService').textContent = appliancesData.applianceService || 'Not set';
+            
+            // Hide form
+            document.getElementById('appliancesDisplay').style.display = 'block';
+            document.getElementById('appliancesForm').style.display = 'none';
+            
+            showAlert('Appliances information saved successfully!', 'success');
+        }
+
+        window.editExterior = editExterior;
+        window.cancelEditExterior = cancelEditExterior;
+        window.saveExterior = saveExterior;
+        window.editAppliances = editAppliances;
+        window.cancelEditAppliances = cancelEditAppliances;
+        window.saveAppliances = saveAppliances;
+
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 Command Center Dashboard Starting...');
@@ -1982,6 +2192,22 @@
             document.getElementById('displayGarageFlooring').textContent = 'Concrete';
             document.getElementById('displayGarageStorage').textContent = 'Shelving';
             document.getElementById('displayGarageElectrical').textContent = 'Multiple outlets';
+            
+            // Set default exterior values
+            document.getElementById('displayLotSize').textContent = '0.25 acres';
+            document.getElementById('displayLandscaping').textContent = 'Mature trees and shrubs';
+            document.getElementById('displayDriveway').textContent = 'Asphalt';
+            document.getElementById('displayPatio').textContent = 'Concrete patio';
+            document.getElementById('displayFencing').textContent = 'Wood fence';
+            document.getElementById('displayPool').textContent = 'No pool';
+            
+            // Set default appliances values
+            document.getElementById('displayRefrigerator').textContent = 'Samsung, 2020';
+            document.getElementById('displayDishwasher').textContent = 'Bosch, 2019';
+            document.getElementById('displayWasherDryer').textContent = 'LG, 2021';
+            document.getElementById('displayStove').textContent = 'GE, 2020';
+            document.getElementById('displayMicrowave').textContent = 'Whirlpool, 2019';
+            document.getElementById('displayApplianceService').textContent = '2023-04-15';
         }
 
         // Load dashboard data (simplified for testing)
