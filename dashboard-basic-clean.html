@@ -749,39 +749,57 @@
     <script>
         // Define all functions FIRST before anything else
         function showSection(sectionName) {
-            alert(`Opening ${sectionName} section`);
+            // Remove active from all nav items
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+            
+            // Add active to clicked nav item
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+            
+            // For now, just log to console - you can add actual section switching later
+            console.log(`Switched to ${sectionName} section`);
         }
 
         function openTasksCalendar() {
-            alert('Tasks & Calendar clicked!');
+            console.log('Opening Tasks & Calendar');
+            // You can redirect to a tasks page or show a modal
         }
 
         function openProducts() {
-            alert('Products clicked!');
+            console.log('Opening Products');
+            // You can redirect to a products page or show a modal
         }
 
         function openEmergency() {
-            alert('Emergency clicked!');
+            console.log('Opening Emergency Contacts');
+            showSection('emergency');
         }
 
         function addService() {
-            alert('Add Service clicked!');
+            console.log('Adding Service');
+            // You can show an add service form or redirect
         }
 
         function viewRecords() {
-            alert('View Records clicked!');
+            console.log('Viewing Records');
+            // You can show service records or redirect
         }
 
         function openHomeDetails() {
-            alert('Home Details clicked!');
+            console.log('Opening Home Details');
+            showSection('basic');
         }
 
         function exportData() {
-            alert('Export Data clicked!');
+            console.log('Exporting Data');
+            // You can implement actual data export
         }
 
         function openChatbot() {
-            alert('Chatbot clicked!');
+            console.log('Opening Chatbot');
+            // You can show a chatbot modal or redirect
         }
 
         function signOut() {
