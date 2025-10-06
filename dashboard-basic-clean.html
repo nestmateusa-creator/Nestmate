@@ -746,6 +746,61 @@
     </button>
 
     <script>
+        // Define all functions FIRST before anything else
+        function showSection(sectionName) {
+            alert(`Opening ${sectionName} section`);
+        }
+
+        function openTasksCalendar() {
+            alert('Tasks & Calendar clicked!');
+        }
+
+        function openProducts() {
+            alert('Products clicked!');
+        }
+
+        function openEmergency() {
+            alert('Emergency clicked!');
+        }
+
+        function addService() {
+            alert('Add Service clicked!');
+        }
+
+        function viewRecords() {
+            alert('View Records clicked!');
+        }
+
+        function openHomeDetails() {
+            alert('Home Details clicked!');
+        }
+
+        function exportData() {
+            alert('Export Data clicked!');
+        }
+
+        function openChatbot() {
+            alert('Chatbot clicked!');
+        }
+
+        function signOut() {
+            if (confirm('Are you sure you want to sign out?')) {
+                window.location.href = 'login-aws.html';
+            }
+        }
+
+        // Make functions globally accessible IMMEDIATELY
+        window.showSection = showSection;
+        window.openTasksCalendar = openTasksCalendar;
+        window.openProducts = openProducts;
+        window.openEmergency = openEmergency;
+        window.addService = addService;
+        window.viewRecords = viewRecords;
+        window.openHomeDetails = openHomeDetails;
+        window.exportData = exportData;
+        window.openChatbot = openChatbot;
+        window.signOut = signOut;
+
         // AWS Configuration
         AWS.config.update({
             region: 'us-east-2',
@@ -759,7 +814,6 @@
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('🚀 Command Center Dashboard Starting...');
-            alert('Dashboard loading...');
             
             // Check authentication
             const isAuthenticated = await nestMateAuth.isAuthenticated();
@@ -780,7 +834,6 @@
             await loadDashboardData();
             
             console.log('✅ Command Center Dashboard initialized successfully');
-            alert('Dashboard loaded! Buttons should work now.');
         });
 
         // Load dashboard data
@@ -953,89 +1006,6 @@
             `;
         }
 
-        // Navigation function
-        function showSection(sectionName) {
-            console.log('showSection called with:', sectionName);
-            alert(`showSection called: ${sectionName}`);
-            
-            // Remove active from all nav items
-            const navItems = document.querySelectorAll('.nav-item');
-            navItems.forEach(item => item.classList.remove('active'));
-            
-            // Add active to clicked nav item
-            if (event && event.target) {
-                event.target.classList.add('active');
-            }
-            
-            // For now, just show an alert - you can implement actual section switching later
-            alert(`Opening ${sectionName} section`);
-        }
-
-        // Quick Action Functions
-        function openTasksCalendar() {
-            console.log('openTasksCalendar called');
-            alert('openTasksCalendar called!');
-            showSection('tasks');
-        }
-
-        function openProducts() {
-            console.log('openProducts called');
-            alert('openProducts called!');
-        }
-
-        function openEmergency() {
-            console.log('openEmergency called');
-            alert('openEmergency called!');
-            showSection('emergency');
-        }
-
-        function addService() {
-            console.log('addService called');
-            alert('addService called!');
-        }
-
-        function viewRecords() {
-            console.log('viewRecords called');
-            alert('viewRecords called!');
-        }
-
-        function openHomeDetails() {
-            console.log('openHomeDetails called');
-            alert('openHomeDetails called!');
-            showSection('basic');
-        }
-
-        function exportData() {
-            console.log('exportData called');
-            alert('exportData called!');
-        }
-
-        function openChatbot() {
-            console.log('openChatbot called');
-            alert('openChatbot called!');
-        }
-
-        // Sign out function
-        function signOut() {
-            console.log('signOut called');
-            alert('signOut called!');
-            if (confirm('Are you sure you want to sign out?')) {
-                nestMateAuth.signOut();
-                window.location.href = 'login-aws.html';
-            }
-        }
-
-        // Make functions globally accessible
-        window.showSection = showSection;
-        window.signOut = signOut;
-        window.openTasksCalendar = openTasksCalendar;
-        window.openProducts = openProducts;
-        window.openEmergency = openEmergency;
-        window.addService = addService;
-        window.viewRecords = viewRecords;
-        window.openHomeDetails = openHomeDetails;
-        window.exportData = exportData;
-        window.openChatbot = openChatbot;
     </script>
 </body>
 </html>
