@@ -1023,12 +1023,71 @@
                 <h2 class="section-title">
                     <i class="fas fa-bed"></i> Bedrooms
                 </h2>
+                
                 <div class="card">
-                    <h3>Bedroom Information</h3>
-                    <p>Master Bedroom: 15' x 12'</p>
-                    <p>Bedroom 2: 12' x 10'</p>
-                    <p>Bedroom 3: 11' x 10'</p>
-                    <p>Bedroom 4: 10' x 9'</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3>Bedroom Information</h3>
+                        <button class="btn" onclick="editBedrooms()">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                    </div>
+                    
+                    <div id="bedroomsDisplay">
+                        <p><strong>Master Bedroom:</strong> <span id="displayMasterBedroom">Not set</span></p>
+                        <p><strong>Bedroom 2:</strong> <span id="displayBedroom2">Not set</span></p>
+                        <p><strong>Bedroom 3:</strong> <span id="displayBedroom3">Not set</span></p>
+                        <p><strong>Bedroom 4:</strong> <span id="displayBedroom4">Not set</span></p>
+                        <p><strong>Closet Space:</strong> <span id="displayClosetSpace">Not set</span></p>
+                        <p><strong>Flooring:</strong> <span id="displayBedroomFlooring">Not set</span></p>
+                    </div>
+                    
+                    <div id="bedroomsForm" style="display: none;">
+                        <div class="form-group">
+                            <label for="masterBedroom">Master Bedroom Size</label>
+                            <input type="text" id="masterBedroom" placeholder="e.g., 15' x 12'">
+                        </div>
+                        <div class="form-group">
+                            <label for="bedroom2">Bedroom 2 Size</label>
+                            <input type="text" id="bedroom2" placeholder="e.g., 12' x 10'">
+                        </div>
+                        <div class="form-group">
+                            <label for="bedroom3">Bedroom 3 Size</label>
+                            <input type="text" id="bedroom3" placeholder="e.g., 11' x 10'">
+                        </div>
+                        <div class="form-group">
+                            <label for="bedroom4">Bedroom 4 Size</label>
+                            <input type="text" id="bedroom4" placeholder="e.g., 10' x 9'">
+                        </div>
+                        <div class="form-group">
+                            <label for="closetSpace">Closet Space</label>
+                            <select id="closetSpace">
+                                <option value="">Select closet space</option>
+                                <option value="walk-in">Walk-in Closets</option>
+                                <option value="standard">Standard Closets</option>
+                                <option value="minimal">Minimal Closet Space</option>
+                                <option value="custom">Custom Built-ins</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="bedroomFlooring">Flooring Type</label>
+                            <select id="bedroomFlooring">
+                                <option value="">Select flooring type</option>
+                                <option value="hardwood">Hardwood</option>
+                                <option value="carpet">Carpet</option>
+                                <option value="laminate">Laminate</option>
+                                <option value="tile">Tile</option>
+                                <option value="vinyl">Vinyl</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; gap: 1rem;">
+                            <button class="btn" onclick="saveBedrooms()">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                            <button class="btn btn-secondary" onclick="cancelEditBedrooms()">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1037,11 +1096,88 @@
                 <h2 class="section-title">
                     <i class="fas fa-bath"></i> Bathrooms
                 </h2>
+                
                 <div class="card">
-                    <h3>Bathroom Information</h3>
-                    <p>Master Bath: Full bath with double vanity</p>
-                    <p>Guest Bath: Full bath</p>
-                    <p>Powder Room: Half bath</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3>Bathroom Information</h3>
+                        <button class="btn" onclick="editBathrooms()">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                    </div>
+                    
+                    <div id="bathroomsDisplay">
+                        <p><strong>Master Bath:</strong> <span id="displayMasterBath">Not set</span></p>
+                        <p><strong>Guest Bath:</strong> <span id="displayGuestBath">Not set</span></p>
+                        <p><strong>Powder Room:</strong> <span id="displayPowderRoom">Not set</span></p>
+                        <p><strong>Fixtures:</strong> <span id="displayBathroomFixtures">Not set</span></p>
+                        <p><strong>Flooring:</strong> <span id="displayBathroomFlooring">Not set</span></p>
+                        <p><strong>Last Renovation:</strong> <span id="displayBathroomRenovation">Not set</span></p>
+                    </div>
+                    
+                    <div id="bathroomsForm" style="display: none;">
+                        <div class="form-group">
+                            <label for="masterBath">Master Bathroom</label>
+                            <select id="masterBath">
+                                <option value="">Select master bath type</option>
+                                <option value="full-double-vanity">Full bath with double vanity</option>
+                                <option value="full-single-vanity">Full bath with single vanity</option>
+                                <option value="full-jetted-tub">Full bath with jetted tub</option>
+                                <option value="full-walk-in-shower">Full bath with walk-in shower</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="guestBath">Guest Bathroom</label>
+                            <select id="guestBath">
+                                <option value="">Select guest bath type</option>
+                                <option value="full-bath">Full bath</option>
+                                <option value="full-bath-tub">Full bath with tub</option>
+                                <option value="full-bath-shower">Full bath with shower only</option>
+                                <option value="half-bath">Half bath</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="powderRoom">Powder Room</label>
+                            <select id="powderRoom">
+                                <option value="">Select powder room</option>
+                                <option value="half-bath">Half bath</option>
+                                <option value="full-bath">Full bath</option>
+                                <option value="none">No powder room</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="bathroomFixtures">Fixture Quality</label>
+                            <select id="bathroomFixtures">
+                                <option value="">Select fixture quality</option>
+                                <option value="basic">Basic</option>
+                                <option value="standard">Standard</option>
+                                <option value="premium">Premium</option>
+                                <option value="luxury">Luxury</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="bathroomFlooring">Flooring Type</label>
+                            <select id="bathroomFlooring">
+                                <option value="">Select flooring type</option>
+                                <option value="ceramic-tile">Ceramic Tile</option>
+                                <option value="porcelain-tile">Porcelain Tile</option>
+                                <option value="natural-stone">Natural Stone</option>
+                                <option value="vinyl">Vinyl</option>
+                                <option value="laminate">Laminate</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="bathroomRenovation">Last Renovation Date</label>
+                            <input type="date" id="bathroomRenovation">
+                        </div>
+                        <div style="display: flex; gap: 1rem;">
+                            <button class="btn" onclick="saveBathrooms()">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                            <button class="btn btn-secondary" onclick="cancelEditBathrooms()">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1050,12 +1186,88 @@
                 <h2 class="section-title">
                     <i class="fas fa-utensils"></i> Kitchen
                 </h2>
+                
                 <div class="card">
-                    <h3>Kitchen Information</h3>
-                    <p>Size: 12' x 10'</p>
-                    <p>Appliances: Stainless steel</p>
-                    <p>Countertops: Granite</p>
-                    <p>Cabinets: Oak</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3>Kitchen Information</h3>
+                        <button class="btn" onclick="editKitchen()">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                    </div>
+                    
+                    <div id="kitchenDisplay">
+                        <p><strong>Size:</strong> <span id="displayKitchenSize">Not set</span></p>
+                        <p><strong>Appliances:</strong> <span id="displayKitchenAppliances">Not set</span></p>
+                        <p><strong>Countertops:</strong> <span id="displayKitchenCountertops">Not set</span></p>
+                        <p><strong>Cabinets:</strong> <span id="displayKitchenCabinets">Not set</span></p>
+                        <p><strong>Flooring:</strong> <span id="displayKitchenFlooring">Not set</span></p>
+                        <p><strong>Last Renovation:</strong> <span id="displayKitchenRenovation">Not set</span></p>
+                    </div>
+                    
+                    <div id="kitchenForm" style="display: none;">
+                        <div class="form-group">
+                            <label for="kitchenSize">Kitchen Size</label>
+                            <input type="text" id="kitchenSize" placeholder="e.g., 12' x 10'">
+                        </div>
+                        <div class="form-group">
+                            <label for="kitchenAppliances">Appliance Finish</label>
+                            <select id="kitchenAppliances">
+                                <option value="">Select appliance finish</option>
+                                <option value="stainless-steel">Stainless Steel</option>
+                                <option value="black-stainless">Black Stainless</option>
+                                <option value="white">White</option>
+                                <option value="black">Black</option>
+                                <option value="custom">Custom Color</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="kitchenCountertops">Countertop Material</label>
+                            <select id="kitchenCountertops">
+                                <option value="">Select countertop material</option>
+                                <option value="granite">Granite</option>
+                                <option value="quartz">Quartz</option>
+                                <option value="marble">Marble</option>
+                                <option value="butcher-block">Butcher Block</option>
+                                <option value="laminate">Laminate</option>
+                                <option value="concrete">Concrete</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="kitchenCabinets">Cabinet Material</label>
+                            <select id="kitchenCabinets">
+                                <option value="">Select cabinet material</option>
+                                <option value="oak">Oak</option>
+                                <option value="maple">Maple</option>
+                                <option value="cherry">Cherry</option>
+                                <option value="pine">Pine</option>
+                                <option value="mdf">MDF</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="kitchenFlooring">Flooring Type</label>
+                            <select id="kitchenFlooring">
+                                <option value="">Select flooring type</option>
+                                <option value="hardwood">Hardwood</option>
+                                <option value="tile">Tile</option>
+                                <option value="vinyl">Vinyl</option>
+                                <option value="laminate">Laminate</option>
+                                <option value="concrete">Concrete</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="kitchenRenovation">Last Renovation Date</label>
+                            <input type="date" id="kitchenRenovation">
+                        </div>
+                        <div style="display: flex; gap: 1rem;">
+                            <button class="btn" onclick="saveKitchen()">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                            <button class="btn btn-secondary" onclick="cancelEditKitchen()">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1343,6 +1555,124 @@
         window.cancelEditSystems = cancelEditSystems;
         window.saveSystems = saveSystems;
 
+        // Bedrooms CRUD Functions
+        function editBedrooms() {
+            document.getElementById('bedroomsDisplay').style.display = 'none';
+            document.getElementById('bedroomsForm').style.display = 'block';
+        }
+
+        function cancelEditBedrooms() {
+            document.getElementById('bedroomsDisplay').style.display = 'block';
+            document.getElementById('bedroomsForm').style.display = 'none';
+        }
+
+        function saveBedrooms() {
+            const bedroomData = {
+                masterBedroom: document.getElementById('masterBedroom').value,
+                bedroom2: document.getElementById('bedroom2').value,
+                bedroom3: document.getElementById('bedroom3').value,
+                bedroom4: document.getElementById('bedroom4').value,
+                closetSpace: document.getElementById('closetSpace').value,
+                bedroomFlooring: document.getElementById('bedroomFlooring').value
+            };
+
+            // Update display
+            document.getElementById('displayMasterBedroom').textContent = bedroomData.masterBedroom || 'Not set';
+            document.getElementById('displayBedroom2').textContent = bedroomData.bedroom2 || 'Not set';
+            document.getElementById('displayBedroom3').textContent = bedroomData.bedroom3 || 'Not set';
+            document.getElementById('displayBedroom4').textContent = bedroomData.bedroom4 || 'Not set';
+            document.getElementById('displayClosetSpace').textContent = bedroomData.closetSpace || 'Not set';
+            document.getElementById('displayBedroomFlooring').textContent = bedroomData.bedroomFlooring || 'Not set';
+            
+            // Hide form
+            document.getElementById('bedroomsDisplay').style.display = 'block';
+            document.getElementById('bedroomsForm').style.display = 'none';
+            
+            showAlert('Bedroom information saved successfully!', 'success');
+        }
+
+        // Bathrooms CRUD Functions
+        function editBathrooms() {
+            document.getElementById('bathroomsDisplay').style.display = 'none';
+            document.getElementById('bathroomsForm').style.display = 'block';
+        }
+
+        function cancelEditBathrooms() {
+            document.getElementById('bathroomsDisplay').style.display = 'block';
+            document.getElementById('bathroomsForm').style.display = 'none';
+        }
+
+        function saveBathrooms() {
+            const bathroomData = {
+                masterBath: document.getElementById('masterBath').value,
+                guestBath: document.getElementById('guestBath').value,
+                powderRoom: document.getElementById('powderRoom').value,
+                bathroomFixtures: document.getElementById('bathroomFixtures').value,
+                bathroomFlooring: document.getElementById('bathroomFlooring').value,
+                bathroomRenovation: document.getElementById('bathroomRenovation').value
+            };
+
+            // Update display
+            document.getElementById('displayMasterBath').textContent = bathroomData.masterBath || 'Not set';
+            document.getElementById('displayGuestBath').textContent = bathroomData.guestBath || 'Not set';
+            document.getElementById('displayPowderRoom').textContent = bathroomData.powderRoom || 'Not set';
+            document.getElementById('displayBathroomFixtures').textContent = bathroomData.bathroomFixtures || 'Not set';
+            document.getElementById('displayBathroomFlooring').textContent = bathroomData.bathroomFlooring || 'Not set';
+            document.getElementById('displayBathroomRenovation').textContent = bathroomData.bathroomRenovation || 'Not set';
+            
+            // Hide form
+            document.getElementById('bathroomsDisplay').style.display = 'block';
+            document.getElementById('bathroomsForm').style.display = 'none';
+            
+            showAlert('Bathroom information saved successfully!', 'success');
+        }
+
+        // Kitchen CRUD Functions
+        function editKitchen() {
+            document.getElementById('kitchenDisplay').style.display = 'none';
+            document.getElementById('kitchenForm').style.display = 'block';
+        }
+
+        function cancelEditKitchen() {
+            document.getElementById('kitchenDisplay').style.display = 'block';
+            document.getElementById('kitchenForm').style.display = 'none';
+        }
+
+        function saveKitchen() {
+            const kitchenData = {
+                kitchenSize: document.getElementById('kitchenSize').value,
+                kitchenAppliances: document.getElementById('kitchenAppliances').value,
+                kitchenCountertops: document.getElementById('kitchenCountertops').value,
+                kitchenCabinets: document.getElementById('kitchenCabinets').value,
+                kitchenFlooring: document.getElementById('kitchenFlooring').value,
+                kitchenRenovation: document.getElementById('kitchenRenovation').value
+            };
+
+            // Update display
+            document.getElementById('displayKitchenSize').textContent = kitchenData.kitchenSize || 'Not set';
+            document.getElementById('displayKitchenAppliances').textContent = kitchenData.kitchenAppliances || 'Not set';
+            document.getElementById('displayKitchenCountertops').textContent = kitchenData.kitchenCountertops || 'Not set';
+            document.getElementById('displayKitchenCabinets').textContent = kitchenData.kitchenCabinets || 'Not set';
+            document.getElementById('displayKitchenFlooring').textContent = kitchenData.kitchenFlooring || 'Not set';
+            document.getElementById('displayKitchenRenovation').textContent = kitchenData.kitchenRenovation || 'Not set';
+            
+            // Hide form
+            document.getElementById('kitchenDisplay').style.display = 'block';
+            document.getElementById('kitchenForm').style.display = 'none';
+            
+            showAlert('Kitchen information saved successfully!', 'success');
+        }
+
+        window.editBedrooms = editBedrooms;
+        window.cancelEditBedrooms = cancelEditBedrooms;
+        window.saveBedrooms = saveBedrooms;
+        window.editBathrooms = editBathrooms;
+        window.cancelEditBathrooms = cancelEditBathrooms;
+        window.saveBathrooms = saveBathrooms;
+        window.editKitchen = editKitchen;
+        window.cancelEditKitchen = cancelEditKitchen;
+        window.saveKitchen = saveKitchen;
+
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 Command Center Dashboard Starting...');
@@ -1383,6 +1713,30 @@
             document.getElementById('displayWaterHeater').textContent = 'Gas, 50 gallon';
             document.getElementById('displaySecurity').textContent = 'Basic Alarm';
             document.getElementById('displayLastService').textContent = '2023-06-01';
+            
+            // Set default bedroom values
+            document.getElementById('displayMasterBedroom').textContent = '15\' x 12\'';
+            document.getElementById('displayBedroom2').textContent = '12\' x 10\'';
+            document.getElementById('displayBedroom3').textContent = '11\' x 10\'';
+            document.getElementById('displayBedroom4').textContent = '10\' x 9\'';
+            document.getElementById('displayClosetSpace').textContent = 'Walk-in Closets';
+            document.getElementById('displayBedroomFlooring').textContent = 'Carpet';
+            
+            // Set default bathroom values
+            document.getElementById('displayMasterBath').textContent = 'Full bath with double vanity';
+            document.getElementById('displayGuestBath').textContent = 'Full bath';
+            document.getElementById('displayPowderRoom').textContent = 'Half bath';
+            document.getElementById('displayBathroomFixtures').textContent = 'Standard';
+            document.getElementById('displayBathroomFlooring').textContent = 'Ceramic Tile';
+            document.getElementById('displayBathroomRenovation').textContent = '2022-03-15';
+            
+            // Set default kitchen values
+            document.getElementById('displayKitchenSize').textContent = '12\' x 10\'';
+            document.getElementById('displayKitchenAppliances').textContent = 'Stainless Steel';
+            document.getElementById('displayKitchenCountertops').textContent = 'Granite';
+            document.getElementById('displayKitchenCabinets').textContent = 'Oak';
+            document.getElementById('displayKitchenFlooring').textContent = 'Tile';
+            document.getElementById('displayKitchenRenovation').textContent = '2021-08-20';
         }
 
         // Load dashboard data (simplified for testing)
