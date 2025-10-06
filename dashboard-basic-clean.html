@@ -532,6 +532,30 @@
         .sign-out-btn:hover {
             background: #dc2626;
         }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+            padding: 2rem;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title i {
+            margin-right: 1rem;
+            color: #00d4aa;
+        }
     </style>
 </head>
 <body>
@@ -937,9 +961,15 @@
     <script>
         // Define all functions FIRST before anything else
         function showSection(sectionName) {
+            console.log('showSection called with:', sectionName);
+            
             // Hide all content sections
             const sections = document.querySelectorAll('.content-section');
-            sections.forEach(section => section.classList.remove('active'));
+            console.log('Found sections:', sections.length);
+            sections.forEach(section => {
+                section.classList.remove('active');
+                console.log('Removed active from:', section.id);
+            });
             
             // Remove active from all nav items
             const navItems = document.querySelectorAll('.nav-item');
@@ -947,8 +977,14 @@
             
             // Show the selected section
             const targetSection = document.getElementById(sectionName + 'Section');
+            console.log('Looking for section:', sectionName + 'Section');
+            console.log('Target section found:', targetSection);
+            
             if (targetSection) {
                 targetSection.classList.add('active');
+                console.log('Added active to:', targetSection.id);
+            } else {
+                console.error('Section not found:', sectionName + 'Section');
             }
             
             // Add active to clicked nav item
