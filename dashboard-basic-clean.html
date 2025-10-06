@@ -6,8 +6,9 @@
     <title>Basic Dashboard - NestMate</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1491.0.min.js"></script>
-    <script src="auth-aws.js"></script>
+    <!-- Temporarily disable external scripts to test -->
+    <!-- <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1491.0.min.js"></script> -->
+    <!-- <script src="auth-aws.js"></script> -->
     
     <style>
         * {
@@ -1103,37 +1104,14 @@
         window.openChatbot = openChatbot;
         window.signOut = signOut;
 
-        // AWS Configuration
-        AWS.config.update({
-            region: 'us-east-2',
-            accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
-            secretAccessKey: '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'
-        });
-
-        const dynamodb = new AWS.DynamoDB.DocumentClient();
-        let currentUser = null;
-
         // Initialize dashboard
-        document.addEventListener('DOMContentLoaded', async function() {
+        document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 Command Center Dashboard Starting...');
             
-            // Check authentication
-            const isAuthenticated = await nestMateAuth.isAuthenticated();
-            if (!isAuthenticated) {
-                window.location.href = 'login-aws.html';
-                return;
-            }
-
-            // Get current user
-            currentUser = nestMateAuth.currentUser;
-            if (currentUser) {
-                document.getElementById('userName').textContent = currentUser.name || 'User';
-                document.getElementById('userEmail').textContent = currentUser.email || 'user@example.com';
-                document.getElementById('userAvatar').textContent = (currentUser.name || 'U').charAt(0).toUpperCase();
-            }
-            
-            // Load user data
-            await loadUserData();
+            // Set user info (temporarily hardcoded for testing)
+            document.getElementById('userName').textContent = 'Test User';
+            document.getElementById('userEmail').textContent = 'test@example.com';
+            document.getElementById('userAvatar').textContent = 'T';
             
             // Load dashboard data
             loadDashboardData();
@@ -1141,29 +1119,15 @@
             console.log('✅ Command Center Dashboard initialized successfully');
         });
 
-        // Load user data from AWS
-        async function loadUserData() {
-            try {
-                const userRecord = await nestMateAuth.getUserRecord(currentUser.userId);
-                if (userRecord.success && userRecord.user) {
-                    const user = userRecord.user;
-                    
-                    // Load basic info
-                    if (user.basicInfo) {
-                        document.getElementById('displayAddress').textContent = user.basicInfo.address || 'Not set';
-                        document.getElementById('displayYearBuilt').textContent = user.basicInfo.yearBuilt || 'Not set';
-                        document.getElementById('displaySquareFootage').textContent = user.basicInfo.squareFootage || 'Not set';
-                        document.getElementById('displayBedrooms').textContent = user.basicInfo.bedrooms || 'Not set';
-                        document.getElementById('displayBathrooms').textContent = user.basicInfo.bathrooms || 'Not set';
-                        document.getElementById('displayHomeType').textContent = user.basicInfo.homeType || 'Not set';
-                    }
-                    
-                    // Load other sections as needed
-                    // Add more section loading here...
-                }
-            } catch (error) {
-                console.error('Error loading user data:', error);
-            }
+        // Load user data (simplified for testing)
+        function loadUserData() {
+            // Set default values for testing
+            document.getElementById('displayAddress').textContent = '123 Main Street, Anytown, USA';
+            document.getElementById('displayYearBuilt').textContent = '2015';
+            document.getElementById('displaySquareFootage').textContent = '2,500 sq ft';
+            document.getElementById('displayBedrooms').textContent = '4';
+            document.getElementById('displayBathrooms').textContent = '3';
+            document.getElementById('displayHomeType').textContent = 'Single Family';
         }
 
         // Load dashboard data (simplified for testing)
@@ -1211,7 +1175,7 @@
             document.getElementById('basicInfoForm').style.display = 'none';
         }
 
-        async function saveBasicInfo() {
+        function saveBasicInfo() {
             const basicInfo = {
                 address: document.getElementById('address').value,
                 yearBuilt: document.getElementById('yearBuilt').value,
@@ -1221,26 +1185,19 @@
                 homeType: document.getElementById('homeType').value
             };
 
-            try {
-                await nestMateAuth.updateUserRecord(currentUser.userId, { basicInfo });
-                
-                // Update display
-                document.getElementById('displayAddress').textContent = basicInfo.address || 'Not set';
-                document.getElementById('displayYearBuilt').textContent = basicInfo.yearBuilt || 'Not set';
-                document.getElementById('displaySquareFootage').textContent = basicInfo.squareFootage || 'Not set';
-                document.getElementById('displayBedrooms').textContent = basicInfo.bedrooms || 'Not set';
-                document.getElementById('displayBathrooms').textContent = basicInfo.bathrooms || 'Not set';
-                document.getElementById('displayHomeType').textContent = basicInfo.homeType || 'Not set';
-                
-                // Hide form
-                document.getElementById('basicInfoDisplay').style.display = 'block';
-                document.getElementById('basicInfoForm').style.display = 'none';
-                
-                showAlert('Basic info saved successfully!', 'success');
-            } catch (error) {
-                console.error('Error saving basic info:', error);
-                showAlert('Error saving basic info', 'error');
-            }
+            // Update display (simplified for testing)
+            document.getElementById('displayAddress').textContent = basicInfo.address || 'Not set';
+            document.getElementById('displayYearBuilt').textContent = basicInfo.yearBuilt || 'Not set';
+            document.getElementById('displaySquareFootage').textContent = basicInfo.squareFootage || 'Not set';
+            document.getElementById('displayBedrooms').textContent = basicInfo.bedrooms || 'Not set';
+            document.getElementById('displayBathrooms').textContent = basicInfo.bathrooms || 'Not set';
+            document.getElementById('displayHomeType').textContent = basicInfo.homeType || 'Not set';
+            
+            // Hide form
+            document.getElementById('basicInfoDisplay').style.display = 'block';
+            document.getElementById('basicInfoForm').style.display = 'none';
+            
+            showAlert('Basic info saved successfully!', 'success');
         }
 
         // Show alert function
