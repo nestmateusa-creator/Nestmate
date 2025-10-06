@@ -606,138 +606,326 @@
                 </button>
             </div>
 
-        <!-- Dashboard Header -->
-        <div class="dashboard-header">
-            <i class="fas fa-home"></i>
-            <div>
-                <h1>Your Home Command Center</h1>
-                <p class="dashboard-subtitle">Complete home intelligence from foundation to roof</p>
-            </div>
-        </div>
-
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Home Health Score Card -->
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">
-                        <i class="fas fa-heart"></i>
-                        Home Health Score
-                    </h2>
-                    <i class="fas fa-info-circle card-info"></i>
+            <!-- Dashboard Overview Section -->
+            <div id="overviewSection" class="content-section active">
+                <!-- Dashboard Header -->
+                <div class="dashboard-header">
+                    <i class="fas fa-home"></i>
+                    <div>
+                        <h1>Your Home Command Center</h1>
+                        <p class="dashboard-subtitle">Complete home intelligence from foundation to roof</p>
+                    </div>
                 </div>
 
-                <div class="health-score-container">
-                    <div class="health-score-gauge">
-                        <div class="gauge-circle">
-                            <div class="gauge-content">
-                                <div class="gauge-score" id="healthScore">85</div>
-                                <div class="gauge-label">Health Score</div>
+                <!-- Main Content -->
+                <div class="main-content">
+                    <!-- Home Health Score Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                                <i class="fas fa-heart"></i>
+                                Home Health Score
+                            </h2>
+                            <i class="fas fa-info-circle card-info"></i>
+                        </div>
+
+                        <div class="health-score-container">
+                            <div class="health-score-gauge">
+                                <div class="gauge-circle">
+                                    <div class="gauge-content">
+                                        <div class="gauge-score" id="healthScore">85</div>
+                                        <div class="gauge-label">Health Score</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="progress-section">
+                                <div class="progress-item">
+                                    <span class="progress-label">Structure</span>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar" style="width: 90%"></div>
+                                    </div>
+                                    <span class="progress-percentage">90%</span>
+                                </div>
+                                <div class="progress-item">
+                                    <span class="progress-label">Systems</span>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar" style="width: 85%"></div>
+                                    </div>
+                                    <span class="progress-percentage">85%</span>
+                                </div>
+                                <div class="progress-item">
+                                    <span class="progress-label">Maintenance</span>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar" style="width: 80%"></div>
+                                    </div>
+                                    <span class="progress-percentage">80%</span>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="progress-section">
-                        <div class="progress-item">
-                            <span class="progress-label">Structure</span>
-                            <div class="progress-bar-container">
-                                <div class="progress-bar" style="width: 90%"></div>
-                            </div>
-                            <span class="progress-percentage">90%</span>
+                    <!-- Quick Actions Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                                <i class="fas fa-bolt"></i>
+                                Quick Actions
+                            </h2>
                         </div>
-                        <div class="progress-item">
-                            <span class="progress-label">Systems</span>
-                            <div class="progress-bar-container">
-                                <div class="progress-bar" style="width: 85%"></div>
-                            </div>
-                            <span class="progress-percentage">85%</span>
+
+                        <div class="quick-actions-grid">
+                            <button class="action-button" onclick="openTasksCalendar()">
+                                <i class="fas fa-calendar-check"></i>
+                                <span class="action-button-text">Tasks & Calendar</span>
+                            </button>
+                            <button class="action-button" onclick="openProducts()">
+                                <i class="fas fa-shopping-bag"></i>
+                                <span class="action-button-text">Products</span>
+                            </button>
+                            <button class="action-button emergency" onclick="openEmergency()">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <span class="action-button-text">Emergency</span>
+                            </button>
+                            <button class="action-button" onclick="addService()">
+                                <i class="fas fa-wrench"></i>
+                                <span class="action-button-text">Add Service</span>
+                            </button>
+                            <button class="action-button" onclick="viewRecords()">
+                                <i class="fas fa-clipboard-list"></i>
+                                <span class="action-button-text">View Records</span>
+                            </button>
+                            <button class="action-button" onclick="openHomeDetails()">
+                                <i class="fas fa-file-alt"></i>
+                                <span class="action-button-text">Home Details</span>
+                            </button>
                         </div>
-                        <div class="progress-item">
-                            <span class="progress-label">Maintenance</span>
-                            <div class="progress-bar-container">
-                                <div class="progress-bar" style="width: 80%"></div>
-                            </div>
-                            <span class="progress-percentage">80%</span>
+
+                        <button class="export-button" onclick="exportData()">
+                            <i class="fas fa-chart-bar"></i>
+                            Export Data
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Bottom Sections -->
+                <div class="bottom-sections">
+                    <!-- Recent Activity -->
+                    <div class="bottom-section">
+                        <div class="bottom-section-header">
+                            <h3 class="bottom-section-title">
+                                <i class="fas fa-clock"></i>
+                                Recent Activity
+                            </h3>
+                            <i class="fas fa-external-link-alt external-link"></i>
+                        </div>
+                        <div class="loading">
+                            <i class="fas fa-spinner"></i>
+                            Loading recent activity...
+                        </div>
+                    </div>
+
+                    <!-- Energy & Savings -->
+                    <div class="bottom-section">
+                        <div class="bottom-section-header">
+                            <h3 class="bottom-section-title">
+                                <i class="fas fa-dollar-sign"></i>
+                                Energy & Savings
+                            </h3>
+                            <i class="fas fa-external-link-alt external-link"></i>
+                        </div>
+                        <div class="loading">
+                            <i class="fas fa-spinner"></i>
+                            Loading energy data...
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Quick Actions Card -->
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">
-                        <i class="fas fa-bolt"></i>
-                        Quick Actions
-                    </h2>
-                </div>
-
-                <div class="quick-actions-grid">
-                    <button class="action-button" onclick="openTasksCalendar()">
-                        <i class="fas fa-calendar-check"></i>
-                        <span class="action-button-text">Tasks & Calendar</span>
-                    </button>
-                    <button class="action-button" onclick="openProducts()">
-                        <i class="fas fa-shopping-bag"></i>
-                        <span class="action-button-text">Products</span>
-                    </button>
-                    <button class="action-button emergency" onclick="openEmergency()">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <span class="action-button-text">Emergency</span>
-                    </button>
-                    <button class="action-button" onclick="addService()">
-                        <i class="fas fa-wrench"></i>
-                        <span class="action-button-text">Add Service</span>
-                    </button>
-                    <button class="action-button" onclick="viewRecords()">
-                        <i class="fas fa-clipboard-list"></i>
-                        <span class="action-button-text">View Records</span>
-                    </button>
-                    <button class="action-button" onclick="openHomeDetails()">
-                        <i class="fas fa-file-alt"></i>
-                        <span class="action-button-text">Home Details</span>
-                    </button>
-                </div>
-
-                <button class="export-button" onclick="exportData()">
-                    <i class="fas fa-chart-bar"></i>
-                    Export Data
-                </button>
-            </div>
-        </div>
-
-        <!-- Bottom Sections -->
-        <div class="bottom-sections">
-            <!-- Recent Activity -->
-            <div class="bottom-section">
-                <div class="bottom-section-header">
-                    <h3 class="bottom-section-title">
-                        <i class="fas fa-clock"></i>
-                        Recent Activity
-                    </h3>
-                    <i class="fas fa-external-link-alt external-link"></i>
-                </div>
-                <div class="loading">
-                    <i class="fas fa-spinner"></i>
-                    Loading recent activity...
+            <!-- Basic Info Section -->
+            <div id="basicSection" class="content-section">
+                <h2 class="section-title">
+                    <i class="fas fa-info-circle"></i> Basic Info
+                </h2>
+                <div class="card">
+                    <h3>Home Information</h3>
+                    <p>Address: 123 Main Street, Anytown, USA</p>
+                    <p>Year Built: 2015</p>
+                    <p>Square Footage: 2,500 sq ft</p>
+                    <p>Bedrooms: 4</p>
+                    <p>Bathrooms: 3</p>
                 </div>
             </div>
 
-            <!-- Energy & Savings -->
-            <div class="bottom-section">
-                <div class="bottom-section-header">
-                    <h3 class="bottom-section-title">
-                        <i class="fas fa-dollar-sign"></i>
-                        Energy & Savings
-                    </h3>
-                    <i class="fas fa-external-link-alt external-link"></i>
-                </div>
-                <div class="loading">
-                    <i class="fas fa-spinner"></i>
-                    Loading energy data...
+            <!-- Structure Section -->
+            <div id="structureSection" class="content-section">
+                <h2 class="section-title">
+                    <i class="fas fa-building"></i> Structure
+                </h2>
+                <div class="card">
+                    <h3>Structural Information</h3>
+                    <p>Foundation: Concrete slab</p>
+                    <p>Roof Type: Asphalt shingles</p>
+                    <p>Exterior: Vinyl siding</p>
+                    <p>Windows: Double-pane vinyl</p>
                 </div>
             </div>
-        </div>
+
+            <!-- Systems Section -->
+            <div id="systemsSection" class="content-section">
+                <h2 class="section-title">
+                    <i class="fas fa-cogs"></i> Systems
+                </h2>
+                <div class="card">
+                    <h3>Home Systems</h3>
+                    <p>HVAC: Central air conditioning and heating</p>
+                    <p>Electrical: 200 amp service</p>
+                    <p>Plumbing: Copper pipes</p>
+                    <p>Water Heater: Gas, 50 gallon</p>
+                </div>
+            </div>
+
+            <!-- Bedrooms Section -->
+            <div id="bedroomsSection" class="content-section">
+                <h2 class="section-title">
+                    <i class="fas fa-bed"></i> Bedrooms
+                </h2>
+                <div class="card">
+                    <h3>Bedroom Information</h3>
+                    <p>Master Bedroom: 15' x 12'</p>
+                    <p>Bedroom 2: 12' x 10'</p>
+                    <p>Bedroom 3: 11' x 10'</p>
+                    <p>Bedroom 4: 10' x 9'</p>
+                </div>
+            </div>
+
+            <!-- Bathrooms Section -->
+            <div id="bathroomsSection" class="content-section">
+                <h2 class="section-title">
+                    <i class="fas fa-bath"></i> Bathrooms
+                </h2>
+                <div class="card">
+                    <h3>Bathroom Information</h3>
+                    <p>Master Bath: Full bath with double vanity</p>
+                    <p>Guest Bath: Full bath</p>
+                    <p>Powder Room: Half bath</p>
+                </div>
+            </div>
+
+            <!-- Kitchen Section -->
+            <div id="kitchenSection" class="content-section">
+                <h2 class="section-title">
+                    <i class="fas fa-utensils"></i> Kitchen
+                </h2>
+                <div class="card">
+                    <h3>Kitchen Information</h3>
+                    <p>Size: 12' x 10'</p>
+                    <p>Appliances: Stainless steel</p>
+                    <p>Countertops: Granite</p>
+                    <p>Cabinets: Oak</p>
+                </div>
+            </div>
+
+            <!-- Living Areas Section -->
+            <div id="livingSection" class="content-section">
+                <h2 class="section-title">
+                    <i class="fas fa-couch"></i> Living Areas
+                </h2>
+                <div class="card">
+                    <h3>Living Space Information</h3>
+                    <p>Living Room: 16' x 14'</p>
+                    <p>Dining Room: 12' x 10'</p>
+                    <p>Family Room: 15' x 12'</p>
+                </div>
+            </div>
+
+            <!-- Garage Section -->
+            <div id="garageSection" class="content-section">
+                <h2 class="section-title">
+                    <i class="fas fa-car"></i> Garage
+                </h2>
+                <div class="card">
+                    <h3>Garage Information</h3>
+                    <p>Type: 2-car attached garage</p>
+                    <p>Size: 20' x 20'</p>
+                    <p>Door: Automatic opener</p>
+                </div>
+            </div>
+
+            <!-- Exterior Section -->
+            <div id="exteriorSection" class="content-section">
+                <h2 class="section-title">
+                    <i class="fas fa-home"></i> Exterior
+                </h2>
+                <div class="card">
+                    <h3>Exterior Information</h3>
+                    <p>Lot Size: 0.25 acres</p>
+                    <p>Landscaping: Mature trees and shrubs</p>
+                    <p>Driveway: Asphalt</p>
+                    <p>Patio: Concrete</p>
+                </div>
+            </div>
+
+            <!-- Appliances Section -->
+            <div id="appliancesSection" class="content-section">
+                <h2 class="section-title">
+                    <i class="fas fa-tv"></i> Appliances
+                </h2>
+                <div class="card">
+                    <h3>Appliance Information</h3>
+                    <p>Refrigerator: Samsung, 2020</p>
+                    <p>Dishwasher: Bosch, 2019</p>
+                    <p>Washer/Dryer: LG, 2021</p>
+                    <p>Stove: GE, 2020</p>
+                </div>
+            </div>
+
+            <!-- Favorites Section -->
+            <div id="favoritesSection" class="content-section">
+                <h2 class="section-title">
+                    <i class="fas fa-heart"></i> Favorites
+                </h2>
+                <div class="card">
+                    <h3>Favorite Items</h3>
+                    <p>No favorites added yet</p>
+                </div>
+            </div>
+
+            <!-- Photos Section -->
+            <div id="photosSection" class="content-section">
+                <h2 class="section-title">
+                    <i class="fas fa-camera"></i> Photos
+                </h2>
+                <div class="card">
+                    <h3>Home Photos</h3>
+                    <p>No photos uploaded yet</p>
+                </div>
+            </div>
+
+            <!-- Floor Plan Section -->
+            <div id="floorplanSection" class="content-section">
+                <h2 class="section-title">
+                    <i class="fas fa-drafting-compass"></i> Floor Plan
+                </h2>
+                <div class="card">
+                    <h3>Floor Plan</h3>
+                    <p>Floor plan not available</p>
+                </div>
+            </div>
+
+            <!-- Emergency Section -->
+            <div id="emergencySection" class="content-section">
+                <h2 class="section-title">
+                    <i class="fas fa-phone"></i> Emergency
+                </h2>
+                <div class="card">
+                    <h3>Emergency Contacts</h3>
+                    <p>Police: 911</p>
+                    <p>Fire Department: 911</p>
+                    <p>Emergency Electrician: (555) 123-4567</p>
+                    <p>Emergency Plumber: (555) 987-6543</p>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -749,16 +937,25 @@
     <script>
         // Define all functions FIRST before anything else
         function showSection(sectionName) {
+            // Hide all content sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => section.classList.remove('active'));
+            
             // Remove active from all nav items
             const navItems = document.querySelectorAll('.nav-item');
             navItems.forEach(item => item.classList.remove('active'));
+            
+            // Show the selected section
+            const targetSection = document.getElementById(sectionName + 'Section');
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
             
             // Add active to clicked nav item
             if (event && event.target) {
                 event.target.classList.add('active');
             }
             
-            // For now, just log to console - you can add actual section switching later
             console.log(`Switched to ${sectionName} section`);
         }
 
