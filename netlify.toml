@@ -1,4 +1,17 @@
 [build]
+  publish = "."
+  functions = "netlify/functions"
+
+# Optional: redirect root-level 404s to a simple 404 if present
+#[[redirects]]
+#  from = "/*"
+#  to = "/404.html"
+#  status = 404
+
+[functions]
+  node_bundler = "esbuild"
+
+[build]
   functions = "netlify/functions"
   publish = "."
 

@@ -36,8 +36,8 @@
     const ddb = new AWS.DynamoDB.DocumentClient();
 
       const planMap = {
-      '9B600lc6u4oneY50Ch1sQ0M': {key:'basic', name:'Basic (Monthly)', dash:'dashboard-basic-new.html'},
-      'cNi3cx3zY3kj6rzckZ1sQ0R': {key:'basic', name:'Basic (Yearly)', dash:'dashboard-basic-new.html'},
+      '9B600lc6u4oneY50Ch1sQ0M': {key:'basic', name:'Basic (Monthly)', dash:'dashboard-basic-clean.html'},
+      'cNi3cx3zY3kj6rzckZ1sQ0R': {key:'basic', name:'Basic (Yearly)', dash:'dashboard-basic-clean.html'},
       '14AeVf4E29IHbLT4Sx1sQ0N': {key:'pro', name:'Pro (Monthly)', dash:'dashboard-pro-new.html'},
       'bJe6oJ0nMg755nv0Ch1sQ0S': {key:'pro', name:'Pro (Yearly)', dash:'dashboard-pro-new.html'},
       '9B628t1rQ2gfdU1et71sQ0O': {key:'advanced', name:'Advanced Pro (Monthly)', dash:'dashboard-advanced-pro-new.html'},
@@ -49,7 +49,7 @@
     function getSelectedPlan() {
       const url = new URL(window.location.href);
       const planKey = url.searchParams.get('plan') || localStorage.getItem('selectedPlan');
-      return planMap[planKey] || {key:'basic', name:'Basic', dash:'dashboard-basic-aws.html'};
+      return planMap[planKey] || {key:'basic', name:'Basic', dash:'dashboard-basic-clean.html'};
     }
 
     async function activateSubscription() {

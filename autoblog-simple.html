@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Autoblog Test - NestMate</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background: #1a1a2e; 
+            color: white; 
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .btn { 
+            padding: 15px 30px; 
+            margin: 10px; 
+            background: #4CAF50; 
+            color: white; 
+            border: none; 
+            cursor: pointer; 
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .btn:hover { background: #45a049; }
+        .btn-primary { background: #2563eb; }
+        .btn-primary:hover { background: #1d4ed8; }
+        .form-group {
+            margin: 20px 0;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group select, .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #555;
+            border-radius: 5px;
+            background: #333;
+            color: white;
+            font-size: 16px;
+        }
+        .result-box {
+            background: #222;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid #4CAF50;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        .loading.show {
+            display: block;
+        }
+        .spinner {
+            border: 4px solid #333;
+            border-top: 4px solid #4CAF50;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: #333;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+        .stat-label {
+            font-size: 14px;
+            color: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 Simple Autoblog Test</h1>
+        <p>This is a simplified version to test the autoblog system quickly.</p>
+
+        <!-- Stats -->
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalPosts">0</div>
+                <div class="stat-label">Total Posts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="generatedToday">0</div>
+                <div class="stat-label">Generated Today</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="scheduledPosts">0</div>
+                <div class="stat-label">Scheduled</div>
+            </div>
+        </div>
+
+        <!-- Simple Form -->
+        <div class="form-group">
+            <label for="topic">Choose a Topic:</label>
+            <select id="topic">
+                <option value="">Select a topic...</option>
+                <option value="home-management">Home Management</option>
+                <option value="home-improvement">Home Improvement</option>
+                <option value="energy-efficiency">Energy Efficiency</option>
+                <option value="smart-home">Smart Home</option>
+                <option value="maintenance">Maintenance</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="audience">Target Audience:</label>
+            <select id="audience">
+                <option value="">Select audience...</option>
+                <option value="homeowners">Homeowners</option>
+                <option value="new-homeowners">New Homeowners</option>
+                <option value="realtors">Realtors</option>
+                <option value="builders">Builders</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="keywords">Keywords (optional):</label>
+            <input type="text" id="keywords" placeholder="e.g., home maintenance, energy savings">
+        </div>
+
+        <!-- Buttons -->
+        <button class="btn btn-primary" onclick="generateContent()">
+            🎯 Generate Blog Post
+        </button>
+        
+        <button class="btn" onclick="viewGeneratedPosts()">
+            📝 View Generated Posts
+        </button>
+
+        <button class="btn" onclick="clearAllPosts()">
+            🗑️ Clear All Posts
+        </button>
+
+        <!-- Loading -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Generating content with AI...</p>
+        </div>
+
+        <!-- Results -->
+        <div id="results"></div>
+    </div>
+
+    <script>
+        // Simple Autoblog System
+        class SimpleAutoblog {
+            constructor() {
+                this.posts = this.loadPosts();
+                this.updateStats();
+            }
+
+            loadPosts() {
+                const saved = localStorage.getItem('simple-autoblog-posts');
+                return saved ? JSON.parse(saved) : [];
+            }
+
+            savePosts() {
+                localStorage.setItem('simple-autoblog-posts', JSON.stringify(this.posts));
+            }
+
+            updateStats() {
+                const today = new Date().toDateString();
+                const todayPosts = this.posts.filter(post => 
+                    new Date(post.createdAt).toDateString() === today
+                );
+
+                document.getElementById('totalPosts').textContent = this.posts.length;
+                document.getElementById('generatedToday').textContent = todayPosts.length;
+                document.getElementById('scheduledPosts').textContent = this.posts.filter(p => p.scheduled).length;
+            }
+
+            async generateContent() {
+                const topic = document.getElementById('topic').value;
+                const audience = document.getElementById('audience').value;
+                const keywords = document.getElementById('keywords').value;
+
+                if (!topic || !audience) {
+                    alert('Please select both topic and audience!');
+                    return;
+                }
+
+                this.showLoading(true);
+                this.hideResults();
+
+                try {
+                    // Simulate AI generation (2-3 seconds)
+                    await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 1000));
+
+                    const content = this.createContent(topic, audience, keywords);
+                    this.posts.push(content);
+                    this.savePosts();
+                    this.updateStats();
+                    this.displayResult(content);
+                    this.showLoading(false);
+
+                } catch (error) {
+                    alert('Error generating content: ' + error.message);
+                    this.showLoading(false);
+                }
+            }
+
+            createContent(topic, audience, keywords) {
+                const templates = {
+                    'home-management': {
+                        title: `Complete Guide to Home Management for ${this.formatAudience(audience)}`,
+                        content: `Managing a home effectively requires organization, planning, and the right tools. As ${this.formatAudience(audience)}, you need a systematic approach to keep your property in excellent condition.
+
+## Key Areas of Home Management
+
+### 1. Regular Maintenance
+- Schedule seasonal inspections
+- Keep detailed records of all work performed
+- Maintain a calendar of important dates
+
+### 2. Financial Planning
+- Budget for regular maintenance
+- Plan for unexpected repairs
+- Track home improvement investments
+
+### 3. Documentation
+- Keep receipts and warranties
+- Maintain a home inventory
+- Document all improvements and repairs
+
+## Benefits of Proper Home Management
+
+Effective home management provides numerous advantages:
+- **Increased Property Value**: Well-maintained homes appreciate faster
+- **Reduced Stress**: Organized systems prevent last-minute emergencies
+- **Cost Savings**: Preventive maintenance is cheaper than major repairs
+- **Peace of Mind**: Knowing your home is well-cared for
+
+## Getting Started
+
+Begin with these simple steps:
+1. Create a home management binder or digital system
+2. Schedule a comprehensive home inspection
+3. Set up a maintenance calendar
+4. Start tracking expenses and improvements
+
+Remember, successful home management is about consistency and attention to detail. Start small and build your system over time.`
+                    },
+                    'home-improvement': {
+                        title: `Home Improvement Tips for ${this.formatAudience(audience)}`,
+                        content: `Home improvement projects can transform your living space and increase your property value. As ${this.formatAudience(audience)}, understanding the fundamentals of home improvement is essential.
+
+## Planning Your Project
+
+### 1. Set Clear Goals
+- Define what you want to achieve
+- Consider your budget and timeline
+- Research local building codes and permits
+
+### 2. Choose the Right Projects
+- Focus on high-impact, low-cost improvements
+- Consider projects that add the most value
+- Start with projects you can complete yourself
+
+### 3. Budget Wisely
+- Get multiple quotes for professional work
+- Set aside 10-20% for unexpected costs
+- Consider the return on investment
+
+## Popular Home Improvement Projects
+
+### Kitchen Updates
+- Paint cabinets for an instant refresh
+- Update hardware and fixtures
+- Consider new countertops or backsplash
+
+### Bathroom Renovations
+- Replace outdated fixtures
+- Update lighting and mirrors
+- Consider new flooring or paint
+
+### Outdoor Improvements
+- Enhance curb appeal with landscaping
+- Add outdoor lighting
+- Consider a deck or patio
+
+## DIY vs. Professional
+
+Some projects are perfect for DIY:
+- Painting and wallpapering
+- Installing new hardware
+- Basic landscaping
+
+Leave these to professionals:
+- Electrical work
+- Plumbing modifications
+- Structural changes
+
+Remember, the key to successful home improvement is proper planning and realistic expectations.`
+                    },
+                    'energy-efficiency': {
+                        title: `Energy Efficiency Guide for ${this.formatAudience(audience)}`,
+                        content: `Energy efficiency is crucial for reducing costs and environmental impact. As ${this.formatAudience(audience)}, implementing energy-saving measures can significantly improve your home's performance.
+
+## Understanding Energy Efficiency
+
+### 1. Home Energy Audit
+- Identify areas of energy loss
+- Measure current energy consumption
+- Prioritize improvements by impact
+
+### 2. Common Energy Wasters
+- Poor insulation
+- Inefficient heating and cooling
+- Air leaks around windows and doors
+- Outdated appliances
+
+## Quick Energy Wins
+
+### Low-Cost Improvements
+- Seal air leaks with weatherstripping
+- Install programmable thermostats
+- Replace incandescent bulbs with LEDs
+- Add insulation to attics and walls
+
+### Behavioral Changes
+- Adjust thermostat settings
+- Use energy-efficient appliances
+- Turn off lights and electronics when not in use
+- Wash clothes in cold water
+
+## Major Energy Improvements
+
+### HVAC System
+- Upgrade to high-efficiency units
+- Regular maintenance and cleaning
+- Proper duct sealing and insulation
+
+### Windows and Doors
+- Install energy-efficient windows
+- Add storm doors and windows
+- Use window treatments for insulation
+
+### Appliances
+- Choose ENERGY STAR certified products
+- Replace old, inefficient appliances
+- Consider smart home technology
+
+## Financial Benefits
+
+Energy efficiency improvements offer:
+- **Lower Utility Bills**: Save 20-30% on energy costs
+- **Increased Home Value**: Energy-efficient homes sell for more
+- **Tax Incentives**: Many improvements qualify for rebates
+- **Environmental Impact**: Reduce your carbon footprint
+
+Start with simple changes and gradually implement larger improvements for maximum impact.`
+                    }
+                };
+
+                const template = templates[topic] || templates['home-management'];
+                const now = new Date();
+
+                return {
+                    id: Date.now().toString(),
+                    title: template.title,
+                    content: template.content,
+                    excerpt: template.content.substring(0, 150) + '...',
+                    topic: topic,
+                    audience: audience,
+                    keywords: keywords ? keywords.split(',').map(k => k.trim()) : [],
+                    category: this.getCategoryFromTopic(topic),
+                    wordCount: template.content.split(' ').length,
+                    createdAt: now.toISOString(),
+                    scheduled: false,
+                    published: false
+                };
+            }
+
+            formatAudience(audience) {
+                return audience.split('-').map(word => 
+                    word.charAt(0).toUpperCase() + word.slice(1)
+                ).join(' ');
+            }
+
+            getCategoryFromTopic(topic) {
+                const categories = {
+                    'home-management': 'Home Management',
+                    'home-improvement': 'Home Improvement',
+                    'energy-efficiency': 'Energy Efficiency',
+                    'smart-home': 'Smart Home',
+                    'maintenance': 'Maintenance'
+                };
+                return categories[topic] || 'General';
+            }
+
+            displayResult(content) {
+                const resultsDiv = document.getElementById('results');
+                resultsDiv.innerHTML = `
+                    <div class="result-box">
+                        <h3>✅ Content Generated Successfully!</h3>
+                        <h4>${content.title}</h4>
+                        <p><strong>Category:</strong> ${content.category}</p>
+                        <p><strong>Audience:</strong> ${this.formatAudience(content.audience)}</p>
+                        <p><strong>Word Count:</strong> ${content.wordCount}</p>
+                        <p><strong>Keywords:</strong> ${content.keywords.join(', ') || 'None'}</p>
+                        <hr style="margin: 15px 0; border: 1px solid #555;">
+                        <h5>Content Preview:</h5>
+                        <div style="max-height: 200px; overflow-y: auto; background: #333; padding: 15px; border-radius: 5px;">
+                            ${content.content.replace(/\n/g, '<br>')}
+                        </div>
+                        <div style="margin-top: 15px;">
+                            <button class="btn" onclick="autoblog.schedulePost('${content.id}')">
+                                📅 Schedule Post
+                            </button>
+                            <button class="btn" onclick="autoblog.publishPost('${content.id}')">
+                                🚀 Publish Now
+                            </button>
+                            <button class="btn" onclick="autoblog.deletePost('${content.id}')">
+                                🗑️ Delete
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            schedulePost(postId) {
+                const post = this.posts.find(p => p.id === postId);
+                if (post) {
+                    post.scheduled = true;
+                    post.scheduledDate = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(); // Tomorrow
+                    this.savePosts();
+                    this.updateStats();
+                    alert('Post scheduled for tomorrow!');
+                }
+            }
+
+            publishPost(postId) {
+                const post = this.posts.find(p => p.id === postId);
+                if (post) {
+                    post.published = true;
+                    post.publishedAt = new Date().toISOString();
+                    this.savePosts();
+                    this.updateStats();
+                    alert('Post published successfully!');
+                }
+            }
+
+            deletePost(postId) {
+                if (confirm('Are you sure you want to delete this post?')) {
+                    this.posts = this.posts.filter(p => p.id !== postId);
+                    this.savePosts();
+                    this.updateStats();
+                    this.hideResults();
+                    alert('Post deleted!');
+                }
+            }
+
+            viewGeneratedPosts() {
+                if (this.posts.length === 0) {
+                    alert('No posts generated yet!');
+                    return;
+                }
+
+                let html = '<div class="result-box"><h3>📝 Generated Posts</h3>';
+                this.posts.forEach(post => {
+                    html += `
+                        <div style="background: #333; padding: 15px; margin: 10px 0; border-radius: 5px;">
+                            <h4>${post.title}</h4>
+                            <p><strong>Category:</strong> ${post.category} | <strong>Status:</strong> ${post.published ? 'Published' : post.scheduled ? 'Scheduled' : 'Draft'}</p>
+                            <p><strong>Created:</strong> ${new Date(post.createdAt).toLocaleString()}</p>
+                            <div style="margin-top: 10px;">
+                                ${!post.published ? `<button class="btn" onclick="autoblog.publishPost('${post.id}')">Publish</button>` : ''}
+                                <button class="btn" onclick="autoblog.deletePost('${post.id}')">Delete</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                
+                document.getElementById('results').innerHTML = html;
+            }
+
+            clearAllPosts() {
+                if (confirm('Are you sure you want to delete ALL posts? This cannot be undone!')) {
+                    this.posts = [];
+                    this.savePosts();
+                    this.updateStats();
+                    this.hideResults();
+                    alert('All posts cleared!');
+                }
+            }
+
+            showLoading(show) {
+                const loading = document.getElementById('loading');
+                if (show) {
+                    loading.classList.add('show');
+                } else {
+                    loading.classList.remove('show');
+                }
+            }
+
+            hideResults() {
+                document.getElementById('results').innerHTML = '';
+            }
+        }
+
+        // Initialize the autoblog system
+        let autoblog;
+        document.addEventListener('DOMContentLoaded', () => {
+            autoblog = new SimpleAutoblog();
+            window.autoblog = autoblog;
+            console.log('✅ Simple Autoblog System Ready!');
+        });
+
+        // Global functions for buttons
+        function generateContent() {
+            autoblog.generateContent();
+        }
+
+        function viewGeneratedPosts() {
+            autoblog.viewGeneratedPosts();
+        }
+
+        function clearAllPosts() {
+            autoblog.clearAllPosts();
+        }
+    </script>
+</body>
+</html>

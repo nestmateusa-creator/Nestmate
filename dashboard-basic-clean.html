@@ -6,9 +6,9 @@
     <title>Basic Dashboard - NestMate</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Temporarily disable external scripts to test -->
-    <!-- <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1491.0.min.js"></script> -->
-    <!-- <script src="auth-aws.js"></script> -->
+    <!-- AWS SDK and Authentication -->
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1491.0.min.js"></script>
+    <script src="auth-aws.js"></script>
     
     <style>
         * {
@@ -1716,15 +1716,23 @@
                         <p id="photosEmpty" style="color:#94a3b8;">No photos uploaded yet</p>
                     </div>
                     <div id="photosForm" style="display:none;">
-                        <div class="form-group">
-                            <label for="photoUrl">Photo URL</label>
-                            <input type="url" id="photoUrl" placeholder="Paste an image URL">
+                        <div class="form-container">
+                            <div class="form-group">
+                                <label for="photoFile">Upload Photo</label>
+                                <input type="file" id="photoFile" accept="image/*" multiple>
+                                <small style="color: #94a3b8; margin-top: 0.5rem; display: block;">Select multiple images to upload</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="photoUrl">Or paste image URL</label>
+                                <input type="url" id="photoUrl" placeholder="Paste an image URL">
+                            </div>
+                            <div class="form-actions">
+                                <button class="btn" onclick="uploadPhotos()"><i class="fas fa-upload"></i> Upload</button>
+                                <button class="btn" onclick="addPhotoFromUrl()"><i class="fas fa-plus"></i> Add URL</button>
+                                <button class="btn btn-secondary" onclick="clearPhotos()"><i class="fas fa-trash"></i> Clear All</button>
+                            </div>
                         </div>
-                        <div style="display:flex; gap: 0.75rem; margin-bottom: 0.75rem;">
-                            <button class="btn" onclick="addPhoto()"><i class="fas fa-plus"></i> Add</button>
-                            <button class="btn btn-secondary" onclick="clearPhotos()"><i class="fas fa-trash"></i> Clear All</button>
-                        </div>
-                        <div style="display:flex; gap: 1rem;">
+                        <div style="display:flex; gap: 1rem; margin-top: 1rem;">
                             <button class="btn" onclick="savePhotos(); this.closest('.card').classList.remove('editing');"><i class="fas fa-save"></i> Save</button>
                             <button class="btn btn-secondary" onclick="cancelEditPhotos(); this.closest('.card').classList.remove('editing');"><i class="fas fa-times"></i> Cancel</button>
                         </div>
@@ -1748,11 +1756,22 @@
                         <div id="floorplanPreview" style="width:100%; aspect-ratio: 16/9; background:#334155; border:1px dashed #475569; border-radius: 0.5rem; display:flex; align-items:center; justify-content:center; color:#94a3b8;">Floor plan not available</div>
                     </div>
                     <div id="floorplanForm" style="display:none;">
-                        <div class="form-group">
-                            <label for="floorplanUrl">Floor Plan URL</label>
-                            <input type="url" id="floorplanUrl" placeholder="Paste an image or PDF URL">
+                        <div class="form-container">
+                            <div class="form-group">
+                                <label for="floorplanFile">Upload Floor Plan</label>
+                                <input type="file" id="floorplanFile" accept="image/*,.pdf">
+                                <small style="color: #94a3b8; margin-top: 0.5rem; display: block;">Upload image or PDF file</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="floorplanUrl">Or paste file URL</label>
+                                <input type="url" id="floorplanUrl" placeholder="Paste an image or PDF URL">
+                            </div>
+                            <div class="form-actions">
+                                <button class="btn" onclick="uploadFloorplan()"><i class="fas fa-upload"></i> Upload</button>
+                                <button class="btn" onclick="addFloorplanFromUrl()"><i class="fas fa-plus"></i> Add URL</button>
+                            </div>
                         </div>
-                        <div style="display:flex; gap: 1rem;">
+                        <div style="display:flex; gap: 1rem; margin-top: 1rem;">
                             <button class="btn" onclick="saveFloorplan(); this.closest('.card').classList.remove('editing');"><i class="fas fa-save"></i> Save</button>
                             <button class="btn btn-secondary" onclick="cancelEditFloorplan(); this.closest('.card').classList.remove('editing');"><i class="fas fa-times"></i> Cancel</button>
                         </div>
@@ -1801,6 +1820,52 @@
     </button>
 
     <script>
+        // AWS Configuration
+        AWS.config.update({
+            region: 'us-east-2',
+            accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
+            secretAccessKey: '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'
+        });
+
+        const dynamodb = new AWS.DynamoDB.DocumentClient();
+
+        // S3 Upload Functions
+        async function getS3PresignedUrl(key, contentType) {
+            try {
+                const response = await fetch('/.netlify/functions/s3-presign', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ key, contentType })
+                });
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Error getting presigned URL:', error);
+                throw error;
+            }
+        }
+
+        async function uploadToS3(file, key) {
+            try {
+                const { uploadUrl, publicUrl } = await getS3PresignedUrl(key, file.type);
+                
+                const response = await fetch(uploadUrl, {
+                    method: 'PUT',
+                    body: file,
+                    headers: { 'Content-Type': file.type }
+                });
+
+                if (response.ok) {
+                    return publicUrl;
+                } else {
+                    throw new Error('Upload failed');
+                }
+            } catch (error) {
+                console.error('S3 upload error:', error);
+                throw error;
+            }
+        }
+
         // Define all functions FIRST before anything else
         function showSection(sectionName) {
             console.log('showSection called with:', sectionName);
@@ -1956,12 +2021,73 @@
             showAlert('Systems information saved successfully!', 'success');
         }
 
+        // Sign out function
+        async function signOut() {
+            try {
+                await nestMateAuth.signOut();
+                window.location.href = 'login-aws.html';
+            } catch (error) {
+                console.error('Sign out error:', error);
+                window.location.href = 'login-aws.html';
+            }
+        }
+
         window.showSection = showSection;
+        window.signOut = signOut;
         window.openTasksCalendar = openTasksCalendar;
         window.openProducts = openProducts;
         window.openEmergency = openEmergency;
         window.addService = addService;
         window.viewRecords = viewRecords;
+        
+        // Make all CRUD functions globally accessible
+        window.editBasicInfo = editBasicInfo;
+        window.cancelEditBasicInfo = cancelEditBasicInfo;
+        window.saveBasicInfo = saveBasicInfo;
+        window.editStructure = editStructure;
+        window.cancelEditStructure = cancelEditStructure;
+        window.saveStructure = saveStructure;
+        window.editSystems = editSystems;
+        window.cancelEditSystems = cancelEditSystems;
+        window.saveSystems = saveSystems;
+        window.editBedrooms = editBedrooms;
+        window.cancelEditBedrooms = cancelEditBedrooms;
+        window.saveBedrooms = saveBedrooms;
+        window.editBathrooms = editBathrooms;
+        window.cancelEditBathrooms = cancelEditBathrooms;
+        window.saveBathrooms = saveBathrooms;
+        window.editKitchen = editKitchen;
+        window.cancelEditKitchen = cancelEditKitchen;
+        window.saveKitchen = saveKitchen;
+        window.editLivingAreas = editLivingAreas;
+        window.cancelEditLivingAreas = cancelEditLivingAreas;
+        window.saveLivingAreas = saveLivingAreas;
+        window.editGarage = editGarage;
+        window.cancelEditGarage = cancelEditGarage;
+        window.saveGarage = saveGarage;
+        window.editExterior = editExterior;
+        window.cancelEditExterior = cancelEditExterior;
+        window.saveExterior = saveExterior;
+        window.editAppliances = editAppliances;
+        window.cancelEditAppliances = cancelEditAppliances;
+        window.saveAppliances = saveAppliances;
+        window.editFavorites = editFavorites;
+        window.cancelEditFavorites = cancelEditFavorites;
+        window.saveFavorites = saveFavorites;
+        window.editPhotos = editPhotos;
+        window.cancelEditPhotos = cancelEditPhotos;
+        window.savePhotos = savePhotos;
+        window.uploadPhotos = uploadPhotos;
+        window.addPhotoFromUrl = addPhotoFromUrl;
+        window.clearPhotos = clearPhotos;
+        window.editFloorplan = editFloorplan;
+        window.cancelEditFloorplan = cancelEditFloorplan;
+        window.saveFloorplan = saveFloorplan;
+        window.uploadFloorplan = uploadFloorplan;
+        window.addFloorplanFromUrl = addFloorplanFromUrl;
+        window.editEmergency = editEmergency;
+        window.cancelEditEmergency = cancelEditEmergency;
+        window.saveEmergency = saveEmergency;
         window.openHomeDetails = openHomeDetails;
         window.exportData = exportData;
         window.openChatbot = openChatbot;
@@ -2299,33 +2425,123 @@
             document.getElementById('photosForm').style.display = 'none';
         }
 
-        function addPhoto() {
+        // Photos CRUD Functions with S3 Upload
+        let photosData = [];
+
+        function addPhotoFromUrl() {
             const input = document.getElementById('photoUrl');
             const url = (input.value || '').trim();
             if (!url) return;
-            const grid = document.getElementById('photosGrid');
-            const img = document.createElement('img');
-            img.src = url;
-            img.alt = 'Home Photo';
-            img.style.width = '100%';
-            img.style.height = '120px';
-            img.style.objectFit = 'cover';
-            img.style.borderRadius = '0.375rem';
-            grid.appendChild(img);
+            
+            photosData.push({ url, type: 'url' });
+            displayPhotos();
             input.value = '';
             document.getElementById('photosEmpty').style.display = 'none';
         }
 
-        function clearPhotos() {
+        async function uploadPhotos() {
+            const fileInput = document.getElementById('photoFile');
+            const files = fileInput.files;
+            
+            if (files.length === 0) {
+                showAlert('Please select files to upload', 'error');
+                return;
+            }
+
+            showAlert('Uploading photos...', 'info');
+            
+            try {
+                const userId = nestMateAuth.currentUser.userId;
+                const uploadPromises = Array.from(files).map(async (file, index) => {
+                    const key = `users/${userId}/photos/${Date.now()}-${index}-${file.name}`;
+                    const url = await uploadToS3(file, key);
+                    return { url, type: 's3', filename: file.name };
+                });
+
+                const uploadedPhotos = await Promise.all(uploadPromises);
+                photosData.push(...uploadedPhotos);
+                displayPhotos();
+                fileInput.value = '';
+                document.getElementById('photosEmpty').style.display = 'none';
+                showAlert(`${uploadedPhotos.length} photos uploaded successfully!`, 'success');
+            } catch (error) {
+                console.error('Upload error:', error);
+                showAlert('Upload failed. Please try again.', 'error');
+            }
+        }
+
+        function displayPhotos() {
             const grid = document.getElementById('photosGrid');
             grid.innerHTML = '';
+            
+            photosData.forEach((photo, index) => {
+                const container = document.createElement('div');
+                container.style.position = 'relative';
+                
+                const img = document.createElement('img');
+                img.src = photo.url;
+                img.alt = photo.filename || 'Home Photo';
+                img.style.width = '100%';
+                img.style.height = '120px';
+                img.style.objectFit = 'cover';
+                img.style.borderRadius = '0.375rem';
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
+                deleteBtn.style.position = 'absolute';
+                deleteBtn.style.top = '0.25rem';
+                deleteBtn.style.right = '0.25rem';
+                deleteBtn.style.background = 'rgba(239, 68, 68, 0.8)';
+                deleteBtn.style.border = 'none';
+                deleteBtn.style.borderRadius = '50%';
+                deleteBtn.style.width = '1.5rem';
+                deleteBtn.style.height = '1.5rem';
+                deleteBtn.style.color = 'white';
+                deleteBtn.style.cursor = 'pointer';
+                deleteBtn.onclick = () => removePhoto(index);
+                
+                container.appendChild(img);
+                container.appendChild(deleteBtn);
+                grid.appendChild(container);
+            });
+        }
+
+        function removePhoto(index) {
+            photosData.splice(index, 1);
+            displayPhotos();
+            if (photosData.length === 0) {
+                document.getElementById('photosEmpty').style.display = '';
+            }
+        }
+
+        function clearPhotos() {
+            photosData = [];
+            displayPhotos();
             document.getElementById('photosEmpty').style.display = '';
         }
 
-        function savePhotos() {
-            document.getElementById('photosDisplay').style.display = 'block';
-            document.getElementById('photosForm').style.display = 'none';
-            showAlert('Photos saved!', 'success');
+        async function savePhotos() {
+            try {
+                const userId = nestMateAuth.currentUser.userId;
+                const params = {
+                    TableName: 'nestmate-users',
+                    Key: { userId: userId },
+                    UpdateExpression: 'SET photos = :photos, lastUpdated = :timestamp',
+                    ExpressionAttributeValues: {
+                        ':photos': photosData,
+                        ':timestamp': new Date().toISOString()
+                    }
+                };
+                
+                await dynamodb.update(params).promise();
+                
+                document.getElementById('photosDisplay').style.display = 'block';
+                document.getElementById('photosForm').style.display = 'none';
+                showAlert('Photos saved to database!', 'success');
+            } catch (error) {
+                console.error('Save photos error:', error);
+                showAlert('Failed to save photos. Please try again.', 'error');
+            }
         }
 
         // Floorplan CRUD Functions
@@ -2339,28 +2555,88 @@
             document.getElementById('floorplanForm').style.display = 'none';
         }
 
-        function saveFloorplan() {
-            const url = (document.getElementById('floorplanUrl').value || '').trim();
+        // Floor Plan CRUD Functions with S3 Upload
+        let floorplanData = null;
+
+        function addFloorplanFromUrl() {
+            const input = document.getElementById('floorplanUrl');
+            const url = (input.value || '').trim();
+            if (!url) return;
+            
+            floorplanData = { url, type: 'url' };
+            displayFloorplan();
+            input.value = '';
+        }
+
+        async function uploadFloorplan() {
+            const fileInput = document.getElementById('floorplanFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showAlert('Please select a file to upload', 'error');
+                return;
+            }
+
+            showAlert('Uploading floor plan...', 'info');
+            
+            try {
+                const userId = nestMateAuth.currentUser.userId;
+                const key = `users/${userId}/floorplan/${Date.now()}-${file.name}`;
+                const url = await uploadToS3(file, key);
+                
+                floorplanData = { url, type: 's3', filename: file.name };
+                displayFloorplan();
+                fileInput.value = '';
+                showAlert('Floor plan uploaded successfully!', 'success');
+            } catch (error) {
+                console.error('Upload error:', error);
+                showAlert('Upload failed. Please try again.', 'error');
+            }
+        }
+
+        function displayFloorplan() {
             const preview = document.getElementById('floorplanPreview');
-            if (url) {
-                if (url.match(/\.(png|jpg|jpeg|gif|webp)$/i)) {
+            
+            if (floorplanData && floorplanData.url) {
+                if (floorplanData.url.match(/\.(png|jpg|jpeg|gif|webp)$/i)) {
                     preview.innerHTML = '';
                     const img = document.createElement('img');
-                    img.src = url;
+                    img.src = floorplanData.url;
                     img.alt = 'Floor Plan';
                     img.style.maxWidth = '100%';
                     img.style.maxHeight = '100%';
                     img.style.objectFit = 'contain';
                     preview.appendChild(img);
                 } else {
-                    preview.innerHTML = `<a href="${url}" target="_blank" style="color:#93c5fd;">Open Floor Plan</a>`;
+                    preview.innerHTML = `<a href="${floorplanData.url}" target="_blank" style="color:#93c5fd;">Open Floor Plan</a>`;
                 }
             } else {
                 preview.textContent = 'Floor plan not available';
             }
-            document.getElementById('floorplanDisplay').style.display = 'block';
-            document.getElementById('floorplanForm').style.display = 'none';
-            showAlert('Floor plan saved!', 'success');
+        }
+
+        async function saveFloorplan() {
+            try {
+                const userId = nestMateAuth.currentUser.userId;
+                const params = {
+                    TableName: 'nestmate-users',
+                    Key: { userId: userId },
+                    UpdateExpression: 'SET floorplan = :floorplan, lastUpdated = :timestamp',
+                    ExpressionAttributeValues: {
+                        ':floorplan': floorplanData,
+                        ':timestamp': new Date().toISOString()
+                    }
+                };
+                
+                await dynamodb.update(params).promise();
+                
+                document.getElementById('floorplanDisplay').style.display = 'block';
+                document.getElementById('floorplanForm').style.display = 'none';
+                showAlert('Floor plan saved to database!', 'success');
+            } catch (error) {
+                console.error('Save floorplan error:', error);
+                showAlert('Failed to save floor plan. Please try again.', 'error');
+            }
         }
 
         // Emergency CRUD Functions
@@ -2386,37 +2662,60 @@
         }
 
         // Initialize dashboard
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             console.log('🚀 Command Center Dashboard Starting...');
             
-            // Set user info (temporarily hardcoded for testing)
-            document.getElementById('userName').textContent = 'Test User';
-            document.getElementById('userEmail').textContent = 'test@example.com';
-            document.getElementById('userAvatar').textContent = 'T';
+            // Check authentication
+            const isAuthenticated = await nestMateAuth.isAuthenticated();
+            if (!isAuthenticated) {
+                window.location.href = 'login-aws.html';
+                return;
+            }
+
+            // Get user info
+            const user = nestMateAuth.currentUser;
+            if (user) {
+                document.getElementById('userName').textContent = user.name || 'User';
+                document.getElementById('userEmail').textContent = user.email || 'user@example.com';
+                document.getElementById('userAvatar').textContent = (user.name || 'U').charAt(0).toUpperCase();
+            }
             
             // Load dashboard data
+            await loadUserData();
             loadDashboardData();
             
             console.log('✅ Command Center Dashboard initialized successfully');
         });
 
-        // Load user data (simplified for testing)
-        function loadUserData() {
-            // Set default values for testing
-            document.getElementById('displayAddress').textContent = '123 Main Street, Anytown, USA';
-            document.getElementById('displayYearBuilt').textContent = '2015';
-            document.getElementById('displaySquareFootage').textContent = '2,500 sq ft';
-            document.getElementById('displayBedrooms').textContent = '4';
-            document.getElementById('displayBathrooms').textContent = '3';
-            document.getElementById('displayHomeType').textContent = 'Single Family';
+        // Load user data from DynamoDB
+        async function loadUserData() {
+            try {
+                const userId = nestMateAuth.currentUser.userId;
+                const params = {
+                    TableName: 'nestmate-users',
+                    Key: { userId: userId }
+                };
+                
+                const result = await dynamodb.get(params).promise();
+                const userData = result.Item || {};
+                
+                // Load basic info
+                const basicInfo = userData.basicInfo || {};
+                document.getElementById('displayAddress').textContent = basicInfo.address || 'Not set';
+                document.getElementById('displayYearBuilt').textContent = basicInfo.yearBuilt || 'Not set';
+                document.getElementById('displaySquareFootage').textContent = basicInfo.squareFootage ? `${basicInfo.squareFootage} sq ft` : 'Not set';
+                document.getElementById('displayBedrooms').textContent = basicInfo.bedrooms || 'Not set';
+                document.getElementById('displayBathrooms').textContent = basicInfo.bathrooms || 'Not set';
+                document.getElementById('displayHomeType').textContent = basicInfo.homeType || 'Not set';
             
-            // Set default structure values
-            document.getElementById('displayFoundation').textContent = 'Concrete Slab';
-            document.getElementById('displayRoofType').textContent = 'Asphalt Shingles';
-            document.getElementById('displayExterior').textContent = 'Vinyl Siding';
-            document.getElementById('displayWindows').textContent = 'Double Pane';
-            document.getElementById('displayInsulation').textContent = 'Fiberglass';
-            document.getElementById('displayLastInspection').textContent = '2023-01-15';
+                // Load structure info
+                const structure = userData.structure || {};
+                document.getElementById('displayFoundation').textContent = structure.foundation || 'Not set';
+                document.getElementById('displayRoofType').textContent = structure.roofType || 'Not set';
+                document.getElementById('displayExterior').textContent = structure.exterior || 'Not set';
+                document.getElementById('displayWindows').textContent = structure.windows || 'Not set';
+                document.getElementById('displayInsulation').textContent = structure.insulation || 'Not set';
+                document.getElementById('displayLastInspection').textContent = structure.lastInspection || 'Not set';
             
             // Set default systems values
             document.getElementById('displayHVAC').textContent = 'Central Air & Heat';
@@ -2481,6 +2780,24 @@
             document.getElementById('displayStove').textContent = 'GE, 2020';
             document.getElementById('displayMicrowave').textContent = 'Whirlpool, 2019';
             document.getElementById('displayApplianceService').textContent = '2023-04-15';
+            
+            // Load photos
+            if (userData.photos && userData.photos.length > 0) {
+                photosData = userData.photos;
+                displayPhotos();
+                document.getElementById('photosEmpty').style.display = 'none';
+            }
+            
+            // Load floor plan
+            if (userData.floorplan) {
+                floorplanData = userData.floorplan;
+                displayFloorplan();
+            }
+            
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                showAlert('Failed to load user data', 'error');
+            }
         }
 
         // Load dashboard data (simplified for testing)

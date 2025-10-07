@@ -27,7 +27,12 @@ class NestMateAuth {
 
     // Sign up a new user
     async signUp(email, password, userData = {}) {
+        console.log('=== SIGNUP START ===');
+        console.log('Email:', email);
+        console.log('UserData:', userData);
+        
         try {
+            console.log('Step 1: Preparing Cognito signup parameters...');
             const attrs = [
                 { Name: 'email', Value: email },
                 { Name: 'name', Value: userData.name || '' }
@@ -42,28 +47,41 @@ class NestMateAuth {
                 Password: password,
                 UserAttributes: attrs
             };
+            console.log('Cognito params:', params);
 
+            console.log('Step 2: Calling Cognito signUp...');
             const result = await cognito.signUp(params).promise();
+            console.log('Cognito result:', result);
             
-            // Create user record in DynamoDB
-            await this.createUserRecord({
-                userId: result.UserSub,
-                email: email,
-                name: userData.name || '',
-                phone: userData.phone || '',
-                subscription: 'basic',
-                createdAt: new Date().toISOString(),
-                lastLogin: new Date().toISOString()
-            });
+            console.log('Step 3: Creating DynamoDB user record...');
+            try {
+                await this.createUserRecord({
+                    userId: result.UserSub,
+                    email: email,
+                    name: userData.name || '',
+                    phone: userData.phone || '',
+                    subscription: 'basic',
+                    subscriptionStatus: 'active',
+                    createdAt: new Date().toISOString(),
+                    lastLogin: new Date().toISOString()
+                });
+                console.log('✅ DynamoDB record created successfully');
+            } catch (dbError) {
+                console.error('❌ DynamoDB error:', dbError);
+                // Continue anyway - the Cognito user was created
+            }
 
+            console.log('Step 4: Signup completed successfully');
             return {
                 success: true,
                 userSub: result.UserSub,
-                needsConfirmation: !result.UserConfirmed,
-                message: 'Account created successfully! Please check your email for confirmation.'
+                needsConfirmation: false,
+                message: 'Account created successfully!'
             };
         } catch (error) {
-            console.error('Sign up error:', error);
+            console.error('❌ SIGNUP ERROR:', error);
+            console.error('Error code:', error.code);
+            console.error('Error message:', error.message);
             return { 
                 success: false, 
                 errorCode: error.code,

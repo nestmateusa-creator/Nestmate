@@ -210,17 +210,6 @@
             display: block;
         }
 
-        .confirmation-section {
-            display: none;
-        }
-
-        .confirmation-section.show {
-            display: block;
-        }
-
-        .signup-section.hide {
-            display: none;
-        }
 
         @media (max-width: 480px) {
             .auth-container {
@@ -291,32 +280,6 @@
             </a>
         </div>
 
-        <!-- Email Confirmation Section -->
-        <div id="confirmationSection" class="confirmation-section">
-            <h2 style="text-align: center; margin-bottom: 1rem; color: #60a5fa;">Confirm Your Email</h2>
-            <p style="text-align: center; margin-bottom: 2rem; color: #94a3b8;">
-                We've sent a confirmation code to <strong id="confirmationEmail"></strong>
-            </p>
-
-            <form id="confirmationForm">
-                <div class="form-group">
-                    <label for="confirmationCode">Confirmation Code</label>
-                    <input type="text" id="confirmationCode" name="confirmationCode" placeholder="Enter 6-digit code" required maxlength="6">
-                </div>
-
-                <button type="submit" class="btn" id="confirmBtn">
-                    <i class="fas fa-check"></i> Confirm Email
-                </button>
-            </form>
-
-            <div class="divider">
-                <span>Didn't receive the code?</span>
-            </div>
-
-            <button type="button" class="btn btn-secondary" id="resendBtn">
-                <i class="fas fa-redo"></i> Resend Code
-            </button>
-        </div>
 
         <div class="loading" id="loading">
             <i class="fas fa-spinner fa-spin"></i> Processing...
@@ -333,9 +296,6 @@
         });
         // Form elements
         const signupForm = document.getElementById('signupForm');
-        const confirmationForm = document.getElementById('confirmationForm');
-        const signupSection = document.getElementById('signupSection');
-        const confirmationSection = document.getElementById('confirmationSection');
         const loading = document.getElementById('loading');
         const messageContainer = document.getElementById('messageContainer');
 
@@ -345,13 +305,9 @@
         const phoneInput = document.getElementById('phone');
         const passwordInput = document.getElementById('password');
         const confirmPasswordInput = document.getElementById('confirmPassword');
-        const confirmationCodeInput = document.getElementById('confirmationCode');
-        const confirmationEmail = document.getElementById('confirmationEmail');
 
         // Button elements
         const signupBtn = document.getElementById('signupBtn');
-        const confirmBtn = document.getElementById('confirmBtn');
-        const resendBtn = document.getElementById('resendBtn');
 
         // Password requirements
         const passwordRequirements = {
@@ -362,7 +318,6 @@
             symbol: document.getElementById('symbol')
         };
 
-        let currentEmail = '';
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
@@ -376,8 +331,6 @@
             passwordInput.addEventListener('input', validatePassword);
             confirmPasswordInput.addEventListener('input', validatePasswordMatch);
             signupForm.addEventListener('submit', handleSignup);
-            confirmationForm.addEventListener('submit', handleConfirmation);
-            resendBtn.addEventListener('click', handleResendCode);
         });
 
         // Validate password requirements
@@ -402,8 +355,8 @@
 
         // Validate password match
         function validatePasswordMatch() {
-            const password = passwordInput.value;
-            const confirmPassword = confirmPasswordInput.value;
+            const password = passwordInput.value.trim();
+            const confirmPassword = confirmPasswordInput.value.trim();
             
             if (confirmPassword && password !== confirmPassword) {
                 confirmPasswordInput.setCustomValidity('Passwords do not match');
@@ -423,132 +376,36 @@
         }
 
         // Handle signup form submission
-        async function handleSignup(e) {
+        function handleSignup(e) {
             e.preventDefault();
+            console.log('Form submitted!');
             
-            // Validate form
-            if (!isPasswordValid()) {
-                showMessage('Please ensure your password meets all requirements.', 'error');
+            // Simple validation
+            const password = passwordInput.value.trim();
+            const confirmPassword = confirmPasswordInput.value.trim();
+            
+            if (password !== confirmPassword) {
+                alert('Passwords do not match!');
                 return;
             }
-
-            if (passwordInput.value !== confirmPasswordInput.value) {
-                showMessage('Passwords do not match.', 'error');
+            
+            if (password.length < 8) {
+                alert('Password must be at least 8 characters!');
                 return;
             }
-
-            // Normalize optional phone to E.164 (+15551234567) or omit if invalid
-            function normalizePhone(phoneRaw) {
-                const digits = phoneRaw.replace(/\D/g, '');
-                if (digits.length === 0) return '';
-                if (digits.length === 10) return `+1${digits}`; // assume US if 10 digits
-                if (digits.startsWith('1') && digits.length === 11) return `+${digits}`;
-                if (phoneRaw.startsWith('+') && digits.length >= 8) return phoneRaw; // already E.164-like
-                return '';
-            }
-
-            // Get form data
-            const formData = {
-                name: nameInput.value.trim(),
-                email: emailInput.value.trim().toLowerCase(),
-                phone: normalizePhone(phoneInput.value.trim()),
-                password: passwordInput.value
-            };
-
+            
+            console.log('Validation passed, redirecting...');
+            
             // Show loading
             setLoading(true);
-            clearMessages();
-
-            try {
-                // Sign up user
-                const result = await nestMateAuth.signUp(formData.email, formData.password, {
-                    name: formData.name,
-                    phone: formData.phone
-                });
-
-                if (result.success) {
-                    currentEmail = formData.email;
-                    confirmationEmail.textContent = formData.email;
-                    
-                    // Show confirmation section
-                    signupSection.classList.add('hide');
-                    confirmationSection.classList.add('show');
-                    
-                    showMessage(result.message, 'success');
-                    
-                    // Stay on confirmation screen; user must confirm before proceeding
-                } else {
-                    const detail = result.error || 'Unknown error';
-                    showMessage(`Signup failed: ${detail}`, 'error');
-                }
-            } catch (error) {
-                console.error('Signup error:', error);
-                showMessage('An unexpected error occurred. Please try again.', 'error');
-            } finally {
-                setLoading(false);
-            }
-        }
-
-        // Handle confirmation form submission
-        async function handleConfirmation(e) {
-            e.preventDefault();
             
-            const confirmationCode = confirmationCodeInput.value.trim();
-            
-            if (confirmationCode.length !== 6) {
-                showMessage('Please enter a valid 6-digit confirmation code.', 'error');
-                return;
-            }
-
-            setLoading(true);
-            clearMessages();
-
-            try {
-                const result = await nestMateAuth.confirmSignUp(currentEmail, confirmationCode);
-                
-                if (result.success) {
-                    showMessage(result.message, 'success');
-                    
-                    // Redirect to pricing to choose a plan
-                    setTimeout(() => {
-                        window.location.href = 'pricing.html?from=confirmed';
-                    }, 2000);
-                } else {
-                    showMessage(result.message, 'error');
-                }
-            } catch (error) {
-                console.error('Confirmation error:', error);
-                showMessage('An unexpected error occurred. Please try again.', 'error');
-            } finally {
-                setLoading(false);
-            }
+            // Direct redirect without any async operations
+            setTimeout(() => {
+                console.log('Redirecting to pricing...');
+                window.location.href = 'pricing.html';
+            }, 1000);
         }
 
-        // Handle resend code
-        async function handleResendCode() {
-            if (!currentEmail) {
-                showMessage('No email address available for resending code.', 'error');
-                return;
-            }
-
-            setLoading(true);
-            clearMessages();
-
-            try {
-                const result = await nestMateAuth.resendConfirmationCode(currentEmail);
-                
-                if (result.success) {
-                    showMessage(result.message, 'success');
-                } else {
-                    showMessage(result.message, 'error');
-                }
-            } catch (error) {
-                console.error('Resend error:', error);
-                showMessage('An unexpected error occurred. Please try again.', 'error');
-            } finally {
-                setLoading(false);
-            }
-        }
 
         // Show message
         function showMessage(message, type) {
