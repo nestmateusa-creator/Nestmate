@@ -4,26 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NestMate Blog - Home Management Tips & Insights</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --secondary: #64748b;
-            --success: #22c55e;
-            --warning: #f59e0b;
-            --error: #ef4444;
-            --background: #f8fafc;
-            --surface: #ffffff;
-            --text: #1e293b;
-            --text-light: #64748b;
-            --border: #e2e8f0;
-            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-        }
-
         * {
             margin: 0;
             padding: 0;
@@ -31,10 +14,10 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: var(--text);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #fafafa;
         }
 
         .container {
@@ -45,12 +28,12 @@
 
         /* Header */
         .header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border);
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
             position: sticky;
             top: 0;
             z-index: 100;
+            backdrop-filter: blur(10px);
         }
 
         .nav {
@@ -63,32 +46,44 @@
         .logo {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 12px;
             font-size: 1.5rem;
             font-weight: 700;
-            color: var(--primary);
+            color: #1f2937;
             text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .logo:hover {
+            color: #3b82f6;
         }
 
         .logo i {
-            font-size: 2rem;
+            color: #3b82f6;
+            font-size: 1.8rem;
         }
 
         .nav-links {
             display: flex;
-            gap: 2rem;
             list-style: none;
+            gap: 2rem;
+            align-items: center;
         }
 
         .nav-links a {
-            color: var(--text);
             text-decoration: none;
+            color: #6b7280;
             font-weight: 500;
             transition: color 0.3s ease;
+            position: relative;
         }
 
         .nav-links a:hover {
-            color: var(--primary);
+            color: #1f2937;
+        }
+
+        .nav-links a.active {
+            color: #3b82f6;
         }
 
         .nav-actions {
@@ -99,94 +94,252 @@
 
         .btn {
             padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
+            border-radius: 8px;
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 500;
             transition: all 0.3s ease;
             border: none;
             cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
+            font-size: 0.9rem;
         }
 
         .btn-primary {
-            background: var(--primary);
+            background: #3b82f6;
             color: white;
         }
 
         .btn-primary:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
+            background: #2563eb;
+            transform: translateY(-1px);
         }
 
         .btn-secondary {
             background: transparent;
-            color: var(--text);
-            border: 2px solid var(--border);
+            color: #6b7280;
+            border: 1px solid #d1d5db;
         }
 
         .btn-secondary:hover {
-            background: var(--background);
-            border-color: var(--primary);
+            background: #f9fafb;
+            color: #1f2937;
         }
 
-        /* Main Content */
-        .main {
-            padding: 4rem 0;
-        }
-
+        /* Hero Section */
         .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 0;
             text-align: center;
-            margin-bottom: 4rem;
         }
 
         .hero h1 {
-            font-size: 3rem;
+            font-size: 3.5rem;
             font-weight: 800;
-            color: white;
             margin-bottom: 1rem;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            letter-spacing: -0.02em;
         }
 
         .hero p {
             font-size: 1.25rem;
-            color: rgba(255, 255, 255, 0.9);
+            opacity: 0.9;
             max-width: 600px;
             margin: 0 auto;
+            font-weight: 400;
         }
 
-        /* Blog Grid */
+        /* Main Content */
+        .main-content {
+            padding: 4rem 0;
+        }
+
+        .content-wrapper {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 3rem;
+            margin-top: 2rem;
+        }
+
         .blog-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 2rem;
-            margin-bottom: 4rem;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            height: fit-content;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #f3f4f6;
+        }
+
+        .sidebar h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #3b82f6;
+        }
+
+        .category-list {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .category-item {
+            margin-bottom: 0.75rem;
+        }
+
+        .category-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #4b5563;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 1px solid #e5e7eb;
+        }
+
+        .category-link:hover {
+            background: #3b82f6;
+            color: white;
+            transform: translateX(4px);
+        }
+
+        .category-link.active {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .category-count {
+            background: #e5e7eb;
+            color: #6b7280;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .category-link:hover .category-count,
+        .category-link.active .category-count {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .search-box {
+            margin-bottom: 2rem;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .recent-posts {
+            margin-top: 2rem;
+        }
+
+        .recent-post {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .recent-post:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .recent-post-image {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .recent-post-content h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+            line-height: 1.3;
+        }
+
+        .recent-post-content p {
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+
+        .recent-post-content a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .recent-post-content a:hover h4 {
+            color: #3b82f6;
         }
 
         .blog-card {
-            background: var(--surface);
-            border-radius: 1rem;
+            background: white;
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: var(--shadow-lg);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
             cursor: pointer;
+            border: 1px solid #f3f4f6;
         }
 
         .blog-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
 
         .blog-image {
-            width: 100%;
-            height: 200px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            height: 220px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-size: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .blog-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 100%);
         }
 
         .blog-content {
@@ -198,126 +351,162 @@
             align-items: center;
             gap: 1rem;
             margin-bottom: 1rem;
-            font-size: 0.9rem;
-            color: var(--text-light);
-        }
-
-        .blog-date {
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
+            font-size: 0.875rem;
+            color: #6b7280;
         }
 
         .blog-category {
-            background: var(--primary);
-            color: white;
+            background: #dbeafe;
+            color: #1e40af;
             padding: 0.25rem 0.75rem;
-            border-radius: 1rem;
-            font-size: 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
             font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .blog-title {
             font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--text);
+            font-weight: 600;
             margin-bottom: 0.75rem;
+            color: #1f2937;
             line-height: 1.4;
         }
 
         .blog-excerpt {
-            color: var(--text-light);
+            color: #6b7280;
             line-height: 1.6;
-            margin-bottom: 1rem;
+            margin-bottom: 1.25rem;
+            font-size: 0.95rem;
         }
 
-        .blog-read-more {
-            color: var(--primary);
+        .read-more {
+            color: #3b82f6;
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 500;
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            transition: color 0.3s ease;
-        }
-
-        .blog-read-more:hover {
-            color: var(--primary-dark);
-        }
-
-        /* Categories */
-        .categories {
-            background: var(--surface);
-            padding: 2rem;
-            border-radius: 1rem;
-            box-shadow: var(--shadow-lg);
-            margin-bottom: 4rem;
-        }
-
-        .categories h2 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text);
-            margin-bottom: 1.5rem;
-            text-align: center;
-        }
-
-        .category-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-        }
-
-        .category-item {
-            background: var(--background);
-            padding: 1rem;
-            border-radius: 0.5rem;
-            text-align: center;
-            transition: transform 0.3s ease;
-            cursor: pointer;
-        }
-
-        .category-item:hover {
-            transform: translateY(-2px);
-        }
-
-        .category-item i {
-            font-size: 2rem;
-            color: var(--primary);
-            margin-bottom: 0.5rem;
-        }
-
-        .category-item h3 {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text);
-            margin-bottom: 0.25rem;
-        }
-
-        .category-item p {
+            transition: all 0.3s ease;
             font-size: 0.9rem;
-            color: var(--text-light);
         }
 
-        /* Newsletter */
-        .newsletter {
-            background: var(--surface);
-            padding: 3rem 2rem;
-            border-radius: 1rem;
-            box-shadow: var(--shadow-lg);
+        .read-more:hover {
+            color: #1d4ed8;
+            gap: 0.75rem;
+        }
+
+        /* Loading State */
+        .loading {
             text-align: center;
-            margin-bottom: 4rem;
+            padding: 4rem;
+            color: #6b7280;
         }
 
-        .newsletter h2 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text);
+        .loading i {
+            font-size: 2rem;
+            animation: spin 1s linear infinite;
             margin-bottom: 1rem;
         }
 
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Featured Section */
+        .featured-section {
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: #6b7280;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .content-wrapper {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .blog-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .main-content {
+                padding: 2rem 0;
+            }
+
+            .hero {
+                padding: 3rem 0;
+            }
+
+            .sidebar {
+                order: 1;
+            }
+        }
+
+        /* Mobile Navigation */
+        .mobile-nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #6b7280;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-nav-toggle {
+                display: block;
+            }
+        }
+
+        /* Newsletter Section */
+        .newsletter {
+            background: #f8fafc;
+            padding: 3rem 0;
+            margin-top: 4rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .newsletter-content {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .newsletter h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
         .newsletter p {
-            color: var(--text-light);
+            color: #6b7280;
             margin-bottom: 2rem;
         }
 
@@ -328,87 +517,23 @@
             margin: 0 auto;
         }
 
-        .newsletter-input {
+        .newsletter input {
             flex: 1;
-            padding: 0.75rem;
-            border: 2px solid var(--border);
-            border-radius: 0.5rem;
-            font-size: 1rem;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 0.9rem;
         }
 
-        .newsletter-input:focus {
+        .newsletter input:focus {
             outline: none;
-            border-color: var(--primary);
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
-        /* Footer */
-        .footer {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid var(--border);
-            padding: 2rem 0;
-            margin-top: 4rem;
-        }
-
-        .footer-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .footer-section h3 {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text);
-            margin-bottom: 1rem;
-        }
-
-        .footer-section ul {
-            list-style: none;
-        }
-
-        .footer-section ul li {
-            margin-bottom: 0.5rem;
-        }
-
-        .footer-section ul li a {
-            color: var(--text-light);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .footer-section ul li a:hover {
-            color: var(--primary);
-        }
-
-        .footer-bottom {
-            text-align: center;
-            padding-top: 2rem;
-            border-top: 1px solid var(--border);
-            color: var(--text-light);
-        }
-
-        /* Mobile Responsive */
         @media (max-width: 768px) {
-            .nav-links {
-                display: none;
-            }
-
-            .blog-grid {
-                grid-template-columns: 1fr;
-            }
-
             .newsletter-form {
                 flex-direction: column;
-            }
-
-            .hero h1 {
-                font-size: 2rem;
-            }
-
-            .hero p {
-                font-size: 1rem;
             }
         }
     </style>
@@ -422,1836 +547,246 @@
                     <i class="fas fa-home"></i>
                     NestMate
                 </a>
-                
                 <ul class="nav-links">
                     <li><a href="index.html">Home</a></li>
+                    <li><a href="index.html#features">Features</a></li>
                     <li><a href="pricing.html">Pricing</a></li>
                     <li><a href="about.html">About</a></li>
                     <li><a href="faq.html">FAQ</a></li>
-                    <li><a href="blog.html">Blog</a></li>
+                    <li><a href="blog.html" class="active">Blog</a></li>
                     <li><a href="contact.html">Contact</a></li>
                 </ul>
-                
                 <div class="nav-actions">
                     <a href="login-aws.html" class="btn btn-secondary">Sign In</a>
-                    <a href="login-aws.html" class="btn btn-primary">Get Started</a>
+                    <a href="register-aws.html" class="btn btn-primary">Get Started</a>
                 </div>
+                <button class="mobile-nav-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
             </nav>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="main">
-        <div class="container">
             <!-- Hero Section -->
             <section class="hero">
+        <div class="container">
                 <h1>NestMate Blog</h1>
-                <p>Expert tips, home improvement guides, and insights to help you manage your home like a pro.</p>
+            <p>Discover expert tips, insights, and strategies to transform your home into a smart, valuable asset</p>
+        </div>
             </section>
 
-            <!-- Categories -->
-            <section class="categories">
-                <h2>Explore by Audience</h2>
-                <div class="category-grid">
-                    <div class="category-item" onclick="window.location.href='blog-realtor-1.html'">
-                        <i class="fas fa-handshake"></i>
-                        <h3>For Realtors</h3>
-                        <p>Professional tools and strategies</p>
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="featured-section">
+                <h2 class="section-title">Latest Articles</h2>
+                <p class="section-subtitle">Stay updated with the latest home management trends and tips</p>
+            </div>
+            
+            <div class="content-wrapper">
+                <aside class="sidebar">
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Search articles...">
                     </div>
-                    <div class="category-item" onclick="window.location.href='blog-builder-1.html'">
-                        <i class="fas fa-hard-hat"></i>
-                        <h3>For Builders</h3>
-                        <p>Construction project management</p>
+                    
+                    <h3>Categories</h3>
+                    <ul class="category-list" id="categoryList">
+                        <!-- Categories will be loaded here -->
+                    </ul>
+                    
+                    <div class="recent-posts">
+                        <h3>Recent Posts</h3>
+                        <div id="recentPosts">
+                            <!-- Recent posts will be loaded here -->
+                        </div>
                     </div>
-                    <div class="category-item" onclick="window.location.href='blog-new-homeowner-1.html'">
-                        <i class="fas fa-home"></i>
-                        <h3>New Homeowners</h3>
-                        <p>Essential home management guide</p>
+                </aside>
+                
+                <div class="blog-content">
+                    <div id="loading" class="loading">
+                        <i class="fas fa-spinner"></i>
+                        <p>Loading amazing content...</p>
                     </div>
-                    <div class="category-item" onclick="window.location.href='blog-home-buyer-1.html'">
-                        <i class="fas fa-search"></i>
-                        <h3>Home Buyers</h3>
-                        <p>Finding and evaluating properties</p>
-                    </div>
-                    <div class="category-item">
-                        <i class="fas fa-tools"></i>
-                        <h3>Home Improvements</h3>
-                        <p>DIY projects and professional tips</p>
-                    </div>
-                    <div class="category-item">
-                        <i class="fas fa-chart-line"></i>
-                        <h3>Home Value</h3>
-                        <p>Maximize your property's worth</p>
+                    
+                    <div id="blog-container" class="blog-grid" style="display: none;">
+                        <!-- Blog posts will be loaded here -->
                     </div>
                 </div>
-            </section>
-
-            <!-- Blog Grid -->
-            <section class="blog-grid">
-                <!-- Blog Post 1 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-1.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-home"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>January 15, 2024</span>
-                            </div>
-                            <div class="blog-category">Home Management</div>
-                        </div>
-                        <h3 class="blog-title">10 Essential Home Management Tasks Every Homeowner Should Know</h3>
-                        <p class="blog-excerpt">Discover the fundamental tasks that will keep your home running smoothly and increase its value over time. From seasonal maintenance to daily routines...</p>
-                        <a href="blog-post-1.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 2 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-2.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>January 12, 2024</span>
-                            </div>
-                            <div class="blog-category">Home Value</div>
-                        </div>
-                        <h3 class="blog-title">How NestMate Can Increase Your Home's Value by 15% or More</h3>
-                        <p class="blog-excerpt">Learn how proper home management and documentation can significantly boost your property's market value. Real case studies and expert insights...</p>
-                        <a href="blog-post-2.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 3 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-3.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-tools"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>January 10, 2024</span>
-                            </div>
-                            <div class="blog-category">DIY Projects</div>
-                        </div>
-                        <h3 class="blog-title">5 Budget-Friendly Home Improvements That Pay for Themselves</h3>
-                        <p class="blog-excerpt">Transform your home without breaking the bank. These proven improvements offer the best return on investment and can be done over a weekend...</p>
-                        <a href="blog-post-3.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 4 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-4.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-leaf"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>January 8, 2024</span>
-                            </div>
-                            <div class="blog-category">Energy Efficiency</div>
-                        </div>
-                        <h3 class="blog-title">The Complete Guide to Energy-Efficient Home Upgrades</h3>
-                        <p class="blog-excerpt">Cut your energy bills in half with these smart upgrades. From insulation to smart thermostats, learn which improvements offer the biggest savings...</p>
-                        <a href="blog-post-4.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 5 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-5.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>January 5, 2024</span>
-                            </div>
-                            <div class="blog-category">Home Security</div>
-                        </div>
-                        <h3 class="blog-title">Smart Home Security: Protecting Your Family and Property</h3>
-                        <p class="blog-excerpt">Modern security solutions that work together to keep your home safe. Learn about the latest technology and how to create a comprehensive security plan...</p>
-                        <a href="blog-post-5.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 6 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-6.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-cogs"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>January 3, 2024</span>
-                            </div>
-                            <div class="blog-category">Maintenance</div>
-                        </div>
-                        <h3 class="blog-title">Seasonal Home Maintenance Checklist: Never Miss a Task Again</h3>
-                        <p class="blog-excerpt">A comprehensive year-round maintenance schedule that prevents costly repairs. Track everything with NestMate's smart home management system...</p>
-                        <a href="blog-post-6.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 7 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-7.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-lightbulb"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>January 1, 2024</span>
-                            </div>
-                            <div class="blog-category">Smart Home</div>
-                        </div>
-                        <h3 class="blog-title">Smart Home Technology: What's Worth the Investment in 2024</h3>
-                        <p class="blog-excerpt">Navigate the world of smart home devices with confidence. We break down which technologies offer real value and which are just hype...</p>
-                        <a href="blog-post-7.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 8 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-8.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-dollar-sign"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>December 28, 2023</span>
-                            </div>
-                            <div class="blog-category">Finance</div>
-                        </div>
-                        <h3 class="blog-title">How Proper Home Documentation Can Save You Thousands</h3>
-                        <p class="blog-excerpt">Learn how keeping detailed records of your home improvements and maintenance can save you money on taxes, insurance, and future repairs...</p>
-                        <a href="blog-post-8.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 9 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-9.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-palette"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>December 25, 2023</span>
-                            </div>
-                            <div class="blog-category">Design</div>
-                        </div>
-                        <h3 class="blog-title">Interior Design Trends That Will Increase Your Home's Appeal</h3>
-                        <p class="blog-excerpt">Stay ahead of the curve with these 2024 design trends that buyers love. From color schemes to furniture choices, make your home irresistible...</p>
-                        <a href="blog-post-9.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 10 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-10.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>December 22, 2023</span>
-                            </div>
-                            <div class="blog-category">Family</div>
-                        </div>
-                        <h3 class="blog-title">Creating a Family-Friendly Home: Safety and Functionality Tips</h3>
-                        <p class="blog-excerpt">Make your home the perfect place for your family to grow and thrive. Essential tips for childproofing, organization, and creating lasting memories...</p>
-                        <a href="blog-post-10.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 11 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-11.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-thermometer-half"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>December 20, 2023</span>
-                            </div>
-                            <div class="blog-category">HVAC</div>
-                        </div>
-                        <h3 class="blog-title">HVAC Maintenance: Keep Your Home Comfortable Year-Round</h3>
-                        <p class="blog-excerpt">Learn essential HVAC maintenance tips to improve efficiency, reduce energy costs, and extend the life of your heating and cooling systems...</p>
-                        <a href="blog-post-11.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 12 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-12.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-tint"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>December 18, 2023</span>
-                            </div>
-                            <div class="blog-category">Plumbing</div>
-                        </div>
-                        <h3 class="blog-title">Plumbing Basics: Prevent Costly Water Damage</h3>
-                        <p class="blog-excerpt">Essential plumbing knowledge every homeowner should have. Learn to identify problems early and when to call a professional...</p>
-                        <a href="blog-post-12.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 13 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-13.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-bolt"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>December 15, 2023</span>
-                            </div>
-                            <div class="blog-category">Electrical</div>
-                        </div>
-                        <h3 class="blog-title">Electrical Safety: Protecting Your Home from Electrical Hazards</h3>
-                        <p class="blog-excerpt">Stay safe with proper electrical maintenance and know when to upgrade your home's electrical system for modern demands...</p>
-                        <a href="blog-post-13.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 14 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-14.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-seedling"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>December 12, 2023</span>
-                            </div>
-                            <div class="blog-category">Landscaping</div>
-                        </div>
-                        <h3 class="blog-title">Landscaping for Curb Appeal: Boost Your Home's First Impression</h3>
-                        <p class="blog-excerpt">Transform your outdoor space with strategic landscaping that increases property value and creates a welcoming atmosphere...</p>
-                        <a href="blog-post-14.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 15 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-15.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-paint-brush"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>December 10, 2023</span>
-                            </div>
-                            <div class="blog-category">Painting</div>
-                        </div>
-                        <h3 class="blog-title">Professional Painting Tips: DIY vs Hiring a Pro</h3>
-                        <p class="blog-excerpt">Master the art of home painting with expert tips on preparation, technique, and choosing the right paint for every surface...</p>
-                        <a href="blog-post-15.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 16 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-16.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-door-open"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>December 8, 2023</span>
-                            </div>
-                            <div class="blog-category">Windows & Doors</div>
-                        </div>
-                        <h3 class="blog-title">Window and Door Maintenance: Weatherproofing Your Home</h3>
-                        <p class="blog-excerpt">Keep the elements out and energy costs down with proper window and door maintenance. Learn sealing and weatherproofing techniques...</p>
-                        <a href="blog-post-16.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 17 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-17.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-warehouse"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>December 5, 2023</span>
-                            </div>
-                            <div class="blog-category">Storage</div>
-                        </div>
-                        <h3 class="blog-title">Smart Storage Solutions: Maximize Your Home's Space</h3>
-                        <p class="blog-excerpt">Discover innovative storage ideas that transform cluttered spaces into organized, functional areas that work for your lifestyle...</p>
-                        <a href="blog-post-17.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 18 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-18.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-fire"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>December 3, 2023</span>
-                            </div>
-                            <div class="blog-category">Fire Safety</div>
-                        </div>
-                        <h3 class="blog-title">Fire Safety at Home: Prevention and Preparedness</h3>
-                        <p class="blog-excerpt">Protect your family with comprehensive fire safety measures. Learn about prevention, detection systems, and emergency planning...</p>
-                        <a href="blog-post-18.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 19 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-19.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-recycle"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>December 1, 2023</span>
-                            </div>
-                            <div class="blog-category">Sustainability</div>
-                        </div>
-                        <h3 class="blog-title">Eco-Friendly Home Practices: Reduce Your Environmental Footprint</h3>
-                        <p class="blog-excerpt">Make your home more sustainable with practical eco-friendly practices that save money and help the environment...</p>
-                        <a href="blog-post-19.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 20 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-20.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-camera"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>November 28, 2023</span>
-                            </div>
-                            <div class="blog-category">Documentation</div>
-                        </div>
-                        <h3 class="blog-title">Home Documentation: Why Every Homeowner Needs a Digital Record</h3>
-                        <p class="blog-excerpt">Learn how to create comprehensive home records that protect your investment and simplify future maintenance and sales...</p>
-                        <a href="blog-post-20.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 21 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-21.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-bed"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>November 25, 2023</span>
-                            </div>
-                            <div class="blog-category">Bedroom</div>
-                        </div>
-                        <h3 class="blog-title">Master Bedroom Makeover: Creating Your Personal Sanctuary</h3>
-                        <p class="blog-excerpt">Transform your bedroom into a peaceful retreat with design tips, organization solutions, and comfort-enhancing upgrades...</p>
-                        <a href="blog-post-21.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 22 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-22.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-utensils"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>November 22, 2023</span>
-                            </div>
-                            <div class="blog-category">Kitchen</div>
-                        </div>
-                        <h3 class="blog-title">Kitchen Renovation on a Budget: Smart Upgrades That Pay Off</h3>
-                        <p class="blog-excerpt">Maximize your kitchen's potential without breaking the bank. Discover cost-effective upgrades that dramatically improve functionality...</p>
-                        <a href="blog-post-22.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 23 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-23.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-bath"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>November 20, 2023</span>
-                            </div>
-                            <div class="blog-category">Bathroom</div>
-                        </div>
-                        <h3 class="blog-title">Bathroom Remodeling: Small Changes, Big Impact</h3>
-                        <p class="blog-excerpt">Refresh your bathroom with strategic updates that enhance both style and functionality. From fixtures to finishes, make every detail count...</p>
-                        <a href="blog-post-23.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 24 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-24.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-car"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>November 18, 2023</span>
-                            </div>
-                            <div class="blog-category">Garage</div>
-                        </div>
-                        <h3 class="blog-title">Garage Organization: Transform Chaos into Order</h3>
-                        <p class="blog-excerpt">Turn your garage into a functional space with smart storage solutions and organization systems that actually work...</p>
-                        <a href="blog-post-24.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 25 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-25.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-tree"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>November 15, 2023</span>
-                            </div>
-                            <div class="blog-category">Outdoor Living</div>
-                        </div>
-                        <h3 class="blog-title">Outdoor Living Spaces: Extend Your Home's Comfort</h3>
-                        <p class="blog-excerpt">Create inviting outdoor areas that serve as natural extensions of your home. From patios to pergolas, maximize your outdoor potential...</p>
-                        <a href="blog-post-25.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 26 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-26.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-wifi"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>November 12, 2023</span>
-                            </div>
-                            <div class="blog-category">Technology</div>
-                        </div>
-                        <h3 class="blog-title">Home Network Setup: Reliable Internet for Modern Living</h3>
-                        <p class="blog-excerpt">Optimize your home's internet connectivity with professional networking tips. Ensure fast, reliable WiFi throughout your entire home...</p>
-                        <a href="blog-post-26.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 27 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-27.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-umbrella"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>November 10, 2023</span>
-                            </div>
-                            <div class="blog-category">Weather Protection</div>
-                        </div>
-                        <h3 class="blog-title">Weatherproofing Your Home: Prepare for Every Season</h3>
-                        <p class="blog-excerpt">Protect your home from weather damage with comprehensive weatherproofing strategies for all seasons and climate conditions...</p>
-                        <a href="blog-post-27.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 28 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-28.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-chart-pie"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>November 8, 2023</span>
-                            </div>
-                            <div class="blog-category">Budgeting</div>
-                        </div>
-                        <h3 class="blog-title">Home Maintenance Budgeting: Plan for the Unexpected</h3>
-                        <p class="blog-excerpt">Create a realistic home maintenance budget that covers routine upkeep and unexpected repairs. Financial planning for homeowners...</p>
-                        <a href="blog-post-28.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 29 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-29.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-handshake"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>November 5, 2023</span>
-                            </div>
-                            <div class="blog-category">Contractors</div>
-                        </div>
-                        <h3 class="blog-title">Working with Contractors: How to Choose and Manage Professionals</h3>
-                        <p class="blog-excerpt">Navigate the contractor selection process with confidence. Learn to vet professionals, manage projects, and ensure quality work...</p>
-                        <a href="blog-post-29.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 30 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-30.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-home"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>November 2, 2023</span>
-                            </div>
-                            <div class="blog-category">Home Buying</div>
-                        </div>
-                        <h3 class="blog-title">First-Time Home Buyer's Guide: What to Look for During Inspection</h3>
-                        <p class="blog-excerpt">Navigate the home buying process with expert inspection tips. Know what to look for and what questions to ask before you buy...</p>
-                        <a href="blog-post-30.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 31 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-31.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-solar-panel"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>October 30, 2023</span>
-                            </div>
-                            <div class="blog-category">Solar Energy</div>
-                        </div>
-                        <h3 class="blog-title">Solar Panel Installation: Is It Right for Your Home?</h3>
-                        <p class="blog-excerpt">Evaluate the benefits and costs of solar energy for your home. Learn about installation, financing options, and long-term savings...</p>
-                        <a href="blog-post-31.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 32 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-32.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-wind"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>October 28, 2023</span>
-                            </div>
-                            <div class="blog-category">Ventilation</div>
-                        </div>
-                        <h3 class="blog-title">Home Ventilation Systems: Breathe Easy with Proper Airflow</h3>
-                        <p class="blog-excerpt">Improve indoor air quality with effective ventilation strategies. Learn about different systems and their benefits for your health...</p>
-                        <a href="blog-post-32.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 33 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-33.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-faucet"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>October 25, 2023</span>
-                            </div>
-                            <div class="blog-category">Water Systems</div>
-                        </div>
-                        <h3 class="blog-title">Water Filtration Systems: Clean Water for Every Home</h3>
-                        <p class="blog-excerpt">Choose the right water filtration system for your home. Compare options from whole-house to point-of-use systems...</p>
-                        <a href="blog-post-33.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 34 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-34.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-thermometer-three-quarters"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>October 22, 2023</span>
-                            </div>
-                            <div class="blog-category">Insulation</div>
-                        </div>
-                        <h3 class="blog-title">Home Insulation Guide: Keep Your Energy Bills Low</h3>
-                        <p class="blog-excerpt">Maximize energy efficiency with proper insulation. Learn about different types and where to install them for maximum impact...</p>
-                        <a href="blog-post-34.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 35 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-35.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-couch"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>October 20, 2023</span>
-                            </div>
-                            <div class="blog-category">Living Room</div>
-                        </div>
-                        <h3 class="blog-title">Living Room Design: Create the Perfect Gathering Space</h3>
-                        <p class="blog-excerpt">Design a living room that's both beautiful and functional. Learn layout principles, furniture selection, and decor tips...</p>
-                        <a href="blog-post-35.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 36 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-36.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-dining-room"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>October 18, 2023</span>
-                            </div>
-                            <div class="blog-category">Dining Room</div>
-                        </div>
-                        <h3 class="blog-title">Dining Room Makeover: From Formal to Family-Friendly</h3>
-                        <p class="blog-excerpt">Transform your dining space to suit your lifestyle. Whether formal entertaining or casual family meals, create the perfect setting...</p>
-                        <a href="blog-post-36.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 37 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-37.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-baby"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>October 15, 2023</span>
-                            </div>
-                            <div class="blog-category">Nursery</div>
-                        </div>
-                        <h3 class="blog-title">Nursery Setup: Creating a Safe and Beautiful Baby Room</h3>
-                        <p class="blog-excerpt">Design a nursery that's safe, functional, and beautiful. Essential tips for new parents preparing for their little one...</p>
-                        <a href="blog-post-37.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 38 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-38.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-book"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>October 12, 2023</span>
-                            </div>
-                            <div class="blog-category">Home Office</div>
-                        </div>
-                        <h3 class="blog-title">Home Office Design: Productivity Meets Comfort</h3>
-                        <p class="blog-excerpt">Create a home office that boosts productivity and comfort. Learn about ergonomics, lighting, and organization for remote work...</p>
-                        <a href="blog-post-38.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 39 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-39.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-dumbbell"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>October 10, 2023</span>
-                            </div>
-                            <div class="blog-category">Home Gym</div>
-                        </div>
-                        <h3 class="blog-title">Home Gym Setup: Fitness Without Leaving Your House</h3>
-                        <p class="blog-excerpt">Build a home gym that fits your space and budget. Equipment recommendations and layout tips for effective workouts...</p>
-                        <a href="blog-post-39.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 40 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-40.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-wine-bottle"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>October 8, 2023</span>
-                            </div>
-                            <div class="blog-category">Wine Cellar</div>
-                        </div>
-                        <h3 class="blog-title">Wine Storage Solutions: From Cellar to Countertop</h3>
-                        <p class="blog-excerpt">Proper wine storage techniques for every budget. Learn about temperature, humidity, and lighting for optimal wine preservation...</p>
-                        <a href="blog-post-40.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 41 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-41.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-music"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>October 5, 2023</span>
-                            </div>
-                            <div class="blog-category">Entertainment</div>
-                        </div>
-                        <h3 class="blog-title">Home Theater Setup: Movie Night Perfection</h3>
-                        <p class="blog-excerpt">Create the ultimate home theater experience. Audio, video, seating, and room design tips for cinema-quality entertainment...</p>
-                        <a href="blog-post-41.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 42 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-42.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-gamepad"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>October 3, 2023</span>
-                            </div>
-                            <div class="blog-category">Gaming Room</div>
-                        </div>
-                        <h3 class="blog-title">Gaming Room Design: Level Up Your Setup</h3>
-                        <p class="blog-excerpt">Design the perfect gaming space with proper lighting, ergonomics, and cable management for marathon gaming sessions...</p>
-                        <a href="blog-post-42.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 43 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-43.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-paw"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>October 1, 2023</span>
-                            </div>
-                            <div class="blog-category">Pet-Friendly</div>
-                        </div>
-                        <h3 class="blog-title">Pet-Friendly Home Design: Happy Pets, Happy Home</h3>
-                        <p class="blog-excerpt">Create a home that's comfortable for both you and your pets. Design tips for pet owners who want style and functionality...</p>
-                        <a href="blog-post-43.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 44 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-44.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-wheelchair"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>September 28, 2023</span>
-                            </div>
-                            <div class="blog-category">Accessibility</div>
-                        </div>
-                        <h3 class="blog-title">Accessible Home Design: Universal Design Principles</h3>
-                        <p class="blog-excerpt">Make your home accessible for everyone. Learn about universal design principles that benefit all ages and abilities...</p>
-                        <a href="blog-post-44.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 45 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-45.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-archive"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>September 25, 2023</span>
-                            </div>
-                            <div class="blog-category">Attic</div>
-                        </div>
-                        <h3 class="blog-title">Attic Organization: Transform Wasted Space into Storage Gold</h3>
-                        <p class="blog-excerpt">Maximize your attic's potential with smart organization systems. Turn cluttered space into organized storage solutions...</p>
-                        <a href="blog-post-45.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 46 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-46.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-stairs"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>September 22, 2023</span>
-                            </div>
-                            <div class="blog-category">Basement</div>
-                        </div>
-                        <h3 class="blog-title">Basement Finishing: Unlock Your Home's Hidden Potential</h3>
-                        <p class="blog-excerpt">Transform your basement into valuable living space. Learn about moisture control, lighting, and finishing techniques...</p>
-                        <a href="blog-post-46.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 47 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-47.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-sun"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>September 20, 2023</span>
-                            </div>
-                            <div class="blog-category">Natural Light</div>
-                        </div>
-                        <h3 class="blog-title">Maximizing Natural Light: Brighten Your Home Naturally</h3>
-                        <p class="blog-excerpt">Harness the power of natural light to create brighter, more inviting spaces. Window treatments, mirrors, and design tips...</p>
-                        <a href="blog-post-47.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 48 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-48.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-lightbulb"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>September 18, 2023</span>
-                            </div>
-                            <div class="blog-category">Lighting</div>
-                        </div>
-                        <h3 class="blog-title">Home Lighting Design: Layer Light for Perfect Ambiance</h3>
-                        <p class="blog-excerpt">Master the art of lighting design with ambient, task, and accent lighting. Create the perfect mood for every room...</p>
-                        <a href="blog-post-48.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 49 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-49.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-volume-up"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>September 15, 2023</span>
-                            </div>
-                            <div class="blog-category">Soundproofing</div>
-                        </div>
-                        <h3 class="blog-title">Soundproofing Your Home: Peace and Quiet at Last</h3>
-                        <p class="blog-excerpt">Reduce noise pollution with effective soundproofing techniques. From walls to windows, create a quieter living environment...</p>
-                        <a href="blog-post-49.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 50 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-50.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-thermometer-empty"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>September 12, 2023</span>
-                            </div>
-                            <div class="blog-category">Climate Control</div>
-                        </div>
-                        <h3 class="blog-title">Smart Thermostats: Take Control of Your Home's Climate</h3>
-                        <p class="blog-excerpt">Upgrade to smart climate control for comfort and savings. Learn about programmable thermostats and home automation...</p>
-                        <a href="blog-post-50.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 51 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-51.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-leaf"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>September 10, 2023</span>
-                            </div>
-                            <div class="blog-category">Indoor Plants</div>
-                        </div>
-                        <h3 class="blog-title">Indoor Gardening: Bring Nature Inside Your Home</h3>
-                        <p class="blog-excerpt">Create a thriving indoor garden with the right plants and care techniques. Improve air quality and add natural beauty...</p>
-                        <a href="blog-post-51.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 52 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-52.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-fish"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>September 8, 2023</span>
-                            </div>
-                            <div class="blog-category">Aquariums</div>
-                        </div>
-                        <h3 class="blog-title">Home Aquarium Setup: A Living Work of Art</h3>
-                        <p class="blog-excerpt">Create a stunning aquarium that enhances your home decor. Learn about tank selection, fish care, and maintenance...</p>
-                        <a href="blog-post-52.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 53 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-53.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-fire-burner"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>September 5, 2023</span>
-                            </div>
-                            <div class="blog-category">Fireplaces</div>
-                        </div>
-                        <h3 class="blog-title">Fireplace Maintenance: Keep the Warmth Coming</h3>
-                        <p class="blog-excerpt">Maintain your fireplace for safety and efficiency. Learn about cleaning, inspection, and seasonal preparation...</p>
-                        <a href="blog-post-53.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 54 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-54.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-hot-tub"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>September 3, 2023</span>
-                            </div>
-                            <div class="blog-category">Hot Tubs</div>
-                        </div>
-                        <h3 class="blog-title">Hot Tub Installation: Relaxation in Your Backyard</h3>
-                        <p class="blog-excerpt">Plan the perfect hot tub installation for your outdoor space. Consider placement, electrical needs, and maintenance...</p>
-                        <a href="blog-post-54.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 55 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-55.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-swimming-pool"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>September 1, 2023</span>
-                            </div>
-                            <div class="blog-category">Pools</div>
-                        </div>
-                        <h3 class="blog-title">Pool Maintenance: Crystal Clear Water All Season</h3>
-                        <p class="blog-excerpt">Keep your pool in perfect condition with proper maintenance routines. Water chemistry, cleaning, and equipment care...</p>
-                        <a href="blog-post-55.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 56 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-56.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-seedling"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>August 28, 2023</span>
-                            </div>
-                            <div class="blog-category">Gardening</div>
-                        </div>
-                        <h3 class="blog-title">Vegetable Garden Planning: Fresh Produce from Your Yard</h3>
-                        <p class="blog-excerpt">Start a productive vegetable garden with proper planning and techniques. From soil preparation to harvest timing...</p>
-                        <a href="blog-post-56.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 57 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-57.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-tree"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>August 25, 2023</span>
-                            </div>
-                            <div class="blog-category">Tree Care</div>
-                        </div>
-                        <h3 class="blog-title">Tree Maintenance: Healthy Trees, Beautiful Landscape</h3>
-                        <p class="blog-excerpt">Keep your trees healthy and beautiful with proper care techniques. Pruning, watering, and disease prevention...</p>
-                        <a href="blog-post-57.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 58 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-58.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-sprinkler"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>August 22, 2023</span>
-                            </div>
-                            <div class="blog-category">Irrigation</div>
-                        </div>
-                        <h3 class="blog-title">Smart Irrigation Systems: Water Wisely, Save Money</h3>
-                        <p class="blog-excerpt">Install an efficient irrigation system that conserves water and keeps your landscape healthy. Smart controllers and zoning...</p>
-                        <a href="blog-post-58.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 59 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-59.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-bug"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>August 20, 2023</span>
-                            </div>
-                            <div class="blog-category">Pest Control</div>
-                        </div>
-                        <h3 class="blog-title">Natural Pest Control: Keep Bugs Out Without Chemicals</h3>
-                        <p class="blog-excerpt">Control pests naturally with eco-friendly methods. Prevention, natural repellents, and integrated pest management...</p>
-                        <a href="blog-post-59.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 60 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-60.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-compass"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>August 18, 2023</span>
-                            </div>
-                            <div class="blog-category">Feng Shui</div>
-                        </div>
-                        <h3 class="blog-title">Feng Shui for Your Home: Balance and Harmony</h3>
-                        <p class="blog-excerpt">Apply feng shui principles to create a harmonious living environment. Room arrangement, colors, and energy flow...</p>
-                        <a href="blog-post-60.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 61 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-61.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-palette"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>August 15, 2023</span>
-                            </div>
-                            <div class="blog-category">Color Psychology</div>
-                        </div>
-                        <h3 class="blog-title">Color Psychology in Home Design: Mood and Atmosphere</h3>
-                        <p class="blog-excerpt">Choose colors that create the right mood for each room. Learn how different colors affect emotions and behavior...</p>
-                        <a href="blog-post-61.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 62 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-62.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-cube"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>August 12, 2023</span>
-                            </div>
-                            <div class="blog-category">Minimalism</div>
-                        </div>
-                        <h3 class="blog-title">Minimalist Home Design: Less is More</h3>
-                        <p class="blog-excerpt">Embrace minimalist design principles for a cleaner, more peaceful home. Decluttering, organization, and intentional living...</p>
-                        <a href="blog-post-62.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 63 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-63.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>August 10, 2023</span>
-                            </div>
-                            <div class="blog-category">Vintage</div>
-                        </div>
-                        <h3 class="blog-title">Vintage Home Decor: Timeless Style with Character</h3>
-                        <p class="blog-excerpt">Incorporate vintage elements into your modern home. Mixing old and new for a unique, character-filled space...</p>
-                        <a href="blog-post-63.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 64 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-64.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-industry"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>August 8, 2023</span>
-                            </div>
-                            <div class="blog-category">Industrial</div>
-                        </div>
-                        <h3 class="blog-title">Industrial Home Design: Urban Loft Style</h3>
-                        <p class="blog-excerpt">Achieve the industrial look with exposed brick, metal accents, and raw materials. Modern urban living at its finest...</p>
-                        <a href="blog-post-64.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 65 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-65.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-mountain"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>August 5, 2023</span>
-                            </div>
-                            <div class="blog-category">Rustic</div>
-                        </div>
-                        <h3 class="blog-title">Rustic Home Design: Cozy Cabin Vibes</h3>
-                        <p class="blog-excerpt">Create a warm, rustic atmosphere with natural materials and cozy textures. Bring the outdoors inside...</p>
-                        <a href="blog-post-65.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 66 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-66.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-anchor"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>August 3, 2023</span>
-                            </div>
-                            <div class="blog-category">Coastal</div>
-                        </div>
-                        <h3 class="blog-title">Coastal Home Design: Beach House Living</h3>
-                        <p class="blog-excerpt">Bring the beach to your home with coastal design elements. Light colors, natural textures, and ocean-inspired decor...</p>
-                        <a href="blog-post-66.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 67 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-67.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-crown"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>August 1, 2023</span>
-                            </div>
-                            <div class="blog-category">Luxury</div>
-                        </div>
-                        <h3 class="blog-title">Luxury Home Features: High-End Living</h3>
-                        <p class="blog-excerpt">Add luxury touches to your home with premium materials, smart technology, and sophisticated design elements...</p>
-                        <a href="blog-post-67.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 68 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-68.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-recycle"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>July 28, 2023</span>
-                            </div>
-                            <div class="blog-category">Upcycling</div>
-                        </div>
-                        <h3 class="blog-title">Upcycling Furniture: Give Old Pieces New Life</h3>
-                        <p class="blog-excerpt">Transform old furniture into stunning pieces with creative upcycling techniques. Save money and reduce waste...</p>
-                        <a href="blog-post-68.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 69 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-69.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-tools"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>July 25, 2023</span>
-                            </div>
-                            <div class="blog-category">Workshop</div>
-                        </div>
-                        <h3 class="blog-title">Home Workshop Setup: DIY Projects Made Easy</h3>
-                        <p class="blog-excerpt">Create the perfect workshop space for all your DIY projects. Tool organization, workbench design, and safety tips...</p>
-                        <a href="blog-post-69.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 70 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-70.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-car"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>July 22, 2023</span>
-                            </div>
-                            <div class="blog-category">Car Care</div>
-                        </div>
-                        <h3 class="blog-title">Home Car Maintenance: Keep Your Vehicle Running Smoothly</h3>
-                        <p class="blog-excerpt">Learn basic car maintenance you can do at home. Oil changes, tire care, and seasonal preparation...</p>
-                        <a href="blog-post-70.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 71 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-71.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-bicycle"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>July 20, 2023</span>
-                            </div>
-                            <div class="blog-category">Bike Storage</div>
-                        </div>
-                        <h3 class="blog-title">Bicycle Storage Solutions: Keep Your Bikes Safe and Organized</h3>
-                        <p class="blog-excerpt">Store your bicycles efficiently with space-saving solutions. Indoor and outdoor storage options for every home...</p>
-                        <a href="blog-post-71.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 72 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-72.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-snowflake"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>July 18, 2023</span>
-                            </div>
-                            <div class="blog-category">Winter Prep</div>
-                        </div>
-                        <h3 class="blog-title">Winter Home Preparation: Ready for the Cold Season</h3>
-                        <p class="blog-excerpt">Prepare your home for winter with essential maintenance tasks. Heating, insulation, and weatherproofing tips...</p>
-                        <a href="blog-post-72.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 73 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-73.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-sun"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>July 15, 2023</span>
-                            </div>
-                            <div class="blog-category">Summer Prep</div>
-                        </div>
-                        <h3 class="blog-title">Summer Home Maintenance: Beat the Heat Efficiently</h3>
-                        <p class="blog-excerpt">Keep your home cool and comfortable during summer. AC maintenance, window treatments, and energy-saving tips...</p>
-                        <a href="blog-post-73.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 74 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-74.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-leaf"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>July 12, 2023</span>
-                            </div>
-                            <div class="blog-category">Fall Prep</div>
-                        </div>
-                        <h3 class="blog-title">Fall Home Maintenance: Prepare for Changing Seasons</h3>
-                        <p class="blog-excerpt">Get your home ready for autumn with essential fall maintenance tasks. Gutter cleaning, heating checks, and more...</p>
-                        <a href="blog-post-74.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 75 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-75.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-seedling"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>July 10, 2023</span>
-                            </div>
-                            <div class="blog-category">Spring Prep</div>
-                        </div>
-                        <h3 class="blog-title">Spring Home Maintenance: Fresh Start for Your Home</h3>
-                        <p class="blog-excerpt">Welcome spring with a comprehensive home maintenance checklist. Deep cleaning, repairs, and seasonal updates...</p>
-                        <a href="blog-post-75.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 76 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-76.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-shield-virus"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>July 8, 2023</span>
-                            </div>
-                            <div class="blog-category">Health & Safety</div>
-                        </div>
-                        <h3 class="blog-title">Healthy Home Environment: Clean Air and Safe Living</h3>
-                        <p class="blog-excerpt">Create a healthier home environment with proper ventilation, cleaning routines, and air quality improvements...</p>
-                        <a href="blog-post-76.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 77 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-77.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-first-aid"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>July 5, 2023</span>
-                            </div>
-                            <div class="blog-category">Emergency Prep</div>
-                        </div>
-                        <h3 class="blog-title">Home Emergency Preparedness: Be Ready for Anything</h3>
-                        <p class="blog-excerpt">Prepare your home and family for emergencies. Emergency kits, evacuation plans, and safety equipment...</p>
-                        <a href="blog-post-77.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 78 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-78.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-camera"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>July 3, 2023</span>
-                            </div>
-                            <div class="blog-category">Home Staging</div>
-                        </div>
-                        <h3 class="blog-title">Home Staging for Sale: Make Your Home Irresistible</h3>
-                        <p class="blog-excerpt">Stage your home to sell faster and for more money. Professional staging tips you can do yourself...</p>
-                        <a href="blog-post-78.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 79 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-79.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>July 1, 2023</span>
-                            </div>
-                            <div class="blog-category">Investment</div>
-                        </div>
-                        <h3 class="blog-title">Home as an Investment: Maximize Your Property's Value</h3>
-                        <p class="blog-excerpt">Treat your home as a smart investment with strategic improvements and maintenance that increase long-term value...</p>
-                        <a href="blog-post-79.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Blog Post 80 -->
-                <article class="blog-card" onclick="window.location.href='blog-post-80.html'">
-                    <div class="blog-image">
-                        <i class="fas fa-heart"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                <span>June 28, 2023</span>
-                            </div>
-                            <div class="blog-category">Wellness</div>
-                        </div>
-                        <h3 class="blog-title">Wellness at Home: Create Your Personal Sanctuary</h3>
-                        <p class="blog-excerpt">Transform your home into a wellness retreat with meditation spaces, natural elements, and stress-reducing design...</p>
-                        <a href="blog-post-80.html" class="blog-read-more">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-            </section>
-
-            <!-- Newsletter -->
-            <section class="newsletter">
-                <h2>Stay Updated</h2>
-                <p>Get the latest home management tips and NestMate updates delivered to your inbox.</p>
-                <form class="newsletter-form">
-                    <input type="email" class="newsletter-input" placeholder="Enter your email address" required>
-                    <button type="submit" class="btn btn-primary">Subscribe</button>
-                </form>
-            </section>
+            </div>
         </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="footer">
+    <!-- Newsletter Section -->
+    <section class="newsletter">
         <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>Product</h3>
-                    <ul>
-                        <li><a href="pricing.html">Pricing</a></li>
-                        <li><a href="about.html">About</a></li>
-                        <li><a href="faq.html">FAQ</a></li>
-                        <li><a href="contact.html">Contact</a></li>
-                    </ul>
+            <div class="newsletter-content">
+                <h3>Stay Updated</h3>
+                <p>Get the latest home management tips delivered to your inbox</p>
+                <form class="newsletter-form">
+                    <input type="email" placeholder="Enter your email address" required>
+                    <button type="submit" class="btn btn-primary">Subscribe</button>
+                </form>
+                    </div>
                 </div>
-                
-                <div class="footer-section">
-                    <h3>Features</h3>
-                    <ul>
-                        <li><a href="preview-basic.html">Basic Plan</a></li>
-                        <li><a href="preview-pro.html">Pro Plan</a></li>
-                        <li><a href="preview-advanced-pro.html">Advanced Pro</a></li>
-                        <li><a href="pricing.html">Enterprise</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-section">
-                    <h3>Support</h3>
-                    <ul>
-                        <li><a href="contact.html">Contact Support</a></li>
-                        <li><a href="faq.html">Help Center</a></li>
-                        <li><a href="mailto:support@nestmateusa.com">Email Us</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-section">
-                    <h3>Legal</h3>
-                    <ul>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Terms of Service</a></li>
-                        <li><a href="#">Cookie Policy</a></li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="footer-bottom">
-                <p>&copy; 2024 NestMate. All rights reserved. | support@nestmateusa.com</p>
-            </div>
-        </div>
-    </footer>
+            </section>
 
+    <script src="blog-data.js"></script>
     <script>
+        let allPosts = [];
+        let filteredPosts = [];
+        let currentCategory = 'All';
+
+        // Load blog posts
+        document.addEventListener('DOMContentLoaded', function() {
+            const loading = document.getElementById('loading');
+            const blogContainer = document.getElementById('blog-container');
+            
+            // Simulate loading time for better UX
+            setTimeout(() => {
+                allPosts = getBlogPosts();
+                filteredPosts = [...allPosts];
+                loadBlogPosts();
+                loadCategories();
+                loadRecentPosts();
+                setupSearch();
+                loading.style.display = 'none';
+                blogContainer.style.display = 'grid';
+            }, 1000);
+        });
+
+        function loadBlogPosts() {
+            const blogContainer = document.getElementById('blog-container');
+            
+            blogContainer.innerHTML = filteredPosts.map(post => `
+                <article class="blog-card" onclick="openBlogPost('${post.id}')">
+                    <div class="blog-image">
+                        <i class="${post.icon}"></i>
+                    </div>
+                    <div class="blog-content">
+                        <div class="blog-meta">
+                            <span class="blog-category">${post.category}</span>
+                            <span><i class="fas fa-calendar"></i> ${post.date}</span>
+                            <span><i class="fas fa-clock"></i> ${post.readTime}</span>
+                        </div>
+                        <h2 class="blog-title">${post.title}</h2>
+                        <p class="blog-excerpt">${post.excerpt}</p>
+                        <a href="blog-post.html?id=${post.id}" class="read-more">
+                            Read More <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </article>
+            `).join('');
+        }
+
+        function loadCategories() {
+            const categoryList = document.getElementById('categoryList');
+            const categories = [...new Set(allPosts.map(post => post.category))];
+            categories.sort();
+            
+            const categoryCounts = {};
+            allPosts.forEach(post => {
+                categoryCounts[post.category] = (categoryCounts[post.category] || 0) + 1;
+            });
+            
+            categoryList.innerHTML = `
+                <li class="category-item">
+                    <a href="#" class="category-link active" data-category="All">
+                        <span>All Categories</span>
+                        <span class="category-count">${allPosts.length}</span>
+                    </a>
+                </li>
+                ${categories.map(category => `
+                    <li class="category-item">
+                        <a href="#" class="category-link" data-category="${category}">
+                            <span>${category}</span>
+                            <span class="category-count">${categoryCounts[category]}</span>
+                        </a>
+                    </li>
+                `).join('')}
+            `;
+            
+            // Add click handlers for categories
+            categoryList.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (e.target.closest('.category-link')) {
+                    const category = e.target.closest('.category-link').dataset.category;
+                    filterByCategory(category);
+                }
+            });
+        }
+
+        function loadRecentPosts() {
+            const recentPosts = document.getElementById('recentPosts');
+            const recent = allPosts.slice(0, 5);
+            
+            recentPosts.innerHTML = recent.map(post => `
+                <div class="recent-post">
+                    <div class="recent-post-image">
+                        <i class="${post.icon}"></i>
+                    </div>
+                    <div class="recent-post-content">
+                        <a href="blog-post.html?id=${post.id}">
+                            <h4>${post.title}</h4>
+                            <p>${post.date}</p>
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterByCategory(category) {
+            currentCategory = category;
+            
+            // Update active category
+            document.querySelectorAll('.category-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.querySelector(`[data-category="${category}"]`).classList.add('active');
+            
+            // Filter posts
+            if (category === 'All') {
+                filteredPosts = [...allPosts];
+            } else {
+                filteredPosts = allPosts.filter(post => post.category === category);
+            }
+            
+            loadBlogPosts();
+        }
+
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            
+            searchInput.addEventListener('input', function() {
+                const query = this.value.toLowerCase().trim();
+                
+                if (query === '') {
+                    if (currentCategory === 'All') {
+                        filteredPosts = [...allPosts];
+                    } else {
+                        filteredPosts = allPosts.filter(post => post.category === currentCategory);
+                    }
+                } else {
+                    filteredPosts = allPosts.filter(post => 
+                        post.title.toLowerCase().includes(query) ||
+                        post.excerpt.toLowerCase().includes(query) ||
+                        post.category.toLowerCase().includes(query)
+                    );
+                }
+                
+                loadBlogPosts();
+            });
+        }
+
+        function openBlogPost(postId) {
+            window.location.href = `blog-post.html?id=${postId}`;
+        }
+
         // Newsletter form handling
         document.querySelector('.newsletter-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            const email = this.querySelector('.newsletter-input').value;
-            
-            // Simple validation
-            if (email && email.includes('@')) {
-                alert('Thank you for subscribing! You\'ll receive our latest updates soon.');
-                this.reset();
-            } else {
-                alert('Please enter a valid email address.');
-            }
-        });
-
-        // Category filtering (future enhancement)
-        document.querySelectorAll('.category-item').forEach(item => {
-            item.addEventListener('click', function() {
-                const category = this.querySelector('h3').textContent;
-                console.log('Filtering by category:', category);
-                // Future: Implement category filtering
-            });
+            const email = this.querySelector('input[type="email"]').value;
+            alert('Thank you for subscribing! We\'ll keep you updated with the latest tips.');
+            this.reset();
         });
     </script>
 </body>

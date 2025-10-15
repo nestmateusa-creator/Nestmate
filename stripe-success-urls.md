@@ -27,10 +27,10 @@ Configure these success URLs in your Stripe dashboard for each payment link:
 ## Dashboard Redirects:
 
 After successful payment, users will be redirected to:
-- **Basic**: `dashboard-basic-new.html`
-- **Pro**: `dashboard-pro-new.html`
-- **Advanced Pro**: `dashboard-advanced-pro-new.html`
-- **Enterprise**: `dashboard-advanced-pro-new.html` (same as Advanced Pro)
+- **Basic**: `dashboard-basic-clean.html`
+- **Pro**: `dashboard-basic-clean.html` (temporarily - will be recreated)
+- **Advanced Pro**: `dashboard-basic-clean.html` (temporarily - will be recreated)
+- **Enterprise**: `dashboard-basic-clean.html` (temporarily - will be recreated)
 
 ## Payment Links:
 

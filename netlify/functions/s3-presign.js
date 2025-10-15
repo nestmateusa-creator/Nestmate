@@ -20,7 +20,6 @@ exports.handler = async (event) => {
       Key: key,
       ContentType: contentType,
       Expires: 60, // seconds
-      ACL: 'public-read',
     };
 
     const uploadUrl = await s3.getSignedUrlPromise('putObject', params);

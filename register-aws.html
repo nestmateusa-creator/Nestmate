@@ -375,35 +375,62 @@
                    /[!@#$%^&*(),.?":{}|<>]/.test(password);
         }
 
-        // Handle signup form submission
-        function handleSignup(e) {
+        // Handle signup form submission (server-side signup via Netlify Function)
+        async function handleSignup(e) {
             e.preventDefault();
-            console.log('Form submitted!');
-            
-            // Simple validation
+            clearMessages();
+
             const password = passwordInput.value.trim();
             const confirmPassword = confirmPasswordInput.value.trim();
-            
+            if (!isPasswordValid()) {
+                showMessage('Please ensure your password meets all requirements.', 'error');
+                return;
+            }
             if (password !== confirmPassword) {
-                alert('Passwords do not match!');
+                showMessage('Passwords do not match.', 'error');
                 return;
             }
-            
-            if (password.length < 8) {
-                alert('Password must be at least 8 characters!');
-                return;
-            }
-            
-            console.log('Validation passed, redirecting...');
-            
-            // Show loading
+
             setLoading(true);
-            
-            // Direct redirect without any async operations
-            setTimeout(() => {
-                console.log('Redirecting to pricing...');
-                window.location.href = 'pricing.html';
-            }, 1000);
+            try {
+                // Format phone number for Cognito (E.164 format)
+                let phone = phoneInput.value.trim();
+                if (phone && !phone.startsWith('+')) {
+                    // Add +1 for US numbers if not already formatted
+                    if (phone.length === 10) {
+                        phone = '+1' + phone;
+                    } else if (phone.length === 11 && phone.startsWith('1')) {
+                        phone = '+' + phone;
+                    }
+                }
+
+                const payload = {
+                    email: emailInput.value.trim().toLowerCase(),
+                    password,
+                    name: nameInput.value.trim(),
+                    phone: phone,
+                };
+                console.log('Sending signup request:', payload);
+                const res = await fetch('/.netlify/functions/cognito-signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+                console.log('Response status:', res.status);
+                const data = await res.json();
+                console.log('Response data:', data);
+                if (data.success) {
+                    showMessage('Account created successfully! Redirecting to plan selection…', 'success');
+                    setTimeout(() => { window.location.href = 'pricing.html'; }, 1200);
+                } else {
+                    showMessage(data.message || 'Signup failed. Please try again.', 'error');
+                }
+            } catch (err) {
+                console.error('Signup error:', err);
+                showMessage(err.message || 'Unexpected error. Please try again.', 'error');
+            } finally {
+                setLoading(false);
+            }
         }
 
 
@@ -431,8 +458,9 @@
         function setLoading(isLoading) {
             loading.classList.toggle('show', isLoading);
             signupBtn.disabled = isLoading;
-            confirmBtn.disabled = isLoading;
-            resendBtn.disabled = isLoading;
+            // Only disable elements that exist
+            if (typeof confirmBtn !== 'undefined') confirmBtn.disabled = isLoading;
+            if (typeof resendBtn !== 'undefined') resendBtn.disabled = isLoading;
         }
     </script>
 </body>
