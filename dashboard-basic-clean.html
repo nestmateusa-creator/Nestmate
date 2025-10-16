@@ -2753,13 +2753,13 @@
         let favoritesData = [];
         let floorPlanData = null;
 
-        function addPhotoFromUrl() {
+        async function addPhotoFromUrl() {
             const input = document.getElementById('photoUrl');
             const url = (input.value || '').trim();
             if (!url) return;
             
             photosData.push({ url, type: 'url' });
-            displayPhotos();
+            await displayPhotos();
             input.value = '';
             document.getElementById('photosEmpty').style.display = 'none';
         }
@@ -2885,20 +2885,20 @@
                 container.appendChild(img);
                 container.appendChild(deleteBtn);
                 grid.appendChild(container);
-            });
+            }
         }
 
-        function removePhoto(index) {
+        async function removePhoto(index) {
             photosData.splice(index, 1);
-            displayPhotos();
+            await displayPhotos();
             if (photosData.length === 0) {
                 document.getElementById('photosEmpty').style.display = '';
             }
         }
 
-        function clearPhotos() {
+        async function clearPhotos() {
             photosData = [];
-            displayPhotos();
+            await displayPhotos();
             document.getElementById('photosEmpty').style.display = '';
         }
 
