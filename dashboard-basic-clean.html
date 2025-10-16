@@ -2797,7 +2797,7 @@
                 photosData.push(...uploadedPhotos);
                 console.log('After push - photosData:', photosData);
                 console.log('Number of photos added:', uploadedPhotos.length);
-                displayPhotos();
+                await displayPhotos();
                 fileInput.value = '';
                 document.getElementById('photosEmpty').style.display = 'none';
                 showAlert(`${uploadedPhotos.length} photos uploaded successfully!`, 'success');
@@ -2807,7 +2807,7 @@
             }
         }
 
-        function displayPhotos() {
+        async function displayPhotos() {
             console.log('displayPhotos called with photosData:', photosData);
             const grid = document.getElementById('photosGrid');
             if (!grid) {
@@ -2821,13 +2821,47 @@
                 return;
             }
             
-            photosData.forEach((photo, index) => {
+            for (let index = 0; index < photosData.length; index++) {
+                const photo = photosData[index];
                 console.log('Displaying photo:', photo);
                 const container = document.createElement('div');
                 container.style.position = 'relative';
                 
                 const img = document.createElement('img');
-                img.src = photo.url;
+                
+                // Generate presigned URL for viewing if it's an S3 photo
+                if (photo.type === 's3' && photo.url) {
+                    try {
+                        // Extract the key from the URL
+                        const urlParts = photo.url.split('/');
+                        const key = urlParts.slice(3).join('/'); // Remove bucket name and domain
+                        console.log('Generating presigned URL for key:', key);
+                        
+                        const presignedResponse = await fetch('/.netlify/functions/s3-get-presigned-url', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                bucket: 'nestmate-files-483954734051',
+                                key: key
+                            })
+                        });
+                        
+                        if (presignedResponse.ok) {
+                            const { presignedUrl } = await presignedResponse.json();
+                            img.src = presignedUrl;
+                            console.log('Using presigned URL for image:', presignedUrl.substring(0, 100) + '...');
+                        } else {
+                            console.error('Failed to get presigned URL, using original URL');
+                            img.src = photo.url;
+                        }
+                    } catch (error) {
+                        console.error('Error generating presigned URL:', error);
+                        img.src = photo.url;
+                    }
+                } else {
+                    img.src = photo.url;
+                }
+                
                 img.alt = photo.filename || 'Home Photo';
                 img.style.width = '100%';
                 img.style.height = '120px';
@@ -3124,7 +3158,7 @@
             if (userData.photos && userData.photos.length > 0) {
                 photosData = userData.photos;
                 console.log('Photos loaded, calling displayPhotos with:', photosData);
-                displayPhotos();
+                await displayPhotos();
                 document.getElementById('photosEmpty').style.display = 'none';
             } else {
                 photosData = [];
@@ -3205,7 +3239,7 @@
             // Load photos
             if (userData.photos && userData.photos.length > 0) {
                 photosData = userData.photos;
-                displayPhotos();
+                await displayPhotos();
                 document.getElementById('photosEmpty').style.display = 'none';
             }
             
