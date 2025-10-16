@@ -2788,7 +2788,7 @@
                     console.log('Uploading file:', file.name, 'with key:', key);
                     const url = await uploadToS3(file, key);
                     console.log('Upload successful, URL:', url);
-                    return { url, type: 's3', filename: file.name };
+                    return { url, key, type: 's3', filename: file.name };
                 });
 
                 const uploadedPhotos = await Promise.all(uploadPromises);
@@ -2830,24 +2830,27 @@
                 const img = document.createElement('img');
                 
                 // Generate presigned URL for viewing if it's an S3 photo
-                if (photo.type === 's3' && photo.url) {
+                if (photo.type === 's3' && (photo.key || photo.url)) {
                     try {
-                        // Extract the key from the URL - handle different URL formats
-                        let key;
-                        if (photo.url.includes('s3.amazonaws.com')) {
-                            // Format: https://bucket.s3.amazonaws.com/path/to/file
-                            const urlParts = photo.url.split('/');
-                            key = urlParts.slice(3).join('/');
-                        } else if (photo.url.includes('amazonaws.com')) {
-                            // Format: https://s3.amazonaws.com/bucket/path/to/file
-                            const urlParts = photo.url.split('/');
-                            key = urlParts.slice(4).join('/');
-                        } else {
-                            // Assume it's already a key or extract differently
-                            key = photo.url.replace('https://nestmate-files-483954734051.s3.amazonaws.com/', '');
+                        // Use the key directly if available, otherwise extract from URL
+                        let key = photo.key;
+                        if (!key && photo.url) {
+                            // Extract the key from the URL - handle different URL formats
+                            if (photo.url.includes('s3.amazonaws.com')) {
+                                // Format: https://bucket.s3.amazonaws.com/path/to/file
+                                const urlParts = photo.url.split('/');
+                                key = urlParts.slice(3).join('/');
+                            } else if (photo.url.includes('amazonaws.com')) {
+                                // Format: https://s3.amazonaws.com/bucket/path/to/file
+                                const urlParts = photo.url.split('/');
+                                key = urlParts.slice(4).join('/');
+                            } else {
+                                // Assume it's already a key or extract differently
+                                key = photo.url.replace('https://nestmate-files-483954734051.s3.amazonaws.com/', '');
+                            }
                         }
-                        console.log('Original URL:', photo.url);
-                        console.log('Extracted key:', key);
+                        console.log('Photo object:', photo);
+                        console.log('Using key:', key);
                         
                         const presignedResponse = await fetch('/.netlify/functions/s3-get-presigned-url', {
                             method: 'POST',
