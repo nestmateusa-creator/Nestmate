@@ -2940,9 +2940,9 @@
                 img.style.borderRadius = '0.375rem';
                 img.style.cursor = 'pointer';
                 
-                // Add click handler for expand/collapse
+                // Add click handler to open photo in new page
                 img.onclick = function() {
-                    togglePhotoExpanded(img, photo);
+                    openPhotoInNewPage(photo);
                 };
                 
                 const deleteBtn = document.createElement('button');
@@ -2979,86 +2979,223 @@
             document.getElementById('photosEmpty').style.display = '';
         }
 
-        // Photo expand/collapse functionality
-        function togglePhotoExpanded(img, photo) {
-            const container = img.closest('.photo-container') || img.parentElement;
-            const isExpanded = container.classList.contains('expanded');
-            
-            if (isExpanded) {
-                // Collapse
-                container.classList.remove('expanded');
-                img.style.height = '120px';
-                img.style.objectFit = 'cover';
-                
-                // Remove expanded controls
-                const controls = container.querySelector('.photo-controls');
-                if (controls) controls.remove();
-            } else {
-                // Expand
-                container.classList.add('expanded');
-                img.style.height = 'auto';
-                img.style.maxHeight = '70vh';
-                img.style.objectFit = 'contain';
-                
-                // Add expanded controls
-                addPhotoControls(container, photo);
-            }
+        // Open photo in new page with controls
+        function openPhotoInNewPage(photo) {
+            // Create a new window with the photo viewer
+            const photoViewerUrl = createPhotoViewerURL(photo);
+            window.open(photoViewerUrl, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
         }
 
-        function addPhotoControls(container, photo) {
-            // Remove existing controls if any
-            const existingControls = container.querySelector('.photo-controls');
-            if (existingControls) existingControls.remove();
-            
-            const controls = document.createElement('div');
-            controls.className = 'photo-controls';
-            controls.style.position = 'absolute';
-            controls.style.bottom = '10px';
-            controls.style.right = '10px';
-            controls.style.display = 'flex';
-            controls.style.gap = '8px';
-            controls.style.zIndex = '10';
-            
-            // Download button
-            const downloadBtn = document.createElement('button');
-            downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download';
-            downloadBtn.style.background = 'rgba(0, 123, 255, 0.9)';
-            downloadBtn.style.color = 'white';
-            downloadBtn.style.border = 'none';
-            downloadBtn.style.padding = '8px 12px';
-            downloadBtn.style.borderRadius = '4px';
-            downloadBtn.style.cursor = 'pointer';
-            downloadBtn.style.fontSize = '12px';
-            downloadBtn.onclick = () => downloadPhoto(photo);
-            
-            // PDF button
-            const pdfBtn = document.createElement('button');
-            pdfBtn.innerHTML = '<i class="fas fa-file-pdf"></i> PDF';
-            pdfBtn.style.background = 'rgba(220, 53, 69, 0.9)';
-            pdfBtn.style.color = 'white';
-            pdfBtn.style.border = 'none';
-            pdfBtn.style.padding = '8px 12px';
-            pdfBtn.style.borderRadius = '4px';
-            pdfBtn.style.cursor = 'pointer';
-            pdfBtn.style.fontSize = '12px';
-            pdfBtn.onclick = () => generatePhotoPDF(photo);
-            
-            // Close button
-            const closeBtn = document.createElement('button');
-            closeBtn.innerHTML = '<i class="fas fa-times"></i>';
-            closeBtn.style.background = 'rgba(108, 117, 125, 0.9)';
-            closeBtn.style.color = 'white';
-            closeBtn.style.border = 'none';
-            closeBtn.style.padding = '8px 12px';
-            closeBtn.style.borderRadius = '4px';
-            closeBtn.style.cursor = 'pointer';
-            closeBtn.style.fontSize = '12px';
-            closeBtn.onclick = () => togglePhotoExpanded(container.querySelector('img'), photo);
-            
-            controls.appendChild(downloadBtn);
-            controls.appendChild(pdfBtn);
-            controls.appendChild(closeBtn);
-            container.appendChild(controls);
+        function createPhotoViewerURL(photo) {
+            // Create a data URL with the photo viewer HTML
+            const html = generatePhotoViewerHTML(photo);
+            return 'data:text/html;charset=utf-8,' + encodeURIComponent(html);
+        }
+
+        function generatePhotoViewerHTML(photo) {
+            return `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="utf-8">
+                <title>${photo.filename || 'Photo'} - NestMate</title>
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+                <style>
+                    body {
+                        margin: 0;
+                        padding: 20px;
+                        background: #1a1d29;
+                        color: white;
+                        font-family: Arial, sans-serif;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        min-height: 100vh;
+                    }
+                    .photo-container {
+                        max-width: 90vw;
+                        max-height: 80vh;
+                        text-align: center;
+                        margin-bottom: 20px;
+                    }
+                    .photo-container img {
+                        max-width: 100%;
+                        max-height: 100%;
+                        object-fit: contain;
+                        border-radius: 8px;
+                        box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+                    }
+                    .controls {
+                        display: flex;
+                        gap: 15px;
+                        justify-content: center;
+                        flex-wrap: wrap;
+                    }
+                    .btn {
+                        padding: 12px 24px;
+                        border: none;
+                        border-radius: 6px;
+                        cursor: pointer;
+                        font-size: 14px;
+                        font-weight: 600;
+                        text-decoration: none;
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 8px;
+                        transition: all 0.3s ease;
+                    }
+                    .btn:hover {
+                        transform: translateY(-2px);
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                    }
+                    .btn-download {
+                        background: #007bff;
+                        color: white;
+                    }
+                    .btn-pdf {
+                        background: #dc3545;
+                        color: white;
+                    }
+                    .btn-close {
+                        background: #6c757d;
+                        color: white;
+                    }
+                    .photo-info {
+                        background: #2d3748;
+                        padding: 20px;
+                        border-radius: 8px;
+                        margin-top: 20px;
+                        max-width: 600px;
+                    }
+                    .photo-info h3 {
+                        margin: 0 0 15px 0;
+                        color: #e2e8f0;
+                    }
+                    .info-grid {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                        gap: 15px;
+                    }
+                    .info-item {
+                        background: #374151;
+                        padding: 12px;
+                        border-radius: 6px;
+                        border-left: 4px solid #007bff;
+                    }
+                    .info-label {
+                        font-weight: bold;
+                        color: #9ca3af;
+                        font-size: 12px;
+                        text-transform: uppercase;
+                        margin-bottom: 4px;
+                    }
+                    .info-value {
+                        color: #e2e8f0;
+                        font-size: 14px;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="photo-container">
+                    <img src="${photo.url}" alt="${photo.filename || 'Photo'}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div style="display:none; padding: 40px; background: #374151; border-radius: 8px; color: #9ca3af;">
+                        <i class="fas fa-image" style="font-size: 48px; margin-bottom: 16px;"></i>
+                        <p>Image not available</p>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button class="btn btn-download" onclick="downloadPhoto()">
+                        <i class="fas fa-download"></i> Download Photo
+                    </button>
+                    <button class="btn btn-pdf" onclick="generatePDF()">
+                        <i class="fas fa-file-pdf"></i> Generate PDF Report
+                    </button>
+                    <button class="btn btn-close" onclick="window.close()">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                </div>
+                
+                <div class="photo-info">
+                    <h3><i class="fas fa-info-circle"></i> Photo Information</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">File Name</div>
+                            <div class="info-value">${photo.filename || 'Not specified'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">File Type</div>
+                            <div class="info-value">${photo.type || 'Not specified'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Upload Date</div>
+                            <div class="info-value">${new Date().toLocaleDateString()}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Storage</div>
+                            <div class="info-value">AWS S3</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <script>
+                    const photoData = ${JSON.stringify(photo)};
+                    
+                    function downloadPhoto() {
+                        try {
+                            const link = document.createElement('a');
+                            link.href = photoData.url;
+                            link.download = photoData.filename || 'photo.jpg';
+                            link.target = '_blank';
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                            alert('Photo download started!');
+                        } catch (error) {
+                            console.error('Download error:', error);
+                            alert('Download failed. Please try again.');
+                        }
+                    }
+                    
+                    async function generatePDF() {
+                        try {
+                            alert('Generating PDF...');
+                            
+                            const response = await fetch('/.netlify/functions/generate-photo-pdf', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    photo: photoData,
+                                    userInfo: {
+                                        name: 'Cherie & Frank Gaidosh',
+                                        email: 'cfgaidosh@gmail.com'
+                                    }
+                                })
+                            });
+                            
+                            if (response.ok) {
+                                const blob = await response.blob();
+                                const url = window.URL.createObjectURL(blob);
+                                const link = document.createElement('a');
+                                link.href = url;
+                                link.download = \`\${photoData.filename || 'photo'}_report.pdf\`;
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                                window.URL.revokeObjectURL(url);
+                                alert('PDF generated successfully!');
+                            } else {
+                                throw new Error('PDF generation failed');
+                            }
+                        } catch (error) {
+                            console.error('PDF generation error:', error);
+                            alert('PDF generation failed. Please try again.');
+                        }
+                    }
+                </script>
+            </body>
+            </html>
+            `;
         }
 
         function downloadPhoto(photo) {
