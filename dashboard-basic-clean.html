@@ -2852,27 +2852,32 @@
                         console.log('Photo object:', photo);
                         console.log('Using key:', key);
                         
-                        const presignedResponse = await fetch('/.netlify/functions/s3-get-presigned-url', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                bucket: 'nestmate-files-483954734051',
-                                key: key
-                            })
-                        });
-                        
-                        console.log('Presigned response status:', presignedResponse.status);
-                        
-                        if (presignedResponse.ok) {
-                            const responseData = await presignedResponse.json();
-                            console.log('Presigned response data:', responseData);
-                            img.src = responseData.presignedUrl;
-                            console.log('Using presigned URL for image:', responseData.presignedUrl.substring(0, 100) + '...');
-                        } else {
-                            const errorText = await presignedResponse.text();
-                            console.error('Failed to get presigned URL:', presignedResponse.status, errorText);
-                            console.log('Falling back to original URL:', photo.url);
+                        if (!key) {
+                            console.error('No key found for photo:', photo);
                             img.src = photo.url;
+                        } else {
+                            const presignedResponse = await fetch('/.netlify/functions/s3-get-presigned-url', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    bucket: 'nestmate-files-483954734051',
+                                    key: key
+                                })
+                            });
+                        
+                            console.log('Presigned response status:', presignedResponse.status);
+                            
+                            if (presignedResponse.ok) {
+                                const responseData = await presignedResponse.json();
+                                console.log('Presigned response data:', responseData);
+                                img.src = responseData.presignedUrl;
+                                console.log('Using presigned URL for image:', responseData.presignedUrl.substring(0, 100) + '...');
+                            } else {
+                                const errorText = await presignedResponse.text();
+                                console.error('Failed to get presigned URL:', presignedResponse.status, errorText);
+                                console.log('Falling back to original URL:', photo.url);
+                                img.src = photo.url;
+                            }
                         }
                     } catch (error) {
                         console.error('Error generating presigned URL:', error);
