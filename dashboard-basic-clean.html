@@ -2832,10 +2832,22 @@
                 // Generate presigned URL for viewing if it's an S3 photo
                 if (photo.type === 's3' && photo.url) {
                     try {
-                        // Extract the key from the URL
-                        const urlParts = photo.url.split('/');
-                        const key = urlParts.slice(3).join('/'); // Remove bucket name and domain
-                        console.log('Generating presigned URL for key:', key);
+                        // Extract the key from the URL - handle different URL formats
+                        let key;
+                        if (photo.url.includes('s3.amazonaws.com')) {
+                            // Format: https://bucket.s3.amazonaws.com/path/to/file
+                            const urlParts = photo.url.split('/');
+                            key = urlParts.slice(3).join('/');
+                        } else if (photo.url.includes('amazonaws.com')) {
+                            // Format: https://s3.amazonaws.com/bucket/path/to/file
+                            const urlParts = photo.url.split('/');
+                            key = urlParts.slice(4).join('/');
+                        } else {
+                            // Assume it's already a key or extract differently
+                            key = photo.url.replace('https://nestmate-files-483954734051.s3.amazonaws.com/', '');
+                        }
+                        console.log('Original URL:', photo.url);
+                        console.log('Extracted key:', key);
                         
                         const presignedResponse = await fetch('/.netlify/functions/s3-get-presigned-url', {
                             method: 'POST',
@@ -2846,12 +2858,17 @@
                             })
                         });
                         
+                        console.log('Presigned response status:', presignedResponse.status);
+                        
                         if (presignedResponse.ok) {
-                            const { presignedUrl } = await presignedResponse.json();
-                            img.src = presignedUrl;
-                            console.log('Using presigned URL for image:', presignedUrl.substring(0, 100) + '...');
+                            const responseData = await presignedResponse.json();
+                            console.log('Presigned response data:', responseData);
+                            img.src = responseData.presignedUrl;
+                            console.log('Using presigned URL for image:', responseData.presignedUrl.substring(0, 100) + '...');
                         } else {
-                            console.error('Failed to get presigned URL, using original URL');
+                            const errorText = await presignedResponse.text();
+                            console.error('Failed to get presigned URL:', presignedResponse.status, errorText);
+                            console.log('Falling back to original URL:', photo.url);
                             img.src = photo.url;
                         }
                     } catch (error) {
@@ -2861,6 +2878,24 @@
                 } else {
                     img.src = photo.url;
                 }
+                
+                // Add error handling for image loading
+                img.onerror = function() {
+                    console.error('Failed to load image:', img.src);
+                    // Try to show a placeholder or error message
+                    img.style.display = 'none';
+                    const errorDiv = document.createElement('div');
+                    errorDiv.style.width = '100%';
+                    errorDiv.style.height = '120px';
+                    errorDiv.style.display = 'flex';
+                    errorDiv.style.alignItems = 'center';
+                    errorDiv.style.justifyContent = 'center';
+                    errorDiv.style.backgroundColor = '#f3f4f6';
+                    errorDiv.style.borderRadius = '0.375rem';
+                    errorDiv.style.color = '#6b7280';
+                    errorDiv.innerHTML = '<i class="fas fa-image"></i> Image not available';
+                    container.appendChild(errorDiv);
+                };
                 
                 img.alt = photo.filename || 'Home Photo';
                 img.style.width = '100%';
