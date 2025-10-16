@@ -4,8 +4,8 @@
 // AWS Configuration - Set credentials directly for browser environment
 AWS.config.update({
     region: 'us-east-2',
-    accessKeyId: 'YOUR_AWS_ACCESS_KEY_ID',
-    secretAccessKey: 'YOUR_AWS_SECRET_ACCESS_KEY'
+    accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
+    secretAccessKey: 'wolmLksFIm5go0kLZVelnfLnw7NGIxyZD9EvIu5O'
 });
 
 const cognito = new AWS.CognitoIdentityServiceProvider();
