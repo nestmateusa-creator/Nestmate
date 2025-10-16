@@ -699,6 +699,33 @@
         .file-item .file-actions { display: flex; gap: 4px; }
         .file-item .btn { padding: 4px 8px; font-size: 0.8rem; }
 
+        /* Photo container styles */
+        .photo-container {
+            transition: all 0.3s ease;
+            border-radius: 0.375rem;
+            overflow: hidden;
+        }
+
+        .photo-container.expanded {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .photo-container.expanded img {
+            max-width: 90vw;
+            max-height: 90vh;
+            object-fit: contain;
+        }
+
         /* Account Modal */
         .account-modal {
             position: fixed;
@@ -2825,6 +2852,7 @@
                 const photo = photosData[index];
                 console.log('Displaying photo:', photo);
                 const container = document.createElement('div');
+                container.className = 'photo-container';
                 container.style.position = 'relative';
                 
                 const img = document.createElement('img');
@@ -2910,6 +2938,12 @@
                 img.style.height = '120px';
                 img.style.objectFit = 'cover';
                 img.style.borderRadius = '0.375rem';
+                img.style.cursor = 'pointer';
+                
+                // Add click handler for expand/collapse
+                img.onclick = function() {
+                    togglePhotoExpanded(img, photo);
+                };
                 
                 const deleteBtn = document.createElement('button');
                 deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
@@ -2943,6 +2977,140 @@
             photosData = [];
             await displayPhotos();
             document.getElementById('photosEmpty').style.display = '';
+        }
+
+        // Photo expand/collapse functionality
+        function togglePhotoExpanded(img, photo) {
+            const container = img.closest('.photo-container') || img.parentElement;
+            const isExpanded = container.classList.contains('expanded');
+            
+            if (isExpanded) {
+                // Collapse
+                container.classList.remove('expanded');
+                img.style.height = '120px';
+                img.style.objectFit = 'cover';
+                
+                // Remove expanded controls
+                const controls = container.querySelector('.photo-controls');
+                if (controls) controls.remove();
+            } else {
+                // Expand
+                container.classList.add('expanded');
+                img.style.height = 'auto';
+                img.style.maxHeight = '70vh';
+                img.style.objectFit = 'contain';
+                
+                // Add expanded controls
+                addPhotoControls(container, photo);
+            }
+        }
+
+        function addPhotoControls(container, photo) {
+            // Remove existing controls if any
+            const existingControls = container.querySelector('.photo-controls');
+            if (existingControls) existingControls.remove();
+            
+            const controls = document.createElement('div');
+            controls.className = 'photo-controls';
+            controls.style.position = 'absolute';
+            controls.style.bottom = '10px';
+            controls.style.right = '10px';
+            controls.style.display = 'flex';
+            controls.style.gap = '8px';
+            controls.style.zIndex = '10';
+            
+            // Download button
+            const downloadBtn = document.createElement('button');
+            downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download';
+            downloadBtn.style.background = 'rgba(0, 123, 255, 0.9)';
+            downloadBtn.style.color = 'white';
+            downloadBtn.style.border = 'none';
+            downloadBtn.style.padding = '8px 12px';
+            downloadBtn.style.borderRadius = '4px';
+            downloadBtn.style.cursor = 'pointer';
+            downloadBtn.style.fontSize = '12px';
+            downloadBtn.onclick = () => downloadPhoto(photo);
+            
+            // PDF button
+            const pdfBtn = document.createElement('button');
+            pdfBtn.innerHTML = '<i class="fas fa-file-pdf"></i> PDF';
+            pdfBtn.style.background = 'rgba(220, 53, 69, 0.9)';
+            pdfBtn.style.color = 'white';
+            pdfBtn.style.border = 'none';
+            pdfBtn.style.padding = '8px 12px';
+            pdfBtn.style.borderRadius = '4px';
+            pdfBtn.style.cursor = 'pointer';
+            pdfBtn.style.fontSize = '12px';
+            pdfBtn.onclick = () => generatePhotoPDF(photo);
+            
+            // Close button
+            const closeBtn = document.createElement('button');
+            closeBtn.innerHTML = '<i class="fas fa-times"></i>';
+            closeBtn.style.background = 'rgba(108, 117, 125, 0.9)';
+            closeBtn.style.color = 'white';
+            closeBtn.style.border = 'none';
+            closeBtn.style.padding = '8px 12px';
+            closeBtn.style.borderRadius = '4px';
+            closeBtn.style.cursor = 'pointer';
+            closeBtn.style.fontSize = '12px';
+            closeBtn.onclick = () => togglePhotoExpanded(container.querySelector('img'), photo);
+            
+            controls.appendChild(downloadBtn);
+            controls.appendChild(pdfBtn);
+            controls.appendChild(closeBtn);
+            container.appendChild(controls);
+        }
+
+        function downloadPhoto(photo) {
+            try {
+                const link = document.createElement('a');
+                link.href = photo.url;
+                link.download = photo.filename || 'photo.jpg';
+                link.target = '_blank';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showAlert('Photo download started!', 'success');
+            } catch (error) {
+                console.error('Download error:', error);
+                showAlert('Download failed. Please try again.', 'error');
+            }
+        }
+
+        async function generatePhotoPDF(photo) {
+            try {
+                showAlert('Generating PDF...', 'info');
+                
+                const response = await fetch('/.netlify/functions/generate-photo-pdf', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        photo: photo,
+                        userInfo: {
+                            name: 'Cherie & Frank Gaidosh',
+                            email: 'cfgaidosh@gmail.com'
+                        }
+                    })
+                });
+                
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `${photo.filename || 'photo'}_report.pdf`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(url);
+                    showAlert('PDF generated successfully!', 'success');
+                } else {
+                    throw new Error('PDF generation failed');
+                }
+            } catch (error) {
+                console.error('PDF generation error:', error);
+                showAlert('PDF generation failed. Please try again.', 'error');
+            }
         }
 
         async function savePhotos() {
