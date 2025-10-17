@@ -3445,8 +3445,12 @@
         // Update user display
         function updateUserDisplay() {
             try {
-                if (nestMateAuth.currentUser) {
-                    const userName = nestMateAuth.currentUser.name || 'User';
+                console.log('updateUserDisplay called');
+                console.log('nestMateAuth:', nestMateAuth);
+                console.log('nestMateAuth.currentUser:', nestMateAuth?.currentUser);
+                
+                if (nestMateAuth && nestMateAuth.currentUser) {
+                    const userName = nestMateAuth.currentUser.name || nestMateAuth.currentUser.email?.split('@')[0] || 'User';
                     const userEmail = nestMateAuth.currentUser.email || 'Loading...';
                     
                     document.getElementById('userName').textContent = userName;
@@ -3458,10 +3462,17 @@
                     
                     console.log('User display updated:', userName, userEmail);
                 } else {
-                    console.log('No current user found');
+                    console.log('No current user found, setting default values');
+                    document.getElementById('userName').textContent = 'User';
+                    document.getElementById('userEmail').textContent = 'Loading...';
+                    document.getElementById('userAvatar').textContent = 'U';
                 }
             } catch (error) {
                 console.error('Error updating user display:', error);
+                // Set fallback values
+                document.getElementById('userName').textContent = 'User';
+                document.getElementById('userEmail').textContent = 'Error';
+                document.getElementById('userAvatar').textContent = 'U';
             }
         }
 
@@ -3503,12 +3514,14 @@
             document.getElementById('userEmail').textContent = displayEmail || (user && user.email) || '';
             document.getElementById('userAvatar').textContent = (displayName || 'U').charAt(0).toUpperCase();
             
-            // Update user display
-            updateUserDisplay();
-            
             // Load dashboard data
             await loadUserData();
             loadDashboardData();
+            
+            // Update user display after a short delay to ensure auth is loaded
+            setTimeout(() => {
+                updateUserDisplay();
+            }, 100);
             
             console.log('✅ Command Center Dashboard initialized successfully');
         });
