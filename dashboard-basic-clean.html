@@ -929,7 +929,7 @@
                     <div class="user-avatar" id="userAvatar">U</div>
                     <div class="user-details">
                         <h3 id="userName">User</h3>
-                        <p id="userEmail">user@example.com</p>
+                        <p id="userEmail">Loading...</p>
                     </div>
                     <div class="user-dropdown-arrow">
                         <i class="fas fa-chevron-down"></i>
@@ -2053,12 +2053,12 @@
 
         function addService() {
             console.log('Adding Service');
-            // You can show an add service form or redirect
+            showAlert('Service management feature coming soon!', 'info');
         }
 
         function viewRecords() {
             console.log('Viewing Records');
-            // You can show service records or redirect
+            showAlert('Service records feature coming soon!', 'info');
         }
 
         function openHomeDetails() {
@@ -3442,6 +3442,29 @@
             showAlert('Emergency contacts saved!', 'success');
         }
 
+        // Update user display
+        function updateUserDisplay() {
+            try {
+                if (nestMateAuth.currentUser) {
+                    const userName = nestMateAuth.currentUser.name || 'User';
+                    const userEmail = nestMateAuth.currentUser.email || 'Loading...';
+                    
+                    document.getElementById('userName').textContent = userName;
+                    document.getElementById('userEmail').textContent = userEmail;
+                    
+                    // Update avatar with first letter of name
+                    const firstLetter = userName.charAt(0).toUpperCase();
+                    document.getElementById('userAvatar').textContent = firstLetter;
+                    
+                    console.log('User display updated:', userName, userEmail);
+                } else {
+                    console.log('No current user found');
+                }
+            } catch (error) {
+                console.error('Error updating user display:', error);
+            }
+        }
+
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('🚀 Command Center Dashboard Starting...');
@@ -3479,6 +3502,9 @@
             document.getElementById('userName').textContent = displayName || 'User';
             document.getElementById('userEmail').textContent = displayEmail || (user && user.email) || '';
             document.getElementById('userAvatar').textContent = (displayName || 'U').charAt(0).toUpperCase();
+            
+            // Update user display
+            updateUserDisplay();
             
             // Load dashboard data
             await loadUserData();
