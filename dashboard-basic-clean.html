@@ -3143,25 +3143,64 @@
                     
                     function downloadPhoto() {
                         try {
+                            // Create a temporary link element
                             const link = document.createElement('a');
                             link.href = photoData.url;
                             link.download = photoData.filename || 'photo.jpg';
-                            link.target = '_blank';
+                            link.style.display = 'none';
+                            
+                            // Add to DOM, click, then remove
                             document.body.appendChild(link);
                             link.click();
                             document.body.removeChild(link);
-                            alert('Photo download started!');
+                            
+                            // Show success message
+                            showMessage('Photo download started!', 'success');
                         } catch (error) {
                             console.error('Download error:', error);
-                            alert('Download failed. Please try again.');
+                            showMessage('Download failed. Please try again.', 'error');
                         }
+                    }
+                    
+                    function showMessage(text, type) {
+                        const message = document.createElement('div');
+                        message.textContent = text;
+                        message.style.position = 'fixed';
+                        message.style.top = '20px';
+                        message.style.right = '20px';
+                        message.style.padding = '12px 20px';
+                        message.style.borderRadius = '6px';
+                        message.style.color = 'white';
+                        message.style.fontWeight = '600';
+                        message.style.zIndex = '10000';
+                        message.style.opacity = '0';
+                        message.style.transition = 'opacity 0.3s ease';
+                        
+                        if (type === 'success') {
+                            message.style.background = '#28a745';
+                        } else if (type === 'error') {
+                            message.style.background = '#dc3545';
+                        } else {
+                            message.style.background = '#007bff';
+                        }
+                        
+                        document.body.appendChild(message);
+                        
+                        // Fade in
+                        setTimeout(() => message.style.opacity = '1', 100);
+                        
+                        // Fade out and remove
+                        setTimeout(() => {
+                            message.style.opacity = '0';
+                            setTimeout(() => document.body.removeChild(message), 300);
+                        }, 3000);
                     }
                     
                     async function generatePDF() {
                         try {
-                            alert('Generating PDF...');
+                            showMessage('Generating PDF...', 'info');
                             
-                            const response = await fetch('/.netlify/functions/generate-photo-pdf', {
+                            const response = await fetch('https://nestmateus.com/.netlify/functions/generate-photo-pdf', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({
@@ -3179,17 +3218,20 @@
                                 const link = document.createElement('a');
                                 link.href = url;
                                 link.download = \`\${photoData.filename || 'photo'}_report.pdf\`;
+                                link.style.display = 'none';
                                 document.body.appendChild(link);
                                 link.click();
                                 document.body.removeChild(link);
                                 window.URL.revokeObjectURL(url);
-                                alert('PDF generated successfully!');
+                                showMessage('PDF generated successfully!', 'success');
                             } else {
+                                const errorText = await response.text();
+                                console.error('PDF generation failed:', response.status, errorText);
                                 throw new Error('PDF generation failed');
                             }
                         } catch (error) {
                             console.error('PDF generation error:', error);
-                            alert('PDF generation failed. Please try again.');
+                            showMessage('PDF generation failed. Please try again.', 'error');
                         }
                     }
                 </script>
