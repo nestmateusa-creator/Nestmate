@@ -2982,30 +2982,19 @@
         // Open photo in new page with controls
         async function openPhotoInNewPage(photo) {
             try {
-                // Generate presigned URL for viewing
-                let viewableUrl = photo.url;
-                
-                if (photo.key) {
-                    const response = await fetch('/.netlify/functions/s3-get-presigned-url', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            bucket: 'nestmate-files-483954734051',
-                            key: photo.key
-                        })
-                    });
-                    
-                    if (response.ok) {
-                        const data = await response.json();
-                        viewableUrl = data.presignedUrl;
-                    }
+                if (!photo || !photo.key) {
+                    showAlert('Photo data is incomplete. Cannot open viewer.', 'error');
+                    return;
                 }
+
+                const filename = photo.filename || 'Photo';
+                const photoViewerUrl = `photo-viewer.html?key=${encodeURIComponent(photo.key)}&filename=${encodeURIComponent(filename)}`;
                 
-                // Open the image in a new tab
-                window.open(viewableUrl, '_blank');
+                window.open(photoViewerUrl, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+
             } catch (error) {
-                console.error('Error opening photo:', error);
-                showAlert('Failed to open photo. Please try again.', 'error');
+                console.error('Error opening photo in new page:', error);
+                showAlert('Error opening photo. Please try again.', 'error');
             }
         }
 

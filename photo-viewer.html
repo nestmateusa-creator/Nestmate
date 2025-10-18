@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Viewer - NestMate</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #1a202c;
+            color: #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .viewer-container {
+            background-color: #2d3748;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            max-width: 90vw;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        .photo-display {
+            max-width: 100%;
+            max-height: 70vh;
+            object-fit: contain;
+            border-radius: 4px;
+        }
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .btn {
+            background-color: #4299e1;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s ease;
+        }
+        .btn:hover {
+            background-color: #3182ce;
+        }
+        .btn-secondary {
+            background-color: #718096;
+        }
+        .btn-secondary:hover {
+            background-color: #5f6b7a;
+        }
+        .loading-message {
+            font-size: 1.2rem;
+            color: #a0aec0;
+        }
+        .error-message {
+            color: #fc8181;
+            font-weight: bold;
+        }
+        @media print {
+            body {
+                background-color: white;
+                color: black;
+            }
+            .viewer-container {
+                box-shadow: none;
+                background-color: white;
+            }
+            .controls, .error-message, .loading-message {
+                display: none !important;
+            }
+            .photo-display {
+                max-height: none;
+                width: auto;
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="viewer-container">
+        <h2 id="photoTitle">Loading Photo...</h2>
+        <p id="loading" class="loading-message">Fetching image...</p>
+        <img id="photoImage" class="photo-display" style="display: none;" alt="Viewed Photo">
+        <div class="controls" style="display: none;">
+            <button id="downloadBtn" class="btn"><i class="fas fa-download"></i> Download</button>
+            <button id="printBtn" class="btn btn-secondary"><i class="fas fa-print"></i> Print</button>
+            <button id="closeBtn" class="btn btn-secondary"><i class="fas fa-times"></i> Close</button>
+        </div>
+        <p id="errorMessage" class="error-message" style="display: none;"></p>
+    </div>
+
+    <script>
+        const photoImage = document.getElementById('photoImage');
+        const photoTitle = document.getElementById('photoTitle');
+        const loadingMessage = document.getElementById('loading');
+        const errorMessage = document.getElementById('errorMessage');
+        const controlsDiv = document.querySelector('.controls');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const printBtn = document.getElementById('printBtn');
+        const closeBtn = document.getElementById('closeBtn');
+
+        const NESTMATE_S3_BUCKET = 'nestmate-files-483954734051';
+        const NETLIFY_FUNCTIONS_BASE_URL = 'https://nestmateus.com/.netlify/functions';
+
+        async function getPresignedUrl(key) {
+            try {
+                const response = await fetch(`${NETLIFY_FUNCTIONS_BASE_URL}/s3-get-presigned-url`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ bucket: NESTMATE_S3_BUCKET, key: key })
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    return data.presignedUrl;
+                } else {
+                    const errorText = await response.text();
+                    throw new Error(`Failed to get presigned URL: ${response.status} - ${errorText}`);
+                }
+            } catch (error) {
+                console.error('Error in getPresignedUrl:', error);
+                return null;
+            }
+        }
+
+        async function loadPhoto() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const photoKey = urlParams.get('key');
+            const filename = urlParams.get('filename') || 'Photo';
+
+            if (!photoKey) {
+                photoTitle.textContent = 'Error';
+                loadingMessage.style.display = 'none';
+                errorMessage.textContent = 'No photo key provided.';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            photoTitle.textContent = filename;
+
+            try {
+                const viewableUrl = await getPresignedUrl(photoKey);
+                if (viewableUrl) {
+                    photoImage.src = viewableUrl;
+                    photoImage.style.display = 'block';
+                    controlsDiv.style.display = 'flex';
+                    loadingMessage.style.display = 'none';
+
+                    downloadBtn.onclick = async () => {
+                        const downloadUrl = await getPresignedUrl(photoKey);
+                        if (downloadUrl) {
+                            const link = document.createElement('a');
+                            link.href = downloadUrl;
+                            link.download = filename;
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                        } else {
+                            errorMessage.textContent = 'Failed to generate download link.';
+                            errorMessage.style.display = 'block';
+                        }
+                    };
+
+                    printBtn.onclick = () => {
+                        window.print();
+                    };
+
+                    closeBtn.onclick = () => {
+                        window.close();
+                    };
+
+                } else {
+                    photoTitle.textContent = 'Error';
+                    loadingMessage.style.display = 'none';
+                    errorMessage.textContent = 'Failed to load photo. Access denied or URL invalid.';
+                    errorMessage.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error loading photo:', error);
+                photoTitle.textContent = 'Error';
+                loadingMessage.style.display = 'none';
+                errorMessage.textContent = `An unexpected error occurred: ${error.message}`;
+                errorMessage.style.display = 'block';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadPhoto);
+    </script>
+</body>
+</html>
