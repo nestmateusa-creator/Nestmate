@@ -670,14 +670,107 @@
             z-index: 3000;
         }
         .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
             width: min(900px, 92vw);
             max-height: 90vh;
             background: #0b1220;
-            border: 1px solid #334155;
             border-radius: 12px;
-            padding: 20px;
+            border: 1px solid #334155;
             box-shadow: 0 10px 30px rgba(0,0,0,0.35);
             overflow-y: auto;
+        }
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-header h2 {
+            margin: 0;
+            color: #f1f5f9;
+        }
+        .close-btn {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .close-btn:hover {
+            color: #f1f5f9;
+        }
+        .modal-body {
+            padding: 20px;
+        }
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid #334155;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        .upload-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #1a1d29;
+            border-radius: 8px;
+            border: 1px solid #334155;
+        }
+        .upload-section h4 {
+            margin: 0 0 15px 0;
+            color: #f1f5f9;
+        }
+        .upload-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        .upload-item {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .file-list {
+            margin-top: 10px;
+        }
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: #334155;
+            border-radius: 5px;
+            margin: 5px 0;
+        }
+        .file-name {
+            color: #f1f5f9;
+            font-weight: 500;
+        }
+        .file-actions {
+            display: flex;
+            gap: 5px;
+        }
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 12px;
         }
         .modal h3 { margin-bottom: 12px; }
         .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
@@ -3384,7 +3477,7 @@
             document.getElementById('renovationModalTitle').textContent = 'Add Renovation Project';
             document.getElementById('renovationForm').reset();
             clearFileLists();
-            document.getElementById('renovationModal').style.display = 'block';
+            document.getElementById('renovationModal').style.display = 'flex';
             setupRenovationFileUploads();
         }
 
@@ -3412,7 +3505,7 @@
             
             clearFileLists();
             displayExistingFiles(renovation);
-            document.getElementById('renovationModal').style.display = 'block';
+            document.getElementById('renovationModal').style.display = 'flex';
             setupRenovationFileUploads();
         }
 
