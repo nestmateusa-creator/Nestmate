@@ -3532,21 +3532,21 @@
             // Display existing receipts
             if (renovation.receipts && renovation.receipts.length > 0) {
                 renovation.receipts.forEach(receipt => {
-                    addFileToList('receiptList', receipt.filename, receipt.url, receipt.key);
+                    addFileToList(document.getElementById('receiptList'), receipt.filename, receipt.key, 'renovation');
                 });
             }
 
             // Display existing photos
             if (renovation.photos && renovation.photos.length > 0) {
                 renovation.photos.forEach(photo => {
-                    addFileToList('projectPhotosList', photo.filename, photo.url, photo.key);
+                    addFileToList(document.getElementById('projectPhotosList'), photo.filename, photo.key, 'renovation');
                 });
             }
 
             // Display existing permits
             if (renovation.permits && renovation.permits.length > 0) {
                 renovation.permits.forEach(permit => {
-                    addFileToList('permitList', permit.filename, permit.url, permit.key);
+                    addFileToList(document.getElementById('permitList'), permit.filename, permit.key, 'renovation');
                 });
             }
         }
@@ -3575,7 +3575,7 @@
                     const key = `users/${userId}/renovations/${type}/${Date.now()}-${file.name}`;
                     const url = await uploadToS3(file, key);
                     
-                    addFileToList(listId, file.name, url, key);
+                    addFileToList(document.getElementById(listId), file.name, key, 'renovation');
                 } catch (error) {
                     console.error(`Error uploading ${type} file:`, error);
                     showAlert(`Failed to upload ${file.name}`, 'error');
@@ -3583,24 +3583,6 @@
             }
         }
 
-        function addFileToList(listId, filename, url, key) {
-            const list = document.getElementById(listId);
-            if (!list) {
-                console.error('List element not found:', listId);
-                return;
-            }
-            
-            const fileItem = document.createElement('div');
-            fileItem.className = 'file-item';
-            fileItem.innerHTML = `
-                <span class="file-name">${filename}</span>
-                <div class="file-actions">
-                    <button class="btn btn-sm" onclick="viewFile('${url}')">View</button>
-                    <button class="btn btn-sm btn-danger" onclick="removeFile(this, '${key}')">Remove</button>
-                </div>
-            `;
-            list.appendChild(fileItem);
-        }
 
         async function saveRenovation() {
             try {
