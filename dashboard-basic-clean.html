@@ -3823,7 +3823,16 @@
             document.getElementById('floorPlanViewerModal').style.display = 'none';
         }
 
-        // Floor Plan Canvas Functions
+        // Professional Floor Plan Canvas System
+        let floorPlanObjects = [];
+        let selectedObject = null;
+        let isDragging = false;
+        let dragOffset = { x: 0, y: 0 };
+        let snapDistance = 10;
+        let wallThickness = 6;
+        let doorWidth = 36;
+        let windowWidth = 48;
+
         function initializeFloorPlanCanvas() {
             floorPlanCanvas = document.getElementById('floorPlanCanvas');
             floorPlanCtx = floorPlanCanvas.getContext('2d');
@@ -3838,6 +3847,17 @@
             floorPlanCanvas.addEventListener('mousemove', handleMouseMove);
             floorPlanCanvas.addEventListener('mouseup', handleMouseUp);
             floorPlanCanvas.addEventListener('wheel', handleWheel);
+            floorPlanCanvas.addEventListener('dblclick', handleDoubleClick);
+            
+            // Initialize canvas with professional settings
+            floorPlanCtx.lineCap = 'round';
+            floorPlanCtx.lineJoin = 'round';
+            
+            // Initialize furniture tools
+            initializeFurnitureTools();
+            
+            // Initialize advanced features
+            initializeAdvancedFeatures();
             
             // Initialize canvas
             redrawCanvas();
@@ -3855,9 +3875,24 @@
             if (currentTool === 'select') {
                 // Handle selection
                 selectObject(x, y);
+                if (selectedObject) {
+                    isDragging = true;
+                    dragOffset.x = x - selectedObject.x1;
+                    dragOffset.y = y - selectedObject.y1;
+                }
             } else if (currentTool === 'pan') {
                 // Handle panning
                 floorPlanCanvas.style.cursor = 'grabbing';
+                isDragging = true;
+            } else if (currentTool === 'wall') {
+                // Start wall drawing
+                startWallDrawing(x, y);
+            } else if (currentTool === 'door') {
+                // Start door placement
+                startDoorPlacement(x, y);
+            } else if (currentTool === 'window') {
+                // Start window placement
+                startWindowPlacement(x, y);
             }
         }
 
@@ -3869,10 +3904,28 @@
             // Update cursor position in status bar
             document.getElementById('cursorPosition').textContent = `X: ${Math.round(x)}, Y: ${Math.round(y)}`;
             
-            if (isDrawing && currentTool !== 'select' && currentTool !== 'pan') {
-                // Draw preview
-                redrawCanvas();
-                drawPreview(x, y);
+            if (isDrawing) {
+                if (currentTool === 'pan') {
+                    // Handle panning
+                    panX += (e.movementX || 0) / zoom;
+                    panY += (e.movementY || 0) / zoom;
+                    redrawCanvas();
+                } else if (currentTool === 'select' && selectedObject && isDragging) {
+                    // Handle object dragging
+                    selectedObject.x1 = x - dragOffset.x;
+                    selectedObject.y1 = y - dragOffset.y;
+                    selectedObject.x2 = selectedObject.x1 + (selectedObject.x2 - selectedObject.x1);
+                    selectedObject.y2 = selectedObject.y1 + (selectedObject.y2 - selectedObject.y1);
+                    redrawCanvas();
+                } else if (currentTool === 'wall') {
+                    // Update wall end point
+                    const lastWall = floorPlanObjects[floorPlanObjects.length - 1];
+                    if (lastWall && lastWall.type === 'wall') {
+                        lastWall.x2 = x;
+                        lastWall.y2 = y;
+                        redrawCanvas();
+                    }
+                }
             }
         }
 
@@ -3883,14 +3936,84 @@
             const x = (e.clientX - rect.left) / zoom - panX;
             const y = (e.clientY - rect.top) / zoom - panY;
             
-            if (currentTool !== 'select' && currentTool !== 'pan') {
-                // Create new object
-                createObject(startX, startY, x, y);
+            if (currentTool === 'wall') {
+                // Finalize wall
+                const lastWall = floorPlanObjects[floorPlanObjects.length - 1];
+                if (lastWall && lastWall.type === 'wall') {
+                    lastWall.x2 = x;
+                    lastWall.y2 = y;
+                }
+            } else if (currentTool === 'room') {
+                // Create room
+                const room = {
+                    type: 'room',
+                    x1: Math.min(startX, x),
+                    y1: Math.min(startY, y),
+                    x2: Math.max(startX, x),
+                    y2: Math.max(startY, y),
+                    color: document.getElementById('lineColor').value,
+                    id: Date.now()
+                };
+                floorPlanObjects.push(room);
             }
             
             isDrawing = false;
+            isDragging = false;
             floorPlanCanvas.style.cursor = 'crosshair';
             redrawCanvas();
+        }
+
+        function handleDoubleClick(e) {
+            const rect = floorPlanCanvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / zoom - panX;
+            const y = (e.clientY - rect.top) / zoom - panY;
+            
+            if (currentTool === 'text') {
+                const text = prompt('Enter text:');
+                if (text) {
+                    const textObj = {
+                        type: 'text',
+                        x1: x,
+                        y1: y,
+                        text: text,
+                        color: document.getElementById('lineColor').value,
+                        id: Date.now()
+                    };
+                    floorPlanObjects.push(textObj);
+                    redrawCanvas();
+                }
+            }
+        }
+
+        function selectObject(x, y) {
+            selectedObject = null;
+            
+            // Check objects in reverse order (top to bottom)
+            for (let i = floorPlanObjects.length - 1; i >= 0; i--) {
+                const obj = floorPlanObjects[i];
+                if (isPointInObject(x, y, obj)) {
+                    selectedObject = obj;
+                    break;
+                }
+            }
+            
+            redrawCanvas();
+        }
+
+        function isPointInObject(x, y, obj) {
+            switch (obj.type) {
+                case 'wall':
+                    return distanceToLine(x, y, obj.x1, obj.y1, obj.x2, obj.y2) < (obj.thickness || wallThickness) / 2;
+                case 'room':
+                    return x >= obj.x1 && x <= obj.x2 && y >= obj.y1 && y <= obj.y2;
+                case 'door':
+                case 'window':
+                    return distanceToLine(x, y, obj.x1, obj.y1, obj.x2, obj.y2) < 10;
+                case 'furniture':
+                    return x >= obj.x1 && x <= obj.x2 && y >= obj.y1 && y <= obj.y2;
+                default:
+                    return false;
+            }
         }
 
         function handleWheel(e) {
@@ -3917,9 +4040,60 @@
                 floorPlanCanvas.style.cursor = 'grab';
             } else if (tool === 'select') {
                 floorPlanCanvas.style.cursor = 'default';
+            } else if (tool === 'door' || tool === 'window') {
+                floorPlanCanvas.style.cursor = 'crosshair';
             } else {
                 floorPlanCanvas.style.cursor = 'crosshair';
             }
+        }
+
+        // Furniture Placement Functions
+        function placeFurniture(type, x, y) {
+            const furniture = {
+                type: 'furniture',
+                furnitureType: type,
+                x1: x - 20,
+                y1: y - 20,
+                x2: x + 20,
+                y2: y + 20,
+                color: '#8B4513',
+                id: Date.now()
+            };
+            floorPlanObjects.push(furniture);
+            redrawCanvas();
+        }
+
+        // Add furniture tool handlers
+        function addFurnitureTool(tool, furnitureType) {
+            const button = document.querySelector(`[data-tool="${tool}"]`);
+            if (button) {
+                button.onclick = () => {
+                    selectTool(tool);
+                    // Set up furniture placement
+                    floorPlanCanvas.addEventListener('click', function placeFurnitureHandler(e) {
+                        const rect = floorPlanCanvas.getBoundingClientRect();
+                        const x = (e.clientX - rect.left) / zoom - panX;
+                        const y = (e.clientY - rect.top) / zoom - panY;
+                        placeFurniture(furnitureType, x, y);
+                        floorPlanCanvas.removeEventListener('click', placeFurnitureHandler);
+                    });
+                };
+            }
+        }
+
+        // Initialize furniture tools
+        function initializeFurnitureTools() {
+            addFurnitureTool('bed', 'Bed');
+            addFurnitureTool('sofa', 'Sofa');
+            addFurnitureTool('table', 'Table');
+            addFurnitureTool('chair', 'Chair');
+            addFurnitureTool('appliance', 'Appliance');
+            addFurnitureTool('sink', 'Sink');
+            addFurnitureTool('toilet', 'Toilet');
+            addFurnitureTool('bathtub', 'Bathtub');
+            addFurnitureTool('shower', 'Shower');
+            addFurnitureTool('stove', 'Stove');
+            addFurnitureTool('refrigerator', 'Refrigerator');
         }
 
         // Canvas Drawing Functions
@@ -3968,9 +4142,234 @@
             floorPlanCtx.stroke();
         }
 
+        // Professional Drawing Functions
+        function startWallDrawing(x, y) {
+            const wall = {
+                type: 'wall',
+                x1: x,
+                y1: y,
+                x2: x,
+                y2: y,
+                thickness: wallThickness,
+                color: document.getElementById('lineColor').value,
+                id: Date.now()
+            };
+            floorPlanObjects.push(wall);
+        }
+
+        function startDoorPlacement(x, y) {
+            // Find nearest wall for door placement
+            const nearestWall = findNearestWall(x, y);
+            if (nearestWall) {
+                const door = {
+                    type: 'door',
+                    x1: x,
+                    y1: y,
+                    x2: x + doorWidth,
+                    y2: y,
+                    width: doorWidth,
+                    wallId: nearestWall.id,
+                    swing: 'left', // default swing direction
+                    color: '#8B4513',
+                    id: Date.now()
+                };
+                floorPlanObjects.push(door);
+            }
+        }
+
+        function startWindowPlacement(x, y) {
+            // Find nearest wall for window placement
+            const nearestWall = findNearestWall(x, y);
+            if (nearestWall) {
+                const window = {
+                    type: 'window',
+                    x1: x,
+                    y1: y,
+                    x2: x + windowWidth,
+                    y2: y,
+                    width: windowWidth,
+                    wallId: nearestWall.id,
+                    color: '#87CEEB',
+                    id: Date.now()
+                };
+                floorPlanObjects.push(window);
+            }
+        }
+
+        function findNearestWall(x, y) {
+            let nearestWall = null;
+            let minDistance = Infinity;
+            
+            floorPlanObjects.forEach(obj => {
+                if (obj.type === 'wall') {
+                    const distance = distanceToLine(x, y, obj.x1, obj.y1, obj.x2, obj.y2);
+                    if (distance < minDistance && distance < snapDistance) {
+                        minDistance = distance;
+                        nearestWall = obj;
+                    }
+                }
+            });
+            
+            return nearestWall;
+        }
+
+        function distanceToLine(px, py, x1, y1, x2, y2) {
+            const A = px - x1;
+            const B = py - y1;
+            const C = x2 - x1;
+            const D = y2 - y1;
+            
+            const dot = A * C + B * D;
+            const lenSq = C * C + D * D;
+            let param = -1;
+            
+            if (lenSq !== 0) {
+                param = dot / lenSq;
+            }
+            
+            let xx, yy;
+            
+            if (param < 0) {
+                xx = x1;
+                yy = y1;
+            } else if (param > 1) {
+                xx = x2;
+                yy = y2;
+            } else {
+                xx = x1 + param * C;
+                yy = y1 + param * D;
+            }
+            
+            const dx = px - xx;
+            const dy = py - yy;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+
         function drawObjects() {
-            // This would draw all the floor plan objects
-            // Implementation depends on your object storage structure
+            floorPlanObjects.forEach(obj => {
+                drawObject(obj);
+            });
+        }
+
+        function drawObject(obj) {
+            floorPlanCtx.save();
+            
+            switch (obj.type) {
+                case 'wall':
+                    drawWall(obj);
+                    break;
+                case 'door':
+                    drawDoor(obj);
+                    break;
+                case 'window':
+                    drawWindow(obj);
+                    break;
+                case 'room':
+                    drawRoom(obj);
+                    break;
+                case 'furniture':
+                    drawFurniture(obj);
+                    break;
+            }
+            
+            floorPlanCtx.restore();
+        }
+
+        function drawWall(obj) {
+            floorPlanCtx.strokeStyle = obj.color || '#000000';
+            floorPlanCtx.lineWidth = obj.thickness || wallThickness;
+            floorPlanCtx.beginPath();
+            floorPlanCtx.moveTo(obj.x1, obj.y1);
+            floorPlanCtx.lineTo(obj.x2, obj.y2);
+            floorPlanCtx.stroke();
+            
+            // Draw selection highlight
+            if (obj === selectedObject) {
+                floorPlanCtx.strokeStyle = '#FF6B6B';
+                floorPlanCtx.lineWidth = (obj.thickness || wallThickness) + 2;
+                floorPlanCtx.setLineDash([5, 5]);
+                floorPlanCtx.beginPath();
+                floorPlanCtx.moveTo(obj.x1, obj.y1);
+                floorPlanCtx.lineTo(obj.x2, obj.y2);
+                floorPlanCtx.stroke();
+                floorPlanCtx.setLineDash([]);
+            }
+        }
+
+        function drawDoor(obj) {
+            const centerX = (obj.x1 + obj.x2) / 2;
+            const centerY = (obj.y1 + obj.y2) / 2;
+            const length = Math.sqrt((obj.x2 - obj.x1) ** 2 + (obj.y2 - obj.y1) ** 2);
+            const angle = Math.atan2(obj.y2 - obj.y1, obj.x2 - obj.x1);
+            
+            // Draw door frame
+            floorPlanCtx.strokeStyle = '#8B4513';
+            floorPlanCtx.lineWidth = 2;
+            floorPlanCtx.beginPath();
+            floorPlanCtx.moveTo(obj.x1, obj.y1);
+            floorPlanCtx.lineTo(obj.x2, obj.y2);
+            floorPlanCtx.stroke();
+            
+            // Draw door swing arc
+            floorPlanCtx.strokeStyle = '#8B4513';
+            floorPlanCtx.lineWidth = 1;
+            floorPlanCtx.beginPath();
+            floorPlanCtx.arc(centerX, centerY, length / 2, angle - Math.PI/2, angle + Math.PI/2);
+            floorPlanCtx.stroke();
+            
+            // Draw door panel
+            floorPlanCtx.fillStyle = '#DEB887';
+            floorPlanCtx.fillRect(centerX - 2, centerY - 2, 4, 4);
+        }
+
+        function drawWindow(obj) {
+            const centerX = (obj.x1 + obj.x2) / 2;
+            const centerY = (obj.y1 + obj.y2) / 2;
+            const length = Math.sqrt((obj.x2 - obj.x1) ** 2 + (obj.y2 - obj.y1) ** 2);
+            
+            // Draw window frame
+            floorPlanCtx.strokeStyle = '#87CEEB';
+            floorPlanCtx.lineWidth = 3;
+            floorPlanCtx.beginPath();
+            floorPlanCtx.moveTo(obj.x1, obj.y1);
+            floorPlanCtx.lineTo(obj.x2, obj.y2);
+            floorPlanCtx.stroke();
+            
+            // Draw window panes
+            floorPlanCtx.strokeStyle = '#4682B4';
+            floorPlanCtx.lineWidth = 1;
+            floorPlanCtx.beginPath();
+            floorPlanCtx.moveTo(centerX, obj.y1);
+            floorPlanCtx.lineTo(centerX, obj.y2);
+            floorPlanCtx.stroke();
+        }
+
+        function drawRoom(obj) {
+            // Draw room outline
+            floorPlanCtx.strokeStyle = obj.color || '#000000';
+            floorPlanCtx.lineWidth = 2;
+            floorPlanCtx.beginPath();
+            floorPlanCtx.rect(obj.x1, obj.y1, obj.x2 - obj.x1, obj.y2 - obj.y1);
+            floorPlanCtx.stroke();
+            
+            // Fill room if selected
+            if (obj === selectedObject) {
+                floorPlanCtx.fillStyle = 'rgba(255, 107, 107, 0.1)';
+                floorPlanCtx.fillRect(obj.x1, obj.y1, obj.x2 - obj.x1, obj.y2 - obj.y1);
+            }
+        }
+
+        function drawFurniture(obj) {
+            floorPlanCtx.fillStyle = obj.color || '#8B4513';
+            floorPlanCtx.fillRect(obj.x1, obj.y1, obj.x2 - obj.x1, obj.y2 - obj.y1);
+            
+            // Draw furniture icon
+            floorPlanCtx.fillStyle = '#FFFFFF';
+            floorPlanCtx.font = '12px Arial';
+            floorPlanCtx.textAlign = 'center';
+            floorPlanCtx.fillText(obj.furnitureType || 'F', 
+                (obj.x1 + obj.x2) / 2, 
+                (obj.y1 + obj.y2) / 2 + 4);
         }
 
         function drawPreview(x, y) {
@@ -4184,7 +4583,7 @@
         }
 
         function exportFloorPlan() {
-            if (!currentFloorPlan) {
+            if (floorPlanObjects.length === 0) {
                 showAlert('No floor plan to export', 'error');
                 return;
             }
@@ -4192,9 +4591,107 @@
             // Export as image
             const dataURL = floorPlanCanvas.toDataURL('image/png');
             const link = document.createElement('a');
-            link.download = `${currentFloorPlan.name || 'floor-plan'}.png`;
+            link.download = `floor-plan-${Date.now()}.png`;
             link.href = dataURL;
             link.click();
+        }
+
+        // Advanced Features
+        function addKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                if (e.ctrlKey || e.metaKey) {
+                    switch (e.key) {
+                        case 's':
+                            e.preventDefault();
+                            saveFloorPlan();
+                            break;
+                        case 'z':
+                            e.preventDefault();
+                            undoLastAction();
+                            break;
+                        case 'y':
+                            e.preventDefault();
+                            redoLastAction();
+                            break;
+                        case 'a':
+                            e.preventDefault();
+                            selectAllObjects();
+                            break;
+                        case 'd':
+                            e.preventDefault();
+                            deleteSelectedObject();
+                            break;
+                    }
+                } else {
+                    switch (e.key) {
+                        case 'Delete':
+                        case 'Backspace':
+                            deleteSelectedObject();
+                            break;
+                        case 'Escape':
+                            selectedObject = null;
+                            redrawCanvas();
+                            break;
+                    }
+                }
+            });
+        }
+
+        function undoLastAction() {
+            if (floorPlanObjects.length > 0) {
+                floorPlanObjects.pop();
+                redrawCanvas();
+                showAlert('Undo completed', 'success');
+            }
+        }
+
+        function redoLastAction() {
+            // Implementation would require action history
+            showAlert('Redo not implemented yet', 'info');
+        }
+
+        function selectAllObjects() {
+            // Select all objects for bulk operations
+            showAlert('Select all not implemented yet', 'info');
+        }
+
+        function deleteSelectedObject() {
+            if (selectedObject) {
+                const index = floorPlanObjects.indexOf(selectedObject);
+                if (index > -1) {
+                    floorPlanObjects.splice(index, 1);
+                    selectedObject = null;
+                    redrawCanvas();
+                    showAlert('Object deleted', 'success');
+                }
+            }
+        }
+
+        // Measurement Tools
+        function addMeasurementTool() {
+            if (currentTool === 'measure') {
+                // Add measurement line
+                const measurement = {
+                    type: 'measurement',
+                    x1: startX,
+                    y1: startY,
+                    x2: startX,
+                    y2: startY,
+                    color: '#FF0000',
+                    id: Date.now()
+                };
+                floorPlanObjects.push(measurement);
+            }
+        }
+
+        // Initialize advanced features
+        function initializeAdvancedFeatures() {
+            addKeyboardShortcuts();
+            
+            // Add measurement tool to canvas
+            document.getElementById('measurementTool')?.addEventListener('click', () => {
+                selectTool('measure');
+            });
         }
 
         // Emergency CRUD Functions
