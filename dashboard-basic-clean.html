@@ -5200,8 +5200,10 @@
         }
 
         function viewFile(fileKey) {
-            // Open file in new tab with correct S3 bucket
-            window.open(`https://nestmate-files-483954734051.s3.amazonaws.com/${fileKey}`, '_blank');
+            // Extract filename from key for display
+            const filename = fileKey.split('/').pop() || 'Photo';
+            // Open in photo viewer with presigned URL
+            window.open(`photo-viewer.html?key=${encodeURIComponent(fileKey)}&filename=${encodeURIComponent(filename)}`, '_blank');
         }
 
         function removeFile(button, fileKey) {
