@@ -915,6 +915,9 @@
                 <button class="nav-item" onclick="showSection('floorplan')">
                     <i class="fas fa-drafting-compass"></i> Floor Plan
                 </button>
+                <button class="nav-item" onclick="showSection('renovations')">
+                    <i class="fas fa-hammer"></i> Renovations
+                </button>
                 <button class="nav-item" onclick="showSection('emergency')">
                     <i class="fas fa-phone"></i> Emergency
                 </button>
@@ -1906,6 +1909,24 @@
                 </div>
             </div>
 
+            <!-- Renovations and Upgrades Section -->
+            <div id="renovationsSection" class="content-section">
+                <h2 class="section-title">
+                    <i class="fas fa-hammer"></i> Renovations & Upgrades
+                </h2>
+                <div class="card">
+                    <div class="edit-panel-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3>Project History</h3>
+                        <button class="btn" onclick="openAddRenovationModal()">
+                            <i class="fas fa-plus"></i> Add Project
+                        </button>
+                    </div>
+                    <div id="renovationsList">
+                        <p>No renovation projects yet. Click "Add Project" to get started.</p>
+                    </div>
+                </div>
+            </div>
+
             <!-- Emergency Section -->
             <div id="emergencySection" class="content-section">
                 <h2 class="section-title">
@@ -1945,6 +1966,127 @@
     <button class="chatbot-button" onclick="openChatbot()">
         <i class="fas fa-robot"></i>
     </button>
+
+    <!-- Renovation Modal -->
+    <div id="renovationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="renovationModalTitle">Add Renovation Project</h2>
+                <button class="close-btn" onclick="closeRenovationModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="renovationForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="projectName">Project Name *</label>
+                            <input type="text" id="projectName" required placeholder="e.g., Kitchen Remodel">
+                        </div>
+                        <div class="form-group">
+                            <label for="projectType">Project Type *</label>
+                            <select id="projectType" required>
+                                <option value="">Select Type</option>
+                                <option value="renovation">Renovation</option>
+                                <option value="upgrade">Upgrade</option>
+                                <option value="repair">Repair</option>
+                                <option value="maintenance">Maintenance</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="startDate">Start Date *</label>
+                            <input type="date" id="startDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="endDate">End Date</label>
+                            <input type="date" id="endDate">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="contractor">Contractor/Company</label>
+                            <input type="text" id="contractor" placeholder="Contractor name or company">
+                        </div>
+                        <div class="form-group">
+                            <label for="contractorPhone">Contractor Phone</label>
+                            <input type="tel" id="contractorPhone" placeholder="(555) 123-4567">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="projectDescription">Project Description *</label>
+                        <textarea id="projectDescription" required rows="3" placeholder="Describe the work performed..."></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="totalCost">Total Cost</label>
+                            <input type="number" id="totalCost" step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label for="status">Status</label>
+                            <select id="status">
+                                <option value="planned">Planned</option>
+                                <option value="in-progress">In Progress</option>
+                                <option value="completed">Completed</option>
+                                <option value="on-hold">On Hold</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="warrantyInfo">Warranty Information</label>
+                        <textarea id="warrantyInfo" rows="2" placeholder="Warranty details, expiration dates, etc."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notes">Additional Notes</label>
+                        <textarea id="notes" rows="2" placeholder="Any additional notes or comments..."></textarea>
+                    </div>
+
+                    <!-- File Upload Sections -->
+                    <div class="upload-section">
+                        <h4><i class="fas fa-receipt"></i> Receipts & Invoices</h4>
+                        <div class="upload-grid">
+                            <div class="upload-item">
+                                <label for="receiptFiles">Upload Receipts</label>
+                                <input type="file" id="receiptFiles" multiple accept=".pdf,.jpg,.jpeg,.png">
+                                <div class="file-list" id="receiptList"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="upload-section">
+                        <h4><i class="fas fa-camera"></i> Project Photos</h4>
+                        <div class="upload-grid">
+                            <div class="upload-item">
+                                <label for="projectPhotos">Upload Photos</label>
+                                <input type="file" id="projectPhotos" multiple accept="image/*">
+                                <div class="file-list" id="projectPhotosList"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="upload-section">
+                        <h4><i class="fas fa-file-contract"></i> Permits & Documents</h4>
+                        <div class="upload-grid">
+                            <div class="upload-item">
+                                <label for="permitFiles">Upload Permits/Documents</label>
+                                <input type="file" id="permitFiles" multiple accept=".pdf,.jpg,.jpeg,.png">
+                                <div class="file-list" id="permitList"></div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeRenovationModal()">Cancel</button>
+                <button class="btn" onclick="saveRenovation()">Save Project</button>
+            </div>
+        </div>
+    </div>
 
     <script>
         // AWS Configuration
@@ -3234,6 +3376,289 @@
             }
         }
 
+        // Renovation Data Management
+        let renovationsData = [];
+
+        // Renovation Modal Functions
+        function openAddRenovationModal() {
+            document.getElementById('renovationModalTitle').textContent = 'Add Renovation Project';
+            document.getElementById('renovationForm').reset();
+            clearFileLists();
+            document.getElementById('renovationModal').style.display = 'block';
+            setupRenovationFileUploads();
+        }
+
+        function openEditRenovationModal(renovationId) {
+            const renovation = renovationsData.find(r => r.id === renovationId);
+            if (!renovation) return;
+
+            document.getElementById('renovationModalTitle').textContent = 'Edit Renovation Project';
+            
+            // Populate form fields
+            document.getElementById('projectName').value = renovation.projectName || '';
+            document.getElementById('projectType').value = renovation.projectType || '';
+            document.getElementById('startDate').value = renovation.startDate || '';
+            document.getElementById('endDate').value = renovation.endDate || '';
+            document.getElementById('contractor').value = renovation.contractor || '';
+            document.getElementById('contractorPhone').value = renovation.contractorPhone || '';
+            document.getElementById('projectDescription').value = renovation.projectDescription || '';
+            document.getElementById('totalCost').value = renovation.totalCost || '';
+            document.getElementById('status').value = renovation.status || 'planned';
+            document.getElementById('warrantyInfo').value = renovation.warrantyInfo || '';
+            document.getElementById('notes').value = renovation.notes || '';
+
+            // Store current renovation ID for editing
+            document.getElementById('renovationForm').dataset.editingId = renovationId;
+            
+            clearFileLists();
+            displayExistingFiles(renovation);
+            document.getElementById('renovationModal').style.display = 'block';
+            setupRenovationFileUploads();
+        }
+
+        function closeRenovationModal() {
+            document.getElementById('renovationModal').style.display = 'none';
+            document.getElementById('renovationForm').reset();
+            document.getElementById('renovationForm').dataset.editingId = '';
+            clearFileLists();
+        }
+
+        function clearFileLists() {
+            document.getElementById('receiptList').innerHTML = '';
+            document.getElementById('projectPhotosList').innerHTML = '';
+            document.getElementById('permitList').innerHTML = '';
+        }
+
+        function displayExistingFiles(renovation) {
+            // Display existing receipts
+            if (renovation.receipts && renovation.receipts.length > 0) {
+                renovation.receipts.forEach(receipt => {
+                    addFileToList('receiptList', receipt.filename, receipt.url, receipt.key);
+                });
+            }
+
+            // Display existing photos
+            if (renovation.photos && renovation.photos.length > 0) {
+                renovation.photos.forEach(photo => {
+                    addFileToList('projectPhotosList', photo.filename, photo.url, photo.key);
+                });
+            }
+
+            // Display existing permits
+            if (renovation.permits && renovation.permits.length > 0) {
+                renovation.permits.forEach(permit => {
+                    addFileToList('permitList', permit.filename, permit.url, permit.key);
+                });
+            }
+        }
+
+        function setupRenovationFileUploads() {
+            // Setup receipt uploads
+            document.getElementById('receiptFiles').onchange = function() {
+                handleRenovationFileUpload(this.files, 'receipts', 'receiptList');
+            };
+
+            // Setup photo uploads
+            document.getElementById('projectPhotos').onchange = function() {
+                handleRenovationFileUpload(this.files, 'photos', 'projectPhotosList');
+            };
+
+            // Setup permit uploads
+            document.getElementById('permitFiles').onchange = function() {
+                handleRenovationFileUpload(this.files, 'permits', 'permitList');
+            };
+        }
+
+        async function handleRenovationFileUpload(files, type, listId) {
+            for (let file of files) {
+                try {
+                    const userId = nestMateAuth.currentUser.userId;
+                    const key = `users/${userId}/renovations/${type}/${Date.now()}-${file.name}`;
+                    const url = await uploadToS3(file, key);
+                    
+                    addFileToList(listId, file.name, url, key);
+                } catch (error) {
+                    console.error(`Error uploading ${type} file:`, error);
+                    showAlert(`Failed to upload ${file.name}`, 'error');
+                }
+            }
+        }
+
+        function addFileToList(listId, filename, url, key) {
+            const list = document.getElementById(listId);
+            const fileItem = document.createElement('div');
+            fileItem.className = 'file-item';
+            fileItem.innerHTML = `
+                <span class="file-name">${filename}</span>
+                <div class="file-actions">
+                    <button class="btn btn-sm" onclick="viewFile('${url}')">View</button>
+                    <button class="btn btn-sm btn-danger" onclick="removeFile(this, '${key}')">Remove</button>
+                </div>
+            `;
+            list.appendChild(fileItem);
+        }
+
+        async function saveRenovation() {
+            try {
+                const form = document.getElementById('renovationForm');
+                const editingId = form.dataset.editingId;
+                
+                const renovationData = {
+                    projectName: document.getElementById('projectName').value,
+                    projectType: document.getElementById('projectType').value,
+                    startDate: document.getElementById('startDate').value,
+                    endDate: document.getElementById('endDate').value,
+                    contractor: document.getElementById('contractor').value,
+                    contractorPhone: document.getElementById('contractorPhone').value,
+                    projectDescription: document.getElementById('projectDescription').value,
+                    totalCost: parseFloat(document.getElementById('totalCost').value) || 0,
+                    status: document.getElementById('status').value,
+                    warrantyInfo: document.getElementById('warrantyInfo').value,
+                    notes: document.getElementById('notes').value,
+                    receipts: getFileData('receiptList'),
+                    photos: getFileData('projectPhotosList'),
+                    permits: getFileData('permitList'),
+                    createdAt: editingId ? renovationsData.find(r => r.id === editingId).createdAt : new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+
+                if (editingId) {
+                    // Update existing renovation
+                    const index = renovationsData.findIndex(r => r.id === editingId);
+                    if (index !== -1) {
+                        renovationsData[index] = { ...renovationsData[index], ...renovationData };
+                    }
+                } else {
+                    // Add new renovation
+                    renovationData.id = Date.now().toString();
+                    renovationsData.push(renovationData);
+                }
+
+                // Save to DynamoDB
+                await saveRenovationsToDB();
+                
+                // Refresh display
+                renderRenovationsList();
+                closeRenovationModal();
+                showAlert('Renovation project saved successfully!', 'success');
+
+            } catch (error) {
+                console.error('Error saving renovation:', error);
+                showAlert('Failed to save renovation project', 'error');
+            }
+        }
+
+        function getFileData(listId) {
+            const files = [];
+            const list = document.getElementById(listId);
+            list.querySelectorAll('.file-item').forEach(item => {
+                const name = item.querySelector('.file-name').textContent;
+                const viewBtn = item.querySelector('button[onclick*="viewFile"]');
+                const removeBtn = item.querySelector('button[onclick*="removeFile"]');
+                
+                if (viewBtn && removeBtn) {
+                    const url = viewBtn.onclick.toString().match(/'([^']+)'/)[1];
+                    const key = removeBtn.onclick.toString().match(/'([^']+)'/)[1];
+                    files.push({ filename: name, url: url, key: key });
+                }
+            });
+            return files;
+        }
+
+        async function saveRenovationsToDB() {
+            try {
+                const userId = nestMateAuth.currentUser.userId;
+                const params = {
+                    TableName: 'nestmate-users',
+                    Key: { userId },
+                    UpdateExpression: 'SET renovations = :renovations, lastUpdated = :timestamp',
+                    ExpressionAttributeValues: {
+                        ':renovations': renovationsData,
+                        ':timestamp': new Date().toISOString()
+                    },
+                    ReturnValues: 'UPDATED_NEW'
+                };
+
+                await dynamodb.update(params).promise();
+                console.log('Renovations saved to DynamoDB');
+            } catch (error) {
+                console.error('Error saving renovations to DB:', error);
+                throw error;
+            }
+        }
+
+        function renderRenovationsList() {
+            const list = document.getElementById('renovationsList');
+            
+            if (renovationsData.length === 0) {
+                list.innerHTML = '<p>No renovation projects yet. Click "Add Project" to get started.</p>';
+                return;
+            }
+
+            list.innerHTML = renovationsData.map(renovation => `
+                <div class="renovation-item" style="background: #374151; border: 1px solid #4b5563; border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                        <h4 style="margin: 0; color: #e2e8f0;">${renovation.projectName}</h4>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-sm" onclick="openEditRenovationModal('${renovation.id}')">Edit</button>
+                            <button class="btn btn-sm" onclick="exportRenovationPDF('${renovation.id}')">PDF</button>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.5rem; font-size: 0.9rem; color: #9ca3af;">
+                        <div><strong>Type:</strong> ${renovation.projectType}</div>
+                        <div><strong>Status:</strong> ${renovation.status}</div>
+                        <div><strong>Start:</strong> ${renovation.startDate}</div>
+                        <div><strong>End:</strong> ${renovation.endDate || 'Ongoing'}</div>
+                        <div><strong>Cost:</strong> $${renovation.totalCost || '0'}</div>
+                        <div><strong>Contractor:</strong> ${renovation.contractor || 'N/A'}</div>
+                    </div>
+                    <p style="margin: 0.5rem 0 0 0; color: #d1d5db;">${renovation.projectDescription}</p>
+                </div>
+            `).join('');
+        }
+
+        async function exportRenovationPDF(renovationId) {
+            try {
+                const renovation = renovationsData.find(r => r.id === renovationId);
+                if (!renovation) {
+                    showAlert('Renovation project not found', 'error');
+                    return;
+                }
+
+                showAlert('Generating PDF report...', 'info');
+
+                const response = await fetch('/.netlify/functions/generate-renovation-pdf', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        renovation: renovation,
+                        userInfo: {
+                            name: nestMateAuth.currentUser.name,
+                            email: nestMateAuth.currentUser.email
+                        }
+                    })
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `${renovation.projectName.replace(/[^a-zA-Z0-9]/g, '_')}_report.pdf`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(url);
+                    showAlert('PDF report generated successfully!', 'success');
+                } else {
+                    throw new Error('PDF generation failed');
+                }
+            } catch (error) {
+                console.error('Error generating PDF:', error);
+                showAlert('Failed to generate PDF report', 'error');
+            }
+        }
+
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('🚀 Command Center Dashboard Starting...');
@@ -3275,6 +3700,9 @@
             // Load dashboard data
             await loadUserData();
             loadDashboardData();
+            
+            // Load renovations data
+            await loadRenovationsData();
             
             // Update user display after a short delay to ensure auth is loaded
             setTimeout(() => {
@@ -3453,6 +3881,33 @@
                 console.error('Error details:', error.message);
                 console.error('Error stack:', error.stack);
                 showAlert('Failed to load user data: ' + error.message, 'error');
+            }
+        }
+
+        async function loadRenovationsData() {
+            try {
+                const userId = nestMateAuth.currentUser.userId;
+                const params = {
+                    TableName: 'nestmate-users',
+                    Key: { userId: userId }
+                };
+                
+                const result = await dynamodb.get(params).promise();
+                
+                if (result.Item && result.Item.renovations) {
+                    renovationsData = result.Item.renovations;
+                    renderRenovationsList();
+                    console.log('Renovations data loaded:', renovationsData.length, 'projects');
+                } else {
+                    renovationsData = [];
+                    renderRenovationsList();
+                    console.log('No renovations data found');
+                }
+                
+            } catch (error) {
+                console.error('Error loading renovations data:', error);
+                renovationsData = [];
+                renderRenovationsList();
             }
         }
 
