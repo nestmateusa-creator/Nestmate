@@ -3107,6 +3107,12 @@
                                 // Format: https://s3.amazonaws.com/bucket/path/to/file
                                 const urlParts = photo.url.split('/');
                                 key = urlParts.slice(4).join('/');
+                            } else if (photo.url.includes('nestmate-files')) {
+                                // Format: https://nestmate-files-xxx.s3.region.amazonaws.com/path/to/file
+                                const match = photo.url.match(/nestmate-files-[^/]+\/(.+)/);
+                                if (match) {
+                                    key = decodeURIComponent(match[1]);
+                                }
                             } else {
                                 // Assume it's already a key or extract differently
                                 key = photo.url.replace('https://nestmate-files-483954734051.s3.amazonaws.com/', '');
@@ -3579,6 +3585,11 @@
 
         function addFileToList(listId, filename, url, key) {
             const list = document.getElementById(listId);
+            if (!list) {
+                console.error('List element not found:', listId);
+                return;
+            }
+            
             const fileItem = document.createElement('div');
             fileItem.className = 'file-item';
             fileItem.innerHTML = `
@@ -3733,17 +3744,31 @@
                 });
 
                 if (response.ok) {
-                    const blob = await response.blob();
-                    const url = window.URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.download = `${renovation.projectName.replace(/[^a-zA-Z0-9]/g, '_')}_report.pdf`;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    window.URL.revokeObjectURL(url);
-                    showAlert('PDF report generated successfully!', 'success');
+                    // Check if response is HTML (for browser-based PDF generation)
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('text/html')) {
+                        // Open HTML in new tab for printing
+                        const htmlContent = await response.text();
+                        const newWindow = window.open('', '_blank');
+                        newWindow.document.write(htmlContent);
+                        newWindow.document.close();
+                        showAlert('PDF report opened in new tab. Use Ctrl+P to print/save as PDF.', 'success');
+                    } else {
+                        // Handle as blob for direct download
+                        const blob = await response.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = `${renovation.projectName.replace(/[^a-zA-Z0-9]/g, '_')}_report.pdf`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        window.URL.revokeObjectURL(url);
+                        showAlert('PDF report generated successfully!', 'success');
+                    }
                 } else {
+                    const errorText = await response.text();
+                    console.error('PDF generation failed:', response.status, errorText);
                     throw new Error('PDF generation failed');
                 }
             } catch (error) {
