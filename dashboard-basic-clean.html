@@ -3781,7 +3781,7 @@
         }
 
         // Enhanced Floor Plan System
-        let floorPlanData = [];
+        let floorPlanDataArray = [];
         let currentFloorPlan = null;
         let floorPlanCanvas = null;
         let floorPlanCtx = null;
@@ -4103,7 +4103,7 @@
                     createdAt: new Date().toISOString()
                 };
                 
-                floorPlanData.push(floorPlan);
+                floorPlanDataArray.push(floorPlan);
                 await saveFloorPlanToDB(floorPlan);
                 
                 showAlert('Floor plan uploaded successfully!', 'success');
@@ -4127,7 +4127,7 @@
                     Key: { userId: userId },
                     UpdateExpression: 'SET floorPlanData = :floorPlanData, lastUpdated = :timestamp',
                     ExpressionAttributeValues: {
-                        ':floorPlanData': floorPlanData,
+                        ':floorPlanData': floorPlanDataArray,
                         ':timestamp': new Date().toISOString()
                     }
                 };
@@ -4142,12 +4142,12 @@
         function loadFloorPlanGallery() {
             const gallery = document.getElementById('floorPlanGallery');
             
-            if (floorPlanData.length === 0) {
+            if (floorPlanDataArray.length === 0) {
                 gallery.innerHTML = '<p style="text-align: center; color: #94a3b8; grid-column: 1 / -1;">No floor plans found</p>';
                 return;
             }
             
-            gallery.innerHTML = floorPlanData.map(plan => `
+            gallery.innerHTML = floorPlanDataArray.map(plan => `
                 <div class="floor-plan-card" onclick="viewFloorPlan('${plan.id}')">
                     <img src="${plan.files[0]?.url || '#'}" alt="${plan.name}" onerror="this.style.display='none'">
                     <h4>${plan.name}</h4>
@@ -4160,7 +4160,7 @@
         }
 
         function viewFloorPlan(planId) {
-            const plan = floorPlanData.find(p => p.id == planId);
+            const plan = floorPlanDataArray.find(p => p.id == planId);
             if (plan) {
                 // Open floor plan in viewer
                 window.open(plan.files[0]?.url, '_blank');
