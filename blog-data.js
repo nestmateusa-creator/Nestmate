@@ -25,7 +25,7 @@ function getBlogPosts() {
                     <h4 style="color: #2563eb; margin-bottom: 1rem;">Recommended Smart Home Products:</h4>
                     <ul style="list-style: none; padding: 0;">
                         <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B08J4C8871/?tag=nestmateusa-20" target="_blank" style="color: #2563eb; text-decoration: none;">• Amazon Smart Thermostat</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0BCR7M9KX/?tag=nestmateusa-20" target="_blank" style="color: #2563eb; text-decoration: none;">• Smart Thermostat B0BCR7M9KX</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0BCR7M9KX/?tag=nestmateusa-20" target="_blank" style="color: #2563eb; text-decoration: none;">• Ecobee SmartThermostat with Voice Control</a></li>
                         <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0C9CSVSNY/?tag=nestmateusa-20" target="_blank" style="color: #2563eb; text-decoration: none;">• Under Cabinet Lighting, 14.7" Rechargeable Motion Sensor Light</a></li>
                         <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B09B7NQT2K/?tag=nestmateusa-20" target="_blank" style="color: #2563eb; text-decoration: none;">• Govee Smart Light Bulbs</a></li>
                         <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0CJXVK5S6/?tag=nestmateusa-20" target="_blank" style="color: #2563eb; text-decoration: none;">• Schlage Encode Plus Smart WiFi Deadbolt</a></li>
@@ -123,7 +123,7 @@ function getBlogPosts() {
                         <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0C9CSVSNY/?tag=nestmateusa-20" target="_blank" style="color: #22c55e; text-decoration: none;">• Under Cabinet Lighting (Motion Sensor)</a></li>
                         <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B09B7NQT2K/?tag=nestmateusa-20" target="_blank" style="color: #22c55e; text-decoration: none;">• Govee Smart Light Bulbs</a></li>
                         <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B08J4C8871/?tag=nestmateusa-20" target="_blank" style="color: #22c55e; text-decoration: none;">• Amazon Smart Thermostat</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0BCR7M9KX/?tag=nestmateusa-20" target="_blank" style="color: #22c55e; text-decoration: none;">• Smart Thermostat B0BCR7M9KX</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0BCR7M9KX/?tag=nestmateusa-20" target="_blank" style="color: #22c55e; text-decoration: none;">• Ecobee SmartThermostat with Voice Control</a></li>
                         <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0DKSQ5YQ9/?tag=nestmateusa-20" target="_blank" style="color: #22c55e; text-decoration: none;">• VIOMI 800G Reverse Osmosis Water System</a></li>
                         <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B076S1W5QY/?tag=nestmateusa-20" target="_blank" style="color: #22c55e; text-decoration: none;">• Delta Faucet Smart Touch Kitchen Faucet</a></li>
                         <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0DXY718RL/?tag=nestmateusa-20" target="_blank" style="color: #22c55e; text-decoration: none;">• Levoit Air Purifier with True HEPA Filter</a></li>
@@ -6924,7 +6924,7 @@ function getBlogPosts() {
                     <li><a href="https://www.amazon.com/dp/B0BKH83KF9/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Smart Thermostat Option 11</a></li>
                     <li><a href="https://www.amazon.com/dp/B0B12ZBHLZ/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Smart Thermostat Option 12</a></li>
                     <li><a href="https://www.amazon.com/dp/B08HRPDBFF/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Smart Thermostat Option 13</a></li>
-                    <li><a href="https://www.amazon.com/dp/B0CSK5YMLV/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Smart Thermostat Option 14</a></li>
+                    <li><a href="https://www.amazon.com/dp/B0DT9MC2Z9/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Smart Thermostat Option 14</a></li>
                     <li><a href="https://www.amazon.com/dp/B0B12ZBHLZ/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Smart Thermostat Option 15</a></li>
                     <li><a href="https://www.amazon.com/dp/B0DDCS8H9S/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Smart Thermostat Option 16</a></li>
                     <li><a href="https://www.amazon.com/dp/B0C3V2WGLK/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Smart Thermostat Option 17</a></li>
@@ -7362,15 +7362,15 @@ function getBlogPosts() {
         
         {
             id: 'smart-thermostat-b0bcr7m9kx',
-            title: 'Smart Thermostat B0BCR7M9KX: Advanced Home Climate Control',
+            title: 'Ecobee SmartThermostat with Voice Control: Advanced Home Climate Control',
             excerpt: 'Discover this advanced smart thermostat with energy-saving features and smart home integration. Learn about installation, features, and automation capabilities.',
             category: 'Smart Home',
             date: 'Dec 21, 2024',
             readTime: '7 min read',
             icon: 'fas fa-microphone',
             content: `
-                <h2>Smart Thermostat B0BCR7M9KX: Advanced Climate Control</h2>
-                <p>The <a href="https://www.amazon.com/dp/B0BCR7M9KX/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Smart Thermostat B0BCR7M9KX</a> represents advanced smart home temperature management technology. This innovative device combines intelligent climate control with smart home integration, creating an efficient system for maintaining optimal comfort and energy efficiency.</p>
+                <h2>Ecobee SmartThermostat with Voice Control: Advanced Climate Control</h2>
+                <p>The <a href="https://www.amazon.com/dp/B0BCR7M9KX/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Ecobee SmartThermostat with Voice Control</a> represents advanced smart home temperature management technology. This innovative device combines intelligent climate control with built-in Alexa voice control and smart home integration, creating an efficient system for maintaining optimal comfort and energy efficiency.</p>
                 
                 <h3>Smart Home Integration</h3>
                 <p>This advanced smart thermostat integrates seamlessly with popular smart home platforms and voice assistants. You can control the device using voice commands, smartphone apps, or through automation routines that coordinate with other smart home devices.</p>
@@ -7409,15 +7409,15 @@ function getBlogPosts() {
         
         {
             id: 'smart-thermostat-b0b1x7g9j2',
-            title: 'Smart Thermostat B08J4C8871: Professional Home Climate Control',
+            title: 'Amazon Smart Thermostat: Professional Home Climate Control',
             excerpt: 'Discover this professional-grade smart thermostat with advanced features and reliable performance. Learn about installation, energy savings, and smart home integration.',
             category: 'Smart Home',
             date: 'Dec 21, 2024',
             readTime: '6 min read',
             icon: 'fas fa-home',
             content: `
-                <h2>Smart Thermostat B08J4C8871: Professional Climate Control</h2>
-                <p>The <a href="https://www.amazon.com/dp/B08J4C8871/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Smart Thermostat B08J4C8871</a> brings professional-grade reliability and advanced features to residential smart home automation. This device combines proven technology with modern smart home capabilities, providing reliable performance and comprehensive climate control.</p>
+                <h2>Amazon Smart Thermostat: Professional Climate Control</h2>
+                <p>The <a href="https://www.amazon.com/dp/B08J4C8871/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Amazon Smart Thermostat</a> brings professional-grade reliability and advanced features to residential smart home automation. This device combines proven technology with modern smart home capabilities, providing reliable performance and comprehensive climate control with seamless Alexa integration.</p>
                 
                 <h3>Professional-Grade Construction</h3>
                 <p>This smart thermostat is built with professional-grade components and construction, ensuring exceptional reliability and long-term performance. The device is designed to withstand years of continuous operation with minimal maintenance, making it ideal for homeowners who value durability and consistent performance.</p>
@@ -7471,15 +7471,15 @@ function getBlogPosts() {
         
         {
             id: 'smart-thermostat-b08hrpdbff',
-            title: 'Smart Thermostat B08HRPDBFF: Affordable Smart Temperature Control',
+            title: 'Google Nest Thermostat: Affordable Smart Temperature Control',
             excerpt: 'Discover this affordable smart thermostat with essential features and energy-saving capabilities. Learn about installation, smart home integration, and cost-effective climate control.',
             category: 'Smart Home',
             date: 'Dec 21, 2024',
             readTime: '5 min read',
             icon: 'fas fa-thermometer-quarter',
             content: `
-                <h2>Smart Thermostat B08HRPDBFF: Affordable Smart Control</h2>
-                <p>The <a href="https://www.amazon.com/dp/B08HRPDBFF/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Smart Thermostat B08HRPDBFF</a> makes smart home temperature control accessible to more homeowners with its affordable price point and user-friendly design. While it focuses on essential features, it delivers excellent value and core smart thermostat functionality.</p>
+                <h2>Google Nest Thermostat: Affordable Smart Control</h2>
+                <p>The <a href="https://www.amazon.com/dp/B08HRPDBFF/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Google Nest Thermostat</a> makes smart home temperature control accessible to more homeowners with its affordable price point and user-friendly design. While it focuses on essential features, it delivers excellent value and core smart thermostat functionality.</p>
                 
                 <h3>Simplified Design and Interface</h3>
                 <p>This smart thermostat features a clean, minimalist design that blends seamlessly into most home decors. The interface is intentionally simplified, focusing on essential functions while maintaining core smart features that make it user-friendly and accessible.</p>
@@ -7533,15 +7533,15 @@ function getBlogPosts() {
         
         {
             id: 'smart-thermostat-b0bkh83kf9',
-            title: 'Smart Thermostat B0BKH83KF9: Entry-Level Smart Home Control',
+            title: 'Emerson Sensi Touch Wi-Fi Thermostat: Entry-Level Smart Home Control',
             excerpt: 'Discover this affordable smart thermostat with essential features and energy-saving capabilities. Learn about smart home integration, installation, and cost-effective climate control.',
             category: 'Smart Home',
             date: 'Dec 21, 2024',
             readTime: '6 min read',
             icon: 'fas fa-leaf',
             content: `
-                <h2>Smart Thermostat B0BKH83KF9: Smart Control on a Budget</h2>
-                <p>The <a href="https://www.amazon.com/dp/B0BKH83KF9/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Smart Thermostat B0BKH83KF9</a> brings the core benefits of smart thermostat technology to a more affordable price point. While it focuses on essential features, it delivers excellent energy savings, smart home integration, and user-friendly operation that makes it an ideal entry point into smart home automation.</p>
+                <h2>Emerson Sensi Touch Wi-Fi Thermostat: Smart Control on a Budget</h2>
+                <p>The <a href="https://www.amazon.com/dp/B0BKH83KF9/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Emerson Sensi Touch Wi-Fi Thermostat</a> brings the core benefits of smart thermostat technology to a more affordable price point. While it focuses on essential features, it delivers excellent energy savings, smart home integration, and user-friendly operation that makes it an ideal entry point into smart home automation.</p>
                 
                 <h3>Core Smart Features</h3>
                 <p>This smart thermostat includes essential features without the complexity of premium models. The device offers remote control through a smartphone app, energy usage tracking, and intelligent scheduling that adapts to your lifestyle patterns.</p>
@@ -9060,15 +9060,15 @@ function getBlogPosts() {
         
         {
             id: 'smart-thermostat-b0csk5ymlV',
-            title: 'Smart Thermostat B0CSK5YMLV: Advanced Home Climate Control',
+            title: 'Honeywell T10 Pro Smart Thermostat: Advanced Home Climate Control',
             excerpt: 'Discover this advanced smart thermostat with energy-saving features and smart home integration. Learn about installation, features, and automation capabilities.',
             category: 'Smart Home',
             date: 'Dec 21, 2024',
             readTime: '6 min read',
             icon: 'fas fa-thermometer-half',
             content: `
-                <h2>Smart Thermostat B0CSK5YMLV: Advanced Climate Control</h2>
-                <p>The <a href="https://www.amazon.com/dp/B0CSK5YMLV/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Smart Thermostat B0CSK5YMLV</a> represents advanced smart home temperature management technology. This innovative device combines intelligent climate control with smart home integration, creating an efficient system for maintaining optimal comfort and energy efficiency.</p>
+                <h2>Honeywell T10 Pro Smart Thermostat: Advanced Climate Control</h2>
+                <p>The <a href="https://www.amazon.com/dp/B0DT9MC2Z9/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Honeywell T10 Pro Smart Thermostat</a> represents advanced smart home temperature management technology. This innovative device combines intelligent climate control with smart home integration, creating an efficient system for maintaining optimal comfort and energy efficiency.</p>
                 
                 <h3>Smart Home Integration</h3>
                 <p>This advanced smart thermostat integrates seamlessly with popular smart home platforms and voice assistants. You can control the device using voice commands, smartphone apps, or through automation routines that coordinate with other smart home devices.</p>
