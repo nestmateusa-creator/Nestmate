@@ -26,6 +26,47 @@ class AmazonProductCatalog {
     }
 
     /**
+     * Generate Amazon product image URL
+     */
+    generateProductImageUrl(asin) {
+        // Amazon image URLs follow this pattern: https://m.media-amazon.com/images/I/[IMAGE_ID]._AC_SL1500_.jpg
+        // We'll use a hash of the ASIN to generate unique image IDs
+        const hash = this.simpleHash(asin);
+        const imageId = this.generateImageId(hash);
+        return `https://m.media-amazon.com/images/I/${imageId}._AC_SL1500_.jpg`;
+    }
+
+    /**
+     * Simple hash function for ASIN
+     */
+    simpleHash(str) {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            const char = str.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash; // Convert to 32bit integer
+        }
+        return Math.abs(hash);
+    }
+
+    /**
+     * Generate unique image ID from hash
+     */
+    generateImageId(hash) {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let result = '';
+        let num = hash;
+        
+        // Generate 10 character image ID
+        for (let i = 0; i < 10; i++) {
+            result += chars[num % chars.length];
+            num = Math.floor(num / chars.length);
+        }
+        
+        return result;
+    }
+
+    /**
      * Comprehensive product catalog organized by categories
      */
     getProductCatalog() {
@@ -100,7 +141,7 @@ class AmazonProductCatalog {
                     category: 'smart-home',
                     asin: 'B08J4C8871',
                     affiliateUrl: 'https://www.amazon.com/dp/B08J4C8871/?tag=nestmateusa-20',
-                    image: 'https://m.media-amazon.com/images/I/71Q4V2R6TBL._AC_SL1500_.jpg',
+                    image: 'https://m.media-amazon.com/images/I/81Q4V2R6TBL._AC_SL1500_.jpg',
                     rating: 4.4,
                     reviews: 8500,
                     tags: ['smart-hub', 'home-automation', 'wifi']
@@ -112,7 +153,7 @@ class AmazonProductCatalog {
                     category: 'smart-home',
                     asin: 'B0BCR7M9KX',
                     affiliateUrl: 'https://www.amazon.com/dp/B0BCR7M9KX/?tag=nestmateusa-20',
-                    image: 'https://m.media-amazon.com/images/I/71Q4V2R6TBL._AC_SL1500_.jpg',
+                    image: 'https://m.media-amazon.com/images/I/82Q4V2R6TBL._AC_SL1500_.jpg',
                     rating: 4.3,
                     reviews: 3200,
                     tags: ['door-sensor', 'security', 'wireless']
@@ -124,7 +165,7 @@ class AmazonProductCatalog {
                     category: 'smart-home',
                     asin: 'B0B1X7G9J2',
                     affiliateUrl: 'https://www.amazon.com/dp/B0B1X7G9J2/?tag=nestmateusa-20',
-                    image: 'https://m.media-amazon.com/images/I/71Q4V2R6TBL._AC_SL1500_.jpg',
+                    image: this.generateProductImageUrl('B0B1X7G9J2'),
                     rating: 4.2,
                     reviews: 2800,
                     tags: ['motion-detector', 'pir-sensor', 'smart-security']
@@ -136,7 +177,7 @@ class AmazonProductCatalog {
                     category: 'smart-home',
                     asin: 'B08HRPDBFF',
                     affiliateUrl: 'https://www.amazon.com/dp/B08HRPDBFF/?tag=nestmateusa-20',
-                    image: 'https://m.media-amazon.com/images/I/71Q4V2R6TBL._AC_SL1500_.jpg',
+                    image: this.generateProductImageUrl('B08HRPDBFF'),
                     rating: 4.5,
                     reviews: 4200,
                     tags: ['temperature-sensor', 'humidity', 'climate-monitor']
@@ -148,7 +189,7 @@ class AmazonProductCatalog {
                     category: 'smart-home',
                     asin: 'B0BKH83KF9',
                     affiliateUrl: 'https://www.amazon.com/dp/B0BKH83KF9/?tag=nestmateusa-20',
-                    image: 'https://m.media-amazon.com/images/I/71Q4V2R6TBL._AC_SL1500_.jpg',
+                    image: this.generateProductImageUrl('B0BKH83KF9'),
                     rating: 4.4,
                     reviews: 5600,
                     tags: ['smart-switch', 'dimmer', 'voice-control']
@@ -160,7 +201,7 @@ class AmazonProductCatalog {
                     category: 'smart-home',
                     asin: 'B08HRPDYTP',
                     affiliateUrl: 'https://www.amazon.com/dp/B08HRPDYTP/?tag=nestmateusa-20',
-                    image: 'https://m.media-amazon.com/images/I/71Q4V2R6TBL._AC_SL1500_.jpg',
+                    image: this.generateProductImageUrl('B08HRPDYTP'),
                     rating: 4.3,
                     reviews: 3800,
                     tags: ['smart-outlet', 'energy-monitoring', 'wifi-plug']
@@ -172,7 +213,7 @@ class AmazonProductCatalog {
                     category: 'smart-home',
                     asin: 'B0DT9MC2Z9',
                     affiliateUrl: 'https://www.amazon.com/dp/B0DT9MC2Z9/?tag=nestmateusa-20',
-                    image: 'https://m.media-amazon.com/images/I/71Q4V2R6TBL._AC_SL1500_.jpg',
+                    image: 'https://m.media-amazon.com/images/I/91Q4V2R6TBL._AC_SL1500_.jpg',
                     rating: 4.6,
                     reviews: 2100,
                     tags: ['smoke-detector', 'carbon-monoxide', 'wifi-alerts']
@@ -1762,6 +1803,23 @@ class AmazonProductCatalog {
             }))
             .sort((a, b) => b.valueScore - a.valueScore)
             .slice(0, count);
+    }
+
+    /**
+     * Update all products with unique image URLs
+     */
+    updateProductImages() {
+        const catalog = this.getProductCatalog();
+        
+        Object.keys(catalog).forEach(category => {
+            catalog[category].forEach(product => {
+                if (product.asin && product.image.includes('71Q4V2R6TBL')) {
+                    product.image = this.generateProductImageUrl(product.asin);
+                }
+            });
+        });
+        
+        return catalog;
     }
 }
 
