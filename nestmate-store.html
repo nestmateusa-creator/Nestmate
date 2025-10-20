@@ -371,6 +371,7 @@
             line-height: 1.4;
             display: -webkit-box;
             -webkit-line-clamp: 2;
+            line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
@@ -645,6 +646,10 @@
                         <select class="search-categories" id="searchCategory">
                             <option value="">All Categories</option>
                             <option value="smart-home">Smart Home</option>
+                            <option value="smart-locks">Smart Locks</option>
+                            <option value="smart-lighting">Smart Lighting</option>
+                            <option value="smart-water-fixtures">Smart Water Fixtures</option>
+                            <option value="hvac-climate">HVAC & Climate</option>
                             <option value="home-maintenance">Home Maintenance</option>
                             <option value="kitchen-appliances">Kitchen</option>
                             <option value="outdoor-garden">Outdoor & Garden</option>
@@ -685,6 +690,10 @@
                     <ul class="nav-menu">
                         <li><a href="#" class="nav-item active" onclick="showCategory('all')">All Products</a></li>
                         <li><a href="#" class="nav-item" onclick="showCategory('smart-home')">Smart Home</a></li>
+                        <li><a href="#" class="nav-item" onclick="showCategory('smart-locks')">Smart Locks</a></li>
+                        <li><a href="#" class="nav-item" onclick="showCategory('smart-lighting')">Smart Lighting</a></li>
+                        <li><a href="#" class="nav-item" onclick="showCategory('smart-water-fixtures')">Water Fixtures</a></li>
+                        <li><a href="#" class="nav-item" onclick="showCategory('hvac-climate')">HVAC & Climate</a></li>
                         <li><a href="#" class="nav-item" onclick="showCategory('home-maintenance')">Home Maintenance</a></li>
                         <li><a href="#" class="nav-item" onclick="showCategory('kitchen-appliances')">Kitchen</a></li>
                         <li><a href="#" class="nav-item" onclick="showCategory('outdoor-garden')">Outdoor</a></li>
@@ -743,6 +752,30 @@
                         <label>
                             <input type="checkbox" value="smart-home" onchange="applyFilters()">
                             Smart Home
+                        </label>
+                    </li>
+                    <li class="filter-option">
+                        <label>
+                            <input type="checkbox" value="smart-locks" onchange="applyFilters()">
+                            Smart Locks
+                        </label>
+                    </li>
+                    <li class="filter-option">
+                        <label>
+                            <input type="checkbox" value="smart-lighting" onchange="applyFilters()">
+                            Smart Lighting
+                        </label>
+                    </li>
+                    <li class="filter-option">
+                        <label>
+                            <input type="checkbox" value="smart-water-fixtures" onchange="applyFilters()">
+                            Smart Water Fixtures
+                        </label>
+                    </li>
+                    <li class="filter-option">
+                        <label>
+                            <input type="checkbox" value="hvac-climate" onchange="applyFilters()">
+                            HVAC & Climate
                         </label>
                     </li>
                     <li class="filter-option">
@@ -840,8 +873,8 @@
         }
 
         function loadProducts() {
-            if (typeof nestmateCatalog !== 'undefined') {
-                currentProducts = nestmateCatalog.getAllProducts();
+            if (typeof amazonCatalog !== 'undefined') {
+                currentProducts = amazonCatalog.getAllProducts();
                 filteredProducts = [...currentProducts];
                 displayProducts();
             } else {
