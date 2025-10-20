@@ -877,6 +877,8 @@
             color: #94a3b8;
             font-size: 0.875rem;
         }
+        /* Snap guide visuals */
+        .snap-legend { color: #94a3b8; font-size: 0.8rem; }
         .modal h3 { margin-bottom: 12px; }
         .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
         .form-grid .form-group { display: flex; flex-direction: column; }
@@ -2607,6 +2609,36 @@
                             </div>
                         </div>
 
+                        <!-- Snapping & Guides -->
+                        <div class="tool-group">
+                            <h5 style="color: #cbd5e1; margin-bottom: 0.5rem;">Snapping & Guides</h5>
+                            <div class="property-controls">
+                                <label style="color:#94a3b8; font-size:0.875rem;">Snap to Grid:</label>
+                                <select id="snapToGridSelect" style="width:100%; padding:0.5rem; background:#334155; color:white; border:1px solid #475569; border-radius:0.25rem; margin-bottom:0.5rem;">
+                                    <option value="on" selected>On</option>
+                                    <option value="off">Off</option>
+                                </select>
+
+                                <label style="color:#94a3b8; font-size:0.875rem;">Axis Lock:</label>
+                                <select id="axisLockSelect" style="width:100%; padding:0.5rem; background:#334155; color:white; border:1px solid #475569; border-radius:0.25rem; margin-bottom:0.5rem;">
+                                    <option value="on" selected>On (H/V)</option>
+                                    <option value="off">Off</option>
+                                </select>
+
+                                <label style="color:#94a3b8; font-size:0.875rem;">Angle Snap:</label>
+                                <select id="angleSnapSelect" style="width:100%; padding:0.5rem; background:#334155; color:white; border:1px solid #475569; border-radius:0.25rem; margin-bottom:0.5rem;">
+                                    <option value="0">Off</option>
+                                    <option value="15">15°</option>
+                                    <option value="30">30°</option>
+                                    <option value="45" selected>45°</option>
+                                </select>
+
+                                <label style="color:#94a3b8; font-size:0.875rem;">Snap Strength:</label>
+                                <input id="snapStrengthRange" type="range" min="2" max="20" value="8" style="width:100%;">
+                                <span class="snap-legend">Lower = looser, Higher = stronger snap</span>
+                            </div>
+                        </div>
+
                         <!-- Properties Panel -->
                         <div class="tool-group">
                             <h5 style="color: #cbd5e1; margin-bottom: 0.5rem;">Properties</h5>
@@ -2622,8 +2654,11 @@
                                 
                                 <label style="color: #94a3b8; font-size: 0.875rem;">Grid Size:</label>
                                 <select id="gridSize" style="width: 100%; padding: 0.5rem; background: #334155; color: white; border: 1px solid #475569; border-radius: 0.25rem;">
+                                    <option value="4">4px</option>
+                                    <option value="5">5px</option>
+                                    <option value="8" selected>8px</option>
                                     <option value="10">10px</option>
-                                    <option value="20" selected>20px</option>
+                                    <option value="20">20px</option>
                                     <option value="50">50px</option>
                                     <option value="100">100px</option>
                                 </select>
@@ -4002,13 +4037,78 @@
             redrawCanvas();
         }
 
+        // Snapping helpers
+        let AXIS_SNAP_PX = 8; // dynamic via UI
+        function readSnapSettings() {
+            // snap to grid
+            const snapSel = document.getElementById('snapToGridSelect');
+            snapToGrid = !snapSel || snapSel.value === 'on';
+            // axis lock
+            const axisSel = document.getElementById('axisLockSelect');
+            window.__axisLockOn = !axisSel || axisSel.value === 'on';
+            // angle snap degrees
+            const angSel = document.getElementById('angleSnapSelect');
+            window.__angleSnapDeg = angSel ? parseInt(angSel.value) : 45;
+            // strength
+            const strength = document.getElementById('snapStrengthRange');
+            AXIS_SNAP_PX = strength ? parseInt(strength.value) : 8;
+        }
+
+        function snapToGridPoint(x, y) {
+            if (!snapToGrid) return { x, y };
+            const size = parseInt(document.getElementById('gridSize').value);
+            return {
+                x: Math.round(x / size) * size,
+                y: Math.round(y / size) * size,
+            };
+        }
+
+        function snapToAxesAndWalls(x, y, startX, startY) {
+            readSnapSettings();
+            // Axis lock when close to horizontal/vertical from start point
+            const dx = Math.abs(x - startX);
+            const dy = Math.abs(y - startY);
+            let sx = x, sy = y;
+            if (window.__axisLockOn && dx < AXIS_SNAP_PX && dy >= AXIS_SNAP_PX) {
+                sx = startX; // vertical line
+            } else if (window.__axisLockOn && dy < AXIS_SNAP_PX && dx >= AXIS_SNAP_PX) {
+                sy = startY; // horizontal line
+            }
+
+            // Angle snapping (e.g., 15/30/45 degrees)
+            const deg = window.__angleSnapDeg || 0;
+            if (deg && (dx > AXIS_SNAP_PX || dy > AXIS_SNAP_PX)) {
+                const angle = Math.atan2(y - startY, x - startX); // radians
+                const snapRad = (Math.PI / 180) * deg;
+                const snappedAngle = Math.round(angle / snapRad) * snapRad;
+                const length = Math.hypot(x - startX, y - startY);
+                sx = startX + Math.cos(snappedAngle) * length;
+                sy = startY + Math.sin(snappedAngle) * length;
+            }
+
+            // Snap to nearby existing perfectly horizontal/vertical walls
+            const alignSnap = Math.max(4, Math.min(AXIS_SNAP_PX, 16));
+            for (const obj of floorPlanObjects) {
+                if (obj.type !== 'wall') continue;
+                const isVertical = Math.abs(obj.x1 - obj.x2) < 1e-3;
+                const isHorizontal = Math.abs(obj.y1 - obj.y2) < 1e-3;
+                if (isVertical && Math.abs(sx - obj.x1) <= alignSnap) sx = obj.x1;
+                if (isHorizontal && Math.abs(sy - obj.y1) <= alignSnap) sy = obj.y1;
+            }
+
+            // Finally apply grid snap
+            const g = snapToGridPoint(sx, sy);
+            return g;
+        }
+
         function handleMouseDown(e) {
             const rect = floorPlanCanvas.getBoundingClientRect();
             const x = (e.clientX - rect.left) / zoom - panX;
             const y = (e.clientY - rect.top) / zoom - panY;
             
-            startX = x;
-            startY = y;
+            const g = snapToGridPoint(x, y);
+            startX = g.x;
+            startY = g.y;
             isDrawing = true;
             
             if (currentTool === 'select') {
@@ -4054,8 +4154,9 @@
                     redrawCanvas();
                 } else if (currentTool === 'select' && selectedObject && isDragging) {
                     // Handle object dragging
-                    selectedObject.x1 = x - dragOffset.x;
-                    selectedObject.y1 = y - dragOffset.y;
+                    const snapped = snapToGridPoint(x - dragOffset.x, y - dragOffset.y);
+                    selectedObject.x1 = snapped.x;
+                    selectedObject.y1 = snapped.y;
                     selectedObject.x2 = selectedObject.x1 + (selectedObject.x2 - selectedObject.x1);
                     selectedObject.y2 = selectedObject.y1 + (selectedObject.y2 - selectedObject.y1);
                     redrawCanvas();
@@ -4063,8 +4164,9 @@
                     // Update wall end point
                     const lastWall = floorPlanObjects[floorPlanObjects.length - 1];
                     if (lastWall && lastWall.type === 'wall') {
-                        lastWall.x2 = x;
-                        lastWall.y2 = y;
+                        const snapped = snapToAxesAndWalls(x, y, startX, startY);
+                        lastWall.x2 = snapped.x;
+                        lastWall.y2 = snapped.y;
                         redrawCanvas();
                     }
                 }
@@ -4082,17 +4184,19 @@
                 // Finalize wall
                 const lastWall = floorPlanObjects[floorPlanObjects.length - 1];
                 if (lastWall && lastWall.type === 'wall') {
-                    lastWall.x2 = x;
-                    lastWall.y2 = y;
+                    const snapped = snapToAxesAndWalls(x, y, startX, startY);
+                    lastWall.x2 = snapped.x;
+                    lastWall.y2 = snapped.y;
                 }
             } else if (currentTool === 'room') {
                 // Create room
+                const end = snapToGridPoint(x, y);
                 const room = {
                     type: 'room',
-                    x1: Math.min(startX, x),
-                    y1: Math.min(startY, y),
-                    x2: Math.max(startX, x),
-                    y2: Math.max(startY, y),
+                    x1: Math.min(startX, end.x),
+                    y1: Math.min(startY, end.y),
+                    x2: Math.max(startX, end.x),
+                    y2: Math.max(startY, end.y),
                     color: document.getElementById('lineColor').value,
                     id: Date.now()
                 };
@@ -4264,23 +4368,34 @@
             const gridSize = parseInt(document.getElementById('gridSize').value);
             const width = floorPlanCanvas.width / zoom;
             const height = floorPlanCanvas.height / zoom;
-            
-            floorPlanCtx.strokeStyle = '#e2e8f0';
-            floorPlanCtx.lineWidth = 0.5;
+
+            // Light minor grid
             floorPlanCtx.beginPath();
-            
-            // Vertical lines
+            floorPlanCtx.strokeStyle = 'rgba(148, 163, 184, 0.35)'; // slate-400 @ 35%
+            floorPlanCtx.lineWidth = 1;
             for (let x = 0; x <= width; x += gridSize) {
                 floorPlanCtx.moveTo(x, 0);
                 floorPlanCtx.lineTo(x, height);
             }
-            
-            // Horizontal lines
             for (let y = 0; y <= height; y += gridSize) {
                 floorPlanCtx.moveTo(0, y);
                 floorPlanCtx.lineTo(width, y);
             }
-            
+            floorPlanCtx.stroke();
+
+            // Darker major grid every 5 squares
+            const major = gridSize * 5;
+            floorPlanCtx.beginPath();
+            floorPlanCtx.strokeStyle = 'rgba(100, 116, 139, 0.7)'; // slate-500 @ 70%
+            floorPlanCtx.lineWidth = 1.5;
+            for (let x = 0; x <= width; x += major) {
+                floorPlanCtx.moveTo(x, 0);
+                floorPlanCtx.lineTo(x, height);
+            }
+            for (let y = 0; y <= height; y += major) {
+                floorPlanCtx.moveTo(0, y);
+                floorPlanCtx.lineTo(width, y);
+            }
             floorPlanCtx.stroke();
         }
 
