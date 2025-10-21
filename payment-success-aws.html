@@ -29,9 +29,9 @@
   <script>
     // Configure AWS (temporary client-side for immediate functionality)
     AWS.config.update({
-      region: 'us-east-2',
-      accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
-      secretAccessKey: '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'
+      region: process.env.NESTMATE_AWS_REGION,
+      accessKeyId: process.env.NESTMATE_AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.NESTMATE_AWS_SECRET_ACCESS_KEY
     });
     const ddb = new AWS.DynamoDB.DocumentClient();
 
@@ -65,7 +65,7 @@
 
       try {
         await ddb.update({
-          TableName: 'nestmate-users',
+          TableName: process.env.NESTMATE_DDB_USERS_TABLE,
           Key: { userId: currentUser.userId },
           UpdateExpression: 'SET subscription = :p, subscriptionStatus = :st',
           ExpressionAttributeValues: { ':p': plan.key, ':st': 'active' }

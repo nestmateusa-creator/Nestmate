@@ -2719,9 +2719,9 @@
     <script>
         // AWS Configuration
         AWS.config.update({
-            region: 'us-east-2',
-            accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
-            secretAccessKey: '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'
+            region: process.env.NESTMATE_AWS_REGION,
+            accessKeyId: process.env.NESTMATE_AWS_ACCESS_KEY_ID,
+            secretAccessKey: process.env.NESTMATE_AWS_SECRET_ACCESS_KEY
         });
 
         // dynamodb is already declared in auth-aws.js
@@ -2881,7 +2881,7 @@
                 console.log('Structure data:', structureData);
                 
                 const params = {
-                    TableName: 'nestmate-users',
+                    TableName: process.env.NESTMATE_DDB_USERS_TABLE,
                     Key: { userId: userId },
                     UpdateExpression: 'SET structureInfo = :structure, lastUpdated = :timestamp',
                     ExpressionAttributeValues: {
@@ -2941,7 +2941,7 @@
                 console.log('Systems data:', systemsData);
                 
                 const params = {
-                    TableName: 'nestmate-users',
+                    TableName: process.env.NESTMATE_DDB_USERS_TABLE,
                     Key: { userId: userId },
                     UpdateExpression: 'SET systemsInfo = :systems, lastUpdated = :timestamp',
                     ExpressionAttributeValues: {
@@ -3082,7 +3082,7 @@
                 console.log('Bedrooms data:', bedroomData);
                 
                 const params = {
-                    TableName: 'nestmate-users',
+                    TableName: process.env.NESTMATE_DDB_USERS_TABLE,
                     Key: { userId: userId },
                     UpdateExpression: 'SET bedroomsInfo = :bedrooms, lastUpdated = :timestamp',
                     ExpressionAttributeValues: {
@@ -3142,7 +3142,7 @@
                 console.log('Bathrooms data:', bathroomData);
                 
                 const params = {
-                    TableName: 'nestmate-users',
+                    TableName: process.env.NESTMATE_DDB_USERS_TABLE,
                     Key: { userId: userId },
                     UpdateExpression: 'SET bathroomsInfo = :bathrooms, lastUpdated = :timestamp',
                     ExpressionAttributeValues: {
@@ -3202,7 +3202,7 @@
                 console.log('Kitchen data:', kitchenData);
                 
                 const params = {
-                    TableName: 'nestmate-users',
+                    TableName: process.env.NESTMATE_DDB_USERS_TABLE,
                     Key: { userId: userId },
                     UpdateExpression: 'SET kitchenInfo = :kitchen, lastUpdated = :timestamp',
                     ExpressionAttributeValues: {
@@ -3272,7 +3272,7 @@
                 console.log('Living areas data:', livingData);
                 
                 const params = {
-                    TableName: 'nestmate-users',
+                    TableName: process.env.NESTMATE_DDB_USERS_TABLE,
                     Key: { userId: userId },
                     UpdateExpression: 'SET livingInfo = :living, lastUpdated = :timestamp',
                     ExpressionAttributeValues: {
@@ -3332,7 +3332,7 @@
                 console.log('Garage data:', garageData);
                 
                 const params = {
-                    TableName: 'nestmate-users',
+                    TableName: process.env.NESTMATE_DDB_USERS_TABLE,
                     Key: { userId: userId },
                     UpdateExpression: 'SET garageInfo = :garage, lastUpdated = :timestamp',
                     ExpressionAttributeValues: {
@@ -3399,7 +3399,7 @@
                 console.log('Exterior data:', exteriorData);
                 
                 const params = {
-                    TableName: 'nestmate-users',
+                    TableName: process.env.NESTMATE_DDB_USERS_TABLE,
                     Key: { userId: userId },
                     UpdateExpression: 'SET exteriorInfo = :exterior, lastUpdated = :timestamp',
                     ExpressionAttributeValues: {
@@ -3459,7 +3459,7 @@
                 console.log('Appliances data:', appliancesData);
                 
                 const params = {
-                    TableName: 'nestmate-users',
+                    TableName: process.env.NESTMATE_DDB_USERS_TABLE,
                     Key: { userId: userId },
                     UpdateExpression: 'SET appliancesInfo = :appliances, lastUpdated = :timestamp',
                     ExpressionAttributeValues: {
@@ -3934,7 +3934,7 @@
             try {
                 const userId = nestMateAuth.currentUser.userId;
                 const params = {
-                    TableName: 'nestmate-users',
+                    TableName: process.env.NESTMATE_DDB_USERS_TABLE,
                     Key: { userId: userId },
                     UpdateExpression: 'SET floorplan = :floorplan, lastUpdated = :timestamp',
                     ExpressionAttributeValues: {
@@ -5025,7 +5025,7 @@
             try {
                 const userId = nestMateAuth.currentUser.userId;
                 const params = {
-                    TableName: 'nestmate-users',
+                    TableName: process.env.NESTMATE_DDB_USERS_TABLE,
                     Key: { userId: userId },
                     UpdateExpression: 'SET floorPlanData = :floorPlanData, lastUpdated = :timestamp',
                     ExpressionAttributeValues: {
@@ -5554,7 +5554,7 @@
             try {
                 const userId = nestMateAuth.currentUser.userId;
                 const params = {
-                    TableName: 'nestmate-users',
+                    TableName: process.env.NESTMATE_DDB_USERS_TABLE,
                     Key: { userId },
                     UpdateExpression: 'SET renovations = :renovations, lastUpdated = :timestamp',
                     ExpressionAttributeValues: {
@@ -5726,7 +5726,7 @@
                 console.log('Loading data for userId:', userId);
                 
                 const params = {
-                    TableName: 'nestmate-users',
+                    TableName: process.env.NESTMATE_DDB_USERS_TABLE,
                     Key: { userId: userId }
                 };
                 
@@ -5887,7 +5887,7 @@
             try {
                 const userId = nestMateAuth.currentUser.userId;
                 const params = {
-                    TableName: 'nestmate-users',
+                    TableName: process.env.NESTMATE_DDB_USERS_TABLE,
                     Key: { userId: userId }
                 };
                 
@@ -5972,7 +5972,7 @@
                 console.log('Basic info data:', basicInfo);
                 
                 const params = {
-                    TableName: 'nestmate-users',
+                    TableName: process.env.NESTMATE_DDB_USERS_TABLE,
                     Key: { userId: userId },
                     UpdateExpression: 'SET basicInfo = :basic, lastUpdated = :timestamp',
                     ExpressionAttributeValues: {
@@ -6493,7 +6493,7 @@
             try {
                 const userId = nestMateAuth.currentUser.userId;
                 const params = {
-                    TableName: 'nestmate-users',
+                    TableName: process.env.NESTMATE_DDB_USERS_TABLE,
                     Key: { userId },
                     UpdateExpression: 'SET kitchensList = :list, lastUpdated = :ts',
                     ExpressionAttributeValues: {
@@ -6668,7 +6668,7 @@
             try {
                 const userId = nestMateAuth.currentUser.userId;
                 const params = {
-                    TableName: 'nestmate-users',
+                    TableName: process.env.NESTMATE_DDB_USERS_TABLE,
                     Key: { userId },
                     UpdateExpression: 'SET bathroomsList = :list, lastUpdated = :ts',
                     ExpressionAttributeValues: {
@@ -6990,7 +6990,7 @@
             try {
                 const userId = nestMateAuth.currentUser.userId;
                 const params = {
-                    TableName: 'nestmate-users',
+                    TableName: process.env.NESTMATE_DDB_USERS_TABLE,
                     Key: { userId },
                     UpdateExpression: 'SET bedroomsList = :list, lastUpdated = :ts',
                     ExpressionAttributeValues: {
