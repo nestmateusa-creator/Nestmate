@@ -275,11 +275,22 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            // Check if user is already authenticated
-            if (nestMateAuth.currentUser) {
-                window.location.href = 'dashboard-basic-aws.html';
-                return;
-            }
+            console.log('Login page loading...');
+            console.log('nestMateAuth object:', nestMateAuth);
+            console.log('typeof nestMateAuth:', typeof nestMateAuth);
+            
+            // Wait a bit for auth to initialize
+            setTimeout(() => {
+                console.log('Checking authentication after delay...');
+                console.log('nestMateAuth.currentUser:', nestMateAuth.currentUser);
+                
+                // Check if user is already authenticated
+                if (nestMateAuth && nestMateAuth.currentUser) {
+                    console.log('User already authenticated, redirecting...');
+                    window.location.href = 'dashboard-basic-clean.html';
+                    return;
+                }
+            }, 500);
 
             // Add event listeners
             loginForm.addEventListener('submit', handleLogin);
@@ -297,10 +308,12 @@
         // Handle login form submission
         async function handleLogin(e) {
             e.preventDefault();
+            console.log('Login form submitted');
             
             // Get form data
             const email = emailInput.value.trim().toLowerCase();
             const password = passwordInput.value;
+            console.log('Login attempt with email:', email);
 
             // Basic validation
             if (!email || !password) {
@@ -313,8 +326,13 @@
             clearMessages();
 
             try {
+                console.log('Attempting to sign in...');
+                console.log('nestMateAuth object:', nestMateAuth);
+                console.log('nestMateAuth.signIn function:', typeof nestMateAuth.signIn);
+                
                 // Sign in user
                 const result = await nestMateAuth.signIn(email, password);
+                console.log('Sign in result:', result);
 
                 if (result.success) {
                     // Fetch user record to decide destination
@@ -338,7 +356,9 @@
                 }
             } catch (error) {
                 console.error('Login error:', error);
-                showMessage('An unexpected error occurred. Please try again.', 'error');
+                console.error('Error details:', error.message);
+                console.error('Error code:', error.code);
+                showMessage('Login failed: ' + (error.message || 'An unexpected error occurred. Please try again.'), 'error');
             } finally {
                 setLoading(false);
             }
