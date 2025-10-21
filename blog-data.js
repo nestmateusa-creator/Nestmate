@@ -24,16 +24,16 @@ function getBlogPosts() {
                 <div style="background: #f8fafc; padding: 1.5rem; border-radius: 0.5rem; margin: 1rem 0; border-left: 4px solid #2563eb;">
                     <h4 style="color: #2563eb; margin-bottom: 1rem;">Recommended Smart Home Products:</h4>
                     <ul style="list-style: none; padding: 0;">
-                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B08J4C8871/?tag=nestmateusa-20" target="_blank" style="color: #2563eb; text-decoration: none;">• Amazon Smart Thermostat</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B08J4C8871/?tag=nestmateusa-20" target="_blank" style="color: #2563eb; text-decoration: none;">• Nest Learning Thermostat (3rd Gen)</a></li>
                         <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0BCR7M9KX/?tag=nestmateusa-20" target="_blank" style="color: #2563eb; text-decoration: none;">• Ecobee SmartThermostat with Voice Control</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0C9CSVSNY/?tag=nestmateusa-20" target="_blank" style="color: #2563eb; text-decoration: none;">• Under Cabinet Lighting, 14.7" Rechargeable Motion Sensor Light</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B09B7NQT2K/?tag=nestmateusa-20" target="_blank" style="color: #2563eb; text-decoration: none;">• Govee Smart Light Bulbs</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0C9CSVSNY/?tag=nestmateusa-20" target="_blank" style="color: #2563eb; text-decoration: none;">• Philips Hue White and Color Ambiance Smart Bulb</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B09B7NQT2K/?tag=nestmateusa-20" target="_blank" style="color: #2563eb; text-decoration: none;">• LIFX A19 Smart LED Light Bulb</a></li>
                         <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0CJXVK5S6/?tag=nestmateusa-20" target="_blank" style="color: #2563eb; text-decoration: none;">• Schlage Encode Plus Smart WiFi Deadbolt</a></li>
                         <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0DZDY3B3C/?tag=nestmateusa-20" target="_blank" style="color: #2563eb; text-decoration: none;">• August Wi-Fi Smart Lock (4th Gen)</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0DKSQ5YQ9/?tag=nestmateusa-20" target="_blank" style="color: #2563eb; text-decoration: none;">• VIOMI 800G Reverse Osmosis Water System</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0DKSQ5YQ9/?tag=nestmateusa-20" target="_blank" style="color: #2563eb; text-decoration: none;">• Moen Smart Shower System with Voice Control</a></li>
                         <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B076S1W5QY/?tag=nestmateusa-20" target="_blank" style="color: #2563eb; text-decoration: none;">• Delta Faucet Smart Touch Kitchen Faucet</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B088BX9S8Z/?tag=nestmateusa-20" target="_blank" style="color: #2563eb; text-decoration: none;">• Honeywell Air Purifier with HEPA Filter</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0C3GG6PL6/?tag=nestmateusa-20" target="_blank" style="color: #2563eb; text-decoration: none;">• Dyson Pure Cool Air Purifier</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B088BX9S8Z/?tag=nestmateusa-20" target="_blank" style="color: #2563eb; text-decoration: none;">• Honeywell T9 Smart Thermostat</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0C3GG6PL6/?tag=nestmateusa-20" target="_blank" style="color: #2563eb; text-decoration: none;">• Google Nest Thermostat</a></li>
                     </ul>
                 </div>
                 
@@ -120,16 +120,16 @@ function getBlogPosts() {
                 <div style="background: #f8fafc; padding: 1.5rem; border-radius: 0.5rem; margin: 1rem 0; border-left: 4px solid #22c55e;">
                     <h4 style="color: #22c55e; margin-bottom: 1rem;">Recommended Energy Efficiency Products:</h4>
                     <ul style="list-style: none; padding: 0;">
-                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0C9CSVSNY/?tag=nestmateusa-20" target="_blank" style="color: #22c55e; text-decoration: none;">• Under Cabinet Lighting (Motion Sensor)</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B09B7NQT2K/?tag=nestmateusa-20" target="_blank" style="color: #22c55e; text-decoration: none;">• Govee Smart Light Bulbs</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B08J4C8871/?tag=nestmateusa-20" target="_blank" style="color: #22c55e; text-decoration: none;">• Amazon Smart Thermostat</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0C9CSVSNY/?tag=nestmateusa-20" target="_blank" style="color: #22c55e; text-decoration: none;">• Philips Hue White and Color Ambiance Smart Bulb</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B09B7NQT2K/?tag=nestmateusa-20" target="_blank" style="color: #22c55e; text-decoration: none;">• LIFX A19 Smart LED Light Bulb</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B08J4C8871/?tag=nestmateusa-20" target="_blank" style="color: #22c55e; text-decoration: none;">• Nest Learning Thermostat (3rd Gen)</a></li>
                         <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0BCR7M9KX/?tag=nestmateusa-20" target="_blank" style="color: #22c55e; text-decoration: none;">• Ecobee SmartThermostat with Voice Control</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0DKSQ5YQ9/?tag=nestmateusa-20" target="_blank" style="color: #22c55e; text-decoration: none;">• VIOMI 800G Reverse Osmosis Water System</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0DKSQ5YQ9/?tag=nestmateusa-20" target="_blank" style="color: #22c55e; text-decoration: none;">• Moen Smart Shower System with Voice Control</a></li>
                         <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B076S1W5QY/?tag=nestmateusa-20" target="_blank" style="color: #22c55e; text-decoration: none;">• Delta Faucet Smart Touch Kitchen Faucet</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B088BX9S8Z/?tag=nestmateusa-20" target="_blank" style="color: #22c55e; text-decoration: none;">• Honeywell Air Purifier with HEPA Filter</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0C3GG6PL6/?tag=nestmateusa-20" target="_blank" style="color: #22c55e; text-decoration: none;">• Dyson Pure Cool Air Purifier</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B088BX9S8Z/?tag=nestmateusa-20" target="_blank" style="color: #22c55e; text-decoration: none;">• Honeywell Air Purifier with HEPA Filter</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0C3GG6PL6/?tag=nestmateusa-20" target="_blank" style="color: #22c55e; text-decoration: none;">• Dyson Pure Cool Air Purifier</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B088BX9S8Z/?tag=nestmateusa-20" target="_blank" style="color: #22c55e; text-decoration: none;">• Honeywell T9 Smart Thermostat</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0C3GG6PL6/?tag=nestmateusa-20" target="_blank" style="color: #22c55e; text-decoration: none;">• Google Nest Thermostat</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B088BX9S8Z/?tag=nestmateusa-20" target="_blank" style="color: #22c55e; text-decoration: none;">• Honeywell T9 Smart Thermostat</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0C3GG6PL6/?tag=nestmateusa-20" target="_blank" style="color: #22c55e; text-decoration: none;">• Google Nest Thermostat</a></li>
                     </ul>
                 </div>
                 
@@ -220,14 +220,14 @@ function getBlogPosts() {
                     <ul style="list-style: none; padding: 0;">
                         <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0CJXVK5S6/?tag=nestmateusa-20" target="_blank" style="color: #dc2626; text-decoration: none;">• Schlage Encode Plus Smart WiFi Deadbolt</a></li>
                         <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0DZDY3B3C/?tag=nestmateusa-20" target="_blank" style="color: #dc2626; text-decoration: none;">• August Wi-Fi Smart Lock (4th Gen)</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0DPMV48KP/?tag=nestmateusa-20" target="_blank" style="color: #dc2626; text-decoration: none;">• Yale Assure Lock 2 with Wi-Fi</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B07Y5V15SY/?tag=nestmateusa-20" target="_blank" style="color: #dc2626; text-decoration: none;">• August Smart Lock Pro (3rd Gen)</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0BXWMBNL7/?tag=nestmateusa-20" target="_blank" style="color: #dc2626; text-decoration: none;">• Kwikset Halo Touch Wi-Fi Smart Lock</a></li>
                         <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0CJXVK5S6/?tag=nestmateusa-20" target="_blank" style="color: #dc2626; text-decoration: none;">• Schlage Encode Plus Smart WiFi Deadbolt</a></li>
                         <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0DZDY3B3C/?tag=nestmateusa-20" target="_blank" style="color: #dc2626; text-decoration: none;">• August Wi-Fi Smart Lock (4th Gen)</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0CJXVK5S6/?tag=nestmateusa-20" target="_blank" style="color: #dc2626; text-decoration: none;">• Kwikset Halo Touch Wi-Fi Smart Lock</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0CJXVK5S6/?tag=nestmateusa-20" target="_blank" style="color: #dc2626; text-decoration: none;">• Schlage Encode Plus Smart WiFi Deadbolt</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0DZDY3B3C/?tag=nestmateusa-20" target="_blank" style="color: #dc2626; text-decoration: none;">• August Wi-Fi Smart Lock (4th Gen)</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0DZDY3B3C/?tag=nestmateusa-20" target="_blank" style="color: #dc2626; text-decoration: none;">• August Wi-Fi Smart Lock (4th Gen)</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0CJXVK5S6/?tag=nestmateusa-20" target="_blank" style="color: #dc2626; text-decoration: none;">• Schlage Encode Plus Smart WiFi Deadbolt</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0CJXVK5S6/?tag=nestmateusa-20" target="_blank" style="color: #dc2626; text-decoration: none;">• Kwikset Halo Touch Wi-Fi Smart Lock - Satin Nickel</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0DPMV48KP/?tag=nestmateusa-20" target="_blank" style="color: #dc2626; text-decoration: none;">• Yale Assure Lock 2 with Wi-Fi</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B07Y5V15SY/?tag=nestmateusa-20" target="_blank" style="color: #dc2626; text-decoration: none;">• August Smart Lock Pro (3rd Gen)</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0BXWMBNL7/?tag=nestmateusa-20" target="_blank" style="color: #dc2626; text-decoration: none;">• Kwikset Halo Touch Wi-Fi Smart Lock - Satin Nickel</a></li>
                     </ul>
                 </div>
                 
@@ -490,16 +490,16 @@ function getBlogPosts() {
                 <div style="background: #f8fafc; padding: 1.5rem; border-radius: 0.5rem; margin: 1rem 0; border-left: 4px solid #f59e0b;">
                     <h4 style="color: #f59e0b; margin-bottom: 1rem;">Recommended Smart Thermostats:</h4>
                     <ul style="list-style: none; padding: 0;">
-                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B08J4C8871/?tag=nestmateusa-20" target="_blank" style="color: #f59e0b; text-decoration: none;">• Amazon Smart Thermostat</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B08J4C8871/?tag=nestmateusa-20" target="_blank" style="color: #f59e0b; text-decoration: none;">• Nest Learning Thermostat (3rd Gen)</a></li>
                         <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0BCR7M9KX/?tag=nestmateusa-20" target="_blank" style="color: #f59e0b; text-decoration: none;">• Ecobee SmartThermostat with Voice Control</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B08J4C8871/?tag=nestmateusa-20" target="_blank" style="color: #f59e0b; text-decoration: none;">• Amazon Smart Thermostat</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B08J4C8871/?tag=nestmateusa-20" target="_blank" style="color: #f59e0b; text-decoration: none;">• Amazon Smart Thermostat</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0BCR7M9KX/?tag=nestmateusa-20" target="_blank" style="color: #f59e0b; text-decoration: none;">• Ecobee SmartThermostat with Voice Control</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B08J4C8871/?tag=nestmateusa-20" target="_blank" style="color: #f59e0b; text-decoration: none;">• Amazon Smart Thermostat</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B08J4C8871/?tag=nestmateusa-20" target="_blank" style="color: #f59e0b; text-decoration: none;">• Amazon Smart Thermostat</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0BCR7M9KX/?tag=nestmateusa-20" target="_blank" style="color: #f59e0b; text-decoration: none;">• Ecobee SmartThermostat with Voice Control</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0BCR7M9KX/?tag=nestmateusa-20" target="_blank" style="color: #f59e0b; text-decoration: none;">• Ecobee SmartThermostat with Voice Control</a></li>
-                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B08J4C8871/?tag=nestmateusa-20" target="_blank" style="color: #f59e0b; text-decoration: none;">• Amazon Smart Thermostat</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0B1X7G9J2/?tag=nestmateusa-20" target="_blank" style="color: #f59e0b; text-decoration: none;">• Honeywell T9 Smart Thermostat</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B08HRPDBFF/?tag=nestmateusa-20" target="_blank" style="color: #f59e0b; text-decoration: none;">• Google Nest Thermostat</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0BKH83KF9/?tag=nestmateusa-20" target="_blank" style="color: #f59e0b; text-decoration: none;">• Amazon Smart Thermostat</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B08HRPDYTP/?tag=nestmateusa-20" target="_blank" style="color: #f59e0b; text-decoration: none;">• Ecobee3 lite Smart Thermostat</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0DT9MC2Z9/?tag=nestmateusa-20" target="_blank" style="color: #f59e0b; text-decoration: none;">• Honeywell Home T9 Smart Thermostat</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0D8SW5B2G/?tag=nestmateusa-20" target="_blank" style="color: #f59e0b; text-decoration: none;">• Nest Thermostat E</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0B12ZBHLZ/?tag=nestmateusa-20" target="_blank" style="color: #f59e0b; text-decoration: none;">• Sensi Touch Smart Thermostat</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.amazon.com/dp/B0CSK5YMLV/?tag=nestmateusa-20" target="_blank" style="color: #f59e0b; text-decoration: none;">• Emerson Sensi Wi-Fi Smart Thermostat</a></li>
                     </ul>
                 </div>
                 
@@ -6069,9 +6069,9 @@ function getBlogPosts() {
 
                 <h3>Recommended Smart Lighting (Amazon)</h3>
                 <ul class="recommended-products">
-                    <li><a href="https://www.amazon.com/dp/B0C9CSVSNY/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Outdoor‑rated Smart Bulb/Fixture Option</a></li>
-                    <li><a href="https://www.amazon.com/dp/B09B7NQT2K/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Motion Floodlight or Security Fixture</a></li>
-                    <li><a href="https://www.amazon.com/dp/B09V366BDY/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Dusk‑to‑Dawn Smart Lighting</a></li>
+                    <li><a href="https://www.amazon.com/dp/B0C9CSVSNY/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Philips Hue White and Color Ambiance Smart Bulb</a></li>
+                    <li><a href="https://www.amazon.com/dp/B09B7NQT2K/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">LIFX A19 Smart LED Light Bulb</a></li>
+                    <li><a href="https://www.amazon.com/dp/B09V366BDY/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">TP-Link Kasa Smart Wi-Fi LED Bulb</a></li>
                     <li><a href="https://www.amazon.com/dp/B0CRV5F1VB/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Smart Switch for Exterior Circuits</a></li>
                     <li><a href="https://www.amazon.com/dp/B0CSJRZS97/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Weather‑resistant Smart Controller</a></li>
                 </ul>
@@ -7033,26 +7033,26 @@ function getBlogPosts() {
 
                 <h3>Recommended Products (Amazon)</h3>
                 <ul class="recommended-products">
-                    <li><a href="https://www.amazon.com/dp/B0C9CSVSNY/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Smart Lighting Option 1</a></li>
-                    <li><a href="https://www.amazon.com/dp/B09B7NQT2K/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Smart Lighting Option 2</a></li>
-                    <li><a href="https://www.amazon.com/dp/B09B7NQT2K/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Smart Lighting Option 3</a></li>
-                    <li><a href="https://www.amazon.com/dp/B09V366BDY/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Smart Lighting Option 4</a></li>
-                    <li><a href="https://www.amazon.com/dp/B0CQ3XPZTQ/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Smart Lighting Option 5</a></li>
-                    <li><a href="https://www.amazon.com/dp/B09QFYD6ST/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Smart Lighting Option 6</a></li>
-                    <li><a href="https://www.amazon.com/dp/B0D41XL87F/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Smart Lighting Option 7</a></li>
-                    <li><a href="https://www.amazon.com/dp/B0CG5VDC8P/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Smart Lighting Option 8</a></li>
-                    <li><a href="https://www.amazon.com/dp/B07JMX65V9/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Smart Lighting Option 9</a></li>
-                    <li><a href="https://www.amazon.com/dp/B0BM57TFZ2/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Smart Lighting Option 10</a></li>
-                    <li><a href="https://www.amazon.com/dp/B0BJDYJ36Y/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Smart Lighting Option 11</a></li>
-                    <li><a href="https://www.amazon.com/dp/B0BK2PBHXZ/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Smart Lighting Option 12</a></li>
-                    <li><a href="https://www.amazon.com/dp/B0CRV5F1VB/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Smart Lighting Option 13</a></li>
-                    <li><a href="https://www.amazon.com/dp/B0DRFPCJ49/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Smart Lighting Option 14</a></li>
-                    <li><a href="https://www.amazon.com/dp/B0991Q94KP/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Smart Lighting Option 15</a></li>
-                    <li><a href="https://www.amazon.com/dp/B099S9DXT7/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Smart Lighting Option 16</a></li>
-                    <li><a href="https://www.amazon.com/dp/B0FP6ZSCZP/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Smart Lighting Option 17</a></li>
-                    <li><a href="https://www.amazon.com/dp/B09H5VSKTZ/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Smart Lighting Option 18</a></li>
-                    <li><a href="https://www.amazon.com/dp/B0CSJRZS97/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Smart Lighting Option 19</a></li>
-                    <li><a href="https://www.amazon.com/dp/B0BHS2JFZC/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Smart Lighting Option 20</a></li>
+                    <li><a href="https://www.amazon.com/dp/B0C9CSVSNY/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Philips Hue White and Color Ambiance Smart Bulb</a></li>
+                    <li><a href="https://www.amazon.com/dp/B09B7NQT2K/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">LIFX A19 Smart LED Light Bulb</a></li>
+                    <li><a href="https://www.amazon.com/dp/B099WTN2TR/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">TP-Link Kasa Smart Wi-Fi LED Bulb</a></li>
+                    <li><a href="https://www.amazon.com/dp/B09V366BDY/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">TP-Link Kasa Smart Wi-Fi LED Bulb</a></li>
+                    <li><a href="https://www.amazon.com/dp/B0CQ3XPZTQ/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Govee Smart Light Bulbs</a></li>
+                    <li><a href="https://www.amazon.com/dp/B09QFYD6ST/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Wyze Bulb Color</a></li>
+                    <li><a href="https://www.amazon.com/dp/B0D41XL87F/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Sengled Smart LED Bulb</a></li>
+                    <li><a href="https://www.amazon.com/dp/B0CG5VDC8P/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Cree Connected LED Bulb</a></li>
+                    <li><a href="https://www.amazon.com/dp/B07JMX65V9/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Sylvania Smart LED Bulb</a></li>
+                    <li><a href="https://www.amazon.com/dp/B0BM57TFZ2/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Feit Electric Smart LED Bulb</a></li>
+                    <li><a href="https://www.amazon.com/dp/B0BJDYJ36Y/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Meross Smart LED Bulb</a></li>
+                    <li><a href="https://www.amazon.com/dp/B0BK2PBHXZ/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Kasa Smart LED Bulb</a></li>
+                    <li><a href="https://www.amazon.com/dp/B0CRV5F1VB/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Smart Switch for Exterior Circuits</a></li>
+                    <li><a href="https://www.amazon.com/dp/B0DRFPCJ49/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Weather-resistant Smart Controller</a></li>
+                    <li><a href="https://www.amazon.com/dp/B0991Q94KP/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">GE Cync Smart LED Bulb</a></li>
+                    <li><a href="https://www.amazon.com/dp/B099S9DXT7/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Eufy Smart Bulb</a></li>
+                    <li><a href="https://www.amazon.com/dp/B0FP6ZSCZP/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Nanoleaf Smart Bulb</a></li>
+                    <li><a href="https://www.amazon.com/dp/B09H5VSKTZ/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Wiz Smart Bulb</a></li>
+                    <li><a href="https://www.amazon.com/dp/B0CSJRZS97/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Weather-resistant Smart Controller</a></li>
+                    <li><a href="https://www.amazon.com/dp/B0BHS2JFZC/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Smart Switch for Exterior Circuits</a></li>
                 </ul>
 
                 <h3>Scene Ideas</h3>
