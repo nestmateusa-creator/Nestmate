@@ -2717,60 +2717,6 @@
     </div>
 
     <script>
-        // AWS Configuration
-        AWS.config.update({
-            region: 'us-east-2',
-            accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
-            secretAccessKey: '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'
-        });
-
-        // Initialize DynamoDB client
-        const dynamodb = new AWS.DynamoDB.DocumentClient();
-
-        // S3 Upload Functions
-        async function getS3PresignedUrl(key, contentType) {
-            try {
-                console.log('Getting presigned URL for:', key, contentType);
-                const response = await fetch('/.netlify/functions/s3-presign', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        bucket: 'nestmate-files-483954734051', // TODO: Make this configurable
-                        key, 
-                        contentType 
-                    })
-                });
-                console.log('Presigned URL response status:', response.status);
-                const data = await response.json();
-                console.log('Presigned URL data:', data);
-                return data;
-            } catch (error) {
-                console.error('Error getting presigned URL:', error);
-                throw error;
-            }
-        }
-
-        async function uploadToS3(file, key) {
-            try {
-                const { uploadUrl, publicUrl } = await getS3PresignedUrl(key, file.type);
-                
-                const response = await fetch(uploadUrl, {
-                    method: 'PUT',
-                    body: file,
-                    headers: { 'Content-Type': file.type }
-                });
-
-                if (response.ok) {
-                    return publicUrl;
-                } else {
-                    throw new Error('Upload failed');
-                }
-            } catch (error) {
-                console.error('S3 upload error:', error);
-                throw error;
-            }
-        }
-
         // Define all functions FIRST before anything else
         function showSection(sectionName) {
             console.log('showSection called with:', sectionName);
@@ -2837,6 +2783,61 @@
             console.log('Opening Home Details');
             showSection('basic');
         }
+
+        // AWS Configuration
+        AWS.config.update({
+            region: 'us-east-2',
+            accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
+            secretAccessKey: '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'
+        });
+
+        // DynamoDB client is already initialized in auth-aws.js
+
+        // S3 Upload Functions
+        async function getS3PresignedUrl(key, contentType) {
+            try {
+                console.log('Getting presigned URL for:', key, contentType);
+                const response = await fetch('/.netlify/functions/s3-presign', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        bucket: 'nestmate-files-483954734051', // TODO: Make this configurable
+                        key, 
+                        contentType 
+                    })
+                });
+                console.log('Presigned URL response status:', response.status);
+                const data = await response.json();
+                console.log('Presigned URL data:', data);
+                return data;
+            } catch (error) {
+                console.error('Error getting presigned URL:', error);
+                throw error;
+            }
+        }
+
+        async function uploadToS3(file, key) {
+            try {
+                const { uploadUrl, publicUrl } = await getS3PresignedUrl(key, file.type);
+                
+                const response = await fetch(uploadUrl, {
+                    method: 'PUT',
+                    body: file,
+                    headers: { 'Content-Type': file.type }
+                });
+
+                if (response.ok) {
+                    return publicUrl;
+                } else {
+                    throw new Error('Upload failed');
+                }
+            } catch (error) {
+                console.error('S3 upload error:', error);
+                throw error;
+            }
+        }
+
+        // Duplicate functions removed - already defined at top of script
 
         function exportData() {
             console.log('Exporting Data');
