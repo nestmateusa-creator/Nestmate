@@ -2809,12 +2809,12 @@
 
         function openTasksCalendar() {
             console.log('Opening Tasks & Calendar');
-            // You can redirect to a tasks page or show a modal
+            showSection('tasks');
         }
 
         function openProducts() {
             console.log('Opening Products');
-            // You can redirect to a products page or show a modal
+            window.location.href = 'nestmate-store.html';
         }
 
         function openEmergency() {
@@ -2824,6 +2824,7 @@
 
         function addService() {
             console.log('Adding Service');
+            showSection('service');
             showAlert('Service management feature coming soon!', 'info');
         }
 
@@ -5708,6 +5709,17 @@
             setTimeout(() => {
                 updateUserDisplay();
             }, 100);
+            
+            // Force update user display again after auth is fully loaded
+            setTimeout(() => {
+                console.log('Force updating user display...');
+                console.log('Current user:', nestMateAuth.currentUser);
+                if (nestMateAuth.currentUser && nestMateAuth.currentUser.email) {
+                    document.getElementById('userName').textContent = nestMateAuth.currentUser.name || nestMateAuth.currentUser.email.split('@')[0];
+                    document.getElementById('userEmail').textContent = nestMateAuth.currentUser.email;
+                    document.getElementById('userAvatar').textContent = (nestMateAuth.currentUser.name || nestMateAuth.currentUser.email.split('@')[0]).charAt(0).toUpperCase();
+                }
+            }, 1000);
             
             console.log('✅ Command Center Dashboard initialized successfully');
         });
