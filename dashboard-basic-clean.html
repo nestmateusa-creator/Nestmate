@@ -5663,10 +5663,19 @@
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('🚀 Command Center Dashboard Starting...');
+            console.log('nestMateAuth object:', nestMateAuth);
+            console.log('typeof nestMateAuth:', typeof nestMateAuth);
+            
+            // Wait a bit for auth to initialize
+            await new Promise(resolve => setTimeout(resolve, 500));
             
             // Check authentication
+            console.log('Checking authentication...');
             const isAuthenticated = await nestMateAuth.isAuthenticated();
+            console.log('Authentication result:', isAuthenticated);
+            
             if (!isAuthenticated) {
+                console.log('Not authenticated, redirecting to login');
                 window.location.href = 'login-aws.html';
                 return;
             }
@@ -5675,13 +5684,31 @@
             const user = nestMateAuth.currentUser;
             console.log('Current user from auth:', user);
             
-            let displayName = (user && (user.name || (user.email ? user.email.split('@')[0] : ''))) || 'User';
-            let displayEmail = (user && user.email) || '';
+            // If no user from auth, try to get from localStorage
+            if (!user) {
+                console.log('No user from auth, checking localStorage...');
+                const storedUser = localStorage.getItem('currentUser');
+                if (storedUser) {
+                    try {
+                        const parsedUser = JSON.parse(storedUser);
+                        console.log('Found user in localStorage:', parsedUser);
+                        nestMateAuth.currentUser = parsedUser;
+                    } catch (e) {
+                        console.error('Error parsing stored user:', e);
+                    }
+                }
+            }
+            
+            const finalUser = nestMateAuth.currentUser || user;
+            console.log('Final user object:', finalUser);
+            
+            let displayName = (finalUser && (finalUser.name || (finalUser.email ? finalUser.email.split('@')[0] : ''))) || 'User';
+            let displayEmail = (finalUser && finalUser.email) || '';
 
             try {
-                if (user && user.userId && nestMateAuth.getUserRecord) {
-                    console.log('Loading user record for userId:', user.userId);
-                    const rec = await nestMateAuth.getUserRecord(user.userId);
+                if (finalUser && finalUser.userId && nestMateAuth.getUserRecord) {
+                    console.log('Loading user record for userId:', finalUser.userId);
+                    const rec = await nestMateAuth.getUserRecord(finalUser.userId);
                     console.log('User record result:', rec);
                     if (rec && rec.success && rec.user) {
                         displayName = rec.user.name || displayName;
@@ -5730,12 +5757,26 @@
                 console.log('loadUserData called');
                 console.log('nestMateAuth.currentUser:', nestMateAuth.currentUser);
                 
-                if (!nestMateAuth.currentUser) {
+                // Try to get user from localStorage if not in auth
+                let currentUser = nestMateAuth.currentUser;
+                if (!currentUser) {
+                    const storedUser = localStorage.getItem('currentUser');
+                    if (storedUser) {
+                        try {
+                            currentUser = JSON.parse(storedUser);
+                            console.log('Using stored user:', currentUser);
+                        } catch (e) {
+                            console.error('Error parsing stored user:', e);
+                        }
+                    }
+                }
+                
+                if (!currentUser) {
                     console.error('No current user found');
                     return;
                 }
                 
-                const userId = nestMateAuth.currentUser.userId;
+                const userId = currentUser.userId;
                 console.log('Loading data for userId:', userId);
                 
                 const params = {
