@@ -7541,7 +7541,7 @@ function getBlogPosts() {
             icon: 'fas fa-leaf',
             content: `
                 <h2>Emerson Sensi Touch Wi-Fi Thermostat: Smart Control on a Budget</h2>
-                <p>The <a href="https://www.amazon.com/dp/B0BCR7M9KX/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Emerson Sensi Touch Wi-Fi Thermostat</a> brings the core benefits of smart thermostat technology to a more affordable price point. While it focuses on essential features, it delivers excellent energy savings, smart home integration, and user-friendly operation that makes it an ideal entry point into smart home automation.</p>
+                <p>The <a href="https://www.amazon.com/dp/B0CSK5YMLV/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Emerson Sensi Touch Wi-Fi Thermostat</a> brings the core benefits of smart thermostat technology to a more affordable price point. While it focuses on essential features, it delivers excellent energy savings, smart home integration, and user-friendly operation that makes it an ideal entry point into smart home automation.</p>
                 
                 <h3>Core Smart Features</h3>
                 <p>This smart thermostat includes essential features without the complexity of premium models. The device offers remote control through a smartphone app, energy usage tracking, and intelligent scheduling that adapts to your lifestyle patterns.</p>
@@ -8476,7 +8476,7 @@ function getBlogPosts() {
             icon: 'fas fa-thermometer-half',
             content: `
                 <h2>Sensi Touch 2 Smart Thermostat: 100 Years of Expertise</h2>
-                <p>The <a href="https://www.amazon.com/dp/B0BCR7M9KX/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Sensi Touch 2 Smart Thermostat</a> combines Emerson's 100 years of expertise in climate control with modern smart technology. This programmable Wi-Fi thermostat features a touchscreen color display, data privacy protection, and easy DIY installation, making it an excellent choice for homeowners seeking reliable smart climate control.</p>
+                <p>The <a href="https://www.amazon.com/dp/B0B12ZBHLZ/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Sensi Touch 2 Smart Thermostat</a> combines Emerson's 100 years of expertise in climate control with modern smart technology. This programmable Wi-Fi thermostat features a touchscreen color display, data privacy protection, and easy DIY installation, making it an excellent choice for homeowners seeking reliable smart climate control.</p>
                 
                 <h3>Touchscreen Color Display</h3>
                 <p>The Sensi Touch 2 features a vibrant color touchscreen display that provides clear, intuitive control over your home's climate. The large, easy-to-read screen makes it simple to adjust temperature, view schedules, and access settings, even in low-light conditions.</p>
@@ -8595,7 +8595,7 @@ function getBlogPosts() {
             icon: 'fas fa-thermometer-three-quarters',
             content: `
                 <h2>Ecobee Smart Thermostat Essential: Energy Star Certified</h2>
-                <p>The <a href="https://www.amazon.com/dp/B0BCR7M9KX/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Ecobee Smart Thermostat Essential</a> is an Energy Star certified programmable Wi-Fi thermostat that works seamlessly with Siri, Alexa, and Google Assistant. This smart thermostat provides essential features for energy-conscious homeowners who want reliable climate control with smart home integration.</p>
+                <p>The <a href="https://www.amazon.com/dp/B08HRPDYTP/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Ecobee Smart Thermostat Essential</a> is an Energy Star certified programmable Wi-Fi thermostat that works seamlessly with Siri, Alexa, and Google Assistant. This smart thermostat provides essential features for energy-conscious homeowners who want reliable climate control with smart home integration.</p>
                 
                 <h3>Energy Star Certification</h3>
                 <p>The Ecobee Essential is Energy Star certified, meaning it meets strict energy efficiency guidelines set by the EPA. This certification ensures the device will help reduce your energy consumption and lower your utility bills through intelligent scheduling and automation.</p>
@@ -8652,7 +8652,7 @@ function getBlogPosts() {
             icon: 'fas fa-thermometer-half',
             content: `
                 <h2>Meross Smart Thermostat: WiFi Thermostat with Matter Support</h2>
-                <p>The <a href="https://www.amazon.com/dp/B0BCR7M9KX/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Meross Smart Thermostat</a> is a WiFi thermostat for home that works with Matter, Alexa, Apple Home, and Google Assistant. This smart thermostat offers app and voice control with 7x24h scheduling and energy-saving capabilities, making it an excellent choice for homeowners seeking comprehensive smart home integration.</p>
+                <p>The <a href="https://www.amazon.com/dp/B0BJDYJ36Y/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Meross Smart Thermostat</a> is a WiFi thermostat for home that works with Matter, Alexa, Apple Home, and Google Assistant. This smart thermostat offers app and voice control with 7x24h scheduling and energy-saving capabilities, making it an excellent choice for homeowners seeking comprehensive smart home integration.</p>
                 
                 <h3>Matter Protocol Support</h3>
                 <p>The Meross Smart Thermostat supports the Matter protocol, ensuring future-proof compatibility with smart home ecosystems. Matter provides standardized connectivity that works across different brands and platforms, making it easier to integrate the thermostat with your existing smart home devices.</p>
@@ -9068,7 +9068,7 @@ function getBlogPosts() {
             icon: 'fas fa-thermometer-half',
             content: `
                 <h2>Honeywell T10 Pro Smart Thermostat: Advanced Climate Control</h2>
-                <p>The <a href="https://www.amazon.com/dp/B0BCR7M9KX/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Honeywell T10 Pro Smart Thermostat</a> represents advanced smart home temperature management technology. This innovative device combines intelligent climate control with smart home integration, creating an efficient system for maintaining optimal comfort and energy efficiency.</p>
+                <p>The <a href="https://www.amazon.com/dp/B0B1X7G9J2/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Honeywell T10 Pro Smart Thermostat</a> represents advanced smart home temperature management technology. This innovative device combines intelligent climate control with smart home integration, creating an efficient system for maintaining optimal comfort and energy efficiency.</p>
                 
                 <h3>Smart Home Integration</h3>
                 <p>This advanced smart thermostat integrates seamlessly with popular smart home platforms and voice assistants. You can control the device using voice commands, smartphone apps, or through automation routines that coordinate with other smart home devices.</p>
@@ -10015,7 +10015,7 @@ function getBlogPosts() {
             icon: 'fas fa-lock',
             content: `
                 <h2>Kwikset Halo Wi-Fi Smart Lock: Touchscreen Deadbolt</h2>
-                <p>The <a href="https://www.amazon.com/dp/B0BCR7M9KX/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Kwikset Halo Wi-Fi Smart Lock</a> is a touchscreen deadbolt with keyless entry that works with Alexa and provides comprehensive smart home security. This advanced smart lock features Wi-Fi connectivity, touchscreen interface, and smart home integration, making it an excellent choice for homeowners seeking modern access control.</p>
+                <p>The <a href="https://www.amazon.com/dp/B0BXWMBNL7/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Kwikset Halo Wi-Fi Smart Lock</a> is a touchscreen deadbolt with keyless entry that works with Alexa and provides comprehensive smart home security. This advanced smart lock features Wi-Fi connectivity, touchscreen interface, and smart home integration, making it an excellent choice for homeowners seeking modern access control.</p>
                 
                 <h3>Touchscreen Interface</h3>
                 <p>The Kwikset Halo features a touchscreen interface that provides intuitive control over your door lock. The touchscreen is designed for ease of use, with responsive controls and clear visual feedback that make it simple to operate.</p>
@@ -10631,7 +10631,7 @@ function getBlogPosts() {
             icon: 'fas fa-lock',
             content: `
                 <h2>ADT Smart Lock: Wi-Fi Deadbolt with Keypad</h2>
-                <p>The <a href="https://www.amazon.com/dp/B0BCR7M9KX/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">ADT Smart Lock</a> is a Wi-Fi deadbolt with keypad that provides keyless entry and app control. This advanced smart lock features Wi-Fi connectivity, touchscreen keypad, and comprehensive smart home integration, making it an excellent choice for homeowners seeking modern access control.</p>
+                <p>The <a href="https://www.amazon.com/dp/B0CJXVK5S6/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">ADT Smart Lock</a> is a Wi-Fi deadbolt with keypad that provides keyless entry and app control. This advanced smart lock features Wi-Fi connectivity, touchscreen keypad, and comprehensive smart home integration, making it an excellent choice for homeowners seeking modern access control.</p>
                 
                 <h3>Touchscreen Keypad</h3>
                 <p>The ADT Smart Lock features a built-in touchscreen keypad that provides easy access without a smartphone. The keypad is designed for durability and ease of use, with large, easy-to-press buttons that work in various lighting conditions.</p>
@@ -11161,7 +11161,7 @@ function getBlogPosts() {
             icon: 'fas fa-lightbulb',
             content: `
                 <h2>Osram Smart Bulb: Wi-Fi LED Bulb</h2>
-                <p>The <a href="https://www.amazon.com/dp/B0BCR7M9KX/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Osram Smart Bulb</a> is a Wi-Fi LED bulb that offers dimming, scheduling, and smart home integration. This reliable smart lighting solution features direct Wi-Fi connectivity, voice control, and comprehensive automation, making it an excellent choice for homeowners seeking intelligent lighting control.</p>
+                <p>The <a href="https://www.amazon.com/dp/B09B7NQT2K/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Osram Smart Bulb</a> is a Wi-Fi LED bulb that offers dimming, scheduling, and smart home integration. This reliable smart lighting solution features direct Wi-Fi connectivity, voice control, and comprehensive automation, making it an excellent choice for homeowners seeking intelligent lighting control.</p>
                 
                 <h3>Wi-Fi Connectivity and Remote Control</h3>
                 <p>The Osram Smart Bulb connects directly to your Wi-Fi network without requiring a separate hub or bridge. This direct connectivity simplifies setup and reduces the number of devices needed for your smart home system.</p>
@@ -11681,7 +11681,7 @@ function getBlogPosts() {
             icon: 'fas fa-tint',
             content: `
                 <h2>Philips Hue Smart Faucet: Wi-Fi Water Fixture</h2>
-                <p>The <a href="https://www.amazon.com/dp/B0BCR7M9KX/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Philips Hue Smart Faucet</a> is a Wi-Fi water fixture that offers temperature control, flow monitoring, and smart home integration. This advanced smart water solution features direct Wi-Fi connectivity, voice control, and comprehensive automation, making it an excellent choice for homeowners seeking intelligent water management.</p>
+                <p>The <a href="https://www.amazon.com/dp/B076S1W5QY/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Philips Hue Smart Faucet</a> is a Wi-Fi water fixture that offers temperature control, flow monitoring, and smart home integration. This advanced smart water solution features direct Wi-Fi connectivity, voice control, and comprehensive automation, making it an excellent choice for homeowners seeking intelligent water management.</p>
                 
                 <h3>Temperature Control and Monitoring</h3>
                 <p>The Philips Hue Smart Faucet provides precise temperature control that allows you to set and maintain your preferred water temperature. The fixture includes built-in temperature sensors that monitor water temperature in real-time, ensuring consistent and safe water delivery.</p>
@@ -12201,7 +12201,7 @@ function getBlogPosts() {
             icon: 'fas fa-tint',
             content: `
                 <h2>Delta Smart Water Faucet: Wi-Fi Water Fixture</h2>
-                <p>The <a href="https://www.amazon.com/dp/B0BCR7M9KX/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Delta Smart Water Faucet</a> is a Wi-Fi water fixture that offers temperature control, flow monitoring, and smart home integration. This advanced smart water solution features direct Wi-Fi connectivity, voice control, and comprehensive automation, making it an excellent choice for homeowners seeking intelligent water management.</p>
+                <p>The <a href="https://www.amazon.com/dp/B076S69WRR/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Delta Smart Water Faucet</a> is a Wi-Fi water fixture that offers temperature control, flow monitoring, and smart home integration. This advanced smart water solution features direct Wi-Fi connectivity, voice control, and comprehensive automation, making it an excellent choice for homeowners seeking intelligent water management.</p>
                 
                 <h3>Temperature Control and Monitoring</h3>
                 <p>The Delta Smart Water Faucet provides precise temperature control that allows you to set and maintain your preferred water temperature. The fixture includes built-in temperature sensors that monitor water temperature in real-time, ensuring consistent and safe water delivery.</p>
@@ -12721,7 +12721,7 @@ function getBlogPosts() {
             icon: 'fas fa-tint',
             content: `
                 <h2>Porcher Smart Water System: Wi-Fi Water Fixture</h2>
-                <p>The <a href="https://www.amazon.com/dp/B0BCR7M9KX/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Porcher Smart Water System</a> is a Wi-Fi water fixture that offers temperature control, flow monitoring, and smart home integration. This advanced smart water solution features direct Wi-Fi connectivity, voice control, and comprehensive automation, making it an excellent choice for homeowners seeking intelligent water management.</p>
+                <p>The <a href="https://www.amazon.com/dp/B0D3F3HD1M/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Porcher Smart Water System</a> is a Wi-Fi water fixture that offers temperature control, flow monitoring, and smart home integration. This advanced smart water solution features direct Wi-Fi connectivity, voice control, and comprehensive automation, making it an excellent choice for homeowners seeking intelligent water management.</p>
                 
                 <h3>Temperature Control and Monitoring</h3>
                 <p>The Porcher Smart Water System provides precise temperature control that allows you to set and maintain your preferred water temperature. The fixture includes built-in temperature sensors that monitor water temperature in real-time, ensuring consistent and safe water delivery.</p>
