@@ -3,9 +3,9 @@
 
 // AWS Configuration - Set credentials directly for browser environment
 AWS.config.update({
-    region: process.env.NESTMATE_AWS_REGION,
-    accessKeyId: process.env.NESTMATE_AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.NESTMATE_AWS_SECRET_ACCESS_KEY
+    region: 'us-east-2',
+    accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
+    secretAccessKey: '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'
 });
 
 const cognito = new AWS.CognitoIdentityServiceProvider();
