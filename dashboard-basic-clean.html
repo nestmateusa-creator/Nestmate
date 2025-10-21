@@ -2754,40 +2754,40 @@
         }
 
         function openTasksCalendar() {
-            console.log('Opening Tasks & Calendar');
+            console.log('✅ Opening Tasks & Calendar');
             showSection('tasks');
         }
 
         function openProducts() {
-            console.log('Opening Products');
+            console.log('✅ Opening Products - redirecting to store');
             window.location.href = 'nestmate-store.html';
         }
 
         function openEmergency() {
-            console.log('Opening Emergency Contacts');
+            console.log('✅ Opening Emergency Contacts');
             showSection('emergency');
         }
 
         function addService() {
-            console.log('Adding Service');
+            console.log('✅ Adding Service');
             showSection('service');
             showAlert('Service management feature coming soon!', 'info');
         }
 
         function viewRecords() {
-            console.log('Viewing Records');
+            console.log('✅ Viewing Records');
             showAlert('Service records feature coming soon!', 'info');
         }
 
         function openHomeDetails() {
-            console.log('Opening Home Details');
+            console.log('✅ Opening Home Details');
             showSection('basic');
         }
 
         // AWS Configuration
         AWS.config.update({
             region: 'us-east-2',
-            accessKeyId: process.env.NESTMATE_AWS_ACCESS_KEY_ID,
+            accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
             secretAccessKey: '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'
         });
 
@@ -5722,9 +5722,27 @@
             }
 
             console.log('Final display info:', { displayName, displayEmail });
-            document.getElementById('userName').textContent = displayName || 'User';
-            document.getElementById('userEmail').textContent = displayEmail || (user && user.email) || '';
-            document.getElementById('userAvatar').textContent = (displayName || 'U').charAt(0).toUpperCase();
+            
+            // Force update user display immediately
+            if (displayEmail) {
+                document.getElementById('userName').textContent = displayName || 'User';
+                document.getElementById('userEmail').textContent = displayEmail;
+                document.getElementById('userAvatar').textContent = (displayName || 'U').charAt(0).toUpperCase();
+                console.log('User display updated immediately:', displayName, displayEmail);
+            } else {
+                // Fallback to any available user data
+                const fallbackEmail = localStorage.getItem('currentUser') ? JSON.parse(localStorage.getItem('currentUser')).email : '';
+                if (fallbackEmail) {
+                    document.getElementById('userName').textContent = fallbackEmail.split('@')[0];
+                    document.getElementById('userEmail').textContent = fallbackEmail;
+                    document.getElementById('userAvatar').textContent = fallbackEmail.charAt(0).toUpperCase();
+                    console.log('Using fallback user data:', fallbackEmail);
+                } else {
+                    document.getElementById('userName').textContent = 'User';
+                    document.getElementById('userEmail').textContent = 'Loading...';
+                    document.getElementById('userAvatar').textContent = 'U';
+                }
+            }
             
             // Load dashboard data
             await loadUserData();
@@ -5738,16 +5756,51 @@
                 updateUserDisplay();
             }, 100);
             
-            // Force update user display again after auth is fully loaded
+            // Force update user display multiple times to ensure it works
             setTimeout(() => {
-                console.log('Force updating user display...');
+                console.log('Force updating user display (1st attempt)...');
                 console.log('Current user:', nestMateAuth.currentUser);
+                const storedUser = localStorage.getItem('currentUser');
+                console.log('Stored user:', storedUser);
+                
                 if (nestMateAuth.currentUser && nestMateAuth.currentUser.email) {
                     document.getElementById('userName').textContent = nestMateAuth.currentUser.name || nestMateAuth.currentUser.email.split('@')[0];
                     document.getElementById('userEmail').textContent = nestMateAuth.currentUser.email;
                     document.getElementById('userAvatar').textContent = (nestMateAuth.currentUser.name || nestMateAuth.currentUser.email.split('@')[0]).charAt(0).toUpperCase();
+                    console.log('Updated from nestMateAuth.currentUser');
+                } else if (storedUser) {
+                    try {
+                        const parsedUser = JSON.parse(storedUser);
+                        if (parsedUser.email) {
+                            document.getElementById('userName').textContent = parsedUser.name || parsedUser.email.split('@')[0];
+                            document.getElementById('userEmail').textContent = parsedUser.email;
+                            document.getElementById('userAvatar').textContent = (parsedUser.name || parsedUser.email.split('@')[0]).charAt(0).toUpperCase();
+                            console.log('Updated from localStorage:', parsedUser.email);
+                        }
+                    } catch (e) {
+                        console.error('Error parsing stored user:', e);
+                    }
                 }
             }, 1000);
+            
+            // Second attempt after 2 seconds
+            setTimeout(() => {
+                console.log('Force updating user display (2nd attempt)...');
+                const storedUser = localStorage.getItem('currentUser');
+                if (storedUser) {
+                    try {
+                        const parsedUser = JSON.parse(storedUser);
+                        if (parsedUser.email) {
+                            document.getElementById('userName').textContent = parsedUser.name || parsedUser.email.split('@')[0];
+                            document.getElementById('userEmail').textContent = parsedUser.email;
+                            document.getElementById('userAvatar').textContent = (parsedUser.name || parsedUser.email.split('@')[0]).charAt(0).toUpperCase();
+                            console.log('Final update from localStorage:', parsedUser.email);
+                        }
+                    } catch (e) {
+                        console.error('Error parsing stored user on 2nd attempt:', e);
+                    }
+                }
+            }, 2000);
             
             console.log('✅ Command Center Dashboard initialized successfully');
         });
