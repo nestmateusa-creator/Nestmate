@@ -4,7 +4,7 @@
 // AWS Configuration - Set credentials directly for browser environment
 AWS.config.update({
     region: 'us-east-2',
-    accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
+    accessKeyId: process.env.NESTMATE_AWS_ACCESS_KEY_ID,
     secretAccessKey: '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'
 });
 
