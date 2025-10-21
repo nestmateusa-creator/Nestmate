@@ -190,7 +190,7 @@ function getBlogPosts() {
             icon: 'fas fa-thermometer-half',
             content: `
                 <h2>Sensi Touch 2 Smart Thermostat: A Century of Innovation</h2>
-                <p>The <a href="https://www.amazon.com/dp/B0BKH83KF9/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Sensi Touch 2 Smart Thermostat</a> combines a century of HVAC expertise with cutting-edge smart home technology. This Energy Star certified device features a vibrant touchscreen color display, WiFi connectivity, and advanced privacy protection, making it the perfect choice for tech-savvy homeowners.</p>
+                <p>The <a href="https://www.amazon.com/dp/B0B12ZBHLZ/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Sensi Touch 2 Smart Thermostat</a> combines a century of HVAC expertise with cutting-edge smart home technology. This Energy Star certified device features a vibrant touchscreen color display, WiFi connectivity, and advanced privacy protection, making it the perfect choice for tech-savvy homeowners.</p>
                 
                 <h3>100 Years of HVAC Expertise</h3>
                 <p>Built on a foundation of 100 years of HVAC expertise, the <a href="https://www.amazon.com/dp/B0BKH83KF9/?tag=nestmateusa-20" target="_blank" rel="nofollow sponsored noopener">Sensi Touch 2 Smart Thermostat</a> incorporates decades of knowledge about heating and cooling systems. This heritage ensures the thermostat works optimally with virtually any HVAC system, from traditional furnaces to modern heat pumps.</p>
