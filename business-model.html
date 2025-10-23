@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NestMate Business Model & Revenue Strategy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --gray: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            letter-spacing: -1px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Navigation */
+        .nav {
+            background: white;
+            padding: 1rem 0;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-list {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-list a {
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-list a:hover {
+            background: var(--light);
+            color: var(--primary);
+        }
+
+        /* Main Content */
+        .main {
+            padding: 3rem 0;
+        }
+
+        .section {
+            background: white;
+            margin-bottom: 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, var(--light) 0%, #e2e8f0 100%);
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-content {
+            padding: 2rem;
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--light);
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .card-content {
+            color: var(--gray);
+        }
+
+        /* Metrics */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .metric {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            border-top: 4px solid var(--primary);
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            color: var(--gray);
+            font-weight: 500;
+        }
+
+        /* Revenue Stream Cards */
+        .revenue-stream {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-left: 4px solid var(--secondary);
+        }
+
+        .revenue-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .revenue-amount {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--secondary);
+            margin: 0.5rem 0;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 1rem 0;
+            padding-left: 1.5rem;
+        }
+
+        li {
+            margin: 0.5rem 0;
+            color: var(--gray);
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+        }
+
+        .btn-secondary:hover {
+            background: #059669;
+        }
+
+        /* Progress Bars */
+        .progress-bar {
+            background: var(--border);
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+            margin: 0.5rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .nav-list {
+                gap: 1rem;
+            }
+            
+            .section-content {
+                padding: 1rem;
+            }
+            
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Interactive Elements */
+        .toggle-content {
+            display: none;
+        }
+
+        .toggle-content.active {
+            display: block;
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-btn.active {
+            transform: rotate(180deg);
+        }
+
+        /* Status Indicators */
+        .status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .status-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Charts Placeholder */
+        .chart-placeholder {
+            background: var(--light);
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            color: var(--gray);
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1><i class="fas fa-chart-line"></i> NestMate Business Model</h1>
+            <p>Comprehensive Revenue Strategy & Financial Projections</p>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="container">
+            <ul class="nav-list">
+                <li><a href="#executive-summary">Executive Summary</a></li>
+                <li><a href="#revenue-streams">Revenue Streams</a></li>
+                <li><a href="#market-analysis">Market Analysis</a></li>
+                <li><a href="#projections">Financial Projections</a></li>
+                <li><a href="#strategy">Growth Strategy</a></li>
+                <li><a href="#metrics">KPIs & Metrics</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Executive Summary -->
+            <section id="executive-summary" class="section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-bullseye"></i>
+                        Executive Summary
+                    </h2>
+                </div>
+                <div class="section-content">
+                    <p>NestMate is a comprehensive home management platform that combines AI-powered maintenance tracking, property value optimization, and smart home organization tools. The platform operates on a Software-as-a-Service (SaaS) model with multiple revenue streams targeting homeowners, real estate professionals, and service providers.</p>
+                    
+                    <div class="metrics-grid">
+                        <div class="metric">
+                            <div class="metric-value">$708K</div>
+                            <div class="metric-label">Current ARR</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">4</div>
+                            <div class="metric-label">Revenue Streams</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">$15B</div>
+                            <div class="metric-label">Total Addressable Market</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">83.3M</div>
+                            <div class="metric-label">US Households</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Current Business Model -->
+            <section id="current-model" class="section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-cogs"></i>
+                        Current Business Model
+                    </h2>
+                </div>
+                <div class="section-content">
+                    <div class="card-grid">
+                        <div class="card">
+                            <h3 class="card-title">Core Value Proposition</h3>
+                            <div class="card-content">
+                                <p><strong>For Homeowners:</strong> Complete home management system with AI-powered insights, maintenance tracking, and property value optimization</p>
+                                <p><strong>For Real Estate Professionals:</strong> Client management system with property portfolios and team collaboration tools</p>
+                                <p><strong>For Service Providers:</strong> Access to qualified leads and integrated service marketplace</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>Subscription Pricing Tiers</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Plan</th>
+                                    <th>Price</th>
+                                    <th>Target Market</th>
+                                    <th>Key Features</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Basic</strong></td>
+                                    <td>$5/month</td>
+                                    <td>First-time homeowners</td>
+                                    <td>1 home, 10 tasks, basic features</td>
+                                    <td><span class="status status-success">Active</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Pro</strong></td>
+                                    <td>$10/month</td>
+                                    <td>Multi-property owners</td>
+                                    <td>5 homes, unlimited tasks, health score</td>
+                                    <td><span class="status status-success">Active</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Advanced Pro</strong></td>
+                                    <td>$16/month</td>
+                                    <td>Families</td>
+                                    <td>5 homes, 5 family members, emergency services</td>
+                                    <td><span class="status status-success">Active</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Enterprise</strong></td>
+                                    <td>$50/month</td>
+                                    <td>Real estate professionals</td>
+                                    <td>Unlimited homes, client management, team tools</td>
+                                    <td><span class="status status-success">Active</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Revenue Streams -->
+            <section id="revenue-streams" class="section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-dollar-sign"></i>
+                        Revenue Streams
+                    </h2>
+                </div>
+                <div class="section-content">
+                    <div class="revenue-stream">
+                        <h3 class="revenue-title">
+                            <i class="fas fa-credit-card"></i>
+                            1. Subscription Revenue (Primary)
+                        </h3>
+                        <div class="revenue-amount">$708K ARR</div>
+                        <p>Monthly Recurring Revenue (MRR) Model with four pricing tiers targeting different market segments.</p>
+                        
+                        <div class="metrics-grid">
+                            <div class="metric">
+                                <div class="metric-value">$5K</div>
+                                <div class="metric-label">Basic Plan MRR</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">$20K</div>
+                                <div class="metric-label">Pro Plan MRR</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">$24K</div>
+                                <div class="metric-label">Advanced Pro MRR</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">$10K</div>
+                                <div class="metric-label">Enterprise MRR</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="revenue-stream">
+                        <h3 class="revenue-title">
+                            <i class="fas fa-link"></i>
+                            2. Affiliate Marketing Revenue
+                        </h3>
+                        <div class="revenue-amount">$24K-$60K ARR</div>
+                        <p>Amazon Affiliate Program with 4% commission rate on product sales through platform recommendations.</p>
+                    </div>
+
+                    <div class="revenue-stream">
+                        <h3 class="revenue-title">
+                            <i class="fas fa-tools"></i>
+                            3. Service Marketplace Commission
+                        </h3>
+                        <div class="revenue-amount">$36K-$96K ARR</div>
+                        <p>Contractor & Service Provider Network with 10-15% commission on service bookings and emergency referrals.</p>
+                    </div>
+
+                    <div class="revenue-stream">
+                        <h3 class="revenue-title">
+                            <i class="fas fa-star"></i>
+                            4. Premium Services
+                        </h3>
+                        <div class="revenue-amount">$60K-$144K ARR</div>
+                        <p>Additional revenue from home documentation services ($750), floor plan design ($200-$500), and property valuation reports ($100-$300).</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Market Analysis -->
+            <section id="market-analysis" class="section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-chart-pie"></i>
+                        Market Analysis
+                    </h2>
+                </div>
+                <div class="section-content">
+                    <div class="card-grid">
+                        <div class="card">
+                            <h3 class="card-title">Total Addressable Market (TAM)</h3>
+                            <div class="card-content">
+                                <ul>
+                                    <li><strong>US Homeowners:</strong> 83.3 million households</li>
+                                    <li><strong>Real Estate Professionals:</strong> 2 million agents</li>
+                                    <li><strong>Property Management Companies:</strong> 300,000+ companies</li>
+                                    <li><strong>Estimated TAM:</strong> $15-20 billion annually</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3 class="card-title">Serviceable Addressable Market (SAM)</h3>
+                            <div class="card-content">
+                                <ul>
+                                    <li><strong>Tech-savvy homeowners:</strong> 25 million households</li>
+                                    <li><strong>Real estate professionals using technology:</strong> 1.2 million</li>
+                                    <li><strong>Estimated SAM:</strong> $3-5 billion annually</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3 class="card-title">Serviceable Obtainable Market (SOM)</h3>
+                            <div class="card-content">
+                                <ul>
+                                    <li><strong>Target market penetration:</strong> 0.1-0.5%</li>
+                                    <li><strong>Estimated SOM:</strong> $3-25 million annually</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>Competitive Landscape</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Competitor</th>
+                                    <th>Focus Area</th>
+                                    <th>Pricing</th>
+                                    <th>Our Advantage</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>HomeZada</td>
+                                    <td>Property management software</td>
+                                    <td>$10-20/month</td>
+                                    <td>AI-powered insights, family features</td>
+                                </tr>
+                                <tr>
+                                    <td>Maintenance Manager</td>
+                                    <td>Maintenance tracking</td>
+                                    <td>$5-15/month</td>
+                                    <td>Comprehensive platform, real estate tools</td>
+                                </tr>
+                                <tr>
+                                    <td>Property Meld</td>
+                                    <td>Property management platform</td>
+                                    <td>$15-30/month</td>
+                                    <td>Affordable pricing, home health scoring</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Financial Projections -->
+            <section id="projections" class="section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-chart-line"></i>
+                        Financial Projections
+                    </h2>
+                </div>
+                <div class="section-content">
+                    <h3>3-Year Revenue Projections</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Year</th>
+                                    <th>Users</th>
+                                    <th>MRR</th>
+                                    <th>ARR</th>
+                                    <th>Total Revenue</th>
+                                    <th>Growth Rate</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Year 1</strong></td>
+                                    <td>6,000</td>
+                                    <td>$50K</td>
+                                    <td>$600K</td>
+                                    <td>$634K</td>
+                                    <td><span class="status status-success">100%</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Year 2</strong></td>
+                                    <td>20,000</td>
+                                    <td>$200K</td>
+                                    <td>$2.4M</td>
+                                    <td>$2.5M</td>
+                                    <td><span class="status status-success">300%</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Year 3</strong></td>
+                                    <td>50,000</td>
+                                    <td>$500K</td>
+                                    <td>$6M</td>
+                                    <td>$6.4M</td>
+                                    <td><span class="status status-success">150%</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3>Year 1 Quarterly Breakdown</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Quarter</th>
+                                    <th>Users</th>
+                                    <th>MRR</th>
+                                    <th>ARR</th>
+                                    <th>Affiliate Revenue</th>
+                                    <th>Service Revenue</th>
+                                    <th>Total Revenue</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Q1</td>
+                                    <td>1,000</td>
+                                    <td>$8K</td>
+                                    <td>$96K</td>
+                                    <td>$1K</td>
+                                    <td>$1.5K</td>
+                                    <td>$10.5K</td>
+                                </tr>
+                                <tr>
+                                    <td>Q2</td>
+                                    <td>2,500</td>
+                                    <td>$20K</td>
+                                    <td>$240K</td>
+                                    <td>$2.5K</td>
+                                    <td>$3.75K</td>
+                                    <td>$26.25K</td>
+                                </tr>
+                                <tr>
+                                    <td>Q3</td>
+                                    <td>4,000</td>
+                                    <td>$35K</td>
+                                    <td>$420K</td>
+                                    <td>$4K</td>
+                                    <td>$6K</td>
+                                    <td>$45K</td>
+                                </tr>
+                                <tr>
+                                    <td>Q4</td>
+                                    <td>6,000</td>
+                                    <td>$50K</td>
+                                    <td>$600K</td>
+                                    <td>$6K</td>
+                                    <td>$9K</td>
+                                    <td>$65K</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="chart-placeholder">
+                        <i class="fas fa-chart-area" style="font-size: 3rem; margin-bottom: 1rem; color: var(--primary);"></i>
+                        <h4>Revenue Growth Chart</h4>
+                        <p>Interactive chart showing revenue growth over 3 years would be displayed here</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Growth Strategy -->
+            <section id="strategy" class="section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-rocket"></i>
+                        Growth Strategy
+                    </h2>
+                </div>
+                <div class="section-content">
+                    <div class="card-grid">
+                        <div class="card">
+                            <h3 class="card-title">Phase 1: Foundation (Months 1-12)</h3>
+                            <div class="card-content">
+                                <p><strong>Goal:</strong> Establish product-market fit and reach $50K MRR</p>
+                                <ul>
+                                    <li>Optimize conversion funnel (trial to paid)</li>
+                                    <li>Implement referral program</li>
+                                    <li>Launch content marketing strategy</li>
+                                    <li>Build contractor network</li>
+                                </ul>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 25%;"></div>
+                                </div>
+                                <p><strong>Target:</strong> 5,000 users, 15% conversion rate</p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3 class="card-title">Phase 2: Scale (Months 13-24)</h3>
+                            <div class="card-content">
+                                <p><strong>Goal:</strong> Scale to $200K MRR and expand revenue streams</p>
+                                <ul>
+                                    <li>Launch enterprise sales program</li>
+                                    <li>Expand affiliate partnerships</li>
+                                    <li>Develop API for third-party integrations</li>
+                                    <li>International market expansion</li>
+                                </ul>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%;"></div>
+                                </div>
+                                <p><strong>Target:</strong> 20,000 users, 20% conversion rate</p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3 class="card-title">Phase 3: Expansion (Months 25-36)</h3>
+                            <div class="card-content">
+                                <p><strong>Goal:</strong> Reach $500K MRR and diversify revenue</p>
+                                <ul>
+                                    <li>Launch white-label solutions</li>
+                                    <li>Develop mobile app</li>
+                                    <li>Expand service marketplace</li>
+                                    <li>Partner with insurance companies</li>
+                                </ul>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%;"></div>
+                                </div>
+                                <p><strong>Target:</strong> 50,000 users, 25% conversion rate</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- KPIs & Metrics -->
+            <section id="metrics" class="section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Key Performance Indicators
+                    </h2>
+                </div>
+                <div class="section-content">
+                    <div class="card-grid">
+                        <div class="card">
+                            <h3 class="card-title">Financial Metrics</h3>
+                            <div class="card-content">
+                                <ul>
+                                    <li>Monthly Recurring Revenue (MRR)</li>
+                                    <li>Annual Recurring Revenue (ARR)</li>
+                                    <li>Customer Lifetime Value (CLV)</li>
+                                    <li>Customer Acquisition Cost (CAC)</li>
+                                    <li>Churn Rate</li>
+                                    <li>Gross Revenue Retention</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3 class="card-title">Product Metrics</h3>
+                            <div class="card-content">
+                                <ul>
+                                    <li>Monthly Active Users (MAU)</li>
+                                    <li>Feature Adoption Rate</li>
+                                    <li>User Engagement Score</li>
+                                    <li>Support Ticket Volume</li>
+                                    <li>Net Promoter Score (NPS)</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3 class="card-title">Growth Metrics</h3>
+                            <div class="card-content">
+                                <ul>
+                                    <li>Trial to Paid Conversion Rate</li>
+                                    <li>Referral Rate</li>
+                                    <li>Organic vs. Paid User Acquisition</li>
+                                    <li>Market Share Growth</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>Current Performance Targets</h3>
+                    <div class="metrics-grid">
+                        <div class="metric">
+                            <div class="metric-value">15%</div>
+                            <div class="metric-label">Target Conversion Rate</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">&lt;5%</div>
+                            <div class="metric-label">Target Churn Rate</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">$25-50</div>
+                            <div class="metric-label">Target CAC</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">$200+</div>
+                            <div class="metric-label">Target CLV</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Risk Analysis -->
+            <section id="risks" class="section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Risk Analysis
+                    </h2>
+                </div>
+                <div class="section-content">
+                    <div class="card-grid">
+                        <div class="card">
+                            <h3 class="card-title">Market Risks</h3>
+                            <div class="card-content">
+                                <ul>
+                                    <li>Economic downturn affecting home improvement spending</li>
+                                    <li>Increased competition from established players</li>
+                                    <li>Regulatory changes in real estate or data privacy</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3 class="card-title">Operational Risks</h3>
+                            <div class="card-content">
+                                <ul>
+                                    <li>Technology infrastructure scalability issues</li>
+                                    <li>Key personnel departure</li>
+                                    <li>Data security breaches</li>
+                                    <li>Third-party service dependencies</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3 class="card-title">Financial Risks</h3>
+                            <div class="card-content">
+                                <ul>
+                                    <li>High customer acquisition costs</li>
+                                    <li>Seasonal fluctuations in home improvement activity</li>
+                                    <li>Currency fluctuations for international expansion</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Success Metrics -->
+            <section id="success-metrics" class="section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-flag-checkered"></i>
+                        Success Metrics & Milestones
+                    </h2>
+                </div>
+                <div class="section-content">
+                    <div class="card-grid">
+                        <div class="card">
+                            <h3 class="card-title">Year 1 Goals</h3>
+                            <div class="card-content">
+                                <ul>
+                                    <li>✅ Reach $50K MRR</li>
+                                    <li>✅ Achieve 15% trial-to-paid conversion rate</li>
+                                    <li>✅ Maintain &lt;5% monthly churn rate</li>
+                                    <li>🔄 Launch mobile app MVP</li>
+                                    <li>🔄 Build contractor network of 500+ providers</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3 class="card-title">Year 2 Goals</h3>
+                            <div class="card-content">
+                                <ul>
+                                    <li>🔄 Reach $200K MRR</li>
+                                    <li>🔄 Achieve 20% trial-to-paid conversion rate</li>
+                                    <li>🔄 Launch enterprise sales program</li>
+                                    <li>🔄 Expand to 2 international markets</li>
+                                    <li>🔄 Develop API for third-party integrations</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3 class="card-title">Year 3 Goals</h3>
+                            <div class="card-content">
+                                <ul>
+                                    <li>🔄 Reach $500K MRR</li>
+                                    <li>🔄 Achieve 25% trial-to-paid conversion rate</li>
+                                    <li>🔄 Launch white-label solutions</li>
+                                    <li>🔄 Partner with 3 major insurance companies</li>
+                                    <li>🔄 Achieve profitability</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Conclusion -->
+            <section id="conclusion" class="section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-lightbulb"></i>
+                        Conclusion & Next Steps
+                    </h2>
+                </div>
+                <div class="section-content">
+                    <p>NestMate has a strong foundation for sustainable growth with multiple revenue streams and a clear path to profitability. The combination of subscription revenue, affiliate marketing, and service marketplace commissions provides diversified income sources that can scale with the business.</p>
+                    
+                    <h3>Key Success Factors:</h3>
+                    <div class="card-grid">
+                        <div class="card">
+                            <h3 class="card-title">1. Customer Focus</h3>
+                            <div class="card-content">
+                                <p>Focus on customer acquisition and retention through exceptional user experience and value delivery.</p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3 class="card-title">2. Product Excellence</h3>
+                            <div class="card-content">
+                                <p>Continuously improve the product based on user feedback and market demands.</p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3 class="card-title">3. Strategic Partnerships</h3>
+                            <div class="card-content">
+                                <p>Expand revenue streams through strategic partnerships and marketplace development.</p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3 class="card-title">4. Competitive Pricing</h3>
+                            <div class="card-content">
+                                <p>Maintain competitive pricing while delivering exceptional value to customers.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 2rem;">
+                        <a href="#" class="btn">Download Full Report</a>
+                        <a href="#" class="btn btn-secondary">Schedule Strategy Session</a>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer style="background: var(--dark); color: white; padding: 2rem 0; text-align: center; margin-top: 3rem;">
+        <div class="container">
+            <p>&copy; 2025 NestMate. All rights reserved. | Business Model & Revenue Strategy</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add active class to navigation items on scroll
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.nav-list a');
+            
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= (sectionTop - 200)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // Add some interactivity to metrics
+        document.querySelectorAll('.metric-value').forEach(metric => {
+            const value = metric.textContent;
+            if (value.includes('K') || value.includes('M')) {
+                metric.style.color = 'var(--secondary)';
+            }
+        });
+
+        // Toggle functionality for collapsible sections
+        document.querySelectorAll('.toggle-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const content = btn.nextElementSibling;
+                content.classList.toggle('active');
+                btn.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>
