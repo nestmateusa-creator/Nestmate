@@ -352,6 +352,782 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        /* Advanced Dashboard Specific Styles */
+        .homes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .home-card {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .home-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .home-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .home-header h4 {
+            color: #f1f5f9;
+            font-size: 1.125rem;
+            margin: 0;
+        }
+
+        .home-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .home-status.active {
+            background: rgba(16, 185, 129, 0.2);
+            color: #6ee7b7;
+        }
+
+        .home-details p {
+            color: #94a3b8;
+            font-size: 0.875rem;
+            margin: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .home-details i {
+            width: 16px;
+            color: #00d4aa;
+        }
+
+        .home-health {
+            text-align: center;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: rgba(0, 212, 170, 0.1);
+            border-radius: 8px;
+        }
+
+        .health-score {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #00d4aa;
+            margin-bottom: 0.25rem;
+        }
+
+        .home-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .btn-small {
+            background: #334155;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-small:hover {
+            background: #475569;
+        }
+
+        .add-home {
+            border: 2px dashed #475569;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+        }
+
+        .add-home-content {
+            text-align: center;
+            color: #94a3b8;
+        }
+
+        .add-home-content i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #00d4aa;
+        }
+
+        .add-home-content h4 {
+            color: #f1f5f9;
+            margin-bottom: 0.5rem;
+        }
+
+        .btn-primary {
+            background: #00d4aa;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: #00a085;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #334155;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+
+        /* Task Management Styles */
+        .task-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-item {
+            background: #0f172a;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #00d4aa;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.875rem;
+        }
+
+        .task-filters {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-btn {
+            background: #334155;
+            color: #cbd5e1;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            background: #00d4aa;
+            color: white;
+        }
+
+        .task-list {
+            margin-bottom: 1.5rem;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: #0f172a;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            border-left: 4px solid #334155;
+        }
+
+        .task-item.high-priority {
+            border-left-color: #ef4444;
+        }
+
+        .task-item.medium-priority {
+            border-left-color: #f59e0b;
+        }
+
+        .task-item.low-priority {
+            border-left-color: #10b981;
+        }
+
+        .task-checkbox input[type="checkbox"] {
+            display: none;
+        }
+
+        .task-checkbox label {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #475569;
+            border-radius: 4px;
+            cursor: pointer;
+            display: block;
+            position: relative;
+        }
+
+        .task-checkbox input[type="checkbox"]:checked + label {
+            background: #00d4aa;
+            border-color: #00d4aa;
+        }
+
+        .task-checkbox input[type="checkbox"]:checked + label::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .task-content {
+            flex: 1;
+        }
+
+        .task-content h4 {
+            color: #f1f5f9;
+            margin: 0 0 0.25rem 0;
+            font-size: 1rem;
+        }
+
+        .task-content p {
+            color: #94a3b8;
+            margin: 0;
+            font-size: 0.875rem;
+        }
+
+        .task-content.completed {
+            opacity: 0.6;
+            text-decoration: line-through;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .add-task-section {
+            text-align: center;
+        }
+
+        /* Health Score Styles */
+        .health-overview {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .health-main-score {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00d4aa, #00a085);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .score-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 0.25rem;
+        }
+
+        .score-label {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.875rem;
+        }
+
+        .score-breakdown {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .breakdown-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .breakdown-label {
+            min-width: 80px;
+            color: #cbd5e1;
+            font-size: 0.875rem;
+        }
+
+        .breakdown-bar {
+            flex: 1;
+            height: 8px;
+            background: #334155;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .breakdown-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4aa, #00a085);
+            transition: width 0.3s ease;
+        }
+
+        .breakdown-value {
+            min-width: 40px;
+            text-align: right;
+            color: #00d4aa;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .health-recommendations {
+            background: #0f172a;
+            padding: 1.5rem;
+            border-radius: 12px;
+        }
+
+        .health-recommendations h4 {
+            color: #f1f5f9;
+            margin-bottom: 1rem;
+        }
+
+        .recommendation-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: #1e293b;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .rec-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .rec-icon.high {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+        }
+
+        .rec-icon.medium {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+        }
+
+        .rec-content {
+            flex: 1;
+        }
+
+        .rec-content h5 {
+            color: #f1f5f9;
+            margin: 0 0 0.25rem 0;
+            font-size: 1rem;
+        }
+
+        .rec-content p {
+            color: #94a3b8;
+            margin: 0;
+            font-size: 0.875rem;
+        }
+
+        /* Analytics Styles */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .analytics-card {
+            background: #0f172a;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid #334155;
+        }
+
+        .analytics-card h4 {
+            color: #f1f5f9;
+            margin-bottom: 1rem;
+        }
+
+        .chart-placeholder {
+            height: 150px;
+            background: #1e293b;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+        }
+
+        .chart-placeholder i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-display {
+            text-align: center;
+        }
+
+        .metric-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #00d4aa;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            color: #94a3b8;
+            font-size: 0.875rem;
+        }
+
+        /* Floor Plan Styles */
+        .floorplan-tools {
+            display: grid;
+            grid-template-columns: 1fr 3fr 1fr;
+            gap: 2rem;
+        }
+
+        .toolbar {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .tool-btn {
+            background: #334155;
+            color: #cbd5e1;
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tool-btn.active,
+        .tool-btn:hover {
+            background: #00d4aa;
+            color: white;
+        }
+
+        .floorplan-canvas {
+            background: #0f172a;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            min-height: 400px;
+        }
+
+        .canvas-placeholder {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+        }
+
+        .canvas-placeholder i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #00d4aa;
+        }
+
+        .canvas-placeholder h4 {
+            color: #f1f5f9;
+            margin-bottom: 0.5rem;
+        }
+
+        .floorplan-features h4 {
+            color: #f1f5f9;
+            margin-bottom: 1rem;
+        }
+
+        .floorplan-features ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .floorplan-features li {
+            color: #94a3b8;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .floorplan-features li i {
+            color: #00d4aa;
+        }
+
+        /* Photo Management Styles */
+        .photo-filters {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .photo-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            aspect-ratio: 4/3;
+        }
+
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            padding: 1rem;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .photo-label {
+            font-weight: 600;
+        }
+
+        .photo-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .photo-actions button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .upload-photo {
+            border: 2px dashed #475569;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+        }
+
+        .upload-content {
+            text-align: center;
+            color: #94a3b8;
+        }
+
+        .upload-content i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: #00d4aa;
+        }
+
+        /* Export Styles */
+        .export-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .export-option {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: #0f172a;
+            border-radius: 12px;
+            border: 1px solid #334155;
+        }
+
+        .export-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            background: #00d4aa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .export-content {
+            flex: 1;
+        }
+
+        .export-content h4 {
+            color: #f1f5f9;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .export-content p {
+            color: #94a3b8;
+            margin: 0;
+            font-size: 0.875rem;
+        }
+
+        .backup-settings {
+            background: #0f172a;
+            padding: 1.5rem;
+            border-radius: 12px;
+        }
+
+        .backup-settings h4 {
+            color: #f1f5f9;
+            margin-bottom: 1rem;
+        }
+
+        .setting-item {
+            margin-bottom: 1rem;
+        }
+
+        .setting-item label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #cbd5e1;
+            cursor: pointer;
+        }
+
+        /* Support Styles */
+        .support-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .support-feature {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: #0f172a;
+            border-radius: 12px;
+            border: 1px solid #334155;
+        }
+
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #00d4aa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: white;
+        }
+
+        .feature-content h4 {
+            color: #f1f5f9;
+            margin: 0 0 0.25rem 0;
+        }
+
+        .feature-content p {
+            color: #94a3b8;
+            margin: 0;
+            font-size: 0.875rem;
+        }
+
+        .support-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .homes-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .task-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .health-overview {
+                grid-template-columns: 1fr;
+            }
+            
+            .floorplan-tools {
+                grid-template-columns: 1fr;
+            }
+            
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .export-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .support-features {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -495,70 +1271,438 @@
                     </div>
                 </div>
 
-                <!-- Other sections will be added dynamically -->
+                <!-- Multi-Home Management -->
                 <div id="homes" class="dashboard-section" style="display: none;">
                     <div class="card">
-                        <h3>Manage Your Homes (Up to 5)</h3>
-                        <p>Advanced home management for multiple properties with detailed tracking and analytics.</p>
-                        <!-- Home management content will be added here -->
+                        <h3>Multi-Home Management (Up to 5 Homes)</h3>
+                        <div class="homes-grid">
+                            <div class="home-card">
+                                <div class="home-header">
+                                    <h4>123 Main Street</h4>
+                                    <span class="home-status active">Active</span>
+                                </div>
+                                <div class="home-details">
+                                    <p><i class="fas fa-home"></i> Single Family Home</p>
+                                    <p><i class="fas fa-bed"></i> 3 bed, 2 bath</p>
+                                    <p><i class="fas fa-ruler"></i> 2,400 sq ft</p>
+                                    <p><i class="fas fa-calendar"></i> Built 2018</p>
+                                </div>
+                                <div class="home-health">
+                                    <div class="health-score">92</div>
+                                    <span>Health Score</span>
+                                </div>
+                                <div class="home-actions">
+                                    <button class="btn-small">View Details</button>
+                                    <button class="btn-small">Edit</button>
+                                </div>
+                            </div>
+                            
+                            <div class="home-card">
+                                <div class="home-header">
+                                    <h4>456 Oak Avenue</h4>
+                                    <span class="home-status active">Active</span>
+                                </div>
+                                <div class="home-details">
+                                    <p><i class="fas fa-home"></i> Townhouse</p>
+                                    <p><i class="fas fa-bed"></i> 2 bed, 2 bath</p>
+                                    <p><i class="fas fa-ruler"></i> 1,800 sq ft</p>
+                                    <p><i class="fas fa-calendar"></i> Built 2020</p>
+                                </div>
+                                <div class="home-health">
+                                    <div class="health-score">88</div>
+                                    <span>Health Score</span>
+                                </div>
+                                <div class="home-actions">
+                                    <button class="btn-small">View Details</button>
+                                    <button class="btn-small">Edit</button>
+                                </div>
+                            </div>
+                            
+                            <div class="home-card add-home">
+                                <div class="add-home-content">
+                                    <i class="fas fa-plus"></i>
+                                    <h4>Add New Home</h4>
+                                    <p>Add up to 3 more homes</p>
+                                    <button class="btn-primary">Add Home</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
+                <!-- Unlimited Tasks -->
                 <div id="tasks" class="dashboard-section" style="display: none;">
                     <div class="card">
                         <h3>Unlimited Tasks & Reminders</h3>
-                        <p>Never miss important maintenance or tasks across all your properties.</p>
-                        <!-- Task management content will be added here -->
+                        <div class="task-stats">
+                            <div class="stat-item">
+                                <div class="stat-number">24</div>
+                                <div class="stat-label">Active Tasks</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">8</div>
+                                <div class="stat-label">Due This Week</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">156</div>
+                                <div class="stat-label">Completed</div>
+                            </div>
+                        </div>
+                        
+                        <div class="task-filters">
+                            <button class="filter-btn active">All Tasks</button>
+                            <button class="filter-btn">Due Soon</button>
+                            <button class="filter-btn">By Home</button>
+                            <button class="filter-btn">By Category</button>
+                        </div>
+                        
+                        <div class="task-list">
+                            <div class="task-item high-priority">
+                                <div class="task-checkbox">
+                                    <input type="checkbox" id="task1">
+                                    <label for="task1"></label>
+                                </div>
+                                <div class="task-content">
+                                    <h4>Replace HVAC Filter</h4>
+                                    <p>123 Main Street • Due in 2 days</p>
+                                </div>
+                                <div class="task-actions">
+                                    <button class="btn-small">Edit</button>
+                                    <button class="btn-small">Complete</button>
+                                </div>
+                            </div>
+                            
+                            <div class="task-item medium-priority">
+                                <div class="task-checkbox">
+                                    <input type="checkbox" id="task2">
+                                    <label for="task2"></label>
+                                </div>
+                                <div class="task-content">
+                                    <h4>Schedule Annual Inspection</h4>
+                                    <p>456 Oak Avenue • Due in 1 week</p>
+                                </div>
+                                <div class="task-actions">
+                                    <button class="btn-small">Edit</button>
+                                    <button class="btn-small">Complete</button>
+                                </div>
+                            </div>
+                            
+                            <div class="task-item low-priority">
+                                <div class="task-checkbox">
+                                    <input type="checkbox" id="task3" checked>
+                                    <label for="task3"></label>
+                                </div>
+                                <div class="task-content completed">
+                                    <h4>Clean Gutters</h4>
+                                    <p>123 Main Street • Completed 2 days ago</p>
+                                </div>
+                                <div class="task-actions">
+                                    <button class="btn-small">Undo</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="add-task-section">
+                            <button class="btn-primary">
+                                <i class="fas fa-plus"></i> Add New Task
+                            </button>
+                        </div>
                     </div>
                 </div>
 
+                <!-- Home Health Score -->
                 <div id="health" class="dashboard-section" style="display: none;">
                     <div class="card">
                         <h3>Home Health Score Analytics</h3>
-                        <p>Detailed health scoring and analytics for all your properties.</p>
-                        <!-- Health score content will be added here -->
+                        <div class="health-overview">
+                            <div class="health-main-score">
+                                <div class="score-circle">
+                                    <div class="score-number">92</div>
+                                    <div class="score-label">Overall Health</div>
+                                </div>
+                                <div class="score-breakdown">
+                                    <div class="breakdown-item">
+                                        <span class="breakdown-label">Structure</span>
+                                        <div class="breakdown-bar">
+                                            <div class="breakdown-fill" style="width: 95%"></div>
+                                        </div>
+                                        <span class="breakdown-value">95%</span>
+                                    </div>
+                                    <div class="breakdown-item">
+                                        <span class="breakdown-label">Systems</span>
+                                        <div class="breakdown-bar">
+                                            <div class="breakdown-fill" style="width: 90%"></div>
+                                        </div>
+                                        <span class="breakdown-value">90%</span>
+                                    </div>
+                                    <div class="breakdown-item">
+                                        <span class="breakdown-label">Maintenance</span>
+                                        <div class="breakdown-bar">
+                                            <div class="breakdown-fill" style="width: 88%"></div>
+                                        </div>
+                                        <span class="breakdown-value">88%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="health-recommendations">
+                            <h4>Health Recommendations</h4>
+                            <div class="recommendation-item">
+                                <div class="rec-icon high">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                                <div class="rec-content">
+                                    <h5>HVAC System Maintenance</h5>
+                                    <p>Your HVAC system needs annual maintenance. Schedule service within 30 days.</p>
+                                </div>
+                                <button class="btn-small">Schedule</button>
+                            </div>
+                            
+                            <div class="recommendation-item">
+                                <div class="rec-icon medium">
+                                    <i class="fas fa-info-circle"></i>
+                                </div>
+                                <div class="rec-content">
+                                    <h5>Roof Inspection</h5>
+                                    <p>Consider scheduling a roof inspection to maintain optimal health score.</p>
+                                </div>
+                                <button class="btn-small">Learn More</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
+                <!-- Advanced Analytics -->
                 <div id="analytics" class="dashboard-section" style="display: none;">
                     <div class="card">
-                        <h3>Advanced Analytics</h3>
-                        <p>Comprehensive analytics and insights for your home management.</p>
-                        <!-- Analytics content will be added here -->
+                        <h3>Advanced Analytics & Insights</h3>
+                        <div class="analytics-grid">
+                            <div class="analytics-card">
+                                <h4>Maintenance Trends</h4>
+                                <div class="chart-placeholder">
+                                    <i class="fas fa-chart-line"></i>
+                                    <p>Maintenance cost trends over time</p>
+                                </div>
+                            </div>
+                            
+                            <div class="analytics-card">
+                                <h4>Energy Efficiency</h4>
+                                <div class="chart-placeholder">
+                                    <i class="fas fa-bolt"></i>
+                                    <p>Energy usage and efficiency metrics</p>
+                                </div>
+                            </div>
+                            
+                            <div class="analytics-card">
+                                <h4>Property Value Tracking</h4>
+                                <div class="chart-placeholder">
+                                    <i class="fas fa-dollar-sign"></i>
+                                    <p>Property value appreciation over time</p>
+                                </div>
+                            </div>
+                            
+                            <div class="analytics-card">
+                                <h4>Task Completion Rate</h4>
+                                <div class="metric-display">
+                                    <div class="metric-number">94%</div>
+                                    <div class="metric-label">Completion Rate</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
+                <!-- Floor Plan Designer -->
                 <div id="floorplan" class="dashboard-section" style="display: none;">
                     <div class="card">
                         <h3>Professional Floor Plan Designer</h3>
-                        <p>Create professional floor plans with advanced tools and 3D visualization.</p>
-                        <!-- Floor plan designer content will be added here -->
+                        <div class="floorplan-tools">
+                            <div class="toolbar">
+                                <button class="tool-btn active">
+                                    <i class="fas fa-mouse-pointer"></i> Select
+                                </button>
+                                <button class="tool-btn">
+                                    <i class="fas fa-square"></i> Room
+                                </button>
+                                <button class="tool-btn">
+                                    <i class="fas fa-door-open"></i> Door
+                                </button>
+                                <button class="tool-btn">
+                                    <i class="fas fa-window-maximize"></i> Window
+                                </button>
+                                <button class="tool-btn">
+                                    <i class="fas fa-bed"></i> Furniture
+                                </button>
+                            </div>
+                            
+                            <div class="floorplan-canvas">
+                                <div class="canvas-placeholder">
+                                    <i class="fas fa-drafting-compass"></i>
+                                    <h4>Professional Floor Plan Designer</h4>
+                                    <p>Create detailed floor plans with advanced tools</p>
+                                    <button class="btn-primary">Start New Plan</button>
+                                </div>
+                            </div>
+                            
+                            <div class="floorplan-features">
+                                <h4>Advanced Features</h4>
+                                <ul>
+                                    <li><i class="fas fa-check"></i> 3D Visualization</li>
+                                    <li><i class="fas fa-check"></i> Measurement Tools</li>
+                                    <li><i class="fas fa-check"></i> Furniture Library</li>
+                                    <li><i class="fas fa-check"></i> Export Options</li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
+                <!-- Photo Management -->
                 <div id="photos" class="dashboard-section" style="display: none;">
                     <div class="card">
                         <h3>Advanced Photo Management</h3>
-                        <p>Organize and manage photos with smart categorization and search capabilities.</p>
-                        <!-- Photo management content will be added here -->
+                        <div class="photo-filters">
+                            <button class="filter-btn active">All Photos</button>
+                            <button class="filter-btn">By Room</button>
+                            <button class="filter-btn">By Date</button>
+                            <button class="filter-btn">By Home</button>
+                        </div>
+                        
+                        <div class="photo-grid">
+                            <div class="photo-item">
+                                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPktpdGNoZW48L3RleHQ+PC9zdmc+" alt="Kitchen">
+                                <div class="photo-overlay">
+                                    <span class="photo-label">Kitchen</span>
+                                    <div class="photo-actions">
+                                        <button><i class="fas fa-edit"></i></button>
+                                        <button><i class="fas fa-trash"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="photo-item">
+                                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkxpdmluZyBSb29tPC90ZXh0Pjwvc3ZnPg==" alt="Living Room">
+                                <div class="photo-overlay">
+                                    <span class="photo-label">Living Room</span>
+                                    <div class="photo-actions">
+                                        <button><i class="fas fa-edit"></i></button>
+                                        <button><i class="fas fa-trash"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="photo-item upload-photo">
+                                <div class="upload-content">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <p>Upload Photos</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
+                <!-- Export & Backup -->
                 <div id="export" class="dashboard-section" style="display: none;">
                     <div class="card">
-                        <h3>Export & Backup</h3>
-                        <p>Advanced data export and backup options for all your home information.</p>
-                        <!-- Export content will be added here -->
+                        <h3>Advanced Export & Backup</h3>
+                        <div class="export-options">
+                            <div class="export-option">
+                                <div class="export-icon">
+                                    <i class="fas fa-file-pdf"></i>
+                                </div>
+                                <div class="export-content">
+                                    <h4>PDF Report</h4>
+                                    <p>Complete home management report in PDF format</p>
+                                </div>
+                                <button class="btn-primary">Export PDF</button>
+                            </div>
+                            
+                            <div class="export-option">
+                                <div class="export-icon">
+                                    <i class="fas fa-file-excel"></i>
+                                </div>
+                                <div class="export-content">
+                                    <h4>Excel Spreadsheet</h4>
+                                    <p>All data in Excel format for analysis</p>
+                                </div>
+                                <button class="btn-primary">Export Excel</button>
+                            </div>
+                            
+                            <div class="export-option">
+                                <div class="export-icon">
+                                    <i class="fas fa-database"></i>
+                                </div>
+                                <div class="export-content">
+                                    <h4>Full Backup</h4>
+                                    <p>Complete data backup including photos and documents</p>
+                                </div>
+                                <button class="btn-primary">Create Backup</button>
+                            </div>
+                        </div>
+                        
+                        <div class="backup-settings">
+                            <h4>Automatic Backup Settings</h4>
+                            <div class="setting-item">
+                                <label>
+                                    <input type="checkbox" checked>
+                                    Weekly automatic backup
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <label>
+                                    <input type="checkbox">
+                                    Email backup notifications
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
+                <!-- VIP Support -->
                 <div id="support" class="dashboard-section" style="display: none;">
                     <div class="card">
                         <h3>VIP Priority Support</h3>
-                        <p>Get help fast with our dedicated VIP support team. Priority response times and dedicated assistance.</p>
-                        <button class="contact-support-btn" onclick="contactSupport()">
-                            <i class="fas fa-headset"></i> Contact VIP Support
-                        </button>
+                        <div class="support-features">
+                            <div class="support-feature">
+                                <div class="feature-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="feature-content">
+                                    <h4>Priority Response</h4>
+                                    <p>Get help within 2 hours during business hours</p>
+                                </div>
+                            </div>
+                            
+                            <div class="support-feature">
+                                <div class="feature-icon">
+                                    <i class="fas fa-phone"></i>
+                                </div>
+                                <div class="feature-content">
+                                    <h4>Phone Support</h4>
+                                    <p>Direct phone line to our VIP support team</p>
+                                </div>
+                            </div>
+                            
+                            <div class="support-feature">
+                                <div class="feature-icon">
+                                    <i class="fas fa-user-tie"></i>
+                                </div>
+                                <div class="feature-content">
+                                    <h4>Dedicated Support</h4>
+                                    <p>Personal support representative for your account</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="support-actions">
+                            <button class="btn-primary" onclick="contactSupport()">
+                                <i class="fas fa-headset"></i> Contact VIP Support
+                            </button>
+                            <button class="btn-secondary">
+                                <i class="fas fa-phone"></i> Call Support
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
