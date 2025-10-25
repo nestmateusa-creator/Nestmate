@@ -347,22 +347,38 @@
                 console.log('Sign in result:', result);
 
                 if (result.success) {
-                    // Fetch user record to decide destination
-                    const userRec = await nestMateAuth.getUserRecord(result.userId || nestMateAuth.currentUser?.userId);
-                    const sub = userRec?.user?.subscription || 'basic';
+                    // Check if this is a demo account
+                    const isDemoAccount = email.includes('demo.') && email.includes('@nestmate.com');
+                    
+                    if (isDemoAccount) {
+                        // Demo accounts bypass pricing page and go directly to dashboards
+                        console.log('Demo account detected, bypassing pricing page');
+                        
+                        let dest = 'dashboard-basic-clean.html';
+                        if (email === 'demo.advanced@nestmate.com') dest = 'dashboard-advanced.html';
+                        if (email === 'demo.advancedpro@nestmate.com') dest = 'dashboard-advanced-pro.html';
+                        if (email === 'demo.enterprise@nestmate.com') dest = 'dashboard-enterprise.html';
+                        
+                        showMessage('Demo account access granted! Redirecting to dashboard...', 'success');
+                        setTimeout(() => { window.location.href = dest; }, 800);
+                    } else {
+                        // Regular users follow normal flow with pricing page check
+                        const userRec = await nestMateAuth.getUserRecord(result.userId || nestMateAuth.currentUser?.userId);
+                        const sub = userRec?.user?.subscription || 'basic';
 
-                    let dest = 'dashboard-basic-clean.html';
-                    // Redirect to appropriate dashboard based on subscription
-                    if (sub === 'pro') dest = 'dashboard-advanced.html';
-                    if (sub === 'advanced-pro') dest = 'dashboard-advanced-pro.html';
-                    if (sub === 'enterprise') dest = 'dashboard-enterprise.html';
+                        let dest = 'dashboard-basic-clean.html';
+                        // Redirect to appropriate dashboard based on subscription
+                        if (sub === 'pro') dest = 'dashboard-advanced.html';
+                        if (sub === 'advanced-pro') dest = 'dashboard-advanced-pro.html';
+                        if (sub === 'enterprise') dest = 'dashboard-enterprise.html';
 
-                    // If no active subscription, send to pricing
-                    const status = userRec?.user?.subscriptionStatus || 'inactive';
-                    if (status !== 'active') dest = 'pricing.html?from=login';
+                        // If no active subscription, send to pricing
+                        const status = userRec?.user?.subscriptionStatus || 'inactive';
+                        if (status !== 'active') dest = 'pricing.html?from=login';
 
-                    showMessage('Signed in successfully! Redirecting...', 'success');
-                    setTimeout(() => { window.location.href = dest; }, 800);
+                        showMessage('Signed in successfully! Redirecting...', 'success');
+                        setTimeout(() => { window.location.href = dest; }, 800);
+                    }
                 } else {
                     showMessage(result.message, 'error');
                 }
