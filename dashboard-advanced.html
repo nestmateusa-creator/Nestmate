@@ -1585,6 +1585,48 @@
                 <button class="nav-item active" onclick="showSection('overview')">
                     <i class="fas fa-home"></i> Dashboard Overview
                 </button>
+                <button class="nav-item" onclick="showSection('basic-info')">
+                    <i class="fas fa-info-circle"></i> Basic Info
+                </button>
+                <button class="nav-item" onclick="showSection('structure')">
+                    <i class="fas fa-building"></i> Structure
+                </button>
+                <button class="nav-item" onclick="showSection('systems')">
+                    <i class="fas fa-cogs"></i> Systems
+                </button>
+                <button class="nav-item" onclick="showSection('bedrooms')">
+                    <i class="fas fa-bed"></i> Bedrooms
+                </button>
+                <button class="nav-item" onclick="showSection('bathrooms')">
+                    <i class="fas fa-bath"></i> Bathrooms
+                </button>
+                <button class="nav-item" onclick="showSection('kitchen')">
+                    <i class="fas fa-utensils"></i> Kitchen
+                </button>
+                <button class="nav-item" onclick="showSection('living-areas')">
+                    <i class="fas fa-couch"></i> Living Areas
+                </button>
+                <button class="nav-item" onclick="showSection('garage')">
+                    <i class="fas fa-car"></i> Garage
+                </button>
+                <button class="nav-item" onclick="showSection('exterior')">
+                    <i class="fas fa-home"></i> Exterior
+                </button>
+                <button class="nav-item" onclick="showSection('appliances')">
+                    <i class="fas fa-tv"></i> Appliances
+                </button>
+                <button class="nav-item" onclick="showSection('favorites')">
+                    <i class="fas fa-heart"></i> Favorites
+                </button>
+                <button class="nav-item" onclick="showSection('photos')">
+                    <i class="fas fa-camera"></i> Photos
+                </button>
+                <button class="nav-item" onclick="showSection('renovations')">
+                    <i class="fas fa-tools"></i> Renovations
+                </button>
+                <button class="nav-item" onclick="showSection('emergency')">
+                    <i class="fas fa-phone"></i> Emergency
+                </button>
                 <button class="nav-item" onclick="showSection('homes')">
                     <i class="fas fa-home"></i> Multi-Home Management
                 </button>
@@ -1599,9 +1641,6 @@
                 </button>
                 <button class="nav-item" onclick="showSection('floorplan')">
                     <i class="fas fa-drafting-compass"></i> Floor Plan Designer
-                </button>
-                <button class="nav-item" onclick="showSection('photos')">
-                    <i class="fas fa-images"></i> Photo Management
                 </button>
                 <button class="nav-item" onclick="showSection('export')">
                     <i class="fas fa-download"></i> Export & Backup
@@ -2143,6 +2182,315 @@
                             <button class="btn-secondary">
                                 <i class="fas fa-phone"></i> Call Support
                             </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Basic Info Section -->
+                <div id="basic-info" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3>Home Information</h3>
+                            <button class="btn" onclick="editBasicInfo()">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                        </div>
+                        
+                        <div id="basicInfoDisplay">
+                            <p><strong>Address:</strong> <span id="displayAddress">Not set</span></p>
+                            <p><strong>Year Built:</strong> <span id="displayYearBuilt">Not set</span></p>
+                            <p><strong>Square Footage:</strong> <span id="displaySquareFootage">Not set</span></p>
+                            <p><strong>Bedrooms:</strong> <span id="displayBedrooms">Not set</span></p>
+                            <p><strong>Bathrooms:</strong> <span id="displayBathrooms">Not set</span></p>
+                            <p><strong>Home Type:</strong> <span id="displayHomeType">Not set</span></p>
+                        </div>
+                        
+                        <div id="basicInfoForm" style="display: none;">
+                            <div class="form-group">
+                                <label for="address">Address</label>
+                                <input type="text" id="address" placeholder="Enter home address">
+                            </div>
+                            <div class="form-group">
+                                <label for="yearBuilt">Year Built</label>
+                                <input type="number" id="yearBuilt" placeholder="Enter year built">
+                            </div>
+                            <div class="form-group">
+                                <label for="squareFootage">Square Footage</label>
+                                <input type="number" id="squareFootage" placeholder="Enter square footage">
+                            </div>
+                            <div class="form-group">
+                                <label for="bedrooms">Number of Bedrooms</label>
+                                <input type="number" id="bedrooms" placeholder="Enter number of bedrooms">
+                            </div>
+                            <div class="form-group">
+                                <label for="bathrooms">Number of Bathrooms</label>
+                                <input type="number" id="bathrooms" placeholder="Enter number of bathrooms">
+                            </div>
+                            <div class="form-group">
+                                <label for="homeType">Home Type</label>
+                                <select id="homeType">
+                                    <option value="">Select home type</option>
+                                    <option value="single-family">Single Family</option>
+                                    <option value="condo">Condo</option>
+                                    <option value="townhouse">Townhouse</option>
+                                    <option value="apartment">Apartment</option>
+                                </select>
+                            </div>
+                            <div style="display: flex; gap: 1rem;">
+                                <button class="btn" onclick="saveBasicInfo()">
+                                    <i class="fas fa-save"></i> Save
+                                </button>
+                                <button class="btn btn-secondary" onclick="cancelEditBasicInfo()">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Structure Section -->
+                <div id="structure" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3>Structural Information</h3>
+                            <button class="btn" onclick="editStructure()">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                        </div>
+                        
+                        <div id="structureDisplay">
+                            <p><strong>Foundation:</strong> <span id="displayFoundation">Not set</span></p>
+                            <p><strong>Roof Type:</strong> <span id="displayRoofType">Not set</span></p>
+                            <p><strong>Exterior Material:</strong> <span id="displayExteriorMaterial">Not set</span></p>
+                            <p><strong>Windows:</strong> <span id="displayWindows">Not set</span></p>
+                        </div>
+                        
+                        <div id="structureForm" style="display: none;">
+                            <div class="form-group">
+                                <label for="foundation">Foundation Type</label>
+                                <select id="foundation">
+                                    <option value="">Select foundation type</option>
+                                    <option value="concrete-slab">Concrete Slab</option>
+                                    <option value="crawl-space">Crawl Space</option>
+                                    <option value="basement">Basement</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="roofType">Roof Type</label>
+                                <select id="roofType">
+                                    <option value="">Select roof type</option>
+                                    <option value="asphalt-shingles">Asphalt Shingles</option>
+                                    <option value="metal">Metal</option>
+                                    <option value="tile">Tile</option>
+                                    <option value="slate">Slate</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="exteriorMaterial">Exterior Material</label>
+                                <select id="exteriorMaterial">
+                                    <option value="">Select exterior material</option>
+                                    <option value="vinyl-siding">Vinyl Siding</option>
+                                    <option value="brick">Brick</option>
+                                    <option value="wood">Wood</option>
+                                    <option value="stucco">Stucco</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="windows">Window Type</label>
+                                <select id="windows">
+                                    <option value="">Select window type</option>
+                                    <option value="single-pane">Single Pane</option>
+                                    <option value="double-pane">Double Pane</option>
+                                    <option value="triple-pane">Triple Pane</option>
+                                </select>
+                            </div>
+                            <div style="display: flex; gap: 1rem;">
+                                <button class="btn" onclick="saveStructure()">
+                                    <i class="fas fa-save"></i> Save
+                                </button>
+                                <button class="btn btn-secondary" onclick="cancelEditStructure()">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Systems Section -->
+                <div id="systems" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3>Home Systems</h3>
+                            <button class="btn" onclick="editSystems()">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                        </div>
+                        
+                        <div id="systemsDisplay">
+                            <p><strong>HVAC System:</strong> <span id="displayHVAC">Not set</span></p>
+                            <p><strong>Electrical:</strong> <span id="displayElectrical">Not set</span></p>
+                            <p><strong>Plumbing:</strong> <span id="displayPlumbing">Not set</span></p>
+                            <p><strong>Water Heater:</strong> <span id="displayWaterHeater">Not set</span></p>
+                        </div>
+                        
+                        <div id="systemsForm" style="display: none;">
+                            <div class="form-group">
+                                <label for="hvac">HVAC System</label>
+                                <select id="hvac">
+                                    <option value="">Select HVAC system</option>
+                                    <option value="central-air">Central Air</option>
+                                    <option value="heat-pump">Heat Pump</option>
+                                    <option value="window-units">Window Units</option>
+                                    <option value="ductless">Ductless Mini-Split</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="electrical">Electrical System</label>
+                                <select id="electrical">
+                                    <option value="">Select electrical system</option>
+                                    <option value="100-amp">100 Amp</option>
+                                    <option value="200-amp">200 Amp</option>
+                                    <option value="400-amp">400 Amp</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="plumbing">Plumbing System</label>
+                                <select id="plumbing">
+                                    <option value="">Select plumbing system</option>
+                                    <option value="copper">Copper</option>
+                                    <option value="pvc">PVC</option>
+                                    <option value="pex">PEX</option>
+                                    <option value="galvanized">Galvanized</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="waterHeater">Water Heater</label>
+                                <select id="waterHeater">
+                                    <option value="">Select water heater</option>
+                                    <option value="electric">Electric</option>
+                                    <option value="gas">Gas</option>
+                                    <option value="tankless">Tankless</option>
+                                    <option value="heat-pump">Heat Pump</option>
+                                </select>
+                            </div>
+                            <div style="display: flex; gap: 1rem;">
+                                <button class="btn" onclick="saveSystems()">
+                                    <i class="fas fa-save"></i> Save
+                                </button>
+                                <button class="btn btn-secondary" onclick="cancelEditSystems()">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bedrooms Section -->
+                <div id="bedrooms" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Bedroom Information</h3>
+                        <div id="bedroomsList">
+                            <p>No bedrooms added yet. <button class="btn" onclick="addBedroom()">Add Bedroom</button></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bathrooms Section -->
+                <div id="bathrooms" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Bathroom Information</h3>
+                        <div id="bathroomsList">
+                            <p>No bathrooms added yet. <button class="btn" onclick="addBathroom()">Add Bathroom</button></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kitchen Section -->
+                <div id="kitchen" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Kitchen Information</h3>
+                        <div id="kitchenInfo">
+                            <p>Kitchen details will be displayed here.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Living Areas Section -->
+                <div id="living-areas" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Living Areas</h3>
+                        <div id="livingAreasList">
+                            <p>No living areas added yet. <button class="btn" onclick="addLivingArea()">Add Living Area</button></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Garage Section -->
+                <div id="garage" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Garage Information</h3>
+                        <div id="garageInfo">
+                            <p>Garage details will be displayed here.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exterior Section -->
+                <div id="exterior" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Exterior Features</h3>
+                        <div id="exteriorInfo">
+                            <p>Exterior details will be displayed here.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Appliances Section -->
+                <div id="appliances" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Home Appliances</h3>
+                        <div id="appliancesList">
+                            <p>No appliances added yet. <button class="btn" onclick="addAppliance()">Add Appliance</button></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Favorites Section -->
+                <div id="favorites" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Favorite Items</h3>
+                        <div id="favoritesList">
+                            <p>No favorites added yet.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Photos Section -->
+                <div id="photos" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Home Photos</h3>
+                        <div id="photosGallery">
+                            <p>No photos uploaded yet. <button class="btn" onclick="uploadPhoto()">Upload Photo</button></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Renovations Section -->
+                <div id="renovations" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Renovation History</h3>
+                        <div id="renovationsList">
+                            <p>No renovations recorded yet. <button class="btn" onclick="addRenovation()">Add Renovation</button></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Emergency Section -->
+                <div id="emergency" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Emergency Contacts</h3>
+                        <div id="emergencyContacts">
+                            <p>No emergency contacts added yet. <button class="btn" onclick="addEmergencyContact()">Add Contact</button></p>
                         </div>
                     </div>
                 </div>
