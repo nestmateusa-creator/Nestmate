@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Access - NestMate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #e2e8f0;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #60a5fa;
+            margin-bottom: 1rem;
+        }
+
+        .header p {
+            font-size: 1.25rem;
+            color: #94a3b8;
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .demo-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .demo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .demo-card.basic {
+            border-left: 4px solid #00d4aa;
+        }
+
+        .demo-card.advanced {
+            border-left: 4px solid #00d4aa;
+        }
+
+        .demo-card.advanced-pro {
+            border-left: 4px solid #8b5cf6;
+        }
+
+        .demo-card.enterprise {
+            border-left: 4px solid #f59e0b;
+        }
+
+        .plan-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .plan-badge.basic {
+            background: linear-gradient(135deg, #00d4aa, #00a085);
+            color: white;
+        }
+
+        .plan-badge.advanced {
+            background: linear-gradient(135deg, #00d4aa, #00a085);
+            color: white;
+        }
+
+        .plan-badge.advanced-pro {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+        }
+
+        .plan-badge.enterprise {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+
+        .demo-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #f1f5f9;
+        }
+
+        .demo-card .price {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #60a5fa;
+            margin-bottom: 1rem;
+        }
+
+        .demo-card .features {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .demo-card .features li {
+            padding: 0.25rem 0;
+            color: #cbd5e1;
+            font-size: 0.875rem;
+        }
+
+        .demo-card .features li:before {
+            content: '✓';
+            color: #00d4aa;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        .credentials {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .credentials h4 {
+            color: #f1f5f9;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .credentials .cred-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.25rem 0;
+            font-size: 0.875rem;
+        }
+
+        .credentials .cred-item .label {
+            color: #94a3b8;
+        }
+
+        .credentials .cred-item .value {
+            color: #f1f5f9;
+            font-weight: 500;
+        }
+
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .login-btn:hover {
+            background: linear-gradient(135deg, #1d4ed8, #1e40af);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .instructions {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .instructions h3 {
+            color: #60a5fa;
+            margin-bottom: 1rem;
+        }
+
+        .instructions ol {
+            color: #cbd5e1;
+            padding-left: 1.5rem;
+        }
+
+        .instructions li {
+            margin-bottom: 0.5rem;
+        }
+
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #e2e8f0;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            margin-left: 0.5rem;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .demo-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-home"></i> NestMate Demo Access</h1>
+            <p>Test all subscription tiers with pre-configured demo accounts</p>
+        </div>
+
+        <div class="demo-grid">
+            <!-- Basic Plan Demo -->
+            <div class="demo-card basic">
+                <div class="plan-badge basic">BASIC</div>
+                <h3>Basic Plan Demo</h3>
+                <div class="price">$5/month</div>
+                <ul class="features">
+                    <li>Single home management</li>
+                    <li>10 essential tasks & reminders</li>
+                    <li>Basic home details</li>
+                    <li>Cloud backup</li>
+                    <li>Product recommendations</li>
+                </ul>
+                <div class="credentials">
+                    <h4>Demo Credentials</h4>
+                    <div class="cred-item">
+                        <span class="label">Email:</span>
+                        <span class="value">demo.basic@nestmate.com <button class="copy-btn" onclick="copyToClipboard('demo.basic@nestmate.com')">Copy</button></span>
+                    </div>
+                    <div class="cred-item">
+                        <span class="label">Password:</span>
+                        <span class="value">DemoBasic123! <button class="copy-btn" onclick="copyToClipboard('DemoBasic123!')">Copy</button></span>
+                    </div>
+                </div>
+                <a href="login-aws.html" class="login-btn" onclick="setDemoCredentials('demo.basic@nestmate.com', 'DemoBasic123!')">
+                    <i class="fas fa-sign-in-alt"></i> Login to Basic Demo
+                </a>
+            </div>
+
+            <!-- Advanced (Pro) Plan Demo -->
+            <div class="demo-card advanced">
+                <div class="plan-badge advanced">PRO</div>
+                <h3>Advanced Plan Demo</h3>
+                <div class="price">$10/month</div>
+                <ul class="features">
+                    <li>Up to 5 homes</li>
+                    <li>Unlimited tasks & reminders</li>
+                    <li>Home Health Score</li>
+                    <li>VIP priority support</li>
+                    <li>Advanced analytics</li>
+                    <li>Professional floor plan designer</li>
+                </ul>
+                <div class="credentials">
+                    <h4>Demo Credentials</h4>
+                    <div class="cred-item">
+                        <span class="label">Email:</span>
+                        <span class="value">demo.advanced@nestmate.com <button class="copy-btn" onclick="copyToClipboard('demo.advanced@nestmate.com')">Copy</button></span>
+                    </div>
+                    <div class="cred-item">
+                        <span class="label">Password:</span>
+                        <span class="value">DemoAdvanced123! <button class="copy-btn" onclick="copyToClipboard('DemoAdvanced123!')">Copy</button></span>
+                    </div>
+                </div>
+                <a href="login-aws.html" class="login-btn" onclick="setDemoCredentials('demo.advanced@nestmate.com', 'DemoAdvanced123!')">
+                    <i class="fas fa-sign-in-alt"></i> Login to Advanced Demo
+                </a>
+            </div>
+
+            <!-- Advanced Pro Plan Demo -->
+            <div class="demo-card advanced-pro">
+                <div class="plan-badge advanced-pro">ADVANCED PRO</div>
+                <h3>Advanced Pro Plan Demo</h3>
+                <div class="price">$16/month</div>
+                <ul class="features">
+                    <li>All Pro features</li>
+                    <li>Up to 5 family members</li>
+                    <li>Shared tasks & reminders</li>
+                    <li>Family dashboard</li>
+                    <li>Family analytics & insights</li>
+                    <li>Emergency contact management</li>
+                    <li>Hand-picked contractor services</li>
+                </ul>
+                <div class="credentials">
+                    <h4>Demo Credentials</h4>
+                    <div class="cred-item">
+                        <span class="label">Email:</span>
+                        <span class="value">demo.advancedpro@nestmate.com <button class="copy-btn" onclick="copyToClipboard('demo.advancedpro@nestmate.com')">Copy</button></span>
+                    </div>
+                    <div class="cred-item">
+                        <span class="label">Password:</span>
+                        <span class="value">DemoAdvancedPro123! <button class="copy-btn" onclick="copyToClipboard('DemoAdvancedPro123!')">Copy</button></span>
+                    </div>
+                </div>
+                <a href="login-aws.html" class="login-btn" onclick="setDemoCredentials('demo.advancedpro@nestmate.com', 'DemoAdvancedPro123!')">
+                    <i class="fas fa-sign-in-alt"></i> Login to Advanced Pro Demo
+                </a>
+            </div>
+
+            <!-- Enterprise Plan Demo -->
+            <div class="demo-card enterprise">
+                <div class="plan-badge enterprise">ENTERPRISE</div>
+                <h3>Enterprise Plan Demo</h3>
+                <div class="price">$50/month</div>
+                <ul class="features">
+                    <li>Unlimited homes</li>
+                    <li>Client management system</li>
+                    <li>Team collaboration tools</li>
+                    <li>Property valuation tracking</li>
+                    <li>Maintenance scheduling</li>
+                    <li>Tenant management</li>
+                    <li>White-label reporting</li>
+                    <li>Priority enterprise support</li>
+                </ul>
+                <div class="credentials">
+                    <h4>Demo Credentials</h4>
+                    <div class="cred-item">
+                        <span class="label">Email:</span>
+                        <span class="value">demo.enterprise@nestmate.com <button class="copy-btn" onclick="copyToClipboard('demo.enterprise@nestmate.com')">Copy</button></span>
+                    </div>
+                    <div class="cred-item">
+                        <span class="label">Password:</span>
+                        <span class="value">DemoEnterprise123! <button class="copy-btn" onclick="copyToClipboard('DemoEnterprise123!')">Copy</button></span>
+                    </div>
+                </div>
+                <a href="login-aws.html" class="login-btn" onclick="setDemoCredentials('demo.enterprise@nestmate.com', 'DemoEnterprise123!')">
+                    <i class="fas fa-sign-in-alt"></i> Login to Enterprise Demo
+                </a>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h3><i class="fas fa-info-circle"></i> How to Use Demo Accounts</h3>
+            <ol>
+                <li>Click any "Login to [Plan] Demo" button above</li>
+                <li>You'll be redirected to the login page with credentials pre-filled</li>
+                <li>Click "Sign In" to access the dashboard</li>
+                <li>Each dashboard showcases different features based on the subscription tier</li>
+                <li>You can switch between different demo accounts to compare features</li>
+                <li>All demo accounts have active subscriptions and full access to their respective features</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        function setDemoCredentials(email, password) {
+            // Store credentials in localStorage for the login page to use
+            localStorage.setItem('demoEmail', email);
+            localStorage.setItem('demoPassword', password);
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                // Show a brief success message
+                const button = event.target;
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.style.background = 'rgba(16, 185, 129, 0.2)';
+                button.style.color = '#6ee7b7';
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = 'rgba(255, 255, 255, 0.1)';
+                    button.style.color = '#e2e8f0';
+                }, 2000);
+            }).catch(function(err) {
+                console.error('Could not copy text: ', err);
+                alert('Could not copy to clipboard. Please copy manually.');
+            });
+        }
+    </script>
+</body>
+</html>

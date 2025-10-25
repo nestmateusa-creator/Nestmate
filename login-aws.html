@@ -279,6 +279,18 @@
             console.log('nestMateAuth object:', nestMateAuth);
             console.log('typeof nestMateAuth:', typeof nestMateAuth);
             
+            // Check for demo credentials
+            const demoEmail = localStorage.getItem('demoEmail');
+            const demoPassword = localStorage.getItem('demoPassword');
+            
+            if (demoEmail && demoPassword) {
+                emailInput.value = demoEmail;
+                passwordInput.value = demoPassword;
+                // Clear the demo credentials after filling
+                localStorage.removeItem('demoEmail');
+                localStorage.removeItem('demoPassword');
+            }
+            
             // Wait a bit for auth to initialize
             setTimeout(() => {
                 console.log('Checking authentication after delay...');
@@ -340,10 +352,10 @@
                     const sub = userRec?.user?.subscription || 'basic';
 
                     let dest = 'dashboard-basic-clean.html';
-                    // All plans redirect to basic dashboard for now - other dashboards will be recreated
-                    // if (sub === 'pro') dest = 'dashboard-pro-new.html';
-                    // if (sub === 'advanced') dest = 'dashboard-advanced-pro-new.html';
-                    // if (sub === 'enterprise') dest = 'dashboard-advanced-pro-new.html';
+                    // Redirect to appropriate dashboard based on subscription
+                    if (sub === 'pro') dest = 'dashboard-advanced.html';
+                    if (sub === 'advanced-pro') dest = 'dashboard-advanced-pro.html';
+                    if (sub === 'enterprise') dest = 'dashboard-enterprise.html';
 
                     // If no active subscription, send to pricing
                     const status = userRec?.user?.subscriptionStatus || 'inactive';
