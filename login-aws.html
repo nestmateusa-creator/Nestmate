@@ -360,8 +360,13 @@
                         if (email === 'demo.advancedpro@nestmate.com') dest = 'dashboard-advanced-pro.html';
                         if (email === 'demo.enterprise@nestmate.com') dest = 'dashboard-enterprise.html';
                         
+                        console.log('Demo account email:', email);
+                        console.log('Redirecting to:', dest);
+                        
                         showMessage('Demo account access granted! Redirecting to dashboard...', 'success');
-                        setTimeout(() => { window.location.href = dest; }, 800);
+                        setTimeout(() => { 
+                            window.location.href = dest + '?t=' + Date.now(); 
+                        }, 800);
                     } else {
                         // Regular users follow normal flow with pricing page check
                         const userRec = await nestMateAuth.getUserRecord(result.userId || nestMateAuth.currentUser?.userId);
