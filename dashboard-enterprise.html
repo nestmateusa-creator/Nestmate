@@ -524,6 +524,51 @@
                 <button class="nav-item active" onclick="showSection('overview')">
                     <i class="fas fa-building"></i> Enterprise Overview
                 </button>
+                <button class="nav-item" onclick="showSection('basic-info')">
+                    <i class="fas fa-info-circle"></i> Basic Info
+                </button>
+                <button class="nav-item" onclick="showSection('structure')">
+                    <i class="fas fa-building"></i> Structure
+                </button>
+                <button class="nav-item" onclick="showSection('systems')">
+                    <i class="fas fa-cogs"></i> Systems
+                </button>
+                <button class="nav-item" onclick="showSection('bedrooms')">
+                    <i class="fas fa-bed"></i> Bedrooms
+                </button>
+                <button class="nav-item" onclick="showSection('bathrooms')">
+                    <i class="fas fa-bath"></i> Bathrooms
+                </button>
+                <button class="nav-item" onclick="showSection('kitchen')">
+                    <i class="fas fa-utensils"></i> Kitchen
+                </button>
+                <button class="nav-item" onclick="showSection('living-areas')">
+                    <i class="fas fa-couch"></i> Living Areas
+                </button>
+                <button class="nav-item" onclick="showSection('garage')">
+                    <i class="fas fa-car"></i> Garage
+                </button>
+                <button class="nav-item" onclick="showSection('exterior')">
+                    <i class="fas fa-home"></i> Exterior
+                </button>
+                <button class="nav-item" onclick="showSection('appliances')">
+                    <i class="fas fa-tv"></i> Appliances
+                </button>
+                <button class="nav-item" onclick="showSection('favorites')">
+                    <i class="fas fa-heart"></i> Favorites
+                </button>
+                <button class="nav-item" onclick="showSection('photos')">
+                    <i class="fas fa-camera"></i> Photos
+                </button>
+                <button class="nav-item" onclick="showSection('floorplan')">
+                    <i class="fas fa-drafting-compass"></i> Floor Plan
+                </button>
+                <button class="nav-item" onclick="showSection('renovations')">
+                    <i class="fas fa-tools"></i> Renovations
+                </button>
+                <button class="nav-item" onclick="showSection('emergency')">
+                    <i class="fas fa-phone"></i> Emergency
+                </button>
                 <button class="nav-item" onclick="showSection('properties')">
                     <i class="fas fa-home"></i> Unlimited Properties
                 </button>
@@ -541,9 +586,6 @@
                 </button>
                 <button class="nav-item" onclick="showSection('tenants')">
                     <i class="fas fa-key"></i> Tenant Management
-                </button>
-                <button class="nav-item" onclick="showSection('floorplan')">
-                    <i class="fas fa-drafting-compass"></i> Professional Designer
                 </button>
                 <button class="nav-item" onclick="showSection('reporting')">
                     <i class="fas fa-file-alt"></i> White-label Reports
@@ -564,6 +606,672 @@
                         <div class="user-avatar" id="userAvatar">U</div>
                         <span id="userName">Loading...</span>
                         <button class="sign-out-btn" onclick="signOut()">Sign Out</button>
+                    </div>
+                </div>
+
+                <!-- Basic Info -->
+                <div id="basic-info" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Home Information</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label>Address</label>
+                                <input type="text" value="123 Main Street" placeholder="Enter address">
+                            </div>
+                            <div class="info-item">
+                                <label>Year Built</label>
+                                <input type="number" value="2018" placeholder="Year built">
+                            </div>
+                            <div class="info-item">
+                                <label>Square Footage</label>
+                                <input type="number" value="2400" placeholder="Square feet">
+                            </div>
+                            <div class="info-item">
+                                <label>Bedrooms</label>
+                                <input type="number" value="3" placeholder="Number of bedrooms">
+                            </div>
+                            <div class="info-item">
+                                <label>Bathrooms</label>
+                                <input type="number" value="2" placeholder="Number of bathrooms">
+                            </div>
+                            <div class="info-item">
+                                <label>Home Type</label>
+                                <select>
+                                    <option>Single Family</option>
+                                    <option>Condo</option>
+                                    <option>Townhouse</option>
+                                    <option>Apartment</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="info-actions">
+                            <button class="btn-primary">Save Changes</button>
+                            <button class="btn-secondary">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Structure -->
+                <div id="structure" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Structural Information</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label>Foundation Type</label>
+                                <select>
+                                    <option>Concrete Slab</option>
+                                    <option>Crawl Space</option>
+                                    <option>Basement</option>
+                                    <option>Pier & Beam</option>
+                                </select>
+                            </div>
+                            <div class="info-item">
+                                <label>Roof Type</label>
+                                <select>
+                                    <option>Asphalt Shingles</option>
+                                    <option>Metal</option>
+                                    <option>Tile</option>
+                                    <option>Slate</option>
+                                    <option>Flat</option>
+                                </select>
+                            </div>
+                            <div class="info-item">
+                                <label>Exterior Material</label>
+                                <select>
+                                    <option>Vinyl Siding</option>
+                                    <option>Brick</option>
+                                    <option>Wood Siding</option>
+                                    <option>Stucco</option>
+                                    <option>Stone</option>
+                                </select>
+                            </div>
+                            <div class="info-item">
+                                <label>Window Type</label>
+                                <select>
+                                    <option>Single Pane</option>
+                                    <option>Double Pane</option>
+                                    <option>Triple Pane</option>
+                                    <option>Energy Efficient</option>
+                                </select>
+                            </div>
+                            <div class="info-item">
+                                <label>Insulation Type</label>
+                                <select>
+                                    <option>Fiberglass</option>
+                                    <option>Cellulose</option>
+                                    <option>Spray Foam</option>
+                                    <option>Rigid Board</option>
+                                </select>
+                            </div>
+                            <div class="info-item">
+                                <label>Last Inspection</label>
+                                <input type="date" value="2024-01-15">
+                            </div>
+                        </div>
+                        <div class="info-actions">
+                            <button class="btn-primary">Save Changes</button>
+                            <button class="btn-secondary">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Systems -->
+                <div id="systems" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Home Systems</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label>HVAC System</label>
+                                <select>
+                                    <option>Central Air & Heat</option>
+                                    <option>Heat Pump</option>
+                                    <option>Gas Furnace</option>
+                                    <option>Electric Heat</option>
+                                    <option>Window Units</option>
+                                </select>
+                            </div>
+                            <div class="info-item">
+                                <label>Electrical Service</label>
+                                <select>
+                                    <option>100 Amp</option>
+                                    <option>200 Amp</option>
+                                    <option>400 Amp</option>
+                                    <option>Other</option>
+                                </select>
+                            </div>
+                            <div class="info-item">
+                                <label>Plumbing Material</label>
+                                <select>
+                                    <option>Copper</option>
+                                    <option>PVC</option>
+                                    <option>PEX</option>
+                                    <option>Galvanized Steel</option>
+                                    <option>Mixed</option>
+                                </select>
+                            </div>
+                            <div class="info-item">
+                                <label>Water Heater</label>
+                                <select>
+                                    <option>Gas, 40 gallon</option>
+                                    <option>Gas, 50 gallon</option>
+                                    <option>Electric, 40 gallon</option>
+                                    <option>Electric, 50 gallon</option>
+                                    <option>Tankless Gas</option>
+                                    <option>Tankless Electric</option>
+                                </select>
+                            </div>
+                            <div class="info-item">
+                                <label>Security System</label>
+                                <select>
+                                    <option>None</option>
+                                    <option>Basic Alarm</option>
+                                    <option>Monitored System</option>
+                                    <option>Smart Home System</option>
+                                </select>
+                            </div>
+                            <div class="info-item">
+                                <label>Last Service</label>
+                                <input type="date" value="2024-02-01">
+                            </div>
+                        </div>
+                        <div class="info-actions">
+                            <button class="btn-primary">Save Changes</button>
+                            <button class="btn-secondary">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bedrooms -->
+                <div id="bedrooms" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Bedroom Information</h3>
+                        <div class="room-grid">
+                            <div class="room-card">
+                                <h4>Master Bedroom</h4>
+                                <div class="room-details">
+                                    <p><i class="fas fa-ruler"></i> 16' x 14'</p>
+                                    <p><i class="fas fa-window"></i> 2 Windows</p>
+                                    <p><i class="fas fa-door-open"></i> 1 Door</p>
+                                    <p><i class="fas fa-lightbulb"></i> 4 Outlets</p>
+                                </div>
+                                <div class="room-actions">
+                                    <button class="btn-small">Edit</button>
+                                    <button class="btn-small">Photos</button>
+                                </div>
+                            </div>
+                            
+                            <div class="room-card">
+                                <h4>Guest Bedroom</h4>
+                                <div class="room-details">
+                                    <p><i class="fas fa-ruler"></i> 12' x 10'</p>
+                                    <p><i class="fas fa-window"></i> 1 Window</p>
+                                    <p><i class="fas fa-door-open"></i> 1 Door</p>
+                                    <p><i class="fas fa-lightbulb"></i> 3 Outlets</p>
+                                </div>
+                                <div class="room-actions">
+                                    <button class="btn-small">Edit</button>
+                                    <button class="btn-small">Photos</button>
+                                </div>
+                            </div>
+                            
+                            <div class="room-card add-room">
+                                <div class="add-room-content">
+                                    <i class="fas fa-plus"></i>
+                                    <h4>Add Bedroom</h4>
+                                    <button class="btn-primary">Add Room</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bathrooms -->
+                <div id="bathrooms" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Bathroom Information</h3>
+                        <div class="room-grid">
+                            <div class="room-card">
+                                <h4>Master Bathroom</h4>
+                                <div class="room-details">
+                                    <p><i class="fas fa-ruler"></i> 12' x 8'</p>
+                                    <p><i class="fas fa-bath"></i> Bathtub + Shower</p>
+                                    <p><i class="fas fa-toilet"></i> Toilet</p>
+                                    <p><i class="fas fa-sink"></i> Double Sink</p>
+                                </div>
+                                <div class="room-actions">
+                                    <button class="btn-small">Edit</button>
+                                    <button class="btn-small">Photos</button>
+                                </div>
+                            </div>
+                            
+                            <div class="room-card">
+                                <h4>Guest Bathroom</h4>
+                                <div class="room-details">
+                                    <p><i class="fas fa-ruler"></i> 8' x 6'</p>
+                                    <p><i class="fas fa-shower"></i> Shower Only</p>
+                                    <p><i class="fas fa-toilet"></i> Toilet</p>
+                                    <p><i class="fas fa-sink"></i> Single Sink</p>
+                                </div>
+                                <div class="room-actions">
+                                    <button class="btn-small">Edit</button>
+                                    <button class="btn-small">Photos</button>
+                                </div>
+                            </div>
+                            
+                            <div class="room-card add-room">
+                                <div class="add-room-content">
+                                    <i class="fas fa-plus"></i>
+                                    <h4>Add Bathroom</h4>
+                                    <button class="btn-primary">Add Room</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kitchen -->
+                <div id="kitchen" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Kitchen Information</h3>
+                        <div class="kitchen-details">
+                            <div class="kitchen-info">
+                                <div class="info-item">
+                                    <label>Kitchen Size</label>
+                                    <select>
+                                        <option>Small (under 100 sq ft)</option>
+                                        <option>Medium (100-200 sq ft)</option>
+                                        <option>Large (200+ sq ft)</option>
+                                    </select>
+                                </div>
+                                <div class="info-item">
+                                    <label>Appliance Finish</label>
+                                    <select>
+                                        <option>Stainless Steel</option>
+                                        <option>Black Stainless</option>
+                                        <option>White</option>
+                                        <option>Black</option>
+                                        <option>Custom Color</option>
+                                    </select>
+                                </div>
+                                <div class="info-item">
+                                    <label>Countertop Material</label>
+                                    <select>
+                                        <option>Granite</option>
+                                        <option>Quartz</option>
+                                        <option>Marble</option>
+                                        <option>Laminate</option>
+                                        <option>Butcher Block</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="appliance-list">
+                                <h4>Appliances</h4>
+                                <div class="appliance-item">
+                                    <i class="fas fa-refrigerator"></i>
+                                    <span>Refrigerator</span>
+                                    <span class="appliance-status">Working</span>
+                                </div>
+                                <div class="appliance-item">
+                                    <i class="fas fa-fire"></i>
+                                    <span>Stove/Oven</span>
+                                    <span class="appliance-status">Working</span>
+                                </div>
+                                <div class="appliance-item">
+                                    <i class="fas fa-dishwasher"></i>
+                                    <span>Dishwasher</span>
+                                    <span class="appliance-status">Working</span>
+                                </div>
+                                <div class="appliance-item">
+                                    <i class="fas fa-microphone"></i>
+                                    <span>Microwave</span>
+                                    <span class="appliance-status">Working</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="info-actions">
+                            <button class="btn-primary">Save Changes</button>
+                            <button class="btn-secondary">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Living Areas -->
+                <div id="living-areas" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Living Areas</h3>
+                        <div class="room-grid">
+                            <div class="room-card">
+                                <h4>Living Room</h4>
+                                <div class="room-details">
+                                    <p><i class="fas fa-ruler"></i> 20' x 16'</p>
+                                    <p><i class="fas fa-window"></i> 3 Windows</p>
+                                    <p><i class="fas fa-fireplace"></i> Fireplace</p>
+                                    <p><i class="fas fa-tv"></i> TV Mount</p>
+                                </div>
+                                <div class="room-actions">
+                                    <button class="btn-small">Edit</button>
+                                    <button class="btn-small">Photos</button>
+                                </div>
+                            </div>
+                            
+                            <div class="room-card">
+                                <h4>Dining Room</h4>
+                                <div class="room-details">
+                                    <p><i class="fas fa-ruler"></i> 14' x 12'</p>
+                                    <p><i class="fas fa-window"></i> 2 Windows</p>
+                                    <p><i class="fas fa-chair"></i> Seats 6</p>
+                                    <p><i class="fas fa-lightbulb"></i> Chandelier</p>
+                                </div>
+                                <div class="room-actions">
+                                    <button class="btn-small">Edit</button>
+                                    <button class="btn-small">Photos</button>
+                                </div>
+                            </div>
+                            
+                            <div class="room-card add-room">
+                                <div class="add-room-content">
+                                    <i class="fas fa-plus"></i>
+                                    <h4>Add Living Area</h4>
+                                    <button class="btn-primary">Add Room</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Garage -->
+                <div id="garage" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Garage Information</h3>
+                        <div class="garage-details">
+                            <div class="info-item">
+                                <label>Garage Type</label>
+                                <select>
+                                    <option>Attached</option>
+                                    <option>Detached</option>
+                                    <option>Carport</option>
+                                    <option>None</option>
+                                </select>
+                            </div>
+                            <div class="info-item">
+                                <label>Number of Cars</label>
+                                <select>
+                                    <option>1 Car</option>
+                                    <option>2 Car</option>
+                                    <option>3+ Car</option>
+                                </select>
+                            </div>
+                            <div class="info-item">
+                                <label>Garage Door Type</label>
+                                <select>
+                                    <option>Manual</option>
+                                    <option>Automatic</option>
+                                    <option>Smart</option>
+                                </select>
+                            </div>
+                            <div class="info-item">
+                                <label>Storage</label>
+                                <select>
+                                    <option>None</option>
+                                    <option>Basic Shelving</option>
+                                    <option>Built-in Storage</option>
+                                    <option>Workshop</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="info-actions">
+                            <button class="btn-primary">Save Changes</button>
+                            <button class="btn-secondary">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exterior -->
+                <div id="exterior" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Exterior Information</h3>
+                        <div class="exterior-details">
+                            <div class="info-item">
+                                <label>Exterior Material</label>
+                                <select>
+                                    <option>Vinyl Siding</option>
+                                    <option>Brick</option>
+                                    <option>Wood Siding</option>
+                                    <option>Stucco</option>
+                                    <option>Stone</option>
+                                </select>
+                            </div>
+                            <div class="info-item">
+                                <label>Roof Type</label>
+                                <select>
+                                    <option>Asphalt Shingles</option>
+                                    <option>Metal</option>
+                                    <option>Tile</option>
+                                    <option>Slate</option>
+                                </select>
+                            </div>
+                            <div class="info-item">
+                                <label>Landscaping</label>
+                                <select>
+                                    <option>Minimal</option>
+                                    <option>Basic</option>
+                                    <option>Well Landscaped</option>
+                                    <option>Professional</option>
+                                </select>
+                            </div>
+                            <div class="info-item">
+                                <label>Outdoor Features</label>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox"> Deck</label>
+                                    <label><input type="checkbox"> Patio</label>
+                                    <label><input type="checkbox"> Pool</label>
+                                    <label><input type="checkbox"> Garden</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="info-actions">
+                            <button class="btn-primary">Save Changes</button>
+                            <button class="btn-secondary">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Appliances -->
+                <div id="appliances" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Home Appliances</h3>
+                        <div class="appliances-grid">
+                            <div class="appliance-category">
+                                <h4>Kitchen Appliances</h4>
+                                <div class="appliance-list">
+                                    <div class="appliance-item">
+                                        <i class="fas fa-refrigerator"></i>
+                                        <span>Refrigerator</span>
+                                        <span class="appliance-status working">Working</span>
+                                        <button class="btn-small">Service</button>
+                                    </div>
+                                    <div class="appliance-item">
+                                        <i class="fas fa-fire"></i>
+                                        <span>Stove/Oven</span>
+                                        <span class="appliance-status working">Working</span>
+                                        <button class="btn-small">Service</button>
+                                    </div>
+                                    <div class="appliance-item">
+                                        <i class="fas fa-dishwasher"></i>
+                                        <span>Dishwasher</span>
+                                        <span class="appliance-status working">Working</span>
+                                        <button class="btn-small">Service</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="appliance-category">
+                                <h4>HVAC Systems</h4>
+                                <div class="appliance-list">
+                                    <div class="appliance-item">
+                                        <i class="fas fa-thermometer-half"></i>
+                                        <span>Furnace</span>
+                                        <span class="appliance-status working">Working</span>
+                                        <button class="btn-small">Service</button>
+                                    </div>
+                                    <div class="appliance-item">
+                                        <i class="fas fa-snowflake"></i>
+                                        <span>Air Conditioner</span>
+                                        <span class="appliance-status working">Working</span>
+                                        <button class="btn-small">Service</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="appliance-category">
+                                <h4>Laundry</h4>
+                                <div class="appliance-list">
+                                    <div class="appliance-item">
+                                        <i class="fas fa-tshirt"></i>
+                                        <span>Washer</span>
+                                        <span class="appliance-status working">Working</span>
+                                        <button class="btn-small">Service</button>
+                                    </div>
+                                    <div class="appliance-item">
+                                        <i class="fas fa-tshirt"></i>
+                                        <span>Dryer</span>
+                                        <span class="appliance-status working">Working</span>
+                                        <button class="btn-small">Service</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Favorites -->
+                <div id="favorites" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Favorites</h3>
+                        <div class="favorites-grid">
+                            <div class="favorite-item">
+                                <i class="fas fa-wrench"></i>
+                                <h4>Trusted Plumber</h4>
+                                <p>John's Plumbing Service</p>
+                                <p>(555) 123-4567</p>
+                                <button class="btn-small">Contact</button>
+                            </div>
+                            
+                            <div class="favorite-item">
+                                <i class="fas fa-bolt"></i>
+                                <h4>Electrician</h4>
+                                <p>Sparky's Electrical</p>
+                                <p>(555) 987-6543</p>
+                                <button class="btn-small">Contact</button>
+                            </div>
+                            
+                            <div class="favorite-item">
+                                <i class="fas fa-paint-brush"></i>
+                                <h4>Painter</h4>
+                                <p>Perfect Paint Co.</p>
+                                <p>(555) 456-7890</p>
+                                <button class="btn-small">Contact</button>
+                            </div>
+                            
+                            <div class="favorite-item add-favorite">
+                                <div class="add-favorite-content">
+                                    <i class="fas fa-plus"></i>
+                                    <h4>Add Favorite</h4>
+                                    <button class="btn-primary">Add Contact</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Renovations -->
+                <div id="renovations" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Renovation Projects</h3>
+                        <div class="renovation-timeline">
+                            <div class="renovation-item completed">
+                                <div class="renovation-date">2024</div>
+                                <div class="renovation-content">
+                                    <h4>Kitchen Remodel</h4>
+                                    <p>Complete kitchen renovation with new cabinets and countertops</p>
+                                    <span class="renovation-cost">$15,000</span>
+                                </div>
+                            </div>
+                            
+                            <div class="renovation-item completed">
+                                <div class="renovation-date">2023</div>
+                                <div class="renovation-content">
+                                    <h4>Bathroom Update</h4>
+                                    <p>Master bathroom renovation with new fixtures</p>
+                                    <span class="renovation-cost">$8,500</span>
+                                </div>
+                            </div>
+                            
+                            <div class="renovation-item planned">
+                                <div class="renovation-date">2025</div>
+                                <div class="renovation-content">
+                                    <h4>Deck Addition</h4>
+                                    <p>Planning to add a new deck to the backyard</p>
+                                    <span class="renovation-cost">$12,000</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="add-renovation">
+                            <button class="btn-primary">
+                                <i class="fas fa-plus"></i> Add New Project
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Emergency -->
+                <div id="emergency" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Emergency Contacts</h3>
+                        <div class="emergency-contacts">
+                            <div class="emergency-item critical">
+                                <i class="fas fa-phone"></i>
+                                <div class="emergency-info">
+                                    <h4>Police</h4>
+                                    <p>911</p>
+                                </div>
+                                <button class="btn-emergency">Call</button>
+                            </div>
+                            
+                            <div class="emergency-item critical">
+                                <i class="fas fa-fire"></i>
+                                <div class="emergency-info">
+                                    <h4>Fire Department</h4>
+                                    <p>911</p>
+                                </div>
+                                <button class="btn-emergency">Call</button>
+                            </div>
+                            
+                            <div class="emergency-item">
+                                <i class="fas fa-bolt"></i>
+                                <div class="emergency-info">
+                                    <h4>Electrician</h4>
+                                    <p>(555) 123-4567</p>
+                                </div>
+                                <button class="btn-emergency">Call</button>
+                            </div>
+                            
+                            <div class="emergency-item">
+                                <i class="fas fa-wrench"></i>
+                                <div class="emergency-info">
+                                    <h4>Plumber</h4>
+                                    <p>(555) 987-6543</p>
+                                </div>
+                                <button class="btn-emergency">Call</button>
+                            </div>
+                        </div>
+                        
+                        <div class="emergency-notes">
+                            <h4>Emergency Notes</h4>
+                            <textarea placeholder="Add any important emergency information..."></textarea>
+                        </div>
                     </div>
                 </div>
 
