@@ -1603,6 +1603,160 @@
             window.open('mailto:enterprise@nestmateusa.com?subject=Enterprise Support Request', '_blank');
         }
 
+        // Basic Info Functions
+        function editBasicInfo() {
+            document.getElementById('basicInfoDisplay').style.display = 'none';
+            document.getElementById('basicInfoForm').style.display = 'block';
+        }
+
+        function cancelEditBasicInfo() {
+            document.getElementById('basicInfoDisplay').style.display = 'block';
+            document.getElementById('basicInfoForm').style.display = 'none';
+        }
+
+        async function saveBasicInfo() {
+            const address = document.getElementById('address').value;
+            const yearBuilt = document.getElementById('yearBuilt').value;
+            const squareFootage = document.getElementById('squareFootage').value;
+            const bedrooms = document.getElementById('bedrooms').value;
+            const bathrooms = document.getElementById('bathrooms').value;
+            const homeType = document.getElementById('homeType').value;
+
+            // Update display
+            document.getElementById('displayAddress').textContent = address || 'Not set';
+            document.getElementById('displayYearBuilt').textContent = yearBuilt || 'Not set';
+            document.getElementById('displaySquareFootage').textContent = squareFootage || 'Not set';
+            document.getElementById('displayBedrooms').textContent = bedrooms || 'Not set';
+            document.getElementById('displayBathrooms').textContent = bathrooms || 'Not set';
+            document.getElementById('displayHomeType').textContent = homeType || 'Not set';
+
+            // Hide form and show display
+            document.getElementById('basicInfoForm').style.display = 'none';
+            document.getElementById('basicInfoDisplay').style.display = 'block';
+
+            showAlert('Basic info saved successfully!', 'success');
+        }
+
+        // Structure Functions
+        function editStructure() {
+            document.getElementById('structureDisplay').style.display = 'none';
+            document.getElementById('structureForm').style.display = 'block';
+        }
+
+        function cancelEditStructure() {
+            document.getElementById('structureDisplay').style.display = 'block';
+            document.getElementById('structureForm').style.display = 'none';
+        }
+
+        async function saveStructure() {
+            const foundation = document.getElementById('foundation').value;
+            const roofType = document.getElementById('roofType').value;
+            const exteriorMaterial = document.getElementById('exteriorMaterial').value;
+            const windows = document.getElementById('windows').value;
+
+            // Update display
+            document.getElementById('displayFoundation').textContent = foundation || 'Not set';
+            document.getElementById('displayRoofType').textContent = roofType || 'Not set';
+            document.getElementById('displayExteriorMaterial').textContent = exteriorMaterial || 'Not set';
+            document.getElementById('displayWindows').textContent = windows || 'Not set';
+
+            // Hide form and show display
+            document.getElementById('structureForm').style.display = 'none';
+            document.getElementById('structureDisplay').style.display = 'block';
+
+            showAlert('Structure info saved successfully!', 'success');
+        }
+
+        // Systems Functions
+        function editSystems() {
+            document.getElementById('systemsDisplay').style.display = 'none';
+            document.getElementById('systemsForm').style.display = 'block';
+        }
+
+        function cancelEditSystems() {
+            document.getElementById('systemsDisplay').style.display = 'block';
+            document.getElementById('systemsForm').style.display = 'none';
+        }
+
+        async function saveSystems() {
+            const hvac = document.getElementById('hvac').value;
+            const electrical = document.getElementById('electrical').value;
+            const plumbing = document.getElementById('plumbing').value;
+            const waterHeater = document.getElementById('waterHeater').value;
+
+            // Update display
+            document.getElementById('displayHVAC').textContent = hvac || 'Not set';
+            document.getElementById('displayElectrical').textContent = electrical || 'Not set';
+            document.getElementById('displayPlumbing').textContent = plumbing || 'Not set';
+            document.getElementById('displayWaterHeater').textContent = waterHeater || 'Not set';
+
+            // Hide form and show display
+            document.getElementById('systemsForm').style.display = 'none';
+            document.getElementById('systemsDisplay').style.display = 'block';
+
+            showAlert('Systems info saved successfully!', 'success');
+        }
+
+        // Basic Add Functions
+        function addBedroom() {
+            showAlert('Add bedroom functionality coming soon!', 'info');
+        }
+
+        function addBathroom() {
+            showAlert('Add bathroom functionality coming soon!', 'info');
+        }
+
+        function addLivingArea() {
+            showAlert('Add living area functionality coming soon!', 'info');
+        }
+
+        function addAppliance() {
+            showAlert('Add appliance functionality coming soon!', 'info');
+        }
+
+        function uploadPhoto() {
+            showAlert('Photo upload functionality coming soon!', 'info');
+        }
+
+        function addRenovation() {
+            showAlert('Add renovation functionality coming soon!', 'info');
+        }
+
+        function addEmergencyContact() {
+            showAlert('Add emergency contact functionality coming soon!', 'info');
+        }
+
+        // Utility Functions
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            alertDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 1rem;
+                border-radius: 8px;
+                color: white;
+                z-index: 1000;
+                max-width: 300px;
+            `;
+            
+            if (type === 'success') {
+                alertDiv.style.backgroundColor = '#10b981';
+            } else if (type === 'error') {
+                alertDiv.style.backgroundColor = '#ef4444';
+            } else if (type === 'info') {
+                alertDiv.style.backgroundColor = '#3b82f6';
+            }
+            
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 3000);
+        }
+
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', function() {
             loadUserData();
