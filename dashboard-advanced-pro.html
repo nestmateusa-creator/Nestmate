@@ -774,8 +774,9 @@
                 }
             } catch (error) {
                 console.error('Error loading user data:', error);
-                // Redirect to login if not authenticated
-                window.location.href = 'login-aws.html';
+                // Don't redirect - just show default user info
+                document.getElementById('userName').textContent = 'Demo User';
+                document.getElementById('userAvatar').textContent = 'D';
             }
         }
 
