@@ -170,19 +170,6 @@
         }
 
         /* Home Health Score */
-        .health-score-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-
-        .health-score-gauge {
-            position: relative;
-            width: 200px;
-            height: 200px;
-            margin-bottom: 1.5rem;
-        }
 
         .gauge-circle {
             width: 100%;
@@ -444,10 +431,6 @@
                 grid-template-columns: repeat(2, 1fr);
             }
             
-            .health-score-gauge {
-                width: 150px;
-                height: 150px;
-            }
             
             .gauge-score {
                 font-size: 2.5rem;
@@ -1112,9 +1095,6 @@
                 <button class="nav-item" onclick="showSection('photos')">
                     <i class="fas fa-camera"></i> Photos
                 </button>
-                <button class="nav-item" onclick="showSection('floorplan')">
-                    <i class="fas fa-drafting-compass"></i> Floor Plan
-                </button>
                 <button class="nav-item" onclick="showSection('renovations')">
                     <i class="fas fa-hammer"></i> Renovations
                 </button>
@@ -1156,51 +1136,6 @@
 
                 <!-- Main Content -->
                 <div class="main-content">
-                    <!-- Home Health Score Card -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h2 class="card-title">
-                                <i class="fas fa-heart"></i>
-                                Home Health Score
-                            </h2>
-                            <i class="fas fa-info-circle card-info"></i>
-                        </div>
-
-                        <div class="health-score-container">
-                            <div class="health-score-gauge">
-                                <div class="gauge-circle">
-                                    <div class="gauge-content">
-                                        <div class="gauge-score" id="healthScore">85</div>
-                                        <div class="gauge-label">Health Score</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="progress-section">
-                                <div class="progress-item">
-                                    <span class="progress-label">Structure</span>
-                                    <div class="progress-bar-container">
-                                        <div class="progress-bar" style="width: 90%"></div>
-                                    </div>
-                                    <span class="progress-percentage">90%</span>
-                                </div>
-                                <div class="progress-item">
-                                    <span class="progress-label">Systems</span>
-                                    <div class="progress-bar-container">
-                                        <div class="progress-bar" style="width: 85%"></div>
-                                    </div>
-                                    <span class="progress-percentage">85%</span>
-                                </div>
-                                <div class="progress-item">
-                                    <span class="progress-label">Maintenance</span>
-                                    <div class="progress-bar-container">
-                                        <div class="progress-bar" style="width: 80%"></div>
-                                    </div>
-                                    <span class="progress-percentage">80%</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
                     <!-- Quick Actions Card -->
                     <div class="card">
@@ -2070,45 +2005,6 @@
                 </div>
             </div>
 
-            <!-- Floor Plan Section -->
-            <div id="floorplanSection" class="content-section">
-                <h2 class="section-title">
-                    <i class="fas fa-drafting-compass"></i> Floor Plan Designer
-                </h2>
-                
-                <!-- Floor Plan Actions -->
-                <div class="card" style="margin-bottom: 1rem;">
-                    <div class="edit-panel-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <h3>Floor Plan Designer</h3>
-                        <div style="display: flex; gap: 0.5rem;">
-                            <button class="btn" onclick="openFloorPlanUpload()">
-                                <i class="fas fa-upload"></i> Upload Plan
-                            </button>
-                            <button class="btn" onclick="openFloorPlanCreator()">
-                                <i class="fas fa-plus"></i> Create New
-                            </button>
-                            <button class="btn" onclick="openFloorPlanViewer()">
-                                <i class="fas fa-eye"></i> View Plans
-                            </button>
-                        </div>
-                    </div>
-                    <p style="color: #94a3b8; margin-bottom: 1rem;">
-                        Upload existing floor plans or create professional floor plans with our advanced designer. 
-                        Features include drag-and-drop tools, measurements, 3D visualization, and export options.
-                    </p>
-                </div>
-
-                <!-- Floor Plan Display Area -->
-                <div id="floorplanDisplay" class="card">
-                    <div id="floorplanPreview" style="width:100%; aspect-ratio: 16/9; background:#334155; border:1px dashed #475569; border-radius: 0.5rem; display:flex; align-items:center; justify-content:center; color:#94a3b8; flex-direction: column; gap: 1rem;">
-                        <i class="fas fa-drafting-compass" style="font-size: 3rem; color: #64748b;"></i>
-                        <div style="text-align: center;">
-                            <h3 style="margin-bottom: 0.5rem;">No Floor Plan Available</h3>
-                            <p style="color: #94a3b8;">Upload an existing floor plan or create a new one</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             <!-- Renovations and Upgrades Section -->
             <div id="renovationsSection" class="content-section">
@@ -6020,13 +5916,6 @@
 
         // Load dashboard data (simplified for testing)
         function loadDashboardData() {
-            // Set default health score
-            document.getElementById('healthScore').textContent = '85';
-            
-            // Set default progress bars
-            updateProgressBar('Structure', 90);
-            updateProgressBar('Systems', 85);
-            updateProgressBar('Maintenance', 80);
             
             // Set default activity
             const activitySection = document.querySelector('.bottom-section:first-of-type .loading');
@@ -6134,46 +6023,6 @@
             }, 3000);
         }
 
-        // Calculate health score
-        function calculateHealthScore(user) {
-            let score = 85; // Default score
-            
-            // Adjust based on maintenance records
-            if (user.maintenance && user.maintenance.length > 0) {
-                const recentMaintenance = user.maintenance.filter(m => {
-                    const maintenanceDate = new Date(m.scheduledDate);
-                    const sixMonthsAgo = new Date();
-                    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-                    return maintenanceDate > sixMonthsAgo;
-                });
-                
-                if (recentMaintenance.length > 0) {
-                    score += 5;
-                }
-            }
-            
-            // Adjust based on tasks completion
-            if (user.tasks && user.tasks.length > 0) {
-                const completedTasks = user.tasks.filter(t => t.status === 'completed');
-                const completionRate = completedTasks.length / user.tasks.length;
-                score += Math.round(completionRate * 10);
-            }
-            
-            // Ensure score is between 0-100
-            score = Math.min(100, Math.max(0, score));
-            
-            // Update UI
-            document.getElementById('healthScore').textContent = score;
-            
-            // Update progress bars based on score
-            const structureScore = Math.min(100, score + 5);
-            const systemsScore = score;
-            const maintenanceScore = Math.max(0, score - 5);
-            
-            updateProgressBar('Structure', structureScore);
-            updateProgressBar('Systems', systemsScore);
-            updateProgressBar('Maintenance', maintenanceScore);
-        }
 
         // Update progress bar
         function updateProgressBar(label, percentage) {
