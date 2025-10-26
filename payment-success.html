@@ -169,8 +169,12 @@
         </div>
     </div>
 
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1000.0.min.js"></script>
+    <script src="aws-config.js"></script>
+    <script src="aws-payment-handler.js"></script>
     <script>
-        // Replaced Firebase usage; see payment-success-aws.html for AWS flow
+        // AWS Payment Success Handler
+        const paymentHandler = new AWSPaymentHandler();
 
         // Plan mapping based on Stripe session IDs or other identifiers
         const planMapping = {
@@ -243,24 +247,80 @@
 
         async function saveUserSubscription(planInfo) {
             try {
-                // Wait for authentication
-                const user = await new Promise((resolve, reject) => {
-                    const unsubscribe = auth.onAuthStateChanged((user) => {
-                        unsubscribe();
-                        if (user) {
-                            resolve(user);
-                        } else {
-                            // If no user is authenticated, create a temporary user record
-                            // In production, you'd want to handle this differently
-                            resolve(null);
-                        }
-                    });
-                });
+                console.log('💳 Saving user subscription to AWS...', planInfo);
 
-                // Deprecated: Firebase save removed
+                // Get user email from various sources
+                let userEmail = getEmailFromSources();
+                
+                if (!userEmail) {
+                    console.error('❌ No email found for user identification');
+                    showError('Unable to identify user. Please contact support.');
+                    return false;
+                }
+
+                console.log('📧 User email identified:', userEmail);
+
+                // Update user subscription in AWS
+                const result = await paymentHandler.handlePaymentSuccess(userEmail, planInfo);
+                
+                if (result.success) {
+                    console.log('✅ Subscription saved successfully to AWS');
+                    
+                    // Store user data in localStorage for dashboard access
+                    localStorage.setItem('currentUser', JSON.stringify(result.user));
+                    localStorage.setItem('userSubscription', JSON.stringify(planInfo));
+                    
+                    return true;
+                } else {
+                    console.error('❌ Failed to save subscription:', result.error);
+                    showError('Failed to update subscription. Please contact support.');
+                    return false;
+                }
+
             } catch (error) {
-                console.error('Error saving subscription:', error);
+                console.error('❌ Error saving subscription:', error);
+                showError('Failed to save subscription. Please contact support.');
+                return false;
             }
+        }
+
+        function getEmailFromSources() {
+            // Try to get email from various sources
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // 1. Check URL parameters
+            let email = urlParams.get('email') || urlParams.get('user_email');
+            if (email) return email;
+
+            // 2. Check localStorage for demo accounts
+            const demoEmail = localStorage.getItem('demoEmail');
+            if (demoEmail) return demoEmail;
+
+            // 3. Check if user is logged in via AWS Cognito
+            const currentUser = localStorage.getItem('currentUser');
+            if (currentUser) {
+                try {
+                    const user = JSON.parse(currentUser);
+                    return user.email;
+                } catch (e) {
+                    console.warn('Could not parse current user from localStorage');
+                }
+            }
+
+            // 4. Check session storage
+            const sessionEmail = sessionStorage.getItem('userEmail');
+            if (sessionEmail) return sessionEmail;
+
+            // 5. Prompt user for email if not found
+            return promptForEmail();
+        }
+
+        function promptForEmail() {
+            const email = prompt('Please enter your email address to complete your subscription:');
+            if (email && email.includes('@')) {
+                return email;
+            }
+            return null;
         }
 
         function redirectToDashboard(planInfo) {
