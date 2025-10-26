@@ -4480,6 +4480,9 @@
 
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', async function() {
+            // First, ensure user data is in sessionStorage
+            await ensureUserDataInSession();
+            
             // Initialize AWS data service first
             await initializeAWSData();
             
@@ -4492,6 +4495,59 @@
             // Load and display homes
             loadHomes();
         });
+
+        // Ensure user data is stored in sessionStorage
+        async function ensureUserDataInSession() {
+            try {
+                // Check if we already have user data in sessionStorage
+                const existingUser = sessionStorage.getItem('currentUser');
+                const existingEmail = sessionStorage.getItem('currentUserEmail');
+                
+                if (existingUser && existingEmail) {
+                    console.log('User data already in sessionStorage');
+                    return;
+                }
+                
+                // Try to get user data from various sources
+                let userData = null;
+                let userEmail = null;
+                
+                // Check if user data is in localStorage
+                const localUser = localStorage.getItem('currentUser');
+                if (localUser) {
+                    try {
+                        userData = JSON.parse(localUser);
+                        userEmail = userData.email;
+                        console.log('Found user data in localStorage:', userData);
+                    } catch (error) {
+                        console.error('Error parsing localStorage user data:', error);
+                    }
+                }
+                
+                // If no user data found, create demo user data
+                if (!userData) {
+                    userData = {
+                        userId: 'demo.advanced@nestmate.com',
+                        email: 'demo.advanced@nestmate.com',
+                        name: 'Advanced Demo User',
+                        phone: '',
+                        emailVerified: false
+                    };
+                    userEmail = userData.email;
+                    console.log('Created demo user data:', userData);
+                }
+                
+                // Store in sessionStorage
+                sessionStorage.setItem('currentUser', JSON.stringify(userData));
+                sessionStorage.setItem('currentUserEmail', userEmail);
+                
+                console.log('User data stored in sessionStorage:', userData);
+                console.log('User email stored in sessionStorage:', userEmail);
+                
+            } catch (error) {
+                console.error('Error ensuring user data in sessionStorage:', error);
+            }
+        }
     </script>
 </body>
 </html>
