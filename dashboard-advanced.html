@@ -495,6 +495,112 @@
             color: #00d4aa;
         }
 
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal {
+            background: #1f2937;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .modal h3 {
+            color: #f9fafb;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            color: #f9fafb;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 0.75rem;
+            border: 1px solid #374151;
+            border-radius: 6px;
+            background: #374151;
+            color: #f9fafb;
+            font-size: 0.875rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* List Item Styles */
+        .list-item {
+            background: #374151;
+            border: 1px solid #4b5563;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .list-item-main {
+            flex: 1;
+        }
+
+        .list-item-title {
+            color: #f9fafb;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .list-item-sub {
+            color: #9ca3af;
+            font-size: 0.875rem;
+        }
+
+        .list-item-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #9ca3af;
+            padding: 2rem;
+            font-style: italic;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .sidebar {
@@ -3263,6 +3369,454 @@
             showAlert(`Viewing details for ${roomId.replace('-', ' ')}...`, 'info');
         }
 
+        // ===== Dynamic Bedrooms Helpers =====
+        function renderBedroomsList() {
+            const container = document.getElementById('bedroomsList');
+            if (!container) return;
+            container.innerHTML = '';
+            const list = ensureDashboardState().bedroomsList || [];
+            if (list.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'empty-state';
+                empty.textContent = 'No bedrooms added yet. Click "Add Bedroom" to create one.';
+                container.appendChild(empty);
+                return;
+            }
+            list.forEach((b, idx) => {
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                const details = [
+                    b.size && `Size: ${b.size}`,
+                    b.floorType && `Floor: ${b.floorType}`,
+                    b.windowCount && `Windows: ${b.windowCount}`,
+                    b.outlets && `Outlets: ${b.outlets}`,
+                    b.condition && `Condition: ${b.condition}`
+                ].filter(Boolean).join(' · ');
+                item.innerHTML = `
+                    <div class="list-item-main">
+                        <div class="list-item-title">${b.name || `Bedroom ${idx + 1}`}</div>
+                        <div class="list-item-sub">${details || 'No details added'}</div>
+                    </div>
+                    <div class="list-item-actions">
+                        <button class="btn btn-secondary" onclick="openEditBedroomModal(${idx})"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-secondary" onclick="deleteBedroom(${idx})"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function openAddBedroomModal() {
+            openBedroomModal();
+        }
+
+        function openEditBedroomModal(index) {
+            const state = ensureDashboardState();
+            const data = state.bedroomsList[index];
+            openBedroomModal(data, index);
+        }
+
+        function openBedroomModal(existing = null, index = null) {
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <h3>${existing ? 'Edit Bedroom' : 'Add Bedroom'}</h3>
+                <div class="form-grid">
+                    <div class="form-group"><label>Name</label><input id="bName" type="text" placeholder="e.g., Primary Bedroom" value="${existing?.name || ''}"></div>
+                    <div class="form-group"><label>Size</label><input id="bSize" type="text" placeholder="e.g., 15' x 12'" value="${existing?.size || ''}"></div>
+                    <div class="form-group"><label>Ceiling Height</label><input id="bCeilingHeight" type="text" placeholder="e.g., 9 feet" value="${existing?.ceilingHeight || ''}"></div>
+                    <div class="form-group"><label>Floor Type</label>
+                        <select id="bFloor">
+                            <option value="">Select</option>
+                            <option value="carpet" ${existing?.floorType === 'carpet' ? 'selected' : ''}>Carpet</option>
+                            <option value="hardwood" ${existing?.floorType === 'hardwood' ? 'selected' : ''}>Hardwood</option>
+                            <option value="laminate" ${existing?.floorType === 'laminate' ? 'selected' : ''}>Laminate</option>
+                            <option value="tile" ${existing?.floorType === 'tile' ? 'selected' : ''}>Tile</option>
+                            <option value="vinyl" ${existing?.floorType === 'vinyl' ? 'selected' : ''}>Vinyl</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Wall Color</label><input id="bWallColor" type="text" placeholder="e.g., Light Blue" value="${existing?.wallColor || ''}"></div>
+                    <div class="form-group"><label>Window Count</label><input id="bWindowCount" type="number" min="0" placeholder="e.g., 2" value="${existing?.windowCount ?? ''}"></div>
+                    <div class="form-group"><label>Electrical Outlets</label><input id="bOutlets" type="number" min="0" placeholder="e.g., 6" value="${existing?.outlets ?? ''}"></div>
+                    <div class="form-group"><label>Light Fixtures</label><input id="bLights" type="number" min="0" placeholder="e.g., 2" value="${existing?.lights ?? ''}"></div>
+                    <div class="form-group"><label>Condition</label>
+                        <select id="bCondition">
+                            <option value="">Select</option>
+                            <option value="excellent" ${existing?.condition==='excellent'?'selected':''}>Excellent</option>
+                            <option value="good" ${existing?.condition==='good'?'selected':''}>Good</option>
+                            <option value="fair" ${existing?.condition==='fair'?'selected':''}>Fair</option>
+                            <option value="poor" ${existing?.condition==='poor'?'selected':''}>Poor</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / -1;"><label>Notes</label><textarea id="bNotes" rows="3" placeholder="Any details or future plans...">${existing?.notes || ''}</textarea></div>
+                </div>
+                <div style="display:flex; gap: .75rem; justify-content:flex-end; margin-top: 1rem;">
+                    <button class="btn" id="bSaveBtn"><i class="fas fa-save"></i> Save</button>
+                    <button class="btn btn-secondary" id="bCancelBtn"><i class="fas fa-times"></i> Cancel</button>
+                </div>
+            `;
+            overlay.appendChild(modal);
+            document.body.appendChild(overlay);
+
+            modal.querySelector('#bCancelBtn').onclick = () => overlay.remove();
+            modal.querySelector('#bSaveBtn').onclick = async () => {
+                const payload = {
+                    name: document.getElementById('bName').value.trim(),
+                    size: document.getElementById('bSize').value.trim(),
+                    ceilingHeight: document.getElementById('bCeilingHeight').value.trim(),
+                    floorType: document.getElementById('bFloor').value,
+                    wallColor: document.getElementById('bWallColor').value.trim(),
+                    windowCount: parseInt(document.getElementById('bWindowCount').value) || 0,
+                    outlets: parseInt(document.getElementById('bOutlets').value) || 0,
+                    lights: parseInt(document.getElementById('bLights').value) || 0,
+                    condition: document.getElementById('bCondition').value,
+                    notes: document.getElementById('bNotes').value.trim()
+                };
+                await upsertBedroom(index, payload);
+                overlay.remove();
+            };
+        }
+
+        async function upsertBedroom(index, data) {
+            const state = ensureDashboardState();
+            if (index === null || index === undefined) state.bedroomsList.push(data); else state.bedroomsList[index] = data;
+            await saveBedroomsList();
+            renderBedroomsList();
+            showAlert('Bedroom saved successfully!', 'success');
+        }
+
+        async function deleteBedroom(index) {
+            if (!confirm('Are you sure you want to delete this bedroom?')) return;
+            const state = ensureDashboardState();
+            state.bedroomsList.splice(index, 1);
+            await saveBedroomsList();
+            renderBedroomsList();
+            showAlert('Bedroom deleted successfully!', 'success');
+        }
+
+        async function saveBedroomsList() {
+            const state = ensureDashboardState();
+            localStorage.setItem('dashboardState', JSON.stringify(state));
+        }
+
+        // ===== Dynamic Bathrooms Helpers =====
+        function renderBathroomsList() {
+            const container = document.getElementById('bathroomsList');
+            if (!container) return;
+            container.innerHTML = '';
+            const list = ensureDashboardState().bathroomsList || [];
+            if (list.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'empty-state';
+                empty.textContent = 'No bathrooms added yet. Click "Add Bathroom" to create one.';
+                container.appendChild(empty);
+                return;
+            }
+            list.forEach((b, idx) => {
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                const details = [
+                    b.type && `Type: ${b.type}`,
+                    b.fixtures && `Fixtures: ${b.fixtures}`,
+                    b.flooring && `Floor: ${b.flooring}`,
+                    b.condition && `Condition: ${b.condition}`
+                ].filter(Boolean).join(' · ');
+                item.innerHTML = `
+                    <div class="list-item-main">
+                        <div class="list-item-title">${b.name || `Bathroom ${idx + 1}`}</div>
+                        <div class="list-item-sub">${details || 'No details added'}</div>
+                    </div>
+                    <div class="list-item-actions">
+                        <button class="btn btn-secondary" onclick="openBathroomModal(${idx})"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-secondary" onclick="deleteBathroom(${idx})"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function openAddBathroomModal() { openBathroomModal(null); }
+
+        function openBathroomModal(index) {
+            const existing = (index !== null && index !== undefined) ? ensureDashboardState().bathroomsList[index] : null;
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <h3>${existing ? 'Edit Bathroom' : 'Add Bathroom'}</h3>
+                <div class="form-grid">
+                    <div class="form-group"><label>Name</label><input id="baName" type="text" placeholder="e.g., Master Bath" value="${existing?.name || ''}"></div>
+                    <div class="form-group"><label>Type</label>
+                        <select id="baType">
+                            <option value="">Select</option>
+                            <option value="full" ${existing?.type==='full'?'selected':''}>Full</option>
+                            <option value="three-quarter" ${existing?.type==='three-quarter'?'selected':''}>3/4 Bath</option>
+                            <option value="half" ${existing?.type==='half'?'selected':''}>Half</option>
+                            <option value="powder" ${existing?.type==='powder'?'selected':''}>Powder</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Fixtures</label><input id="baFixtures" type="text" placeholder="e.g., Double vanity, Walk-in shower" value="${existing?.fixtures || ''}"></div>
+                    <div class="form-group"><label>Flooring</label><input id="baFlooring" type="text" placeholder="e.g., Porcelain tile" value="${existing?.flooring || ''}"></div>
+                    <div class="form-group"><label>Wall Color</label><input id="baWallColor" type="text" value="${existing?.wallColor || ''}"></div>
+                    <div class="form-group"><label>Ventilation</label><input id="baVentilation" type="text" placeholder="e.g., Exhaust fan, Window" value="${existing?.ventilation || ''}"></div>
+                    <div class="form-group"><label>Last Renovation</label><input id="baLastRenovation" type="date" value="${existing?.lastRenovation || ''}"></div>
+                    <div class="form-group"><label>Condition</label>
+                        <select id="baCondition">
+                            <option value="">Select</option>
+                            <option value="excellent" ${existing?.condition==='excellent'?'selected':''}>Excellent</option>
+                            <option value="good" ${existing?.condition==='good'?'selected':''}>Good</option>
+                            <option value="fair" ${existing?.condition==='fair'?'selected':''}>Fair</option>
+                            <option value="poor" ${existing?.condition==='poor'?'selected':''}>Poor</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / -1;"><label>Notes</label><textarea id="baNotes" rows="3" placeholder="Any details or future plans...">${existing?.notes || ''}</textarea></div>
+                </div>
+                <div style="display:flex; gap: .75rem; justify-content:flex-end; margin-top: 1rem;">
+                    <button class="btn" id="baSaveBtn"><i class="fas fa-save"></i> Save</button>
+                    <button class="btn btn-secondary" id="baCancelBtn"><i class="fas fa-times"></i> Cancel</button>
+                </div>
+            `;
+            overlay.appendChild(modal);
+            document.body.appendChild(overlay);
+
+            modal.querySelector('#baCancelBtn').onclick = () => overlay.remove();
+            modal.querySelector('#baSaveBtn').onclick = async () => {
+                const payload = {
+                    name: document.getElementById('baName').value.trim(),
+                    type: document.getElementById('baType').value,
+                    fixtures: document.getElementById('baFixtures').value.trim(),
+                    flooring: document.getElementById('baFlooring').value.trim(),
+                    wallColor: document.getElementById('baWallColor').value.trim(),
+                    ventilation: document.getElementById('baVentilation').value.trim(),
+                    lastRenovation: document.getElementById('baLastRenovation').value,
+                    condition: document.getElementById('baCondition').value,
+                    notes: document.getElementById('baNotes').value.trim()
+                };
+                await upsertBathroom(index, payload);
+                overlay.remove();
+            };
+        }
+
+        async function upsertBathroom(index, data) {
+            const state = ensureDashboardState();
+            if (index === null || index === undefined) state.bathroomsList.push(data); else state.bathroomsList[index] = data;
+            await saveBathroomsList();
+            renderBathroomsList();
+            showAlert('Bathroom saved successfully!', 'success');
+        }
+
+        async function deleteBathroom(index) {
+            if (!confirm('Are you sure you want to delete this bathroom?')) return;
+            const state = ensureDashboardState();
+            state.bathroomsList.splice(index, 1);
+            await saveBathroomsList();
+            renderBathroomsList();
+            showAlert('Bathroom deleted successfully!', 'success');
+        }
+
+        async function saveBathroomsList() {
+            const state = ensureDashboardState();
+            localStorage.setItem('dashboardState', JSON.stringify(state));
+        }
+
+        // ===== Dynamic Kitchens Helpers =====
+        function renderKitchensList() {
+            const container = document.getElementById('kitchensList');
+            if (!container) return;
+            container.innerHTML = '';
+            const list = ensureDashboardState().kitchensList || [];
+            if (list.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'empty-state';
+                empty.textContent = 'No kitchens added yet. Click "Add Kitchen" to create one.';
+                container.appendChild(empty);
+                return;
+            }
+            list.forEach((k, idx) => {
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                const details = [
+                    k.size && `Size: ${k.size}`,
+                    k.appliances && `Appliances: ${k.appliances}`,
+                    k.countertops && `Countertops: ${k.countertops}`,
+                    k.condition && `Condition: ${k.condition}`
+                ].filter(Boolean).join(' · ');
+                item.innerHTML = `
+                    <div class="list-item-main">
+                        <div class="list-item-title">${k.name || `Kitchen ${idx + 1}`}</div>
+                        <div class="list-item-sub">${details || 'No details added'}</div>
+                    </div>
+                    <div class="list-item-actions">
+                        <button class="btn btn-secondary" onclick="openKitchenModal(${idx})"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-secondary" onclick="deleteKitchen(${idx})"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function openAddKitchenModal() { openKitchenModal(null); }
+
+        function openKitchenModal(index) {
+            const existing = (index !== null && index !== undefined) ? ensureDashboardState().kitchensList[index] : null;
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <h3>${existing ? 'Edit Kitchen' : 'Add Kitchen'}</h3>
+                <div class="form-grid">
+                    <div class="form-group"><label>Name</label><input id="kName" type="text" placeholder="e.g., Main Kitchen" value="${existing?.name || ''}"></div>
+                    <div class="form-group"><label>Size</label><input id="kSize" type="text" placeholder="e.g., 12' x 10'" value="${existing?.size || ''}"></div>
+                    <div class="form-group"><label>Appliance Finish</label>
+                        <select id="kAppliances">
+                            <option value="">Select</option>
+                            <option value="stainless-steel" ${existing?.appliances==='stainless-steel'?'selected':''}>Stainless Steel</option>
+                            <option value="black-stainless" ${existing?.appliances==='black-stainless'?'selected':''}>Black Stainless</option>
+                            <option value="white" ${existing?.appliances==='white'?'selected':''}>White</option>
+                            <option value="black" ${existing?.appliances==='black'?'selected':''}>Black</option>
+                            <option value="custom" ${existing?.appliances==='custom'?'selected':''}>Custom Color</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Countertop Material</label>
+                        <select id="kCountertops">
+                            <option value="">Select</option>
+                            <option value="granite" ${existing?.countertops==='granite'?'selected':''}>Granite</option>
+                            <option value="quartz" ${existing?.countertops==='quartz'?'selected':''}>Quartz</option>
+                            <option value="marble" ${existing?.countertops==='marble'?'selected':''}>Marble</option>
+                            <option value="butcher-block" ${existing?.countertops==='butcher-block'?'selected':''}>Butcher Block</option>
+                            <option value="laminate" ${existing?.countertops==='laminate'?'selected':''}>Laminate</option>
+                            <option value="concrete" ${existing?.countertops==='concrete'?'selected':''}>Concrete</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Cabinet Material</label>
+                        <select id="kCabinets">
+                            <option value="">Select</option>
+                            <option value="oak" ${existing?.cabinets==='oak'?'selected':''}>Oak</option>
+                            <option value="maple" ${existing?.cabinets==='maple'?'selected':''}>Maple</option>
+                            <option value="cherry" ${existing?.cabinets==='cherry'?'selected':''}>Cherry</option>
+                            <option value="pine" ${existing?.cabinets==='pine'?'selected':''}>Pine</option>
+                            <option value="mdf" ${existing?.cabinets==='mdf'?'selected':''}>MDF</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Flooring Type</label>
+                        <select id="kFlooring">
+                            <option value="">Select</option>
+                            <option value="hardwood" ${existing?.flooring==='hardwood'?'selected':''}>Hardwood</option>
+                            <option value="tile" ${existing?.flooring==='tile'?'selected':''}>Tile</option>
+                            <option value="vinyl" ${existing?.flooring==='vinyl'?'selected':''}>Vinyl</option>
+                            <option value="laminate" ${existing?.flooring==='laminate'?'selected':''}>Laminate</option>
+                            <option value="concrete" ${existing?.flooring==='concrete'?'selected':''}>Concrete</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Last Renovation</label><input id="kLastRenovation" type="date" value="${existing?.lastRenovation || ''}"></div>
+                    <div class="form-group"><label>Condition</label>
+                        <select id="kCondition">
+                            <option value="">Select</option>
+                            <option value="excellent" ${existing?.condition==='excellent'?'selected':''}>Excellent</option>
+                            <option value="good" ${existing?.condition==='good'?'selected':''}>Good</option>
+                            <option value="fair" ${existing?.condition==='fair'?'selected':''}>Fair</option>
+                            <option value="poor" ${existing?.condition==='poor'?'selected':''}>Poor</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / -1;"><label>Notes</label><textarea id="kNotes" rows="3" placeholder="Any details or future plans...">${existing?.notes || ''}</textarea></div>
+                </div>
+                <div style="display:flex; gap: .75rem; justify-content:flex-end; margin-top: 1rem;">
+                    <button class="btn" id="kSaveBtn"><i class="fas fa-save"></i> Save</button>
+                    <button class="btn btn-secondary" id="kCancelBtn"><i class="fas fa-times"></i> Cancel</button>
+                </div>
+            `;
+            overlay.appendChild(modal);
+            document.body.appendChild(overlay);
+
+            modal.querySelector('#kCancelBtn').onclick = () => overlay.remove();
+            modal.querySelector('#kSaveBtn').onclick = async () => {
+                const payload = {
+                    name: document.getElementById('kName').value.trim(),
+                    size: document.getElementById('kSize').value.trim(),
+                    appliances: document.getElementById('kAppliances').value,
+                    countertops: document.getElementById('kCountertops').value,
+                    cabinets: document.getElementById('kCabinets').value,
+                    flooring: document.getElementById('kFlooring').value,
+                    lastRenovation: document.getElementById('kLastRenovation').value,
+                    condition: document.getElementById('kCondition').value,
+                    notes: document.getElementById('kNotes').value.trim()
+                };
+                await upsertKitchen(index, payload);
+                overlay.remove();
+            };
+        }
+
+        async function upsertKitchen(index, data) {
+            const state = ensureDashboardState();
+            if (index === null || index === undefined) state.kitchensList.push(data); else state.kitchensList[index] = data;
+            await saveKitchensList();
+            renderKitchensList();
+            showAlert('Kitchen saved successfully!', 'success');
+        }
+
+        async function deleteKitchen(index) {
+            if (!confirm('Are you sure you want to delete this kitchen?')) return;
+            const state = ensureDashboardState();
+            state.kitchensList.splice(index, 1);
+            await saveKitchensList();
+            renderKitchensList();
+            showAlert('Kitchen deleted successfully!', 'success');
+        }
+
+        async function saveKitchensList() {
+            const state = ensureDashboardState();
+            localStorage.setItem('dashboardState', JSON.stringify(state));
+        }
+
+        // ===== Dashboard State Management =====
+        function ensureDashboardState() {
+            let state = JSON.parse(localStorage.getItem('dashboardState') || '{}');
+            if (!state.bedroomsList) state.bedroomsList = [];
+            if (!state.bathroomsList) state.bathroomsList = [];
+            if (!state.kitchensList) state.kitchensList = [];
+            return state;
+        }
+
+        function showAlert(message, type = 'info') {
+            // Create alert element
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            alert.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                color: white;
+                font-weight: 500;
+                z-index: 10000;
+                max-width: 400px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            `;
+            
+            if (type === 'success') {
+                alert.style.background = '#10b981';
+            } else if (type === 'error') {
+                alert.style.background = '#ef4444';
+            } else {
+                alert.style.background = '#3b82f6';
+            }
+            
+            document.body.appendChild(alert);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.parentNode.removeChild(alert);
+                }
+            }, 3000);
+        }
+
         function openAddRenovationModal() {
             showAlert('Add renovation modal coming soon!', 'info');
         }
@@ -3546,6 +4100,10 @@
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', function() {
             loadUserData();
+            // Initialize lists
+            renderBedroomsList();
+            renderBathroomsList();
+            renderKitchensList();
         });
     </script>
 </body>
