@@ -2352,22 +2352,157 @@
                             <option value="laminate" ${existing?.floorType === 'laminate' ? 'selected' : ''}>Laminate</option>
                             <option value="tile" ${existing?.floorType === 'tile' ? 'selected' : ''}>Tile</option>
                             <option value="vinyl" ${existing?.floorType === 'vinyl' ? 'selected' : ''}>Vinyl</option>
+                            <option value="bamboo" ${existing?.floorType === 'bamboo' ? 'selected' : ''}>Bamboo</option>
+                            <option value="cork" ${existing?.floorType === 'cork' ? 'selected' : ''}>Cork</option>
                         </select>
                     </div>
-                    <div class="form-group"><label>Wall Color</label><input id="bWallColor" type="text" placeholder="e.g., Light Blue" value="${existing?.wallColor || ''}"></div>
+                    <div class="form-group"><label>Floor Color/Material</label><input id="bFloorDetails" type="text" placeholder="e.g., Oak, Gray Berber" value="${existing?.floorDetails || ''}"></div>
+                    <div class="form-group"><label>Wall Color</label><input id="bWallColor" type="text" placeholder="e.g., Light Blue, White" value="${existing?.wallColor || ''}"></div>
+                    <div class="form-group"><label>Trim Style</label>
+                        <select id="bTrimStyle">
+                            <option value="">Select</option>
+                            <option value="colonial" ${existing?.trimStyle === 'colonial' ? 'selected' : ''}>Colonial</option>
+                            <option value="craftsman" ${existing?.trimStyle === 'craftsman' ? 'selected' : ''}>Craftsman</option>
+                            <option value="modern" ${existing?.trimStyle === 'modern' ? 'selected' : ''}>Modern</option>
+                            <option value="traditional" ${existing?.trimStyle === 'traditional' ? 'selected' : ''}>Traditional</option>
+                            <option value="minimal" ${existing?.trimStyle === 'minimal' ? 'selected' : ''}>Minimal</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Trim Color</label><input id="bTrimColor" type="text" placeholder="e.g., White, Cream" value="${existing?.trimColor || ''}"></div>
                     <div class="form-group"><label>Window Count</label><input id="bWindowCount" type="number" min="0" placeholder="e.g., 2" value="${existing?.windowCount ?? ''}"></div>
+                    <div class="form-group"><label>Window Sizes</label><input id="bWindows" type="text" placeholder="e.g., 36x48, 24x36" value="${existing?.windowSizes || ''}"></div>
+                    <div class="form-group"><label>Window Type</label>
+                        <select id="bWindowType">
+                            <option value="">Select</option>
+                            <option value="single-hung" ${existing?.windowType === 'single-hung' ? 'selected' : ''}>Single Hung</option>
+                            <option value="double-hung" ${existing?.windowType === 'double-hung' ? 'selected' : ''}>Double Hung</option>
+                            <option value="casement" ${existing?.windowType === 'casement' ? 'selected' : ''}>Casement</option>
+                            <option value="sliding" ${existing?.windowType === 'sliding' ? 'selected' : ''}>Sliding</option>
+                            <option value="bay" ${existing?.windowType === 'bay' ? 'selected' : ''}>Bay</option>
+                            <option value="picture" ${existing?.windowType === 'picture' ? 'selected' : ''}>Picture</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Blind Sizes</label><input id="bBlinds" type="text" placeholder="e.g., 36x48, 24x36" value="${existing?.blindSizes || ''}"></div>
+                    <div class="form-group"><label>Blind Type</label>
+                        <select id="bBlindType">
+                            <option value="">Select</option>
+                            <option value="venetian" ${existing?.blindType === 'venetian' ? 'selected' : ''}>Venetian</option>
+                            <option value="vertical" ${existing?.blindType === 'vertical' ? 'selected' : ''}>Vertical</option>
+                            <option value="roller" ${existing?.blindType === 'roller' ? 'selected' : ''}>Roller</option>
+                            <option value="cellular" ${existing?.blindType === 'cellular' ? 'selected' : ''}>Cellular</option>
+                            <option value="roman" ${existing?.blindType === 'roman' ? 'selected' : ''}>Roman</option>
+                            <option value="none" ${existing?.blindType === 'none' ? 'selected' : ''}>None</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Curtain Sizes</label><input id="bCurtains" type="text" placeholder="e.g., 84\" panels" value="${existing?.curtainSizes || ''}"></div>
+                    <div class="form-group"><label>Curtain Style</label>
+                        <select id="bCurtainStyle">
+                            <option value="">Select</option>
+                            <option value="grommet" ${existing?.curtainStyle === 'grommet' ? 'selected' : ''}>Grommet</option>
+                            <option value="rod-pocket" ${existing?.curtainStyle === 'rod-pocket' ? 'selected' : ''}>Rod Pocket</option>
+                            <option value="tab-top" ${existing?.curtainStyle === 'tab-top' ? 'selected' : ''}>Tab Top</option>
+                            <option value="pinch-pleat" ${existing?.curtainStyle === 'pinch-pleat' ? 'selected' : ''}>Pinch Pleat</option>
+                            <option value="none" ${existing?.curtainStyle === 'none' ? 'selected' : ''}>None</option>
+                        </select>
+                    </div>
                     <div class="form-group"><label>Electrical Outlets</label><input id="bOutlets" type="number" min="0" placeholder="e.g., 6" value="${existing?.outlets ?? ''}"></div>
+                    <div class="form-group"><label>Outlet Type</label>
+                        <select id="bOutletType">
+                            <option value="">Select</option>
+                            <option value="standard" ${existing?.outletType === 'standard' ? 'selected' : ''}>Standard</option>
+                            <option value="gfci" ${existing?.outletType === 'gfci' ? 'selected' : ''}>GFCI</option>
+                            <option value="usb" ${existing?.outletType === 'usb' ? 'selected' : ''}>USB Outlets</option>
+                            <option value="smart" ${existing?.outletType === 'smart' ? 'selected' : ''}>Smart Outlets</option>
+                        </select>
+                    </div>
                     <div class="form-group"><label>Light Fixtures</label><input id="bLights" type="number" min="0" placeholder="e.g., 2" value="${existing?.lights ?? ''}"></div>
+                    <div class="form-group"><label>Lighting Type</label>
+                        <select id="bLightingType">
+                            <option value="">Select</option>
+                            <option value="ceiling-fan" ${existing?.lightingType === 'ceiling-fan' ? 'selected' : ''}>Ceiling Fan</option>
+                            <option value="recessed" ${existing?.lightingType === 'recessed' ? 'selected' : ''}>Recessed</option>
+                            <option value="chandelier" ${existing?.lightingType === 'chandelier' ? 'selected' : ''}>Chandelier</option>
+                            <option value="pendant" ${existing?.lightingType === 'pendant' ? 'selected' : ''}>Pendant</option>
+                            <option value="table-lamp" ${existing?.lightingType === 'table-lamp' ? 'selected' : ''}>Table Lamp</option>
+                            <option value="floor-lamp" ${existing?.lightingType === 'floor-lamp' ? 'selected' : ''}>Floor Lamp</option>
+                            <option value="wall-sconce" ${existing?.lightingType === 'wall-sconce' ? 'selected' : ''}>Wall Sconce</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Ceiling Fan</label>
+                        <select id="bCeilingFan">
+                            <option value="no" ${existing?.ceilingFan ? '' : 'selected'}>No</option>
+                            <option value="yes" ${existing?.ceilingFan ? 'selected' : ''}>Yes</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Fan Brand/Model</label><input id="bFanDetails" type="text" placeholder="e.g., Hunter, 52\"" value="${existing?.fanDetails || ''}"></div>
+                    <div class="form-group"><label>Closet Type</label>
+                        <select id="bClosetType">
+                            <option value="">Select</option>
+                            <option value="walk-in" ${existing?.closetType === 'walk-in' ? 'selected' : ''}>Walk-in</option>
+                            <option value="reach-in" ${existing?.closetType === 'reach-in' ? 'selected' : ''}>Reach-in</option>
+                            <option value="built-in" ${existing?.closetType === 'built-in' ? 'selected' : ''}>Built-in</option>
+                            <option value="wardrobe" ${existing?.closetType === 'wardrobe' ? 'selected' : ''}>Wardrobe</option>
+                            <option value="none" ${existing?.closetType === 'none' ? 'selected' : ''}>None</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Closet Size</label><input id="bClosetSize" type="text" placeholder="e.g., 6' x 4'" value="${existing?.closetSize || ''}"></div>
+                    <div class="form-group"><label>Closet Organization</label>
+                        <select id="bClosetOrg">
+                            <option value="">Select</option>
+                            <option value="hanging-rods" ${existing?.closetOrg === 'hanging-rods' ? 'selected' : ''}>Hanging Rods</option>
+                            <option value="shelving" ${existing?.closetOrg === 'shelving' ? 'selected' : ''}>Shelving</option>
+                            <option value="drawers" ${existing?.closetOrg === 'drawers' ? 'selected' : ''}>Drawers</option>
+                            <option value="custom-system" ${existing?.closetOrg === 'custom-system' ? 'selected' : ''}>Custom System</option>
+                            <option value="basic" ${existing?.closetOrg === 'basic' ? 'selected' : ''}>Basic</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Attached Bathroom</label>
+                        <select id="bBath">
+                            <option value="no" ${existing?.attachedBath ? '' : 'selected'}>No</option>
+                            <option value="yes" ${existing?.attachedBath ? 'selected' : ''}>Yes</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Bathroom Access</label>
+                        <select id="bBathAccess">
+                            <option value="">Select</option>
+                            <option value="private" ${existing?.bathAccess === 'private' ? 'selected' : ''}>Private</option>
+                            <option value="shared" ${existing?.bathAccess === 'shared' ? 'selected' : ''}>Shared</option>
+                            <option value="jack-jill" ${existing?.bathAccess === 'jack-jill' ? 'selected' : ''}>Jack & Jill</option>
+                            <option value="none" ${existing?.bathAccess === 'none' ? 'selected' : ''}>None</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Heating/Cooling</label>
+                        <select id="bHVAC">
+                            <option value="">Select</option>
+                            <option value="central" ${existing?.hvac === 'central' ? 'selected' : ''}>Central</option>
+                            <option value="window-unit" ${existing?.hvac === 'window-unit' ? 'selected' : ''}>Window Unit</option>
+                            <option value="baseboard" ${existing?.hvac === 'baseboard' ? 'selected' : ''}>Baseboard</option>
+                            <option value="radiator" ${existing?.hvac === 'radiator' ? 'selected' : ''}>Radiator</option>
+                            <option value="none" ${existing?.hvac === 'none' ? 'selected' : ''}>None</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Security Features</label>
+                        <select id="bSecurity">
+                            <option value="">Select</option>
+                            <option value="motion-sensor" ${existing?.security === 'motion-sensor' ? 'selected' : ''}>Motion Sensor</option>
+                            <option value="window-sensor" ${existing?.security === 'window-sensor' ? 'selected' : ''}>Window Sensor</option>
+                            <option value="door-sensor" ${existing?.security === 'door-sensor' ? 'selected' : ''}>Door Sensor</option>
+                            <option value="camera" ${existing?.security === 'camera' ? 'selected' : ''}>Camera</option>
+                            <option value="none" ${existing?.security === 'none' ? 'selected' : ''}>None</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Last Renovation</label><input id="bLastRenovation" type="text" placeholder="e.g., 2020" value="${existing?.lastRenovation || ''}"></div>
                     <div class="form-group"><label>Condition</label>
                         <select id="bCondition">
                             <option value="">Select</option>
-                            <option value="excellent" ${existing?.condition==='excellent'?'selected':''}>Excellent</option>
-                            <option value="good" ${existing?.condition==='good'?'selected':''}>Good</option>
-                            <option value="fair" ${existing?.condition==='fair'?'selected':''}>Fair</option>
-                            <option value="poor" ${existing?.condition==='poor'?'selected':''}>Poor</option>
+                            <option value="excellent" ${existing?.condition === 'excellent' ? 'selected' : ''}>Excellent</option>
+                            <option value="good" ${existing?.condition === 'good' ? 'selected' : ''}>Good</option>
+                            <option value="fair" ${existing?.condition === 'fair' ? 'selected' : ''}>Fair</option>
+                            <option value="poor" ${existing?.condition === 'poor' ? 'selected' : ''}>Poor</option>
+                            <option value="needs-renovation" ${existing?.condition === 'needs-renovation' ? 'selected' : ''}>Needs Renovation</option>
                         </select>
                     </div>
-                    <div class="form-group" style="grid-column: 1 / -1;"><label>Notes</label><textarea id="bNotes" rows="3" placeholder="Any details or future plans...">${existing?.notes || ''}</textarea></div>
+                    <div class="form-group" style="grid-column: 1 / -1"><label>Notes</label><textarea id="bNotes" rows="3" placeholder="Any additional notes...">${existing?.notes || ''}</textarea></div>
                 </div>
                 <div style="display:flex; gap: .75rem; justify-content:flex-end; margin-top: 1rem;">
                     <button class="btn" id="bSaveBtn"><i class="fas fa-save"></i> Save</button>
@@ -2384,10 +2519,31 @@
                     size: document.getElementById('bSize').value.trim(),
                     ceilingHeight: document.getElementById('bCeilingHeight').value.trim(),
                     floorType: document.getElementById('bFloor').value,
+                    floorDetails: document.getElementById('bFloorDetails').value.trim(),
                     wallColor: document.getElementById('bWallColor').value.trim(),
+                    trimStyle: document.getElementById('bTrimStyle').value,
+                    trimColor: document.getElementById('bTrimColor').value.trim(),
                     windowCount: parseInt(document.getElementById('bWindowCount').value) || 0,
+                    windowSizes: document.getElementById('bWindows').value.trim(),
+                    windowType: document.getElementById('bWindowType').value,
+                    blindSizes: document.getElementById('bBlinds').value.trim(),
+                    blindType: document.getElementById('bBlindType').value,
+                    curtainSizes: document.getElementById('bCurtains').value.trim(),
+                    curtainStyle: document.getElementById('bCurtainStyle').value,
                     outlets: parseInt(document.getElementById('bOutlets').value) || 0,
+                    outletType: document.getElementById('bOutletType').value,
                     lights: parseInt(document.getElementById('bLights').value) || 0,
+                    lightingType: document.getElementById('bLightingType').value,
+                    ceilingFan: document.getElementById('bCeilingFan').value === 'yes',
+                    fanDetails: document.getElementById('bFanDetails').value.trim(),
+                    closetType: document.getElementById('bClosetType').value,
+                    closetSize: document.getElementById('bClosetSize').value.trim(),
+                    closetOrg: document.getElementById('bClosetOrg').value,
+                    attachedBath: document.getElementById('bBath').value === 'yes',
+                    bathAccess: document.getElementById('bBathAccess').value,
+                    hvac: document.getElementById('bHVAC').value,
+                    security: document.getElementById('bSecurity').value,
+                    lastRenovation: document.getElementById('bLastRenovation').value.trim(),
                     condition: document.getElementById('bCondition').value,
                     notes: document.getElementById('bNotes').value.trim()
                 };
