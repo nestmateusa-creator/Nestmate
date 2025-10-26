@@ -13,7 +13,7 @@ Configure these success URLs in your Stripe dashboard for each payment link:
 ### Yearly Plans:
 - **Basic Yearly**: `https://nestmateus.com/payment-success.html?success=true&plan=cNi3cx3zY3kj6rzckZ1sQ0R`
 - **Pro Yearly**: `https://nestmateus.com/payment-success.html?success=true&plan=bJe6oJ0nMg755nv0Ch1sQ0S`
-- **Advanced Pro Yearly**: `https://nestmateus.com/payment-success.html?success=true&plan=bJe6oJ0nMg755nv0Ch1sQ0S`
+- **Advanced Pro Yearly**: `https://nestmateus.com/payment-success.html?success=true&plan=14AcN7eeC8ED3fn4Sx1sQ0T`
 - **Enterprise Yearly**: `https://nestmateus.com/payment-success.html?success=true&plan=aFa4gB8UiaML3fn1Gl1sQ0U`
 
 ## How to Configure in Stripe:
@@ -28,9 +28,9 @@ Configure these success URLs in your Stripe dashboard for each payment link:
 
 After successful payment, users will be redirected to:
 - **Basic**: `dashboard-basic-clean.html`
-- **Pro**: `dashboard-basic-clean.html` (temporarily - will be recreated)
-- **Advanced Pro**: `dashboard-basic-clean.html` (temporarily - will be recreated)
-- **Enterprise**: `dashboard-basic-clean.html` (temporarily - will be recreated)
+- **Pro**: `dashboard-advanced.html`
+- **Advanced Pro**: `dashboard-advanced-pro.html`
+- **Enterprise**: `dashboard-enterprise.html`
 
 ## Payment Links:
 
@@ -43,5 +43,5 @@ After successful payment, users will be redirected to:
 ### Yearly:
 - Basic: https://buy.stripe.com/cNi3cx3zY3kj6rzckZ1sQ0R
 - Pro: https://buy.stripe.com/bJe6oJ0nMg755nv0Ch1sQ0S
-- Advanced Pro: https://buy.stripe.com/bJe6oJ0nMg755nv0Ch1sQ0S
+- Advanced Pro: https://buy.stripe.com/14AcN7eeC8ED3fn4Sx1sQ0T
 - Enterprise: https://buy.stripe.com/aFa4gB8UiaML3fn1Gl1sQ0U
