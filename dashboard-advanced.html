@@ -475,6 +475,26 @@
             width: 100%;
         }
 
+        /* Content Section Styling */
+        .content-section {
+            display: none;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #f9fafb;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-title i {
+            color: #00d4aa;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .sidebar {
@@ -1768,13 +1788,13 @@
                 <button class="nav-item" onclick="showSection('systems')">
                     <i class="fas fa-cogs"></i> Systems
                 </button>
-                <button class="nav-item" onclick="showSection('bedrooms')">
+                <button class="nav-item" onclick="showSection('bedroomsSection')">
                     <i class="fas fa-bed"></i> Bedrooms
                 </button>
-                <button class="nav-item" onclick="showSection('bathrooms')">
+                <button class="nav-item" onclick="showSection('bathroomsSection')">
                     <i class="fas fa-bath"></i> Bathrooms
                 </button>
-                <button class="nav-item" onclick="showSection('kitchen')">
+                <button class="nav-item" onclick="showSection('kitchenSection')">
                     <i class="fas fa-utensils"></i> Kitchen
                 </button>
                 <button class="nav-item" onclick="showSection('living-areas')">
@@ -2559,121 +2579,135 @@
                     </div>
                 </div>
 
-                <!-- Bedrooms Section -->
-                <div id="bedrooms" class="dashboard-section" style="display: none;">
-                    <div class="card">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                            <h3>Bedroom Information</h3>
-                            <div>
-                                <button class="btn" onclick="openAddBedroomModal()">
-                                    <i class="fas fa-plus"></i> Add Bedroom
-                                </button>
-                            </div>
+            <!-- Bedrooms Section -->
+            <div id="bedroomsSection" class="content-section">
+                <h2 class="section-title">
+                    <i class="fas fa-bed"></i> Bedrooms
+                </h2>
+                
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3>Bedroom Information</h3>
+                        <div>
+                            <button class="btn" onclick="openAddBedroomModal()">
+                                <i class="fas fa-plus"></i> Add Bedroom
+                            </button>
                         </div>
+                    </div>
 
-                        <!-- List of bedrooms -->
-                        <div id="bedroomsList" class="list-container">
-                            <div style="background: red; color: white; padding: 20px; margin: 10px; border: 3px solid yellow; font-size: 18px; font-weight: bold;">
-                                TEST CONTENT - BEDROOMS SECTION IS WORKING!
-                            </div>
-                            <div style="background: #374151; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-                                <h4 style="color: #f9fafb; margin: 0 0 0.5rem 0;">Master Bedroom</h4>
-                                <p style="color: #d1d5db; margin: 0.25rem 0;">Size: 16' x 14'</p>
-                                <p style="color: #d1d5db; margin: 0.25rem 0;">Features: 2 Windows, 1 Door, 4 Outlets</p>
-                                <p style="color: #d1d5db; margin: 0.25rem 0;">Bed: King Size</p>
-                                <div style="margin-top: 1rem;">
-                                    <button class="btn-small" onclick="editRoom('master-bedroom')" style="margin-right: 0.5rem;">Edit</button>
-                                    <button class="btn-small" onclick="viewRoomDetails('master-bedroom')">Details</button>
-                                </div>
-                            </div>
-                            
-                            <div style="background: #374151; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-                                <h4 style="color: #f9fafb; margin: 0 0 0.5rem 0;">Guest Bedroom</h4>
-                                <p style="color: #d1d5db; margin: 0.25rem 0;">Size: 12' x 10'</p>
-                                <p style="color: #d1d5db; margin: 0.25rem 0;">Features: 1 Window, 1 Door, 2 Outlets</p>
-                                <p style="color: #d1d5db; margin: 0.25rem 0;">Bed: Queen Size</p>
-                                <div style="margin-top: 1rem;">
-                                    <button class="btn-small" onclick="editRoom('guest-bedroom')" style="margin-right: 0.5rem;">Edit</button>
-                                    <button class="btn-small" onclick="viewRoomDetails('guest-bedroom')">Details</button>
-                                </div>
-                            </div>
+                    <!-- List of bedrooms -->
+                    <div id="bedroomsList" class="list-container">
+                        <!-- dynamically rendered -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bathrooms Section -->
+            <div id="bathroomsSection" class="content-section">
+                <h2 class="section-title">
+                    <i class="fas fa-bath"></i> Bathrooms
+                </h2>
+                
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3>Bathroom Information</h3>
+                        <div>
+                            <button class="btn" onclick="openAddBathroomModal()">
+                                <i class="fas fa-plus"></i> Add Bathroom
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- List of bathrooms -->
+                    <div id="bathroomsList" class="list-container"></div>
+                </div>
+            </div>
+
+            <!-- Kitchen Section -->
+            <div id="kitchenSection" class="content-section">
+                <h2 class="section-title">
+                    <i class="fas fa-utensils"></i> Kitchen
+                </h2>
+                
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3>Kitchen Information</h3>
+                        <div>
+                            <button class="btn" onclick="openAddKitchenModal()">
+                                <i class="fas fa-plus"></i> Add Kitchen
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- List of kitchens -->
+                    <div id="kitchensList" class="list-container"></div>
+                    
+                    <div id="kitchenForm" style="display: none;">
+                        <div class="form-group">
+                            <label for="kitchenSize">Kitchen Size</label>
+                            <input type="text" id="kitchenSize" placeholder="e.g., 12' x 10'">
+                        </div>
+                        <div class="form-group">
+                            <label for="kitchenAppliances">Appliance Finish</label>
+                            <select id="kitchenAppliances">
+                                <option value="">Select appliance finish</option>
+                                <option value="stainless-steel">Stainless Steel</option>
+                                <option value="black-stainless">Black Stainless</option>
+                                <option value="white">White</option>
+                                <option value="black">Black</option>
+                                <option value="custom">Custom Color</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="kitchenCountertops">Countertop Material</label>
+                            <select id="kitchenCountertops">
+                                <option value="">Select countertop material</option>
+                                <option value="granite">Granite</option>
+                                <option value="quartz">Quartz</option>
+                                <option value="marble">Marble</option>
+                                <option value="butcher-block">Butcher Block</option>
+                                <option value="laminate">Laminate</option>
+                                <option value="concrete">Concrete</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="kitchenCabinets">Cabinet Material</label>
+                            <select id="kitchenCabinets">
+                                <option value="">Select cabinet material</option>
+                                <option value="oak">Oak</option>
+                                <option value="maple">Maple</option>
+                                <option value="cherry">Cherry</option>
+                                <option value="pine">Pine</option>
+                                <option value="mdf">MDF</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="kitchenFlooring">Flooring Type</label>
+                            <select id="kitchenFlooring">
+                                <option value="">Select flooring type</option>
+                                <option value="hardwood">Hardwood</option>
+                                <option value="tile">Tile</option>
+                                <option value="vinyl">Vinyl</option>
+                                <option value="laminate">Laminate</option>
+                                <option value="concrete">Concrete</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="kitchenRenovation">Last Renovation Date</label>
+                            <input type="date" id="kitchenRenovation">
+                        </div>
+                        <div style="display: flex; gap: 1rem;">
+                            <button class="btn" onclick="saveKitchen()">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                            <button class="btn btn-secondary" onclick="cancelEditKitchen()">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
                         </div>
                     </div>
                 </div>
-
-                <!-- Bathrooms Section -->
-                <div id="bathrooms" class="dashboard-section" style="display: none;">
-                    <div class="card">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                            <h3>Bathroom Information</h3>
-                            <div>
-                                <button class="btn" onclick="openAddBathroomModal()">
-                                    <i class="fas fa-plus"></i> Add Bathroom
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- List of bathrooms -->
-                        <div id="bathroomsList" class="list-container">
-                            <div style="background: blue; color: white; padding: 20px; margin: 10px; border: 3px solid orange; font-size: 18px; font-weight: bold;">
-                                TEST CONTENT - BATHROOMS SECTION IS WORKING!
-                            </div>
-                            <div style="background: #374151; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-                                <h4 style="color: #f9fafb; margin: 0 0 0.5rem 0;">Master Bathroom</h4>
-                                <p style="color: #d1d5db; margin: 0.25rem 0;">Size: 12' x 8'</p>
-                                <p style="color: #d1d5db; margin: 0.25rem 0;">Features: Bathtub & Shower, Toilet, Double Vanity</p>
-                                <p style="color: #d1d5db; margin: 0.25rem 0;">Mirror: Large Mirror</p>
-                                <div style="margin-top: 1rem;">
-                                    <button class="btn-small" onclick="editRoom('master-bathroom')" style="margin-right: 0.5rem;">Edit</button>
-                                    <button class="btn-small" onclick="viewRoomDetails('master-bathroom')">Details</button>
-                                </div>
-                            </div>
-                            
-                            <div style="background: #374151; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-                                <h4 style="color: #f9fafb; margin: 0 0 0.5rem 0;">Guest Bathroom</h4>
-                                <p style="color: #d1d5db; margin: 0.25rem 0;">Size: 8' x 6'</p>
-                                <p style="color: #d1d5db; margin: 0.25rem 0;">Features: Shower Only, Toilet, Single Vanity</p>
-                                <p style="color: #d1d5db; margin: 0.25rem 0;">Mirror: Medicine Cabinet</p>
-                                <div style="margin-top: 1rem;">
-                                    <button class="btn-small" onclick="editRoom('guest-bathroom')" style="margin-right: 0.5rem;">Edit</button>
-                                    <button class="btn-small" onclick="viewRoomDetails('guest-bathroom')">Details</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Kitchen Section -->
-                <div id="kitchen" class="dashboard-section" style="display: none;">
-                    <div class="card">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                            <h3>Kitchen Information</h3>
-                            <div>
-                                <button class="btn" onclick="openAddKitchenModal()">
-                                    <i class="fas fa-plus"></i> Add Kitchen
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- List of kitchens -->
-                        <div id="kitchensList" class="list-container">
-                            <div style="background: green; color: white; padding: 20px; margin: 10px; border: 3px solid purple; font-size: 18px; font-weight: bold;">
-                                TEST CONTENT - KITCHEN SECTION IS WORKING!
-                            </div>
-                            <div style="background: #374151; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-                                <h4 style="color: #f9fafb; margin: 0 0 0.5rem 0;">Main Kitchen</h4>
-                                <p style="color: #d1d5db; margin: 0.25rem 0;">Size: 15' x 12'</p>
-                                <p style="color: #d1d5db; margin: 0.25rem 0;">Appliances: Stainless Steel</p>
-                                <p style="color: #d1d5db; margin: 0.25rem 0;">Countertops: Granite</p>
-                                <p style="color: #d1d5db; margin: 0.25rem 0;">Cabinets: Oak, Double Sink</p>
-                                <div style="margin-top: 1rem;">
-                                    <button class="btn-small" onclick="editRoom('main-kitchen')" style="margin-right: 0.5rem;">Edit</button>
-                                    <button class="btn-small" onclick="viewRoomDetails('main-kitchen')">Details</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            </div>
 
                 <!-- Living Areas Section -->
                 <div id="living-areas" class="dashboard-section" style="display: none;">
@@ -2966,8 +3000,8 @@
         function showSection(sectionId) {
             console.log('showSection called with:', sectionId);
             
-            // Hide all sections
-            const sections = document.querySelectorAll('.dashboard-section');
+            // Hide all sections (both dashboard-section and content-section)
+            const sections = document.querySelectorAll('.dashboard-section, .content-section');
             sections.forEach(section => section.style.display = 'none');
             
             // Remove active class from all nav items
