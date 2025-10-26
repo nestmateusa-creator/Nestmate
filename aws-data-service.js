@@ -3,22 +3,33 @@
 
 class AWSDataService {
     constructor() {
-        this.dynamodb = new AWS.DynamoDB.DocumentClient();
+        this.dynamodb = null;
         this.currentUserId = null;
+        this.initialized = false;
     }
 
     // Initialize with current user
     async initialize(userId) {
         this.currentUserId = userId;
-        console.log('🔧 AWS Data Service initialized for user:', userId);
+        
+        // Initialize DynamoDB client when needed
+        if (typeof AWS !== 'undefined') {
+            this.dynamodb = new AWS.DynamoDB.DocumentClient();
+            this.initialized = true;
+            console.log('🔧 AWS Data Service initialized for user:', userId);
+        } else {
+            console.error('AWS SDK not available');
+            throw new Error('AWS SDK not available');
+        }
     }
 
     // ==================== USER DATA ====================
 
     async saveUserData(userData) {
         try {
-            if (!this.currentUserId) {
-                throw new Error('User not authenticated');
+            if (!this.initialized || !this.currentUserId) {
+                console.warn('AWS Data Service not initialized');
+                return { success: false, error: 'Service not initialized' };
             }
 
             const params = {
@@ -68,8 +79,9 @@ class AWSDataService {
 
     async saveHomesList(homesList) {
         try {
-            if (!this.currentUserId) {
-                throw new Error('User not authenticated');
+            if (!this.initialized || !this.currentUserId) {
+                console.warn('AWS Data Service not initialized');
+                return { success: false, error: 'Service not initialized' };
             }
 
             const params = {
@@ -94,8 +106,9 @@ class AWSDataService {
 
     async getHomesList() {
         try {
-            if (!this.currentUserId) {
-                throw new Error('User not authenticated');
+            if (!this.initialized || !this.currentUserId) {
+                console.warn('AWS Data Service not initialized');
+                return [];
             }
 
             const params = {
