@@ -3973,6 +3973,8 @@
         // AWS Data Service Initialization
         async function initializeAWSData() {
             try {
+                console.log('Initializing AWS Data Service...');
+                
                 // Wait for AWS SDK to be available
                 if (typeof AWS === 'undefined') {
                     console.error('AWS SDK not loaded');
@@ -3981,9 +3983,12 @@
 
                 // Initialize AWS Data Service
                 awsDataService = new AWSDataService();
+                console.log('AWS Data Service created:', awsDataService);
                 
                 // Get current user ID from session storage
                 const currentUserEmail = sessionStorage.getItem('currentUserEmail');
+                console.log('Current user email:', currentUserEmail);
+                
                 if (!currentUserEmail) {
                     console.error('No user email found in session');
                     return;
@@ -3991,11 +3996,11 @@
 
                 // Initialize with user email
                 await awsDataService.initialize(currentUserEmail);
+                console.log('AWS Data Service initialized successfully');
                 
                 // Load data from AWS
                 await loadDataFromAWS();
                 
-                console.log('AWS Data Service initialized successfully');
             } catch (error) {
                 console.error('Error initializing AWS Data Service:', error);
             }
@@ -4077,12 +4082,18 @@
             const homeData = {
                 address: document.getElementById('homeAddress').value,
                 type: document.getElementById('homeType').value,
-                bedrooms: parseInt(document.getElementById('homeBedrooms').value),
-                bathrooms: parseFloat(document.getElementById('homeBathrooms').value),
-                squareFootage: parseInt(document.getElementById('homeSquareFootage').value),
-                yearBuilt: parseInt(document.getElementById('homeYearBuilt').value),
+                bedrooms: parseInt(document.getElementById('homeBedrooms').value) || 0,
+                bathrooms: parseFloat(document.getElementById('homeBathrooms').value) || 0,
+                squareFootage: parseInt(document.getElementById('homeSquareFootage').value) || 0,
+                yearBuilt: parseInt(document.getElementById('homeYearBuilt').value) || new Date().getFullYear(),
                 healthScore: Math.floor(Math.random() * 20) + 80 // Random health score
             };
+
+            // Validate required fields
+            if (!homeData.address || !homeData.type) {
+                showAlert('Please fill in all required fields', 'error');
+                return;
+            }
 
             if (form.dataset.homeId) {
                 // Edit existing home
@@ -4100,7 +4111,12 @@
 
             // Save to AWS
             try {
+                console.log('Attempting to save home to AWS...');
+                console.log('awsDataService:', awsDataService);
+                console.log('awsDataService methods:', Object.getOwnPropertyNames(awsDataService));
+                
                 if (awsDataService) {
+                    console.log('Calling saveHomesList with homes:', homes);
                     await awsDataService.saveHomesList(homes);
                     console.log('Home saved to AWS successfully');
                 } else {
