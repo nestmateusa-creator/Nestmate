@@ -4010,11 +4010,11 @@
                 }
 
                 // Load tasks
-                const tasksData = await awsDataService.getList('tasks');
+                const tasksData = await awsDataService.getTasksList();
                 tasks = tasksData || [];
 
                 // Load homes
-                const homesData = await awsDataService.getList('homes');
+                const homesData = await awsDataService.getHomesList();
                 homes = homesData || [];
 
                 console.log('Data loaded from AWS:', { tasks, homes });
@@ -4101,7 +4101,7 @@
             // Save to AWS
             try {
                 if (awsDataService) {
-                    await awsDataService.saveList('homes', homes);
+                    await awsDataService.saveHomesList(homes);
                     console.log('Home saved to AWS successfully');
                 } else {
                     console.error('AWS Data Service not initialized');
@@ -4157,7 +4157,7 @@
                 // Save to AWS
                 try {
                     if (awsDataService) {
-                        await awsDataService.saveList('tasks', tasks);
+                        await awsDataService.saveTasksList(tasks);
                         console.log('Task completed and saved to AWS');
                     }
                 } catch (error) {
@@ -4178,7 +4178,7 @@
                 // Save to AWS
                 try {
                     if (awsDataService) {
-                        await awsDataService.saveList('tasks', tasks);
+                        await awsDataService.saveTasksList(tasks);
                         console.log('Task undone and saved to AWS');
                     }
                 } catch (error) {
