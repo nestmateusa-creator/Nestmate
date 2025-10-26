@@ -3122,11 +3122,20 @@
         // User authentication and data loading
         async function loadUserData() {
             try {
-                // Load user data from AWS Cognito
-                const user = await getCurrentUser();
-                if (user) {
-                    document.getElementById('userName').textContent = user.username || 'User';
-                    document.getElementById('userAvatar').textContent = (user.username || 'U').charAt(0).toUpperCase();
+                // Load user data from session storage
+                const currentUserEmail = sessionStorage.getItem('currentUserEmail');
+                const currentUser = sessionStorage.getItem('currentUser');
+                
+                if (currentUser) {
+                    const userData = JSON.parse(currentUser);
+                    document.getElementById('userName').textContent = userData.name || 'User';
+                    document.getElementById('userAvatar').textContent = (userData.name || 'U').charAt(0).toUpperCase();
+                } else if (currentUserEmail) {
+                    document.getElementById('userName').textContent = currentUserEmail;
+                    document.getElementById('userAvatar').textContent = currentUserEmail.charAt(0).toUpperCase();
+                } else {
+                    document.getElementById('userName').textContent = 'Demo User';
+                    document.getElementById('userAvatar').textContent = 'D';
                 }
             } catch (error) {
                 console.error('Error loading user data:', error);
@@ -4011,6 +4020,8 @@
             try {
                 if (!awsDataService) {
                     console.error('AWS Data Service not initialized');
+                    // Fallback to localStorage
+                    await loadDataFromLocalStorage();
                     return;
                 }
 
@@ -4025,6 +4036,22 @@
                 console.log('Data loaded from AWS:', { tasks, homes });
             } catch (error) {
                 console.error('Error loading data from AWS:', error);
+                // Fallback to localStorage
+                await loadDataFromLocalStorage();
+            }
+        }
+
+        // Fallback to localStorage when AWS is not available
+        async function loadDataFromLocalStorage() {
+            try {
+                console.log('Loading data from localStorage fallback...');
+                tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+                homes = JSON.parse(localStorage.getItem('homes')) || [];
+                console.log('Data loaded from localStorage:', { tasks, homes });
+            } catch (error) {
+                console.error('Error loading data from localStorage:', error);
+                tasks = [];
+                homes = [];
             }
         }
 
@@ -4113,18 +4140,29 @@
             try {
                 console.log('Attempting to save home to AWS...');
                 console.log('awsDataService:', awsDataService);
-                console.log('awsDataService methods:', Object.getOwnPropertyNames(awsDataService));
                 
                 if (awsDataService) {
+                    console.log('awsDataService methods:', Object.getOwnPropertyNames(awsDataService));
                     console.log('Calling saveHomesList with homes:', homes);
                     await awsDataService.saveHomesList(homes);
                     console.log('Home saved to AWS successfully');
                 } else {
-                    console.error('AWS Data Service not initialized');
+                    console.error('AWS Data Service not initialized, saving to localStorage');
+                    // Fallback to localStorage
+                    localStorage.setItem('homes', JSON.stringify(homes));
+                    console.log('Home saved to localStorage fallback');
                 }
             } catch (error) {
                 console.error('Error saving home to AWS:', error);
-                showAlert('Error saving home. Please try again.', 'error');
+                console.log('Falling back to localStorage...');
+                // Fallback to localStorage
+                try {
+                    localStorage.setItem('homes', JSON.stringify(homes));
+                    console.log('Home saved to localStorage fallback');
+                } catch (localError) {
+                    console.error('Error saving to localStorage:', localError);
+                    showAlert('Error saving home. Please try again.', 'error');
+                }
             }
 
             closeHomeModal();
