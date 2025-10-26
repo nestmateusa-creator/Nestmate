@@ -84,6 +84,9 @@ class AWSDataService {
                 return { success: false, error: 'Service not initialized' };
             }
 
+            console.log('💾 Saving homes list for user:', this.currentUserId);
+            console.log('💾 Homes list to save:', homesList);
+
             const params = {
                 TableName: 'nestmate-users',
                 Key: { userId: this.currentUserId },
@@ -94,7 +97,10 @@ class AWSDataService {
                 }
             };
 
-            await this.dynamodb.update(params).promise();
+            console.log('💾 DynamoDB update params:', params);
+            const result = await this.dynamodb.update(params).promise();
+            console.log('💾 DynamoDB update result:', result);
+
             console.log('✅ Homes list saved to AWS');
             return { success: true };
 
@@ -111,14 +117,20 @@ class AWSDataService {
                 return [];
             }
 
+            console.log('🔍 Getting homes list for user:', this.currentUserId);
+
             const params = {
                 TableName: 'nestmate-users',
                 Key: { userId: this.currentUserId }
             };
 
+            console.log('🔍 DynamoDB get params:', params);
             const result = await this.dynamodb.get(params).promise();
-            return result.Item ? result.Item.homesList || [] : [];
+            console.log('🔍 DynamoDB get result:', result);
 
+            const homesList = result.Item ? result.Item.homesList || [] : [];
+            console.log('🔍 Extracted homes list:', homesList);
+            return homesList;
         } catch (error) {
             console.error('❌ Error getting homes list:', error);
             return [];
