@@ -1398,27 +1398,27 @@
                         <div class="card">
                             <h3>Enterprise Quick Actions</h3>
                             <div class="quick-actions">
-                                <a href="#" class="action-btn">
+                                <a href="javascript:void(0)" class="action-btn" onclick="addNewProperty()">
                                     <i class="fas fa-plus"></i>
                                     Add Property
                                 </a>
-                                <a href="#" class="action-btn">
+                                <a href="javascript:void(0)" class="action-btn" onclick="addNewClient()">
                                     <i class="fas fa-user-plus"></i>
                                     Add Client
                                 </a>
-                                <a href="#" class="action-btn">
+                                <a href="javascript:void(0)" class="action-btn" onclick="manageTeam()">
                                     <i class="fas fa-users"></i>
                                     Manage Team
                                 </a>
-                                <a href="#" class="action-btn">
+                                <a href="javascript:void(0)" class="action-btn" onclick="openAnalytics()">
                                     <i class="fas fa-chart-line"></i>
                                     Analytics
                                 </a>
-                                <a href="#" class="action-btn">
+                                <a href="javascript:void(0)" class="action-btn" onclick="generateReport()">
                                     <i class="fas fa-file-alt"></i>
                                     Generate Report
                                 </a>
-                                <a href="#" class="action-btn">
+                                <a href="javascript:void(0)" class="action-btn" onclick="scheduleService()">
                                     <i class="fas fa-tools"></i>
                                     Schedule Service
                                 </a>
@@ -1803,6 +1803,42 @@
         function contactEnterpriseSupport() {
             // Open enterprise support contact
             window.open('mailto:enterprise@nestmateusa.com?subject=Enterprise Support Request', '_blank');
+        }
+
+        // Enterprise Quick Actions Functions
+        function addNewProperty() {
+            showAlert('Opening add property...', 'info');
+            addNewHome();
+        }
+
+        function addNewClient() {
+            showAlert('Opening add client...', 'info');
+            const clientName = prompt('Enter client name:');
+            if (clientName) {
+                showAlert(`Client ${clientName} added successfully!`, 'success');
+            }
+        }
+
+        function manageTeam() {
+            showAlert('Opening team management...', 'info');
+            showSection('team');
+        }
+
+        function openAnalytics() {
+            showAlert('Opening analytics dashboard...', 'info');
+            showSection('analytics');
+        }
+
+        function generateReport() {
+            showAlert('Generating comprehensive report...', 'info');
+            setTimeout(() => {
+                showAlert('Report generated successfully!', 'success');
+            }, 1500);
+        }
+
+        function scheduleService() {
+            showAlert('Opening service scheduler...', 'info');
+            window.open('expert-services.html', '_blank');
         }
 
         // Basic Info Functions

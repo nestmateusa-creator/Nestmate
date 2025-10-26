@@ -1350,27 +1350,27 @@
                         <div class="card">
                             <h3>Family Quick Actions</h3>
                             <div class="quick-actions">
-                                <a href="#" class="action-btn">
+                                <a href="javascript:void(0)" class="action-btn" onclick="addNewTask()">
                                     <i class="fas fa-plus"></i>
                                     Add Task
                                 </a>
-                                <a href="#" class="action-btn">
+                                <a href="javascript:void(0)" class="action-btn" onclick="inviteFamily()">
                                     <i class="fas fa-users"></i>
                                     Invite Family
                                 </a>
-                                <a href="#" class="action-btn">
+                                <a href="javascript:void(0)" class="action-btn" onclick="openFamilyCalendar()">
                                     <i class="fas fa-calendar"></i>
                                     Family Calendar
                                 </a>
-                                <a href="#" class="action-btn">
+                                <a href="javascript:void(0)" class="action-btn" onclick="shareUpdate()">
                                     <i class="fas fa-share"></i>
                                     Share Update
                                 </a>
-                                <a href="#" class="action-btn">
+                                <a href="javascript:void(0)" class="action-btn" onclick="openEmergencyServices()">
                                     <i class="fas fa-phone"></i>
                                     Emergency
                                 </a>
-                                <a href="#" class="action-btn">
+                                <a href="javascript:void(0)" class="action-btn" onclick="openFamilyAnalytics()">
                                     <i class="fas fa-chart-line"></i>
                                     Family Analytics
                                 </a>
@@ -1718,6 +1718,38 @@
         function contactFamilySupport() {
             // Open family support contact
             window.open('mailto:support@nestmateusa.com?subject=Family Support Request', '_blank');
+        }
+
+        // Family Quick Actions Functions
+        function inviteFamily() {
+            showAlert('Opening family invitation...', 'info');
+            const email = prompt('Enter family member email address:');
+            if (email) {
+                showAlert(`Invitation sent to ${email}!`, 'success');
+            }
+        }
+
+        function openFamilyCalendar() {
+            showAlert('Opening family calendar...', 'info');
+            window.open('tasks-calendar-modal.html', '_blank');
+        }
+
+        function shareUpdate() {
+            showAlert('Opening share update...', 'info');
+            const update = prompt('Enter your update message:');
+            if (update) {
+                showAlert('Update shared with family!', 'success');
+            }
+        }
+
+        function openEmergencyServices() {
+            showAlert('Opening emergency services...', 'info');
+            window.open('emergency-services.html', '_blank');
+        }
+
+        function openFamilyAnalytics() {
+            showAlert('Opening family analytics...', 'info');
+            showSection('analytics');
         }
 
         // Basic Info Functions

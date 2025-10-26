@@ -1778,27 +1778,27 @@
                         <div class="card">
                             <h3>Quick Actions</h3>
                             <div class="quick-actions">
-                                <a href="#" class="action-btn">
+                                <a href="javascript:void(0)" class="action-btn" onclick="addNewTask()">
                                     <i class="fas fa-plus"></i>
                                     Add Task
                                 </a>
-                                <a href="#" class="action-btn">
+                                <a href="javascript:void(0)" class="action-btn" onclick="openSchedule()">
                                     <i class="fas fa-calendar"></i>
                                     Schedule
                                 </a>
-                                <a href="#" class="action-btn">
+                                <a href="javascript:void(0)" class="action-btn" onclick="openProducts()">
                                     <i class="fas fa-shopping-cart"></i>
                                     Products
                                 </a>
-                                <a href="#" class="action-btn">
+                                <a href="javascript:void(0)" class="action-btn" onclick="openEmergencyServices()">
                                     <i class="fas fa-phone"></i>
                                     Emergency
                                 </a>
-                                <a href="#" class="action-btn">
+                                <a href="javascript:void(0)" class="action-btn" onclick="openServices()">
                                     <i class="fas fa-tools"></i>
                                     Services
                                 </a>
-                                <a href="#" class="action-btn">
+                                <a href="javascript:void(0)" class="action-btn" onclick="openRecords()">
                                     <i class="fas fa-file-alt"></i>
                                     Records
                                 </a>
@@ -2769,6 +2769,32 @@
         function contactSupport() {
             // Open support contact form or redirect to support page
             window.open('mailto:support@nestmateusa.com?subject=VIP Support Request', '_blank');
+        }
+
+        // Quick Actions Functions
+        function openSchedule() {
+            showAlert('Opening schedule...', 'info');
+            showSection('tasks');
+        }
+
+        function openProducts() {
+            showAlert('Opening product recommendations...', 'info');
+            window.open('nestmate-store.html', '_blank');
+        }
+
+        function openEmergencyServices() {
+            showAlert('Opening emergency services...', 'info');
+            window.open('emergency-services.html', '_blank');
+        }
+
+        function openServices() {
+            showAlert('Opening service providers...', 'info');
+            window.open('expert-services.html', '_blank');
+        }
+
+        function openRecords() {
+            showAlert('Opening service records...', 'info');
+            window.open('service-records.html', '_blank');
         }
 
         // Basic Info Functions
