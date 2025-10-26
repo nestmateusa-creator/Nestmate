@@ -301,6 +301,102 @@
             transform: translateY(-1px);
         }
 
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: #1f2937;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #374151;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #f9fafb;
+        }
+
+        .close-btn {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #9ca3af;
+            line-height: 1;
+        }
+
+        .close-btn:hover {
+            color: #f9fafb;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid #374151;
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #f9fafb;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #374151;
+            border-radius: 6px;
+            background: #374151;
+            color: #f9fafb;
+            font-size: 0.875rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .sidebar {
@@ -2518,6 +2614,112 @@
         </div>
     </div>
 
+    <!-- Task Management Modal -->
+    <div id="taskModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="taskModalTitle">Add New Task</h3>
+                <span class="close-btn" onclick="closeTaskModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="taskForm">
+                    <div class="form-group">
+                        <label for="taskTitle">Task Title</label>
+                        <input type="text" id="taskTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskDescription">Description</label>
+                        <textarea id="taskDescription" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskHome">Home</label>
+                        <select id="taskHome" required>
+                            <option value="">Select Home</option>
+                            <option value="123-main-street">123 Main Street</option>
+                            <option value="456-oak-avenue">456 Oak Avenue</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskPriority">Priority</label>
+                        <select id="taskPriority" required>
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskDueDate">Due Date</label>
+                        <input type="date" id="taskDueDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskCategory">Category</label>
+                        <select id="taskCategory">
+                            <option value="maintenance">Maintenance</option>
+                            <option value="cleaning">Cleaning</option>
+                            <option value="inspection">Inspection</option>
+                            <option value="repair">Repair</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeTaskModal()">Cancel</button>
+                <button class="btn" onclick="saveTask()">Save Task</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Home Management Modal -->
+    <div id="homeModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="homeModalTitle">Add New Home</h3>
+                <span class="close-btn" onclick="closeHomeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="homeForm">
+                    <div class="form-group">
+                        <label for="homeAddress">Address</label>
+                        <input type="text" id="homeAddress" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="homeType">Home Type</label>
+                        <select id="homeType" required>
+                            <option value="">Select Type</option>
+                            <option value="single-family">Single Family</option>
+                            <option value="townhouse">Townhouse</option>
+                            <option value="condo">Condo</option>
+                            <option value="apartment">Apartment</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="homeBedrooms">Bedrooms</label>
+                            <input type="number" id="homeBedrooms" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="homeBathrooms">Bathrooms</label>
+                            <input type="number" id="homeBathrooms" min="0" step="0.5" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="homeSquareFootage">Square Footage</label>
+                        <input type="number" id="homeSquareFootage" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="homeYearBuilt">Year Built</label>
+                        <input type="number" id="homeYearBuilt" min="1800" max="2025" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeHomeModal()">Cancel</button>
+                <button class="btn" onclick="saveHome()">Save Home</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Navigation functionality
         function showSection(sectionId) {
@@ -2754,38 +2956,240 @@
             showAlert('Schedule service functionality coming soon!', 'info');
         }
 
+        // Data Storage
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+        let homes = JSON.parse(localStorage.getItem('homes')) || [
+            {
+                id: '123-main-street',
+                address: '123 Main Street',
+                type: 'Single Family Home',
+                bedrooms: 3,
+                bathrooms: 2,
+                squareFootage: 2400,
+                yearBuilt: 2018,
+                healthScore: 92
+            },
+            {
+                id: '456-oak-avenue',
+                address: '456 Oak Avenue',
+                type: 'Townhouse',
+                bedrooms: 2,
+                bathrooms: 2,
+                squareFootage: 1800,
+                yearBuilt: 2020,
+                healthScore: 88
+            }
+        ];
+
         // Multi-Home Functions
         function viewHomeDetails(homeId) {
-            showAlert(`Viewing details for home: ${homeId}`, 'info');
+            const home = homes.find(h => h.id === homeId);
+            if (home) {
+                showAlert(`Viewing details for ${home.address}`, 'info');
+                // Here you could open a detailed view modal
+            }
         }
 
         function editHome(homeId) {
-            showAlert(`Editing home: ${homeId}`, 'info');
+            const home = homes.find(h => h.id === homeId);
+            if (home) {
+                openHomeModal(home);
+            }
         }
 
         function addNewHome() {
-            showAlert('Add new home functionality coming soon!', 'info');
+            openHomeModal();
+        }
+
+        function openHomeModal(home = null) {
+            const modal = document.getElementById('homeModal');
+            const title = document.getElementById('homeModalTitle');
+            const form = document.getElementById('homeForm');
+            
+            if (home) {
+                title.textContent = 'Edit Home';
+                document.getElementById('homeAddress').value = home.address;
+                document.getElementById('homeType').value = home.type.toLowerCase().replace(' ', '-');
+                document.getElementById('homeBedrooms').value = home.bedrooms;
+                document.getElementById('homeBathrooms').value = home.bathrooms;
+                document.getElementById('homeSquareFootage').value = home.squareFootage;
+                document.getElementById('homeYearBuilt').value = home.yearBuilt;
+                form.dataset.homeId = home.id;
+            } else {
+                title.textContent = 'Add New Home';
+                form.reset();
+                delete form.dataset.homeId;
+            }
+            
+            modal.style.display = 'flex';
+        }
+
+        function closeHomeModal() {
+            document.getElementById('homeModal').style.display = 'none';
+        }
+
+        function saveHome() {
+            const form = document.getElementById('homeForm');
+            const formData = new FormData(form);
+            
+            const homeData = {
+                address: document.getElementById('homeAddress').value,
+                type: document.getElementById('homeType').value,
+                bedrooms: parseInt(document.getElementById('homeBedrooms').value),
+                bathrooms: parseFloat(document.getElementById('homeBathrooms').value),
+                squareFootage: parseInt(document.getElementById('homeSquareFootage').value),
+                yearBuilt: parseInt(document.getElementById('homeYearBuilt').value),
+                healthScore: Math.floor(Math.random() * 20) + 80 // Random health score
+            };
+
+            if (form.dataset.homeId) {
+                // Edit existing home
+                const index = homes.findIndex(h => h.id === form.dataset.homeId);
+                if (index !== -1) {
+                    homes[index] = { ...homes[index], ...homeData };
+                }
+                showAlert('Home updated successfully!', 'success');
+            } else {
+                // Add new home
+                homeData.id = homeData.address.toLowerCase().replace(/\s+/g, '-');
+                homes.push(homeData);
+                showAlert('Home added successfully!', 'success');
+            }
+
+            localStorage.setItem('homes', JSON.stringify(homes));
+            closeHomeModal();
+            loadHomes();
         }
 
         // Task Functions
         function filterTasks(filter) {
-            showAlert(`Filtering tasks by: ${filter}`, 'info');
+            const taskItems = document.querySelectorAll('.task-item');
+            taskItems.forEach(item => {
+                item.style.display = 'block';
+                
+                if (filter === 'due-soon') {
+                    // Show only tasks due within 3 days
+                    const dueText = item.querySelector('.task-content p').textContent;
+                    if (!dueText.includes('Due in') || dueText.includes('week')) {
+                        item.style.display = 'none';
+                    }
+                } else if (filter === 'by-home') {
+                    // Show only tasks for specific home
+                    // This would need more complex logic
+                } else if (filter === 'by-category') {
+                    // Show only tasks by category
+                    // This would need more complex logic
+                }
+            });
+            
+            // Update active filter button
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
         }
 
         function editTask(taskId) {
-            showAlert(`Editing task: ${taskId}`, 'info');
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                openTaskModal(task);
+            }
         }
 
         function completeTask(taskId) {
-            showAlert(`Completing task: ${taskId}`, 'success');
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                task.completed = true;
+                task.completedDate = new Date().toISOString();
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+                showAlert('Task completed!', 'success');
+                loadTasks();
+            }
         }
 
         function undoTask(taskId) {
-            showAlert(`Undoing task: ${taskId}`, 'info');
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                task.completed = false;
+                delete task.completedDate;
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+                showAlert('Task undone!', 'info');
+                loadTasks();
+            }
         }
 
         function addNewTask() {
-            showAlert('Add new task functionality coming soon!', 'info');
+            openTaskModal();
+        }
+
+        function openTaskModal(task = null) {
+            const modal = document.getElementById('taskModal');
+            const title = document.getElementById('taskModalTitle');
+            const form = document.getElementById('taskForm');
+            
+            if (task) {
+                title.textContent = 'Edit Task';
+                document.getElementById('taskTitle').value = task.title;
+                document.getElementById('taskDescription').value = task.description || '';
+                document.getElementById('taskHome').value = task.home;
+                document.getElementById('taskPriority').value = task.priority;
+                document.getElementById('taskDueDate').value = task.dueDate;
+                document.getElementById('taskCategory').value = task.category;
+                form.dataset.taskId = task.id;
+            } else {
+                title.textContent = 'Add New Task';
+                form.reset();
+                delete form.dataset.taskId;
+            }
+            
+            modal.style.display = 'flex';
+        }
+
+        function closeTaskModal() {
+            document.getElementById('taskModal').style.display = 'none';
+        }
+
+        function saveTask() {
+            const form = document.getElementById('taskForm');
+            const formData = new FormData(form);
+            
+            const taskData = {
+                title: document.getElementById('taskTitle').value,
+                description: document.getElementById('taskDescription').value,
+                home: document.getElementById('taskHome').value,
+                priority: document.getElementById('taskPriority').value,
+                dueDate: document.getElementById('taskDueDate').value,
+                category: document.getElementById('taskCategory').value,
+                created: new Date().toISOString(),
+                completed: false
+            };
+
+            if (form.dataset.taskId) {
+                // Edit existing task
+                const index = tasks.findIndex(t => t.id === form.dataset.taskId);
+                if (index !== -1) {
+                    tasks[index] = { ...tasks[index], ...taskData };
+                }
+                showAlert('Task updated successfully!', 'success');
+            } else {
+                // Add new task
+                taskData.id = 'task' + Date.now();
+                tasks.push(taskData);
+                showAlert('Task added successfully!', 'success');
+            }
+
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            closeTaskModal();
+            loadTasks();
+        }
+
+        // Load Functions
+        function loadTasks() {
+            // This would update the task list in the UI
+            console.log('Loading tasks:', tasks);
+        }
+
+        function loadHomes() {
+            // This would update the homes list in the UI
+            console.log('Loading homes:', homes);
         }
 
         // Utility Functions
