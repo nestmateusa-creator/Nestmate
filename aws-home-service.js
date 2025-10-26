@@ -1,8 +1,6 @@
 // AWS Home Profile Service
 // Handles saving and retrieving home profile data from AWS DynamoDB
 
-import { AWS_CONFIG, DYNAMODB_CONFIG } from './aws-config.js';
-
 class AWSHomeService {
     constructor() {
         this.dynamodb = new AWS.DynamoDB.DocumentClient();
@@ -16,7 +14,7 @@ class AWSHomeService {
             const homeId = homeData.homeId || this.generateHomeId();
             
             const params = {
-                TableName: DYNAMODB_CONFIG.tables.homes,
+                TableName: 'nestmate-homes',
                 Item: {
                     homeId: homeId,
                     userId: userId,
@@ -60,7 +58,7 @@ class AWSHomeService {
             console.log('🏠 Getting user homes from AWS...', userId);
 
             const params = {
-                TableName: DYNAMODB_CONFIG.tables.homes,
+                TableName: 'nestmate-homes',
                 IndexName: 'userId-index',
                 KeyConditionExpression: 'userId = :userId',
                 ExpressionAttributeValues: {
@@ -87,7 +85,7 @@ class AWSHomeService {
             const taskId = taskData.taskId || this.generateTaskId();
             
             const params = {
-                TableName: DYNAMODB_CONFIG.tables.tasks,
+                TableName: 'nestmate-tasks',
                 Item: {
                     taskId: taskId,
                     userId: userId,
@@ -121,7 +119,7 @@ class AWSHomeService {
             console.log('📝 Getting user tasks from AWS...', userId);
 
             const params = {
-                TableName: DYNAMODB_CONFIG.tables.tasks,
+                TableName: 'nestmate-tasks',
                 IndexName: 'userId-index',
                 KeyConditionExpression: 'userId = :userId',
                 ExpressionAttributeValues: {
@@ -148,7 +146,7 @@ class AWSHomeService {
             const roomId = roomData.roomId || this.generateRoomId();
             
             const params = {
-                TableName: DYNAMODB_CONFIG.tables.rooms,
+                TableName: 'nestmate-rooms',
                 Item: {
                     roomId: roomId,
                     userId: userId,
@@ -186,7 +184,7 @@ class AWSHomeService {
             console.log('🚪 Getting home rooms from AWS...', { userId, homeId });
 
             const params = {
-                TableName: DYNAMODB_CONFIG.tables.rooms,
+                TableName: 'nestmate-rooms',
                 IndexName: 'homeId-index',
                 KeyConditionExpression: 'homeId = :homeId',
                 FilterExpression: 'userId = :userId',

@@ -1,8 +1,6 @@
 // AWS Data Service - Complete replacement for localStorage
 // Handles all data persistence through AWS DynamoDB
 
-import { AWS_CONFIG, DYNAMODB_CONFIG } from './aws-config.js';
-
 class AWSDataService {
     constructor() {
         this.dynamodb = new AWS.DynamoDB.DocumentClient();
@@ -24,7 +22,7 @@ class AWSDataService {
             }
 
             const params = {
-                TableName: DYNAMODB_CONFIG.tables.users,
+                TableName: 'nestmate-users',
                 Key: { userId: this.currentUserId },
                 UpdateExpression: 'SET #data = :data, updatedAt = :updated',
                 ExpressionAttributeNames: {
@@ -53,7 +51,7 @@ class AWSDataService {
             }
 
             const params = {
-                TableName: DYNAMODB_CONFIG.tables.users,
+                TableName: 'nestmate-users',
                 Key: { userId: this.currentUserId }
             };
 
@@ -75,7 +73,7 @@ class AWSDataService {
             }
 
             const params = {
-                TableName: DYNAMODB_CONFIG.tables.users,
+                TableName: 'nestmate-users',
                 Key: { userId: this.currentUserId },
                 UpdateExpression: 'SET homesList = :homes, updatedAt = :updated',
                 ExpressionAttributeValues: {
@@ -101,7 +99,7 @@ class AWSDataService {
             }
 
             const params = {
-                TableName: DYNAMODB_CONFIG.tables.users,
+                TableName: 'nestmate-users',
                 Key: { userId: this.currentUserId }
             };
 
@@ -123,7 +121,7 @@ class AWSDataService {
             }
 
             const params = {
-                TableName: DYNAMODB_CONFIG.tables.users,
+                TableName: 'nestmate-users',
                 Key: { userId: this.currentUserId },
                 UpdateExpression: 'SET tasksList = :tasks, updatedAt = :updated',
                 ExpressionAttributeValues: {
@@ -149,7 +147,7 @@ class AWSDataService {
             }
 
             const params = {
-                TableName: DYNAMODB_CONFIG.tables.users,
+                TableName: 'nestmate-users',
                 Key: { userId: this.currentUserId }
             };
 
@@ -171,7 +169,7 @@ class AWSDataService {
             }
 
             const params = {
-                TableName: DYNAMODB_CONFIG.tables.users,
+                TableName: 'nestmate-users',
                 Key: { userId: this.currentUserId },
                 UpdateExpression: 'SET bedroomsList = :bedrooms, updatedAt = :updated',
                 ExpressionAttributeValues: {
@@ -197,7 +195,7 @@ class AWSDataService {
             }
 
             const params = {
-                TableName: DYNAMODB_CONFIG.tables.users,
+                TableName: 'nestmate-users',
                 Key: { userId: this.currentUserId }
             };
 
@@ -217,7 +215,7 @@ class AWSDataService {
             }
 
             const params = {
-                TableName: DYNAMODB_CONFIG.tables.users,
+                TableName: 'nestmate-users',
                 Key: { userId: this.currentUserId },
                 UpdateExpression: 'SET bathroomsList = :bathrooms, updatedAt = :updated',
                 ExpressionAttributeValues: {
@@ -243,7 +241,7 @@ class AWSDataService {
             }
 
             const params = {
-                TableName: DYNAMODB_CONFIG.tables.users,
+                TableName: 'nestmate-users',
                 Key: { userId: this.currentUserId }
             };
 
@@ -263,7 +261,7 @@ class AWSDataService {
             }
 
             const params = {
-                TableName: DYNAMODB_CONFIG.tables.users,
+                TableName: 'nestmate-users',
                 Key: { userId: this.currentUserId },
                 UpdateExpression: 'SET kitchensList = :kitchens, updatedAt = :updated',
                 ExpressionAttributeValues: {
@@ -289,7 +287,7 @@ class AWSDataService {
             }
 
             const params = {
-                TableName: DYNAMODB_CONFIG.tables.users,
+                TableName: 'nestmate-users',
                 Key: { userId: this.currentUserId }
             };
 
@@ -311,7 +309,7 @@ class AWSDataService {
             }
 
             const params = {
-                TableName: DYNAMODB_CONFIG.tables.users,
+                TableName: 'nestmate-users',
                 Key: { userId: this.currentUserId },
                 UpdateExpression: 'SET dashboardState = :state, updatedAt = :updated',
                 ExpressionAttributeValues: {
@@ -337,7 +335,7 @@ class AWSDataService {
             }
 
             const params = {
-                TableName: DYNAMODB_CONFIG.tables.users,
+                TableName: 'nestmate-users',
                 Key: { userId: this.currentUserId }
             };
 
@@ -395,7 +393,7 @@ class AWSDataService {
             }
 
             const params = {
-                TableName: DYNAMODB_CONFIG.tables.users,
+                TableName: 'nestmate-users',
                 Key: { userId: this.currentUserId },
                 UpdateExpression: 'REMOVE dashboardState, homesList, tasksList, bedroomsList, bathroomsList, kitchensList',
                 ReturnValues: 'ALL_NEW'

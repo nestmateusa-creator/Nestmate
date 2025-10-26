@@ -1,8 +1,6 @@
 // AWS Payment Success Handler
 // Handles Stripe payment success and updates user data in AWS DynamoDB
 
-import { AWS_CONFIG, DYNAMODB_CONFIG } from './aws-config.js';
-
 class AWSPaymentHandler {
     constructor() {
         this.dynamodb = new AWS.DynamoDB.DocumentClient();
@@ -22,7 +20,7 @@ class AWSPaymentHandler {
 
             // Update subscription information
             const updateParams = {
-                TableName: DYNAMODB_CONFIG.tables.users,
+                TableName: 'nestmate-users',
                 Key: { userId: user.userId },
                 UpdateExpression: 'SET subscription = :sub, subscriptionStatus = :status, lastPayment = :payment, updatedAt = :updated',
                 ExpressionAttributeValues: {
@@ -53,7 +51,7 @@ class AWSPaymentHandler {
     async getUserByEmail(email) {
         try {
             const params = {
-                TableName: DYNAMODB_CONFIG.tables.users,
+                TableName: 'nestmate-users',
                 IndexName: 'email-index', // Assuming you have a GSI on email
                 KeyConditionExpression: 'email = :email',
                 ExpressionAttributeValues: {
