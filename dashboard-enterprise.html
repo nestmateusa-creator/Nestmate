@@ -604,6 +604,32 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        /* List Container Styling */
+        .list-container {
+            display: block;
+            width: 100%;
+        }
+
+        /* Content Section Styling */
+        .content-section {
+            display: none;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #f9fafb;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-title i {
+            color: #00d4aa;
+        }
     </style>
 </head>
 <body>
@@ -629,13 +655,13 @@
                 <button class="nav-item" onclick="showSection('systems')">
                     <i class="fas fa-cogs"></i> Systems
                 </button>
-                <button class="nav-item" onclick="showSection('bedrooms')">
+                <button class="nav-item" onclick="showSection('bedroomsSection')">
                     <i class="fas fa-bed"></i> Bedrooms
                 </button>
-                <button class="nav-item" onclick="showSection('bathrooms')">
+                <button class="nav-item" onclick="showSection('bathroomsSection')">
                     <i class="fas fa-bath"></i> Bathrooms
                 </button>
-                <button class="nav-item" onclick="showSection('kitchen')">
+                <button class="nav-item" onclick="showSection('kitchenSection')">
                     <i class="fas fa-utensils"></i> Kitchen
                 </button>
                 <button class="nav-item" onclick="showSection('living-areas')">
@@ -878,159 +904,135 @@
                 </div>
 
                 <!-- Bedrooms -->
-                <div id="bedrooms" class="dashboard-section" style="display: none;">
-                    <div class="card">
+            <!-- Bedrooms Section -->
+            <div id="bedroomsSection" class="content-section">
+                <h2 class="section-title">
+                    <i class="fas fa-bed"></i> Bedrooms
+                </h2>
+                
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                         <h3>Bedroom Information</h3>
-                        <div class="room-grid">
-                            <div class="room-card">
-                                <h4>Master Bedroom</h4>
-                                <div class="room-details">
-                                    <p><i class="fas fa-ruler"></i> 16' x 14'</p>
-                                    <p><i class="fas fa-window"></i> 2 Windows</p>
-                                    <p><i class="fas fa-door-open"></i> 1 Door</p>
-                                    <p><i class="fas fa-lightbulb"></i> 4 Outlets</p>
-                                </div>
-                                <div class="room-actions">
-                                    <button class="btn-small">Edit</button>
-                                    <button class="btn-small">Photos</button>
-                                </div>
-                            </div>
-                            
-                            <div class="room-card">
-                                <h4>Guest Bedroom</h4>
-                                <div class="room-details">
-                                    <p><i class="fas fa-ruler"></i> 12' x 10'</p>
-                                    <p><i class="fas fa-window"></i> 1 Window</p>
-                                    <p><i class="fas fa-door-open"></i> 1 Door</p>
-                                    <p><i class="fas fa-lightbulb"></i> 3 Outlets</p>
-                                </div>
-                                <div class="room-actions">
-                                    <button class="btn-small">Edit</button>
-                                    <button class="btn-small">Photos</button>
-                                </div>
-                            </div>
-                            
-                            <div class="room-card add-room">
-                                <div class="add-room-content">
-                                    <i class="fas fa-plus"></i>
-                                    <h4>Add Bedroom</h4>
-                                    <button class="btn-primary">Add Room</button>
-                                </div>
-                            </div>
+                        <div>
+                            <button class="btn" onclick="openAddBedroomModal()">
+                                <i class="fas fa-plus"></i> Add Bedroom
+                            </button>
                         </div>
                     </div>
-                </div>
 
-                <!-- Bathrooms -->
-                <div id="bathrooms" class="dashboard-section" style="display: none;">
-                    <div class="card">
+                    <!-- List of bedrooms -->
+                    <div id="bedroomsList" class="list-container">
+                        <!-- dynamically rendered -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bathrooms Section -->
+            <div id="bathroomsSection" class="content-section">
+                <h2 class="section-title">
+                    <i class="fas fa-bath"></i> Bathrooms
+                </h2>
+                
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                         <h3>Bathroom Information</h3>
-                        <div class="room-grid">
-                            <div class="room-card">
-                                <h4>Master Bathroom</h4>
-                                <div class="room-details">
-                                    <p><i class="fas fa-ruler"></i> 12' x 8'</p>
-                                    <p><i class="fas fa-bath"></i> Bathtub + Shower</p>
-                                    <p><i class="fas fa-toilet"></i> Toilet</p>
-                                    <p><i class="fas fa-sink"></i> Double Sink</p>
-                                </div>
-                                <div class="room-actions">
-                                    <button class="btn-small">Edit</button>
-                                    <button class="btn-small">Photos</button>
-                                </div>
-                            </div>
-                            
-                            <div class="room-card">
-                                <h4>Guest Bathroom</h4>
-                                <div class="room-details">
-                                    <p><i class="fas fa-ruler"></i> 8' x 6'</p>
-                                    <p><i class="fas fa-shower"></i> Shower Only</p>
-                                    <p><i class="fas fa-toilet"></i> Toilet</p>
-                                    <p><i class="fas fa-sink"></i> Single Sink</p>
-                                </div>
-                                <div class="room-actions">
-                                    <button class="btn-small">Edit</button>
-                                    <button class="btn-small">Photos</button>
-                                </div>
-                            </div>
-                            
-                            <div class="room-card add-room">
-                                <div class="add-room-content">
-                                    <i class="fas fa-plus"></i>
-                                    <h4>Add Bathroom</h4>
-                                    <button class="btn-primary">Add Room</button>
-                                </div>
-                            </div>
+                        <div>
+                            <button class="btn" onclick="openAddBathroomModal()">
+                                <i class="fas fa-plus"></i> Add Bathroom
+                            </button>
                         </div>
                     </div>
-                </div>
 
-                <!-- Kitchen -->
-                <div id="kitchen" class="dashboard-section" style="display: none;">
-                    <div class="card">
+                    <!-- List of bathrooms -->
+                    <div id="bathroomsList" class="list-container"></div>
+                </div>
+            </div>
+
+            <!-- Kitchen Section -->
+            <div id="kitchenSection" class="content-section">
+                <h2 class="section-title">
+                    <i class="fas fa-utensils"></i> Kitchen
+                </h2>
+                
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                         <h3>Kitchen Information</h3>
-                        <div class="kitchen-details">
-                            <div class="kitchen-info">
-                                <div class="info-item">
-                                    <label>Kitchen Size</label>
-                                    <select>
-                                        <option>Small (under 100 sq ft)</option>
-                                        <option>Medium (100-200 sq ft)</option>
-                                        <option>Large (200+ sq ft)</option>
-                                    </select>
-                                </div>
-                                <div class="info-item">
-                                    <label>Appliance Finish</label>
-                                    <select>
-                                        <option>Stainless Steel</option>
-                                        <option>Black Stainless</option>
-                                        <option>White</option>
-                                        <option>Black</option>
-                                        <option>Custom Color</option>
-                                    </select>
-                                </div>
-                                <div class="info-item">
-                                    <label>Countertop Material</label>
-                                    <select>
-                                        <option>Granite</option>
-                                        <option>Quartz</option>
-                                        <option>Marble</option>
-                                        <option>Laminate</option>
-                                        <option>Butcher Block</option>
-                                    </select>
-                                </div>
-                            </div>
-                            
-                            <div class="appliance-list">
-                                <h4>Appliances</h4>
-                                <div class="appliance-item">
-                                    <i class="fas fa-refrigerator"></i>
-                                    <span>Refrigerator</span>
-                                    <span class="appliance-status">Working</span>
-                                </div>
-                                <div class="appliance-item">
-                                    <i class="fas fa-fire"></i>
-                                    <span>Stove/Oven</span>
-                                    <span class="appliance-status">Working</span>
-                                </div>
-                                <div class="appliance-item">
-                                    <i class="fas fa-dishwasher"></i>
-                                    <span>Dishwasher</span>
-                                    <span class="appliance-status">Working</span>
-                                </div>
-                                <div class="appliance-item">
-                                    <i class="fas fa-microphone"></i>
-                                    <span>Microwave</span>
-                                    <span class="appliance-status">Working</span>
-                                </div>
-                            </div>
+                        <div>
+                            <button class="btn" onclick="openAddKitchenModal()">
+                                <i class="fas fa-plus"></i> Add Kitchen
+                            </button>
                         </div>
-                        <div class="info-actions">
-                            <button class="btn-primary">Save Changes</button>
-                            <button class="btn-secondary">Cancel</button>
+                    </div>
+
+                    <!-- List of kitchens -->
+                    <div id="kitchensList" class="list-container"></div>
+                    
+                    <div id="kitchenForm" style="display: none;">
+                        <div class="form-group">
+                            <label for="kitchenSize">Kitchen Size</label>
+                            <input type="text" id="kitchenSize" placeholder="e.g., 12' x 10'">
+                        </div>
+                        <div class="form-group">
+                            <label for="kitchenAppliances">Appliance Finish</label>
+                            <select id="kitchenAppliances">
+                                <option value="">Select appliance finish</option>
+                                <option value="stainless-steel">Stainless Steel</option>
+                                <option value="black-stainless">Black Stainless</option>
+                                <option value="white">White</option>
+                                <option value="black">Black</option>
+                                <option value="custom">Custom Color</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="kitchenCountertops">Countertop Material</label>
+                            <select id="kitchenCountertops">
+                                <option value="">Select countertop material</option>
+                                <option value="granite">Granite</option>
+                                <option value="quartz">Quartz</option>
+                                <option value="marble">Marble</option>
+                                <option value="butcher-block">Butcher Block</option>
+                                <option value="laminate">Laminate</option>
+                                <option value="concrete">Concrete</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="kitchenCabinets">Cabinet Material</label>
+                            <select id="kitchenCabinets">
+                                <option value="">Select cabinet material</option>
+                                <option value="oak">Oak</option>
+                                <option value="maple">Maple</option>
+                                <option value="cherry">Cherry</option>
+                                <option value="pine">Pine</option>
+                                <option value="mdf">MDF</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="kitchenFlooring">Flooring Type</label>
+                            <select id="kitchenFlooring">
+                                <option value="">Select flooring type</option>
+                                <option value="hardwood">Hardwood</option>
+                                <option value="tile">Tile</option>
+                                <option value="vinyl">Vinyl</option>
+                                <option value="laminate">Laminate</option>
+                                <option value="concrete">Concrete</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="kitchenRenovation">Last Renovation Date</label>
+                            <input type="date" id="kitchenRenovation">
+                        </div>
+                        <div style="display: flex; gap: 1rem;">
+                            <button class="btn" onclick="saveKitchen()">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                            <button class="btn btn-secondary" onclick="cancelEditKitchen()">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
                         </div>
                     </div>
                 </div>
+            </div>
 
                 <!-- Living Areas -->
                 <div id="living-areas" class="dashboard-section" style="display: none;">
@@ -1727,8 +1729,8 @@
     <script>
         // Navigation functionality
         function showSection(sectionId) {
-            // Hide all sections
-            const sections = document.querySelectorAll('.dashboard-section');
+            // Hide all sections (both dashboard-section and content-section)
+            const sections = document.querySelectorAll('.dashboard-section, .content-section');
             sections.forEach(section => section.style.display = 'none');
             
             // Remove active class from all nav items
