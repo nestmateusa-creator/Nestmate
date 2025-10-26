@@ -4279,6 +4279,7 @@
             if (homesContainer) {
                 homesContainer.innerHTML = '';
                 
+                // Add existing homes
                 homes.forEach(home => {
                     const homeCard = document.createElement('div');
                     homeCard.className = 'home-card';
@@ -4325,6 +4326,21 @@
                     `;
                     homesContainer.appendChild(homeCard);
                 });
+                
+                // Add "Add New Home" card if less than 5 homes
+                if (homes.length < 5) {
+                    const addHomeCard = document.createElement('div');
+                    addHomeCard.className = 'home-card add-home';
+                    addHomeCard.innerHTML = `
+                        <div class="add-home-content">
+                            <i class="fas fa-plus"></i>
+                            <h4>Add New Home</h4>
+                            <p>Add up to ${5 - homes.length} more homes</p>
+                            <button class="btn-primary" onclick="addNewHome()">Add Home</button>
+                        </div>
+                    `;
+                    homesContainer.appendChild(addHomeCard);
+                }
             }
             
             console.log('Homes loaded:', homes);
