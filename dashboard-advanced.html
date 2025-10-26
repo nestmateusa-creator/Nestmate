@@ -2394,11 +2394,11 @@
                             </div>
                             <div class="form-group">
                                 <label for="bedrooms">Number of Bedrooms</label>
-                                <input type="number" id="bedrooms" placeholder="Enter number of bedrooms">
+                                <input type="number" id="bedroomsInput" placeholder="Enter number of bedrooms">
                             </div>
                             <div class="form-group">
                                 <label for="bathrooms">Number of Bathrooms</label>
-                                <input type="number" id="bathrooms" placeholder="Enter number of bathrooms">
+                                <input type="number" id="bathroomsInput" placeholder="Enter number of bathrooms">
                             </div>
                             <div class="form-group">
                                 <label for="homeType">Home Type</label>
@@ -2573,6 +2573,9 @@
 
                         <!-- List of bedrooms -->
                         <div id="bedroomsList" class="list-container">
+                            <div style="background: red; color: white; padding: 20px; margin: 10px; border: 3px solid yellow; font-size: 18px; font-weight: bold;">
+                                TEST CONTENT - BEDROOMS SECTION IS WORKING!
+                            </div>
                             <div style="background: #374151; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
                                 <h4 style="color: #f9fafb; margin: 0 0 0.5rem 0;">Master Bedroom</h4>
                                 <p style="color: #d1d5db; margin: 0.25rem 0;">Size: 16' x 14'</p>
@@ -2612,6 +2615,9 @@
 
                         <!-- List of bathrooms -->
                         <div id="bathroomsList" class="list-container">
+                            <div style="background: blue; color: white; padding: 20px; margin: 10px; border: 3px solid orange; font-size: 18px; font-weight: bold;">
+                                TEST CONTENT - BATHROOMS SECTION IS WORKING!
+                            </div>
                             <div style="background: #374151; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
                                 <h4 style="color: #f9fafb; margin: 0 0 0.5rem 0;">Master Bathroom</h4>
                                 <p style="color: #d1d5db; margin: 0.25rem 0;">Size: 12' x 8'</p>
@@ -2651,6 +2657,9 @@
 
                         <!-- List of kitchens -->
                         <div id="kitchensList" class="list-container">
+                            <div style="background: green; color: white; padding: 20px; margin: 10px; border: 3px solid purple; font-size: 18px; font-weight: bold;">
+                                TEST CONTENT - KITCHEN SECTION IS WORKING!
+                            </div>
                             <div style="background: #374151; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
                                 <h4 style="color: #f9fafb; margin: 0 0 0.5rem 0;">Main Kitchen</h4>
                                 <p style="color: #d1d5db; margin: 0.25rem 0;">Size: 15' x 12'</p>
@@ -2955,6 +2964,8 @@
     <script>
         // Navigation functionality
         function showSection(sectionId) {
+            console.log('showSection called with:', sectionId);
+            
             // Hide all sections
             const sections = document.querySelectorAll('.dashboard-section');
             sections.forEach(section => section.style.display = 'none');
@@ -2964,7 +2975,15 @@
             navItems.forEach(item => item.classList.remove('active'));
             
             // Show selected section
-            document.getElementById(sectionId).style.display = 'block';
+            const targetSection = document.getElementById(sectionId);
+            console.log('Target section found:', targetSection);
+            
+            if (targetSection) {
+                targetSection.style.display = 'block';
+                console.log('Section displayed:', sectionId);
+            } else {
+                console.error('Section not found:', sectionId);
+            }
             
             // Add active class to clicked nav item
             event.target.classList.add('active');
