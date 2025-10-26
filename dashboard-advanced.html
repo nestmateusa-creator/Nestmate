@@ -3996,15 +3996,30 @@
                 
                 // Get current user ID from session storage
                 const currentUserEmail = sessionStorage.getItem('currentUserEmail');
-                console.log('Current user email:', currentUserEmail);
+                const currentUser = sessionStorage.getItem('currentUser');
                 
-                if (!currentUserEmail) {
+                let userEmail = currentUserEmail;
+                
+                // If currentUserEmail is not found, try to get it from currentUser object
+                if (!userEmail && currentUser) {
+                    try {
+                        const userData = JSON.parse(currentUser);
+                        userEmail = userData.email;
+                        console.log('Extracted email from currentUser:', userEmail);
+                    } catch (error) {
+                        console.error('Error parsing currentUser:', error);
+                    }
+                }
+                
+                console.log('Current user email:', userEmail);
+                
+                if (!userEmail) {
                     console.error('No user email found in session');
                     return;
                 }
 
                 // Initialize with user email
-                await awsDataService.initialize(currentUserEmail);
+                await awsDataService.initialize(userEmail);
                 console.log('AWS Data Service initialized successfully');
                 
                 // Load data from AWS
