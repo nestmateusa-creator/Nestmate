@@ -3965,30 +3965,63 @@
             showAlert('Schedule service functionality coming soon!', 'info');
         }
 
-        // Data Storage
-        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-        let homes = JSON.parse(localStorage.getItem('homes')) || [
-            {
-                id: '123-main-street',
-                address: '123 Main Street',
-                type: 'Single Family Home',
-                bedrooms: 3,
-                bathrooms: 2,
-                squareFootage: 2400,
-                yearBuilt: 2018,
-                healthScore: 92
-            },
-            {
-                id: '456-oak-avenue',
-                address: '456 Oak Avenue',
-                type: 'Townhouse',
-                bedrooms: 2,
-                bathrooms: 2,
-                squareFootage: 1800,
-                yearBuilt: 2020,
-                healthScore: 88
+        // Data Storage - AWS Integration
+        let tasks = [];
+        let homes = [];
+        let awsDataService = null;
+
+        // AWS Data Service Initialization
+        async function initializeAWSData() {
+            try {
+                // Wait for AWS SDK to be available
+                if (typeof AWS === 'undefined') {
+                    console.error('AWS SDK not loaded');
+                    return;
+                }
+
+                // Initialize AWS Data Service
+                awsDataService = new AWSDataService();
+                
+                // Get current user ID from session storage
+                const currentUserEmail = sessionStorage.getItem('currentUserEmail');
+                if (!currentUserEmail) {
+                    console.error('No user email found in session');
+                    return;
+                }
+
+                // Initialize with user email
+                await awsDataService.initialize(currentUserEmail);
+                
+                // Load data from AWS
+                await loadDataFromAWS();
+                
+                console.log('AWS Data Service initialized successfully');
+            } catch (error) {
+                console.error('Error initializing AWS Data Service:', error);
             }
-        ];
+        }
+
+        // Load data from AWS
+        async function loadDataFromAWS() {
+            try {
+                if (!awsDataService) {
+                    console.error('AWS Data Service not initialized');
+                    return;
+                }
+
+                // Load tasks
+                const tasksData = await awsDataService.getList('tasks');
+                tasks = tasksData || [];
+
+                // Load homes
+                const homesData = await awsDataService.getList('homes');
+                homes = homesData || [];
+
+                console.log('Data loaded from AWS:', { tasks, homes });
+            } catch (error) {
+                console.error('Error loading data from AWS:', error);
+            }
+        }
 
         // Multi-Home Functions
         function viewHomeDetails(homeId) {
@@ -4037,7 +4070,7 @@
             document.getElementById('homeModal').style.display = 'none';
         }
 
-        function saveHome() {
+        async function saveHome() {
             const form = document.getElementById('homeForm');
             const formData = new FormData(form);
             
@@ -4065,7 +4098,19 @@
                 showAlert('Home added successfully!', 'success');
             }
 
-            localStorage.setItem('homes', JSON.stringify(homes));
+            // Save to AWS
+            try {
+                if (awsDataService) {
+                    await awsDataService.saveList('homes', homes);
+                    console.log('Home saved to AWS successfully');
+                } else {
+                    console.error('AWS Data Service not initialized');
+                }
+            } catch (error) {
+                console.error('Error saving home to AWS:', error);
+                showAlert('Error saving home. Please try again.', 'error');
+            }
+
             closeHomeModal();
             loadHomes();
         }
@@ -4103,23 +4148,43 @@
             }
         }
 
-        function completeTask(taskId) {
+        async function completeTask(taskId) {
             const task = tasks.find(t => t.id === taskId);
             if (task) {
                 task.completed = true;
                 task.completedDate = new Date().toISOString();
-                localStorage.setItem('tasks', JSON.stringify(tasks));
+                
+                // Save to AWS
+                try {
+                    if (awsDataService) {
+                        await awsDataService.saveList('tasks', tasks);
+                        console.log('Task completed and saved to AWS');
+                    }
+                } catch (error) {
+                    console.error('Error saving task to AWS:', error);
+                }
+                
                 showAlert('Task completed!', 'success');
                 loadTasks();
             }
         }
 
-        function undoTask(taskId) {
+        async function undoTask(taskId) {
             const task = tasks.find(t => t.id === taskId);
             if (task) {
                 task.completed = false;
                 delete task.completedDate;
-                localStorage.setItem('tasks', JSON.stringify(tasks));
+                
+                // Save to AWS
+                try {
+                    if (awsDataService) {
+                        await awsDataService.saveList('tasks', tasks);
+                        console.log('Task undone and saved to AWS');
+                    }
+                } catch (error) {
+                    console.error('Error saving task to AWS:', error);
+                }
+                
                 showAlert('Task undone!', 'info');
                 loadTasks();
             }
@@ -4156,7 +4221,7 @@
             document.getElementById('taskModal').style.display = 'none';
         }
 
-        function saveTask() {
+        async function saveTask() {
             const form = document.getElementById('taskForm');
             const formData = new FormData(form);
             
@@ -4185,7 +4250,19 @@
                 showAlert('Task added successfully!', 'success');
             }
 
-            localStorage.setItem('tasks', JSON.stringify(tasks));
+            // Save to AWS
+            try {
+                if (awsDataService) {
+                    await awsDataService.saveList('tasks', tasks);
+                    console.log('Task saved to AWS successfully');
+                } else {
+                    console.error('AWS Data Service not initialized');
+                }
+            } catch (error) {
+                console.error('Error saving task to AWS:', error);
+                showAlert('Error saving task. Please try again.', 'error');
+            }
+
             closeTaskModal();
             loadTasks();
         }
@@ -4197,8 +4274,75 @@
         }
 
         function loadHomes() {
-            // This would update the homes list in the UI
-            console.log('Loading homes:', homes);
+            // Update the homes list in the UI
+            const homesContainer = document.querySelector('.homes-grid');
+            if (homesContainer) {
+                homesContainer.innerHTML = '';
+                
+                homes.forEach(home => {
+                    const homeCard = document.createElement('div');
+                    homeCard.className = 'home-card';
+                    homeCard.innerHTML = `
+                        <div class="home-header">
+                            <h3>${home.address}</h3>
+                            <span class="home-type">${home.type}</span>
+                        </div>
+                        <div class="home-details">
+                            <div class="detail-item">
+                                <i class="fas fa-bed"></i>
+                                <span>${home.bedrooms} bed</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-bath"></i>
+                                <span>${home.bathrooms} bath</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-ruler-combined"></i>
+                                <span>${home.squareFootage} sq ft</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-calendar"></i>
+                                <span>Built ${home.yearBuilt}</span>
+                            </div>
+                        </div>
+                        <div class="home-health">
+                            <div class="health-score">
+                                <span class="score">${home.healthScore}</span>
+                                <span class="label">Health Score</span>
+                            </div>
+                            <div class="health-bar">
+                                <div class="health-fill" style="width: ${home.healthScore}%"></div>
+                            </div>
+                        </div>
+                        <div class="home-actions">
+                            <button class="btn btn-secondary" onclick="viewHomeDetails('${home.id}')">
+                                <i class="fas fa-eye"></i> View Details
+                            </button>
+                            <button class="btn btn-primary" onclick="editHome('${home.id}')">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                        </div>
+                    `;
+                    homesContainer.appendChild(homeCard);
+                });
+            }
+            
+            console.log('Homes loaded:', homes);
+        }
+
+        function editHome(homeId) {
+            const home = homes.find(h => h.id === homeId);
+            if (home) {
+                document.getElementById('homeAddress').value = home.address;
+                document.getElementById('homeType').value = home.type;
+                document.getElementById('homeBedrooms').value = home.bedrooms;
+                document.getElementById('homeBathrooms').value = home.bathrooms;
+                document.getElementById('homeSquareFootage').value = home.squareFootage;
+                document.getElementById('homeYearBuilt').value = home.yearBuilt;
+                
+                document.getElementById('homeForm').dataset.homeId = homeId;
+                document.getElementById('homeModal').style.display = 'flex';
+            }
         }
 
         // Utility Functions
@@ -4233,12 +4377,18 @@
         }
 
         // Initialize dashboard
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Initialize AWS data service first
+            await initializeAWSData();
+            
+            // Load user data and render lists
             loadUserData();
-            // Initialize lists
             renderBedroomsList();
             renderBathroomsList();
             renderKitchensList();
+            
+            // Load and display homes
+            loadHomes();
         });
     </script>
 </body>
