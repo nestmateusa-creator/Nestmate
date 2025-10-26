@@ -3998,6 +3998,10 @@
                 const currentUserEmail = sessionStorage.getItem('currentUserEmail');
                 const currentUser = sessionStorage.getItem('currentUser');
                 
+                console.log('Raw sessionStorage values:');
+                console.log('currentUserEmail:', currentUserEmail);
+                console.log('currentUser:', currentUser);
+                
                 let userEmail = currentUserEmail;
                 
                 // If currentUserEmail is not found, try to get it from currentUser object
@@ -4011,7 +4015,20 @@
                     }
                 }
                 
-                console.log('Current user email:', userEmail);
+                // If still no email, try other possible keys
+                if (!userEmail) {
+                    const possibleKeys = ['userEmail', 'email', 'user_id', 'userId'];
+                    for (const key of possibleKeys) {
+                        const value = sessionStorage.getItem(key);
+                        if (value) {
+                            console.log(`Found email in ${key}:`, value);
+                            userEmail = value;
+                            break;
+                        }
+                    }
+                }
+                
+                console.log('Final user email:', userEmail);
                 
                 if (!userEmail) {
                     console.error('No user email found in session');
