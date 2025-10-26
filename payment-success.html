@@ -266,9 +266,8 @@
                 if (result.success) {
                     console.log('✅ Subscription saved successfully to AWS');
                     
-                    // Store user data in localStorage for dashboard access
-                    localStorage.setItem('currentUser', JSON.stringify(result.user));
-                    localStorage.setItem('userSubscription', JSON.stringify(planInfo));
+                    // User data is now stored in AWS DynamoDB - no localStorage needed
+                    console.log('User subscription updated in AWS DynamoDB');
                     
                     return true;
                 } else {
@@ -288,30 +287,15 @@
             // Try to get email from various sources
             const urlParams = new URLSearchParams(window.location.search);
             
-            // 1. Check URL parameters
+            // 1. Check URL parameters (primary method)
             let email = urlParams.get('email') || urlParams.get('user_email');
             if (email) return email;
 
-            // 2. Check localStorage for demo accounts
-            const demoEmail = localStorage.getItem('demoEmail');
-            if (demoEmail) return demoEmail;
-
-            // 3. Check if user is logged in via AWS Cognito
-            const currentUser = localStorage.getItem('currentUser');
-            if (currentUser) {
-                try {
-                    const user = JSON.parse(currentUser);
-                    return user.email;
-                } catch (e) {
-                    console.warn('Could not parse current user from localStorage');
-                }
-            }
-
-            // 4. Check session storage
+            // 2. Check session storage (temporary session data)
             const sessionEmail = sessionStorage.getItem('userEmail');
             if (sessionEmail) return sessionEmail;
 
-            // 5. Prompt user for email if not found
+            // 3. Prompt user for email if not found
             return promptForEmail();
         }
 

@@ -9,7 +9,6 @@
     <!-- AWS SDK and Authentication -->
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1491.0.min.js"></script>
     <script src="auth-aws.js"></script>
-    <script src="aws-home-service.js"></script>
     
     <style>
         * {
@@ -5576,26 +5575,17 @@
                 return;
             }
 
-            // Get user info (prefer DynamoDB record, fallback to auth claims)
+            // Get user info from AWS authentication
             const user = nestMateAuth.currentUser;
             console.log('Current user from auth:', user);
             
-            // If no user from auth, try to get from localStorage
             if (!user) {
-                console.log('No user from auth, checking localStorage...');
-                const storedUser = localStorage.getItem('currentUser');
-                if (storedUser) {
-                    try {
-                        const parsedUser = JSON.parse(storedUser);
-                        console.log('Found user in localStorage:', parsedUser);
-                        nestMateAuth.currentUser = parsedUser;
-                    } catch (e) {
-                        console.error('Error parsing stored user:', e);
-                    }
-                }
+                console.log('No user from auth, redirecting to login');
+                window.location.href = 'login-aws.html';
+                return;
             }
-            
-            const finalUser = nestMateAuth.currentUser || user;
+
+            const finalUser = user;
             console.log('Final user object:', finalUser);
             
             let displayName = (finalUser && (finalUser.name || (finalUser.email ? finalUser.email.split('@')[0] : ''))) || 'User';
