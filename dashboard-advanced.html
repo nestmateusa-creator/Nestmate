@@ -2537,9 +2537,16 @@
                 <!-- Living Areas Section -->
                 <div id="living-areas" class="dashboard-section" style="display: none;">
                     <div class="card">
-                        <h3>Living Areas</h3>
-                        <div id="livingAreasList">
-                            <p>No living areas added yet. <button class="btn" onclick="addLivingArea()">Add Living Area</button></p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3>Living Areas</h3>
+                            <div>
+                                <button class="btn" onclick="addLivingArea()">
+                                    <i class="fas fa-plus"></i> Add Living Area
+                                </button>
+                            </div>
+                        </div>
+                        <div id="livingAreasList" class="list-container">
+                            <!-- dynamically rendered -->
                         </div>
                     </div>
                 </div>
@@ -2547,9 +2554,19 @@
                 <!-- Garage Section -->
                 <div id="garage" class="dashboard-section" style="display: none;">
                     <div class="card">
-                        <h3>Garage Information</h3>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3>Garage Information</h3>
+                            <div>
+                                <button class="btn" onclick="editGarage()">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                            </div>
+                        </div>
                         <div id="garageInfo">
-                            <p>Garage details will be displayed here.</p>
+                            <p><strong>Garage Type:</strong> <span id="displayGarageType">Not set</span></p>
+                            <p><strong>Capacity:</strong> <span id="displayGarageCapacity">Not set</span></p>
+                            <p><strong>Features:</strong> <span id="displayGarageFeatures">Not set</span></p>
+                            <p><strong>Last Maintenance:</strong> <span id="displayGarageMaintenance">Not set</span></p>
                         </div>
                     </div>
                 </div>
@@ -2557,9 +2574,20 @@
                 <!-- Exterior Section -->
                 <div id="exterior" class="dashboard-section" style="display: none;">
                     <div class="card">
-                        <h3>Exterior Features</h3>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3>Exterior Features</h3>
+                            <div>
+                                <button class="btn" onclick="editExterior()">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                            </div>
+                        </div>
                         <div id="exteriorInfo">
-                            <p>Exterior details will be displayed here.</p>
+                            <p><strong>Exterior Material:</strong> <span id="displayExteriorMaterial">Not set</span></p>
+                            <p><strong>Roof Type:</strong> <span id="displayRoofType">Not set</span></p>
+                            <p><strong>Landscaping:</strong> <span id="displayLandscaping">Not set</span></p>
+                            <p><strong>Outdoor Features:</strong> <span id="displayOutdoorFeatures">Not set</span></p>
+                            <p><strong>Last Inspection:</strong> <span id="displayExteriorInspection">Not set</span></p>
                         </div>
                     </div>
                 </div>
@@ -2567,9 +2595,16 @@
                 <!-- Appliances Section -->
                 <div id="appliances" class="dashboard-section" style="display: none;">
                     <div class="card">
-                        <h3>Home Appliances</h3>
-                        <div id="appliancesList">
-                            <p>No appliances added yet. <button class="btn" onclick="addAppliance()">Add Appliance</button></p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3>Home Appliances</h3>
+                            <div>
+                                <button class="btn" onclick="addAppliance()">
+                                    <i class="fas fa-plus"></i> Add Appliance
+                                </button>
+                            </div>
+                        </div>
+                        <div id="appliancesList" class="list-container">
+                            <!-- dynamically rendered -->
                         </div>
                     </div>
                 </div>
@@ -2577,9 +2612,16 @@
                 <!-- Favorites Section -->
                 <div id="favorites" class="dashboard-section" style="display: none;">
                     <div class="card">
-                        <h3>Favorite Items</h3>
-                        <div id="favoritesList">
-                            <p>No favorites added yet.</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3>Favorite Items</h3>
+                            <div>
+                                <button class="btn" onclick="editFavorites()">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                            </div>
+                        </div>
+                        <div id="favoritesList" class="list-container">
+                            <!-- dynamically rendered -->
                         </div>
                     </div>
                 </div>
@@ -2587,9 +2629,16 @@
                 <!-- Photos Section -->
                 <div id="photos" class="dashboard-section" style="display: none;">
                     <div class="card">
-                        <h3>Home Photos</h3>
-                        <div id="photosGallery">
-                            <p>No photos uploaded yet. <button class="btn" onclick="uploadPhoto()">Upload Photo</button></p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3>Home Photos</h3>
+                            <div>
+                                <button class="btn" onclick="uploadPhoto()">
+                                    <i class="fas fa-upload"></i> Upload Photo
+                                </button>
+                            </div>
+                        </div>
+                        <div id="photosGallery" class="photo-gallery">
+                            <!-- dynamically rendered -->
                         </div>
                     </div>
                 </div>
@@ -2597,9 +2646,16 @@
                 <!-- Renovations Section -->
                 <div id="renovations" class="dashboard-section" style="display: none;">
                     <div class="card">
-                        <h3>Renovation History</h3>
-                        <div id="renovationsList">
-                            <p>No renovations recorded yet. <button class="btn" onclick="addRenovation()">Add Renovation</button></p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3>Renovation History</h3>
+                            <div>
+                                <button class="btn" onclick="addRenovation()">
+                                    <i class="fas fa-plus"></i> Add Renovation
+                                </button>
+                            </div>
+                        </div>
+                        <div id="renovationsList" class="list-container">
+                            <!-- dynamically rendered -->
                         </div>
                     </div>
                 </div>
@@ -2607,9 +2663,16 @@
                 <!-- Emergency Section -->
                 <div id="emergency" class="dashboard-section" style="display: none;">
                     <div class="card">
-                        <h3>Emergency Contacts</h3>
-                        <div id="emergencyContacts">
-                            <p>No emergency contacts added yet. <button class="btn" onclick="addEmergencyContact()">Add Contact</button></p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3>Emergency Contacts</h3>
+                            <div>
+                                <button class="btn" onclick="addEmergencyContact()">
+                                    <i class="fas fa-plus"></i> Add Contact
+                                </button>
+                            </div>
+                        </div>
+                        <div id="emergencyContacts" class="list-container">
+                            <!-- dynamically rendered -->
                         </div>
                     </div>
                 </div>
@@ -2617,9 +2680,16 @@
                 <!-- Tasks Section -->
                 <div id="tasks" class="dashboard-section" style="display: none;">
                     <div class="card">
-                        <h3>Tasks & Calendar</h3>
-                        <div id="tasksList">
-                            <p>No tasks added yet. <button class="btn" onclick="addTask()">Add Task</button></p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3>Tasks & Calendar</h3>
+                            <div>
+                                <button class="btn" onclick="addTask()">
+                                    <i class="fas fa-plus"></i> Add Task
+                                </button>
+                            </div>
+                        </div>
+                        <div id="tasksList" class="list-container">
+                            <!-- dynamically rendered -->
                         </div>
                     </div>
                 </div>
@@ -2627,9 +2697,16 @@
                 <!-- Service Section -->
                 <div id="service" class="dashboard-section" style="display: none;">
                     <div class="card">
-                        <h3>Service Management</h3>
-                        <div id="serviceList">
-                            <p>No services scheduled yet. <button class="btn" onclick="scheduleService()">Schedule Service</button></p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3>Service Management</h3>
+                            <div>
+                                <button class="btn" onclick="scheduleService()">
+                                    <i class="fas fa-plus"></i> Schedule Service
+                                </button>
+                            </div>
+                        </div>
+                        <div id="serviceList" class="list-container">
+                            <!-- dynamically rendered -->
                         </div>
                     </div>
                 </div>
