@@ -6647,13 +6647,11 @@
         }
 
         function openBedroomModal(existing = null, index = null) {
-            console.log('openBedroomModal called');
             // build comprehensive modal
             const overlay = document.createElement('div');
             overlay.className = 'modal-overlay';
             const modal = document.createElement('div');
             modal.className = 'modal';
-            console.log('Modal elements created');
             modal.innerHTML = `
                 <h3>${existing ? 'Edit Bedroom' : 'Add Bedroom'}</h3>
                 <div class="form-grid">
@@ -6874,7 +6872,6 @@
             `;
             overlay.appendChild(modal);
             document.body.appendChild(overlay);
-            console.log('Bedroom modal appended to DOM');
 
             // Setup file upload handlers
             setupFileUpload('bBedroomPhotos', 'bBedroomPhotosList', 'bedroomPhotos');
