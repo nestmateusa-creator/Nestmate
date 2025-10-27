@@ -2191,34 +2191,179 @@
             document.getElementById('homeModal').style.display = 'none';
         }
 
-        function saveHome() {
+        // Multi-Home Functions - Using Basic Dashboard AWS Pattern
+        async function saveHome() {
             const form = document.getElementById('homeForm');
             
             const homeData = {
                 address: document.getElementById('homeAddress').value,
                 type: document.getElementById('homeType').value,
-                bedrooms: parseInt(document.getElementById('homeBedrooms').value),
-                bathrooms: parseFloat(document.getElementById('homeBathrooms').value),
-                squareFootage: parseInt(document.getElementById('homeSquareFootage').value),
-                yearBuilt: parseInt(document.getElementById('homeYearBuilt').value),
+                bedrooms: parseInt(document.getElementById('homeBedrooms').value) || 0,
+                bathrooms: parseFloat(document.getElementById('homeBathrooms').value) || 0,
+                squareFootage: parseInt(document.getElementById('homeSquareFootage').value) || 0,
+                yearBuilt: parseInt(document.getElementById('homeYearBuilt').value) || new Date().getFullYear(),
                 healthScore: Math.floor(Math.random() * 20) + 80
             };
 
-            if (form.dataset.homeId) {
-                const index = homes.findIndex(h => h.id === form.dataset.homeId);
-                if (index !== -1) {
-                    homes[index] = { ...homes[index], ...homeData };
-                }
-                showAlert('Home updated successfully!', 'success');
-            } else {
-                homeData.id = homeData.address.toLowerCase().replace(/\s+/g, '-');
-                homes.push(homeData);
-                showAlert('Home added successfully!', 'success');
+            // Validate required fields
+            if (!homeData.address || !homeData.type) {
+                showAlert('Please fill in all required fields (Address and Type are required)', 'error');
+                return;
             }
 
-            localStorage.setItem('homes', JSON.stringify(homes));
-            closeHomeModal();
-            loadHomes();
+            try {
+                const userId = nestMateAuth.currentUser.userId;
+                console.log('Saving home data for userId:', userId);
+                console.log('Home data:', homeData);
+                
+                // Get existing homes list
+                const existingHomes = await getHomesList();
+                
+                // Add new home or update existing
+                const homeId = homeData.address.toLowerCase().replace(/\s+/g, '-');
+                homeData.id = homeId;
+                
+                let updatedHomes;
+                if (form.dataset.homeId) {
+                    // Edit existing home
+                    const index = parseInt(form.dataset.homeId);
+                    updatedHomes = [...existingHomes];
+                    updatedHomes[index] = homeData;
+                } else {
+                    // Add new home
+                    updatedHomes = [...existingHomes, homeData];
+                }
+                
+                const params = {
+                    TableName: process.env.NESTMATE_DDB_USERS_TABLE,
+                    Key: { userId: userId },
+                    UpdateExpression: 'SET homesList = :homes, lastUpdated = :timestamp',
+                    ExpressionAttributeValues: {
+                        ':homes': updatedHomes,
+                        ':timestamp': new Date().toISOString()
+                    },
+                    ReturnValues: 'UPDATED_NEW'
+                };
+                
+                const result = await dynamodb.update(params).promise();
+                console.log('Home saved successfully:', result);
+                
+                showAlert('Home saved successfully!', 'success');
+                closeHomeModal();
+                loadHomes();
+                
+            } catch (error) {
+                console.error('Save home error:', error);
+                showAlert('Failed to save home. Try again.', 'error');
+            }
+        }
+
+        async function getHomesList() {
+            try {
+                const userId = nestMateAuth.currentUser.userId;
+                const params = {
+                    TableName: process.env.NESTMATE_DDB_USERS_TABLE,
+                    Key: { userId: userId }
+                };
+                
+                const result = await dynamodb.get(params).promise();
+                return result.Item?.homesList || [];
+            } catch (error) {
+                console.error('Get homes list error:', error);
+                return [];
+            }
+        }
+
+        async function loadHomes() {
+            try {
+                const homesList = await getHomesList();
+                const container = document.querySelector('.homes-grid');
+                if (!container) return;
+                
+                container.innerHTML = '';
+                
+                // Add existing homes
+                homesList.forEach((home, index) => {
+                    const homeCard = document.createElement('div');
+                    homeCard.className = 'home-card';
+                    homeCard.innerHTML = `
+                        <div class="home-header">
+                            <h3>${home.address}</h3>
+                            <span class="home-type">${home.type}</span>
+                        </div>
+                        <div class="home-details">
+                            <div class="detail-item">
+                                <i class="fas fa-bed"></i>
+                                <span>${home.bedrooms} bed</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-bath"></i>
+                                <span>${home.bathrooms} bath</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-ruler-combined"></i>
+                                <span>${home.squareFootage} sq ft</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-calendar"></i>
+                                <span>Built ${home.yearBuilt}</span>
+                            </div>
+                        </div>
+                        <div class="home-health">
+                            <div class="health-score">
+                                <span class="score">${home.healthScore}</span>
+                                <span class="label">Health Score</span>
+                            </div>
+                            <div class="health-bar">
+                                <div class="health-fill" style="width: ${home.healthScore}%"></div>
+                            </div>
+                        </div>
+                        <div class="home-actions">
+                            <button class="btn btn-secondary" onclick="viewHomeDetails('${home.id}')">
+                                <i class="fas fa-eye"></i> View Details
+                            </button>
+                            <button class="btn btn-primary" onclick="editHome('${home.id}')">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                        </div>
+                    `;
+                    container.appendChild(homeCard);
+                });
+                
+                // Add "Add New Home" card if less than 5 homes
+                if (homesList.length < 5) {
+                    const addHomeCard = document.createElement('div');
+                    addHomeCard.className = 'home-card add-home';
+                    addHomeCard.innerHTML = `
+                        <div class="add-home-content">
+                            <i class="fas fa-plus"></i>
+                            <h4>Add New Home</h4>
+                            <p>Add up to ${5 - homesList.length} more homes</p>
+                            <button class="btn-primary" onclick="addNewHome()">Add Home</button>
+                        </div>
+                    `;
+                    container.appendChild(addHomeCard);
+                }
+                
+                console.log('Homes loaded:', homesList);
+            } catch (error) {
+                console.error('Load homes error:', error);
+            }
+        }
+
+        async function editHome(homeId) {
+            try {
+                const homesList = await getHomesList();
+                const home = homesList.find(h => h.id === homeId);
+                if (home) {
+                    openHomeModal(home);
+                } else {
+                    showAlert('Home not found', 'error');
+                }
+            } catch (error) {
+                console.error('Edit home error:', error);
+                showAlert('Failed to load home for editing', 'error');
+            }
         }
 
         // Task Functions
@@ -2330,9 +2475,7 @@
             console.log('Loading tasks:', tasks);
         }
 
-        function loadHomes() {
-            console.log('Loading homes:', homes);
-        }
+        // Old loadHomes function removed - using AWS-based loadHomes now
 
         // Utility Functions
         function showAlert(message, type) {
@@ -2968,12 +3111,23 @@
         }
 
         // Initialize dashboard
-        document.addEventListener('DOMContentLoaded', function() {
-            loadUserData();
-            // Initialize lists
-            renderBedroomsList();
-            renderBathroomsList();
-            renderKitchensList();
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 Enterprise Dashboard Starting...');
+            
+            // Wait for auth to initialize
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            // Check authentication
+            const isAuthenticated = await nestMateAuth.isAuthenticated();
+            if (!isAuthenticated) {
+                window.location.href = 'login-aws.html';
+                return;
+            }
+
+            // Load homes using AWS (Basic Dashboard pattern)
+            await loadHomes();
+            
+            console.log('Enterprise Dashboard initialized');
         });
     </script>
 </body>
