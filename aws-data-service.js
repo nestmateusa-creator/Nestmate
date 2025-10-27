@@ -106,8 +106,44 @@ class AWSDataService {
 
         } catch (error) {
             console.error('❌ Error saving homes list:', error);
+            
+            // If the error is because the user record doesn't exist, try to create it
+            if (error.code === 'ValidationException' || error.message.includes('does not exist')) {
+                console.log('🔄 User record does not exist, creating it...');
+                try {
+                    await this.createUserRecord(homesList);
+                    console.log('✅ User record created with homes list');
+                    return { success: true };
+                } catch (createError) {
+                    console.error('❌ Error creating user record:', createError);
+                }
+            }
+            
             return { success: false, error: error.message };
         }
+    }
+
+    // Create user record if it doesn't exist
+    async createUserRecord(homesList = []) {
+        const params = {
+            TableName: 'nestmate-users',
+            Item: {
+                userId: this.currentUserId,
+                email: this.currentUserId, // Assuming userId is the email
+                homesList: homesList,
+                tasksList: [],
+                bedroomsList: [],
+                bathroomsList: [],
+                kitchensList: [],
+                preferences: {},
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            }
+        };
+
+        console.log('🆕 Creating user record with params:', params);
+        await this.dynamodb.put(params).promise();
+        console.log('✅ User record created successfully');
     }
 
     async getHomesList() {
@@ -127,9 +163,19 @@ class AWSDataService {
             console.log('🔍 DynamoDB get params:', params);
             const result = await this.dynamodb.get(params).promise();
             console.log('🔍 DynamoDB get result:', result);
+            console.log('🔍 Result.Item:', result.Item);
+            console.log('🔍 Result.Item?.homesList:', result.Item?.homesList);
 
             const homesList = result.Item ? result.Item.homesList || [] : [];
             console.log('🔍 Extracted homes list:', homesList);
+            
+            // If no homes found, check if user record exists at all
+            if (!result.Item) {
+                console.log('⚠️ No user record found in DynamoDB for userId:', this.currentUserId);
+            } else if (!result.Item.homesList) {
+                console.log('⚠️ User record exists but no homesList field');
+            }
+            
             return homesList;
         } catch (error) {
             console.error('❌ Error getting homes list:', error);
