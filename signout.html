@@ -5,45 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Out - NestMate</title>
     
-    <!-- Firebase SDK v12 -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-        import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+    <!-- AWS SDK -->
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1491.0.min.js"></script>
+    <script src="auth-aws.js"></script>
+    
+    <script>
+        // AWS Configuration
+        AWS.config.update({
+            region: 'us-east-2',
+            accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
+            secretAccessKey: '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'
+        });
 
-        // Old Firebase config (to sign out from old project)
-        const oldFirebaseConfig = {
-            apiKey: "AIzaSyD-4kmEmEH6OPtGK-ez7GkCHV31mg5iNhk",
-            authDomain: "nestmateusa-4914c.firebaseapp.com",
-            projectId: "nestmateusa-4914c",
-            storageBucket: "nestmateusa-4914c.firebasestorage.app",
-            messagingSenderId: "907781112999",
-            appId: "1:907781112999:web:b9585789c6cceac0e64782",
-            measurementId: "G-35WBBNXHB8"
-        };
-
-        // New Firebase config
-        const newFirebaseConfig = {
-            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
-            authDomain: "nestmate-167ed.firebaseapp.com",
-            projectId: "nestmate-167ed",
-            storageBucket: "nestmate-167ed.appspot.com",
-            messagingSenderId: "865171535257",
-            appId: "1:865171535257:web:9944a48a952e99f55f0f08",
-            measurementId: "G-1DYR2RGY4G"
-        };
-
-        // Initialize both Firebase instances
-        const oldApp = initializeApp(oldFirebaseConfig, 'old');
-        const newApp = initializeApp(newFirebaseConfig, 'new');
-        
-        const oldAuth = getAuth(oldApp);
-        const newAuth = getAuth(newApp);
-
-        window.oldAuth = oldAuth;
-        window.newAuth = newAuth;
-        window.signOut = signOut;
-
-        console.log('Firebase instances initialized');
+        console.log('AWS SDK loaded for sign out');
     </script>
     
     <style>
@@ -89,22 +63,20 @@
 </head>
 <body>
     <div class="container">
-        <h1>Firebase Sign Out Tool</h1>
-        <p>This will sign you out from both the old and new Firebase projects.</p>
+        <h1>AWS Sign Out Tool</h1>
+        <p>This will sign you out from AWS Cognito authentication.</p>
         
-        <button onclick="signOutFromOld()">Sign Out from Old Firebase</button>
-        <button onclick="signOutFromNew()">Sign Out from New Firebase</button>
-        <button onclick="signOutFromBoth()">Sign Out from Both</button>
+        <button onclick="signOutFromAWS()">Sign Out from AWS</button>
         <button onclick="clearCache()">Clear Browser Cache</button>
         
         <div id="status"></div>
         
         <h3>Next Steps:</h3>
         <ol>
-            <li>Click "Sign Out from Both"</li>
+            <li>Click "Sign Out from AWS"</li>
             <li>Click "Clear Browser Cache"</li>
             <li>Open a new incognito window</li>
-            <li>Go to login-aws.html and try creating an account</li>
+            <li>Go to login-aws.html and try logging in</li>
         </ol>
     </div>
 
@@ -113,31 +85,29 @@
             document.getElementById('status').innerHTML = `<div class="status ${type}">${message}</div>`;
         }
 
-        async function signOutFromOld() {
+        async function signOutFromAWS() {
             try {
-                await window.signOut(window.oldAuth);
-                showStatus('✅ Signed out from old Firebase project');
-            } catch (error) {
-                showStatus(`❌ Error signing out from old project: ${error.message}`, 'error');
-            }
-        }
-
-        async function signOutFromNew() {
-            try {
-                await window.signOut(window.newAuth);
-                showStatus('✅ Signed out from new Firebase project');
-            } catch (error) {
-                showStatus(`❌ Error signing out from new project: ${error.message}`, 'error');
-            }
-        }
-
-        async function signOutFromBoth() {
-            try {
-                await Promise.all([
-                    window.signOut(window.oldAuth),
-                    window.signOut(window.newAuth)
-                ]);
-                showStatus('✅ Signed out from both Firebase projects');
+                showStatus('🔄 Signing out from AWS...', 'info');
+                
+                // Wait for auth to initialize
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // Check if user is authenticated
+                const isAuthenticated = await nestMateAuth.isAuthenticated();
+                if (!isAuthenticated) {
+                    showStatus('✅ Already signed out', 'success');
+                    return;
+                }
+                
+                // Sign out from AWS Cognito
+                await nestMateAuth.signOut();
+                showStatus('✅ Successfully signed out from AWS', 'success');
+                
+                // Redirect to login page after 2 seconds
+                setTimeout(() => {
+                    window.location.href = 'login-aws.html';
+                }, 2000);
+                
             } catch (error) {
                 showStatus(`❌ Error signing out: ${error.message}`, 'error');
             }
