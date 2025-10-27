@@ -250,7 +250,7 @@
         if (isAuthenticated) {
           const user = nestMateAuth.currentUser;
           const params = {
-            TableName: process.env.NESTMATE_DDB_USERS_TABLE,
+            TableName: 'nestmate-users',
             Key: { userId: user.userId }
           };
           
@@ -286,7 +286,7 @@
         if (isAuthenticated) {
           const user = nestMateAuth.currentUser;
           const params = {
-            TableName: process.env.NESTMATE_DDB_USERS_TABLE,
+            TableName: 'nestmate-users',
             Key: { userId: user.userId },
             UpdateExpression: 'SET contractorBids = :bids, lastUpdated = :timestamp',
             ExpressionAttributeValues: {
@@ -317,7 +317,7 @@
         if (isAuthenticated) {
           const user = nestMateAuth.currentUser;
           const params = {
-            TableName: process.env.NESTMATE_DDB_USERS_TABLE,
+            TableName: 'nestmate-users',
             Key: { userId: user.userId },
             UpdateExpression: 'REMOVE contractorBids SET lastUpdated = :timestamp',
             ExpressionAttributeValues: {

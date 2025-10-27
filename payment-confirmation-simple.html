@@ -183,7 +183,7 @@
                 
                 // Update user in DynamoDB
                 const params = {
-                    TableName: process.env.NESTMATE_DDB_USERS_TABLE,
+                    TableName: 'nestmate-users',
                     Key: { userId: user.userId },
                     UpdateExpression: 'SET subscription = :subscription, email = :email, lastUpdated = :lastUpdated',
                     ExpressionAttributeValues: {

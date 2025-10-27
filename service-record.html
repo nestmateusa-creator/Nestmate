@@ -1187,7 +1187,7 @@
                 if (currentUser) {
                     // Get existing service records
                     const params = {
-                        TableName: process.env.NESTMATE_DDB_USERS_TABLE,
+                        TableName: 'nestmate-users',
                         Key: { userId: currentUser.userId }
                     };
                     
@@ -1206,7 +1206,7 @@
                     
                     // Save to DynamoDB
                     const updateParams = {
-                        TableName: process.env.NESTMATE_DDB_USERS_TABLE,
+                        TableName: 'nestmate-users',
                         Key: { userId: currentUser.userId },
                         UpdateExpression: 'SET serviceRecordsList = :records, lastUpdated = :ts',
                         ExpressionAttributeValues: {
