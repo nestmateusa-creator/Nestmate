@@ -219,39 +219,129 @@
   <footer class="compare-footer">
     &copy; 2025 NestMate. All rights reserved.
   </footer>
+  <!-- AWS SDK -->
+  <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1491.0.min.js"></script>
+  <script src="auth-aws.js"></script>
+  
   <script>
+    // AWS Configuration
+    AWS.config.update({
+      region: 'us-east-2',
+      accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
+      secretAccessKey: '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'
+    });
+
+    const dynamodb = new AWS.DynamoDB.DocumentClient();
+    
     // Logout button logic (redirect to index.html)
     document.getElementById('logoutBtn').addEventListener('click', function() {
-      // If using Firebase Auth, add signOut logic here
+      // If using AWS Auth, add signOut logic here
       window.location.href = 'index.html';
     });
-    // Save and load bids from localStorage
+    
+    // Save and load bids from AWS DynamoDB with localStorage fallback
     const form = document.getElementById('bidsForm');
     const compareSuccess = document.getElementById('compareSuccess');
-    function loadBids() {
+    
+    async function loadBids() {
+      try {
+        // Try to load from AWS first
+        const isAuthenticated = await nestMateAuth.isAuthenticated();
+        if (isAuthenticated) {
+          const user = nestMateAuth.currentUser;
+          const params = {
+            TableName: process.env.NESTMATE_DDB_USERS_TABLE,
+            Key: { userId: user.userId }
+          };
+          
+          const result = await dynamodb.get(params).promise();
+          const data = result.Item?.contractorBids || {};
+          
+          for (const [k, v] of Object.entries(data)) {
+            if (form.elements[k]) form.elements[k].value = v;
+          }
+          return;
+        }
+      } catch (error) {
+        console.log('AWS load failed, using localStorage fallback:', error);
+      }
+      
+      // Fallback to localStorage
       const data = JSON.parse(localStorage.getItem('contractorBids')) || {};
       for (const [k, v] of Object.entries(data)) {
         if (form.elements[k]) form.elements[k].value = v;
       }
     }
-    function saveBids(e) {
+    
+    async function saveBids(e) {
       if (e) e.preventDefault();
       const data = {};
       for (const el of form.elements) {
         if (el.name) data[el.name] = el.value;
       }
+      
+      try {
+        // Try to save to AWS first
+        const isAuthenticated = await nestMateAuth.isAuthenticated();
+        if (isAuthenticated) {
+          const user = nestMateAuth.currentUser;
+          const params = {
+            TableName: process.env.NESTMATE_DDB_USERS_TABLE,
+            Key: { userId: user.userId },
+            UpdateExpression: 'SET contractorBids = :bids, lastUpdated = :timestamp',
+            ExpressionAttributeValues: {
+              ':bids': data,
+              ':timestamp': new Date().toISOString()
+            }
+          };
+          
+          await dynamodb.update(params).promise();
+          compareSuccess.textContent = 'Comparison saved to AWS!';
+          setTimeout(() => { compareSuccess.textContent = ''; }, 2000);
+          return;
+        }
+      } catch (error) {
+        console.log('AWS save failed, using localStorage fallback:', error);
+      }
+      
+      // Fallback to localStorage
       localStorage.setItem('contractorBids', JSON.stringify(data));
-      compareSuccess.textContent = 'Comparison saved!';
+      compareSuccess.textContent = 'Comparison saved locally!';
       setTimeout(() => { compareSuccess.textContent = ''; }, 2000);
     }
-    function clearBids() {
+    
+    async function clearBids() {
+      try {
+        // Try to clear from AWS first
+        const isAuthenticated = await nestMateAuth.isAuthenticated();
+        if (isAuthenticated) {
+          const user = nestMateAuth.currentUser;
+          const params = {
+            TableName: process.env.NESTMATE_DDB_USERS_TABLE,
+            Key: { userId: user.userId },
+            UpdateExpression: 'REMOVE contractorBids SET lastUpdated = :timestamp',
+            ExpressionAttributeValues: {
+              ':timestamp': new Date().toISOString()
+            }
+          };
+          
+          await dynamodb.update(params).promise();
+        }
+      } catch (error) {
+        console.log('AWS clear failed, using localStorage fallback:', error);
+      }
+      
+      // Fallback to localStorage
       localStorage.removeItem('contractorBids');
+      
+      // Clear form
       for (const el of form.elements) {
         if (el.name) el.value = '';
       }
       compareSuccess.textContent = 'All bids cleared.';
       setTimeout(() => { compareSuccess.textContent = ''; }, 1500);
     }
+    
     form.addEventListener('submit', saveBids);
     window.clearBids = clearBids;
     window.addEventListener('DOMContentLoaded', loadBids);
