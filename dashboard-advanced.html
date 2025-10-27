@@ -3974,122 +3974,115 @@
             showAlert('Schedule service functionality coming soon!', 'info');
         }
 
-        // Data Storage - AWS Integration
+        // Remove old AWS-based functions - using localStorage structure now
+        // Data Storage - Using localStorage like bedrooms
         let tasks = [];
         let homes = [];
-        let awsDataService = null;
 
-        // AWS Data Service Initialization
-        async function initializeAWSData() {
-            try {
-                console.log('Initializing AWS Data Service...');
-                
-                // Wait for AWS SDK to be available
-                if (typeof AWS === 'undefined') {
-                    console.error('AWS SDK not loaded');
-                    return;
-                }
-
-                // Initialize AWS Data Service
-                awsDataService = new AWSDataService();
-                console.log('AWS Data Service created:', awsDataService);
-                
-                // Get current user ID from session storage
-                const currentUserEmail = sessionStorage.getItem('currentUserEmail');
-                const currentUser = sessionStorage.getItem('currentUser');
-                
-                console.log('Raw sessionStorage values:');
-                console.log('currentUserEmail:', currentUserEmail);
-                console.log('currentUser:', currentUser);
-                
-                let userEmail = currentUserEmail;
-                
-                // If currentUserEmail is not found, try to get it from currentUser object
-                if (!userEmail && currentUser) {
-                    try {
-                        const userData = JSON.parse(currentUser);
-                        userEmail = userData.email;
-                        console.log('Extracted email from currentUser:', userEmail);
-                    } catch (error) {
-                        console.error('Error parsing currentUser:', error);
-                    }
-                }
-                
-                // If still no email, try other possible keys
-                if (!userEmail) {
-                    const possibleKeys = ['userEmail', 'email', 'user_id', 'userId'];
-                    for (const key of possibleKeys) {
-                        const value = sessionStorage.getItem(key);
-                        if (value) {
-                            console.log(`Found email in ${key}:`, value);
-                            userEmail = value;
-                            break;
-                        }
-                    }
-                }
-                
-                console.log('Final user email:', userEmail);
-                
-                if (!userEmail) {
-                    console.error('No user email found in session');
-                    return;
-                }
-
-                // Initialize with user email
-                await awsDataService.initialize(userEmail);
-                console.log('AWS Data Service initialized successfully');
-                
-                // Load data from AWS
-                await loadDataFromAWS();
-                
-            } catch (error) {
-                console.error('Error initializing AWS Data Service:', error);
-            }
+        // Multi-Home Functions - Using same structure as bedrooms
+        function ensureDashboardState() {
+            let state = JSON.parse(localStorage.getItem('dashboardState') || '{}');
+            if (!state.bedroomsList) state.bedroomsList = [];
+            if (!state.bathroomsList) state.bathroomsList = [];
+            if (!state.kitchensList) state.kitchensList = [];
+            if (!state.homesList) state.homesList = []; // Add homes list
+            return state;
         }
 
-        // Load data from AWS
-        async function loadDataFromAWS() {
-            try {
-                if (!awsDataService) {
-                    console.error('AWS Data Service not initialized');
-                    // Fallback to localStorage
-                    await loadDataFromLocalStorage();
-                    return;
-                }
-
-                // Load tasks
-                const tasksData = await awsDataService.getTasksList();
-                tasks = tasksData || [];
-
-                // Load homes
-                const homesData = await awsDataService.getHomesList();
-                homes = homesData || [];
-
-                console.log('Data loaded from AWS:', { tasks, homes });
-            } catch (error) {
-                console.error('Error loading data from AWS:', error);
-                // Fallback to localStorage
-                await loadDataFromLocalStorage();
+        function renderHomesList() {
+            const container = document.querySelector('.homes-grid');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            const list = ensureDashboardState().homesList || [];
+            
+            // Add existing homes
+            list.forEach((home, index) => {
+                const homeCard = document.createElement('div');
+                homeCard.className = 'home-card';
+                homeCard.innerHTML = `
+                    <div class="home-header">
+                        <h3>${home.address}</h3>
+                        <span class="home-type">${home.type}</span>
+                    </div>
+                    <div class="home-details">
+                        <div class="detail-item">
+                            <i class="fas fa-bed"></i>
+                            <span>${home.bedrooms} bed</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-bath"></i>
+                            <span>${home.bathrooms} bath</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-ruler-combined"></i>
+                            <span>${home.squareFootage} sq ft</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-calendar"></i>
+                            <span>Built ${home.yearBuilt}</span>
+                        </div>
+                    </div>
+                    <div class="home-health">
+                        <div class="health-score">
+                            <span class="score">${home.healthScore}</span>
+                            <span class="label">Health Score</span>
+                        </div>
+                        <div class="health-bar">
+                            <div class="health-fill" style="width: ${home.healthScore}%"></div>
+                        </div>
+                    </div>
+                    <div class="home-actions">
+                        <button class="btn btn-secondary" onclick="viewHomeDetails('${home.id}')">
+                            <i class="fas fa-eye"></i> View Details
+                        </button>
+                        <button class="btn btn-primary" onclick="editHome('${home.id}')">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                    </div>
+                `;
+                container.appendChild(homeCard);
+            });
+            
+            // Add "Add New Home" card if less than 5 homes
+            if (list.length < 5) {
+                const addHomeCard = document.createElement('div');
+                addHomeCard.className = 'home-card add-home';
+                addHomeCard.innerHTML = `
+                    <div class="add-home-content">
+                        <i class="fas fa-plus"></i>
+                        <h4>Add New Home</h4>
+                        <p>Add up to ${5 - list.length} more homes</p>
+                        <button class="btn-primary" onclick="addNewHome()">Add Home</button>
+                    </div>
+                `;
+                container.appendChild(addHomeCard);
             }
+            
+            console.log('Homes rendered:', list);
         }
 
-        // Fallback to localStorage when AWS is not available
-        async function loadDataFromLocalStorage() {
-            try {
-                console.log('Loading data from localStorage fallback...');
-                tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-                homes = JSON.parse(localStorage.getItem('homes')) || [];
-                console.log('Data loaded from localStorage:', { tasks, homes });
-            } catch (error) {
-                console.error('Error loading data from localStorage:', error);
-                tasks = [];
-                homes = [];
+        async function upsertHome(index, data) {
+            const state = ensureDashboardState();
+            if (index === null || index === undefined) {
+                data.id = data.address.toLowerCase().replace(/\s+/g, '-');
+                state.homesList.push(data);
+            } else {
+                state.homesList[index] = data;
             }
+            await saveHomesList();
+            renderHomesList();
+            showAlert('Home saved successfully!', 'success');
         }
 
-        // Multi-Home Functions
+        async function saveHomesList() {
+            const state = ensureDashboardState();
+            localStorage.setItem('dashboardState', JSON.stringify(state));
+        }
+
         function viewHomeDetails(homeId) {
-            const home = homes.find(h => h.id === homeId);
+            const state = ensureDashboardState();
+            const home = state.homesList.find(h => h.id === homeId);
             if (home) {
                 showAlert(`Viewing details for ${home.address}`, 'info');
                 // Here you could open a detailed view modal
@@ -4157,52 +4150,9 @@
                 return;
             }
 
-            if (form.dataset.homeId) {
-                // Edit existing home
-                const index = homes.findIndex(h => h.id === form.dataset.homeId);
-                if (index !== -1) {
-                    homes[index] = { ...homes[index], ...homeData };
-                }
-                showAlert('Home updated successfully!', 'success');
-            } else {
-                // Add new home
-                homeData.id = homeData.address.toLowerCase().replace(/\s+/g, '-');
-                homes.push(homeData);
-                showAlert('Home added successfully!', 'success');
-            }
-
-            // Save to AWS
-            try {
-                console.log('Attempting to save home to AWS...');
-                console.log('awsDataService:', awsDataService);
-                
-                if (awsDataService) {
-                    console.log('awsDataService methods:', Object.getOwnPropertyNames(awsDataService));
-                    console.log('Calling saveHomesList with homes:', homes);
-                    await awsDataService.saveHomesList(homes);
-                    console.log('Home saved to AWS successfully');
-                } else {
-                    console.error('AWS Data Service not initialized, saving to localStorage');
-                    // Fallback to localStorage
-                    localStorage.setItem('homes', JSON.stringify(homes));
-                    console.log('Home saved to localStorage fallback');
-                }
-            } catch (error) {
-                console.error('Error saving home to AWS:', error);
-                console.log('Falling back to localStorage...');
-                // Fallback to localStorage
-                try {
-                    localStorage.setItem('homes', JSON.stringify(homes));
-                    console.log('Home saved to localStorage fallback');
-                    showAlert('Home saved successfully (using local storage)', 'success');
-                } catch (localError) {
-                    console.error('Error saving to localStorage:', localError);
-                    showAlert('Error saving home. Please try again.', 'error');
-                }
-            }
-
+            const index = form.dataset.homeId ? parseInt(form.dataset.homeId) : null;
+            await upsertHome(index, homeData);
             closeHomeModal();
-            loadHomes();
         }
 
         // Task Functions
@@ -4363,81 +4313,11 @@
             console.log('Loading tasks:', tasks);
         }
 
-        function loadHomes() {
-            // Update the homes list in the UI
-            const homesContainer = document.querySelector('.homes-grid');
-            if (homesContainer) {
-                homesContainer.innerHTML = '';
-                
-                // Add existing homes
-                homes.forEach(home => {
-                    const homeCard = document.createElement('div');
-                    homeCard.className = 'home-card';
-                    homeCard.innerHTML = `
-                        <div class="home-header">
-                            <h3>${home.address}</h3>
-                            <span class="home-type">${home.type}</span>
-                        </div>
-                        <div class="home-details">
-                            <div class="detail-item">
-                                <i class="fas fa-bed"></i>
-                                <span>${home.bedrooms} bed</span>
-                            </div>
-                            <div class="detail-item">
-                                <i class="fas fa-bath"></i>
-                                <span>${home.bathrooms} bath</span>
-                            </div>
-                            <div class="detail-item">
-                                <i class="fas fa-ruler-combined"></i>
-                                <span>${home.squareFootage} sq ft</span>
-                            </div>
-                            <div class="detail-item">
-                                <i class="fas fa-calendar"></i>
-                                <span>Built ${home.yearBuilt}</span>
-                            </div>
-                        </div>
-                        <div class="home-health">
-                            <div class="health-score">
-                                <span class="score">${home.healthScore}</span>
-                                <span class="label">Health Score</span>
-                            </div>
-                            <div class="health-bar">
-                                <div class="health-fill" style="width: ${home.healthScore}%"></div>
-                            </div>
-                        </div>
-                        <div class="home-actions">
-                            <button class="btn btn-secondary" onclick="viewHomeDetails('${home.id}')">
-                                <i class="fas fa-eye"></i> View Details
-                            </button>
-                            <button class="btn btn-primary" onclick="editHome('${home.id}')">
-                                <i class="fas fa-edit"></i> Edit
-                            </button>
-                        </div>
-                    `;
-                    homesContainer.appendChild(homeCard);
-                });
-                
-                // Add "Add New Home" card if less than 5 homes
-                if (homes.length < 5) {
-                    const addHomeCard = document.createElement('div');
-                    addHomeCard.className = 'home-card add-home';
-                    addHomeCard.innerHTML = `
-                        <div class="add-home-content">
-                            <i class="fas fa-plus"></i>
-                            <h4>Add New Home</h4>
-                            <p>Add up to ${5 - homes.length} more homes</p>
-                            <button class="btn-primary" onclick="addNewHome()">Add Home</button>
-                        </div>
-                    `;
-                    homesContainer.appendChild(addHomeCard);
-                }
-            }
-            
-            console.log('Homes loaded:', homes);
-        }
+        // Old loadHomes function removed - using renderHomesList() now
 
         function editHome(homeId) {
-            const home = homes.find(h => h.id === homeId);
+            const state = ensureDashboardState();
+            const home = state.homesList.find(h => h.id === homeId);
             if (home) {
                 document.getElementById('homeAddress').value = home.address;
                 document.getElementById('homeType').value = home.type;
@@ -4446,7 +4326,8 @@
                 document.getElementById('homeSquareFootage').value = home.squareFootage;
                 document.getElementById('homeYearBuilt').value = home.yearBuilt;
                 
-                document.getElementById('homeForm').dataset.homeId = homeId;
+                const index = state.homesList.findIndex(h => h.id === homeId);
+                document.getElementById('homeForm').dataset.homeId = index;
                 document.getElementById('homeModal').style.display = 'flex';
             }
         }
@@ -4487,17 +4368,14 @@
             // First, ensure user data is in sessionStorage
             await ensureUserDataInSession();
             
-            // Initialize AWS data service first
-            await initializeAWSData();
-            
             // Load user data and render lists
             loadUserData();
             renderBedroomsList();
             renderBathroomsList();
             renderKitchensList();
             
-            // Load and display homes
-            loadHomes();
+            // Load and display homes using the working structure
+            renderHomesList();
         });
 
         // Ensure user data is stored in sessionStorage
