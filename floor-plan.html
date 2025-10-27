@@ -733,26 +733,19 @@
     </div>
   </div>
 
-  <!-- Firebase Configuration -->
-  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+  <!-- AWS SDK -->
+  <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1491.0.min.js"></script>
+  <script src="auth-aws.js"></script>
   
   <script>
-    // Firebase Configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
-      authDomain: "nestmate-167ed.firebaseapp.com",
-      projectId: "nestmate-167ed",
-      storageBucket: "nestmate-167ed.appspot.com",
-      messagingSenderId: "865171535257",
-      appId: "1:865171535257:web:abcdef1234567890"
-    };
+    // AWS Configuration
+    AWS.config.update({
+      region: 'us-east-2',
+      accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
+      secretAccessKey: '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'
+    });
 
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
+    const dynamodb = new AWS.DynamoDB.DocumentClient();
 
     // Global variables
     let currentTool = 'wall';
@@ -766,45 +759,37 @@
     let currentUser = null;
 
     // Check user authentication and plan
-    function checkUserPlan() {
-      auth.onAuthStateChanged(user => {
-        if (user) {
-          currentUser = user;
-          console.log('User authenticated:', user.email);
-          
-          // Check user's plan from Firebase collections
-          const email = user.email;
-          
-          // Check Pro users
-          db.collection('NESTMATE PRO USER ACCOUNTS').where('email', '==', email).get()
-            .then(snapshot => {
-              if (!snapshot.empty) {
-                currentUserPlan = 'pro';
-                console.log('User is on Pro plan');
-                return;
-              }
-              
-              // Check Advanced Pro users
-              return db.collection('NESTMATE ADVANCED PRO USER ACCOUNTS').where('email', '==', email).get();
-            })
-            .then(snapshot => {
-              if (snapshot && !snapshot.empty) {
-                currentUserPlan = 'advanced';
-                console.log('User is on Advanced Pro plan');
-              } else {
-                currentUserPlan = 'basic';
-                console.log('User is on Basic plan');
-              }
-            })
-            .catch(error => {
-              console.error('Error checking user plan:', error);
-              currentUserPlan = 'basic'; // Default to basic on error
-            });
-        } else {
-          console.log('No user authenticated');
-          currentUserPlan = 'basic';
+    async function checkUserPlan() {
+      try {
+        // Wait for auth to initialize
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Check authentication
+        const isAuthenticated = await nestMateAuth.isAuthenticated();
+        if (!isAuthenticated) {
+          window.location.href = 'login-aws.html';
+          return;
         }
-      });
+
+        currentUser = nestMateAuth.currentUser;
+        console.log('User authenticated:', currentUser.email);
+        
+        // Check user's plan from DynamoDB
+        const params = {
+          TableName: process.env.NESTMATE_DDB_USERS_TABLE,
+          Key: { userId: currentUser.userId }
+        };
+        
+        const result = await dynamodb.get(params).promise();
+        if (result.Item && result.Item.subscription) {
+          currentUserPlan = result.Item.subscription.plan || 'basic';
+          console.log('User is on', currentUserPlan, 'plan');
+        }
+      } catch (error) {
+        console.error('Error checking user plan:', error);
+        window.location.href = 'login-aws.html';
+      }
+    }
     }
 
     // Simple plan check for when user clicks create
@@ -814,45 +799,11 @@
       
       if (currentUser) {
         console.log('User found:', currentUser.email);
-        performPlanCheck(currentUser.email);
+        // Plan already checked in checkUserPlan()
+        console.log('Current plan:', currentUserPlan);
       } else {
         console.log('No user found in immediate check');
       }
-    }
-
-    function performPlanCheck(email) {
-      console.log('Performing immediate plan check for:', email);
-      
-      // Check Pro users first
-      db.collection('NESTMATE PRO USER ACCOUNTS').where('email', '==', email).get()
-        .then(snapshot => {
-          if (!snapshot.empty) {
-            currentUserPlan = 'pro';
-            console.log('User is on Pro plan - allowing floor plan creation');
-            document.getElementById('canvasSection').classList.add('active');
-            document.getElementById('roomTemplates').classList.add('active');
-            return;
-          }
-          
-          // Check Advanced Pro users
-          return db.collection('NESTMATE ADVANCED PRO USER ACCOUNTS').where('email', '==', email).get();
-        })
-        .then(snapshot => {
-          if (snapshot && !snapshot.empty) {
-            currentUserPlan = 'advanced';
-            console.log('User is on Advanced Pro plan - allowing floor plan creation');
-            document.getElementById('canvasSection').classList.add('active');
-            document.getElementById('roomTemplates').classList.add('active');
-          } else {
-            currentUserPlan = 'basic';
-            console.log('User is on Basic plan - showing upgrade message');
-            alert('Floor plan creation is available for Pro and Advanced Pro plans only. Please upgrade to create custom floor plans.');
-          }
-        })
-        .catch(error => {
-          console.error('Error checking user plan:', error);
-          alert('Error checking your plan. Please try again.');
-        });
     }
 
     // Initialize the application
@@ -868,9 +819,11 @@
         window.history.replaceState({}, document.title, window.location.pathname);
       }
       
-      // Set user plan to pro by default to allow access
-      currentUserPlan = 'pro';
-      console.log('Floor plan access enabled for all users');
+      // Initialize floor plan tool
+      checkUserPlan();
+      initializeCanvas();
+      setupEventListeners();
+    });
       
       canvas = document.getElementById('floorPlanCanvas');
       ctx = canvas.getContext('2d');

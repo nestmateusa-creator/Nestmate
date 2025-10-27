@@ -151,7 +151,7 @@
             </div>
             
             <div style="margin-top: 30px;">
-                <a href="dashboard-basic-new.html" class="btn btn-secondary">Continue with Basic Plan</a>
+                <a href="dashboard-basic-clean.html" class="btn btn-secondary">Continue with Basic Plan</a>
             </div>
         </div>
         
@@ -162,22 +162,19 @@
         </div>
     </div>
 
-    <script>
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
-            authDomain: "nestmate-167ed.firebaseapp.com",
-            projectId: "nestmate-167ed",
-            storageBucket: "nestmate-167ed.appspot.com",
-            messagingSenderId: "865171535257",
-            appId: "1:865171535257:web:nextmate-web-app",
-            measurementId: "G-NEXTMATE-ANALYTICS"
-        };
+    <!-- AWS SDK -->
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1491.0.min.js"></script>
+    <script src="auth-aws.js"></script>
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const auth = firebase.auth();
+    <script>
+        // AWS Configuration
+        AWS.config.update({
+            region: 'us-east-2',
+            accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
+            secretAccessKey: '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'
+        });
+
+        const dynamodb = new AWS.DynamoDB.DocumentClient();
 
         // Get URL parameters
         const urlParams = new URLSearchParams(window.location.search);
