@@ -139,11 +139,9 @@
         </div>
     </div>
 
-    <!-- Firebase CDN -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    
+    <!-- AWS SDK -->
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1491.0.min.js"></script>
+    <script src="auth-aws.js"></script>
 
     <script>
         // AWS Configuration
@@ -154,59 +152,62 @@
         });
 
         const dynamodb = new AWS.DynamoDB.DocumentClient();
-        const auth = firebase.auth();
-        const db = firebase.firestore();
 
         // Go back to correct dashboard based on user's account type
         async function goBackToDashboard() {
             try {
-                const user = auth.currentUser;
+                // Check authentication
+                const isAuthenticated = await nestMateAuth.isAuthenticated();
+                if (!isAuthenticated) {
+                    window.location.href = 'login-aws.html';
+                    return;
+                }
+
+                const user = nestMateAuth.currentUser;
                 if (!user) {
                     window.location.href = 'login-aws.html';
                     return;
                 }
 
-                // User will be handled by the collection-based system below
-
-                // For other users, try to get account type from Firestore
+                // Get user's subscription data from DynamoDB
                 try {
-                    const userDoc = await db.collection('userProfiles').doc(user.uid).get();
-                    if (userDoc.exists) {
-                        const userData = userDoc.data();
-                        const accountType = userData.accountType || 'trial';
-                        
-                        // Normalize account type
-                        let normalizedType = 'trial';
-                        if (accountType && accountType.toLowerCase().includes('advanced')) {
-                            normalizedType = 'advanced';
-                        } else if (accountType && accountType.toLowerCase().includes('pro')) {
-                            normalizedType = 'pro';
-                        } else if (accountType && accountType.toLowerCase().includes('basic')) {
-                            normalizedType = 'basic';
-                        }
+                    const params = {
+                        TableName: process.env.NESTMATE_DDB_USERS_TABLE,
+                        Key: { userId: user.userId }
+                    };
+                    
+                    const result = await dynamodb.get(params).promise();
+                    if (result.Item) {
+                        const userData = result.Item;
+                        const accountType = userData.subscription?.plan || 'basic';
                         
                         // Redirect based on account type
-                        switch (normalizedType) {
+                        switch (accountType.toLowerCase()) {
                             case 'basic':
-                                window.location.href = 'dashboard-basic-new.html';
+                                window.location.href = 'dashboard-basic-clean.html';
                                 break;
                             case 'pro':
-                                window.location.href = 'dashboard-pro-new.html';
+                                window.location.href = 'dashboard-advanced.html';
                                 break;
                             case 'advanced':
-                                window.location.href = 'dashboard-advanced-pro-new.html';
+                                window.location.href = 'dashboard-advanced-pro.html';
+                                break;
+                            case 'enterprise':
+                                window.location.href = 'dashboard-enterprise.html';
                                 break;
                             default:
-                                window.location.href = 'dashboard-basic-new.html';
+                                window.location.href = 'dashboard-basic-clean.html';
                         }
                     } else {
-                        window.location.href = 'dashboard-basic-new.html';
+                        window.location.href = 'dashboard-basic-clean.html';
                     }
                 } catch (error) {
-                    window.location.href = 'dashboard-basic-new.html';
+                    console.error('Error getting user data:', error);
+                    window.location.href = 'dashboard-basic-clean.html';
                 }
             } catch (error) {
-                window.location.href = 'dashboard-basic-new.html';
+                console.error('Error in goBackToDashboard:', error);
+                window.location.href = 'dashboard-basic-clean.html';
             }
         }
     </script>

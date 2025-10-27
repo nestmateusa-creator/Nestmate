@@ -736,25 +736,19 @@
     <div class="toast" id="toast"></div>
 
     <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <!-- AWS SDK -->
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1491.0.min.js"></script>
+    <script src="auth-aws.js"></script>
 
     <script>
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
-            authDomain: "nestmate-167ed.firebaseapp.com",
-            projectId: "nestmate-167ed",
-            storageBucket: "nestmate-167ed.appspot.com",
-            messagingSenderId: "865171535257",
-            appId: "1:865171535257:web:abcdefghijklmnopqrstuv"
-        };
+        // AWS Configuration
+        AWS.config.update({
+            region: 'us-east-2',
+            accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
+            secretAccessKey: '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'
+        });
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const auth = firebase.auth();
+        const dynamodb = new AWS.DynamoDB.DocumentClient();
 
         let allRecords = [];
         let filteredRecords = [];
@@ -762,30 +756,43 @@
         let authChecked = false;
 
         // Initialize the page
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             console.log('Service records page loaded!');
             
-        // Get return URL from parameters
-        const urlParams = new URLSearchParams(window.location.search);
-        const returnUrl = urlParams.get('returnUrl') || 'dashboard-basic-new.html';
-        
-        // Set the back to dashboard links
-        document.getElementById('backToDashboard').href = returnUrl;
-        document.getElementById('backToDashboardEmpty').href = returnUrl;
-        
-        // Set the add new service links
-        document.getElementById('addNewService').href = `service-record.html?returnUrl=${encodeURIComponent(returnUrl)}`;
-        document.getElementById('addNewServiceEmpty').href = `service-record.html?returnUrl=${encodeURIComponent(returnUrl)}`;
-        
-        // Clear URL parameters to prevent redirect loops
-        const newUrl = window.location.pathname;
-        window.history.replaceState({}, document.title, newUrl);
+            // Get return URL from parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const returnUrl = urlParams.get('returnUrl') || 'dashboard-basic-clean.html';
+            
+            // Set the back to dashboard links
+            document.getElementById('backToDashboard').href = returnUrl;
+            document.getElementById('backToDashboardEmpty').href = returnUrl;
+            
+            // Set the add new service links
+            document.getElementById('addNewService').href = `service-record.html?returnUrl=${encodeURIComponent(returnUrl)}`;
+            document.getElementById('addNewServiceEmpty').href = `service-record.html?returnUrl=${encodeURIComponent(returnUrl)}`;
+            
+            // Clear URL parameters to prevent redirect loops
+            const newUrl = window.location.pathname;
+            window.history.replaceState({}, document.title, newUrl);
             
             // Always set up event listeners first
             setupEventListeners();
             
-            // Load records without any auth checks - just show empty state
-            loadRecordsWithoutAuth();
+            // Check authentication
+            try {
+                await new Promise(resolve => setTimeout(resolve, 500));
+                const isAuthenticated = await nestMateAuth.isAuthenticated();
+                if (isAuthenticated) {
+                    currentUser = nestMateAuth.currentUser;
+                    console.log('User authenticated:', currentUser);
+                    loadRecords();
+                } else {
+                    loadRecordsWithoutAuth();
+                }
+            } catch (error) {
+                console.error('Auth check error:', error);
+                loadRecordsWithoutAuth();
+            }
         });
         
         function loadRecordsWithoutAuth() {
@@ -901,33 +908,60 @@
             document.getElementById('priorityFilter').addEventListener('change', filterRecords);
         }
 
-        function loadRecords() {
-            console.log('Loading records from localStorage...');
+        async function loadRecords() {
+            console.log('Loading records from AWS DynamoDB...');
             
-            // Load service records from localStorage instead of Firebase
-            const records = JSON.parse(localStorage.getItem('serviceHistory') || '[]');
-            const drafts = JSON.parse(localStorage.getItem('serviceDrafts') || '[]');
-
-            console.log('Records from localStorage:', records);
-            console.log('Drafts from localStorage:', drafts);
-
-            // Add isDraft flag to drafts
-            const draftsWithFlag = drafts.map(draft => ({ ...draft, isDraft: true }));
-
-            allRecords = [...records, ...draftsWithFlag];
-            console.log('All records combined:', allRecords);
-            
-            allRecords.sort((a, b) => {
-                const dateA = new Date(a.createdAt || a.savedAt);
-                const dateB = new Date(b.createdAt || b.savedAt);
-                return dateB - dateA;
-            });
-            
-            filteredRecords = [...allRecords];
-            console.log('Final filtered records:', filteredRecords);
-            
-            updateStats();
-            displayRecords();
+            try {
+                if (currentUser) {
+                    // Load service records from AWS DynamoDB
+                    const params = {
+                        TableName: process.env.NESTMATE_DDB_USERS_TABLE,
+                        Key: { userId: currentUser.userId }
+                    };
+                    
+                    const result = await dynamodb.get(params).promise();
+                    const records = result.Item?.serviceRecordsList || [];
+                    
+                    console.log('Records from AWS DynamoDB:', records);
+                    
+                    allRecords = records;
+                } else {
+                    // Fallback to localStorage if not authenticated
+                    const records = JSON.parse(localStorage.getItem('serviceHistory') || '[]');
+                    const drafts = JSON.parse(localStorage.getItem('serviceDrafts') || '[]');
+                    
+                    console.log('Records from localStorage (fallback):', records);
+                    console.log('Drafts from localStorage (fallback):', drafts);
+                    
+                    // Add isDraft flag to drafts
+                    const draftsWithFlag = drafts.map(draft => ({ ...draft, isDraft: true }));
+                    allRecords = [...records, ...draftsWithFlag];
+                }
+                
+                console.log('All records combined:', allRecords);
+                
+                allRecords.sort((a, b) => {
+                    const dateA = new Date(a.createdAt || a.savedAt);
+                    const dateB = new Date(b.createdAt || b.savedAt);
+                    return dateB - dateA;
+                });
+                
+                filteredRecords = [...allRecords];
+                console.log('Final filtered records:', filteredRecords);
+                
+                updateStats();
+                displayRecords();
+            } catch (error) {
+                console.error('Error loading records:', error);
+                // Fallback to localStorage on error
+                const records = JSON.parse(localStorage.getItem('serviceHistory') || '[]');
+                const drafts = JSON.parse(localStorage.getItem('serviceDrafts') || '[]');
+                const draftsWithFlag = drafts.map(draft => ({ ...draft, isDraft: true }));
+                allRecords = [...records, ...draftsWithFlag];
+                filteredRecords = [...allRecords];
+                updateStats();
+                displayRecords();
+            }
         }
         
         function showEmptyState() {

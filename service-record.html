@@ -887,25 +887,19 @@
     <div class="toast" id="toast"></div>
 
     <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <!-- AWS SDK -->
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1491.0.min.js"></script>
+    <script src="auth-aws.js"></script>
 
     <script>
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
-            authDomain: "nestmate-167ed.firebaseapp.com",
-            projectId: "nestmate-167ed",
-            storageBucket: "nestmate-167ed.appspot.com",
-            messagingSenderId: "865171535257",
-            appId: "1:865171535257:web:abcdefghijklmnopqrstuv"
-        };
+        // AWS Configuration
+        AWS.config.update({
+            region: 'us-east-2',
+            accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
+            secretAccessKey: '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'
+        });
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const auth = firebase.auth();
+        const dynamodb = new AWS.DynamoDB.DocumentClient();
 
         // Global variables
         let selectedAreas = [];
@@ -915,10 +909,10 @@
         let authChecked = false;
 
         // Initialize the form
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             // Get return URL from parameters
             const urlParams = new URLSearchParams(window.location.search);
-            const returnUrl = urlParams.get('returnUrl') || 'dashboard-basic-new.html';
+            const returnUrl = urlParams.get('returnUrl') || 'dashboard-basic-clean.html';
             
             // Set the back to dashboard link
             document.getElementById('backToDashboard').href = returnUrl;
@@ -930,7 +924,19 @@
             // Always set up event listeners first
             setupEventListeners();
             
-            // Initialize form without any auth checks
+            // Check authentication
+            try {
+                await new Promise(resolve => setTimeout(resolve, 500));
+                const isAuthenticated = await nestMateAuth.isAuthenticated();
+                if (isAuthenticated) {
+                    currentUser = nestMateAuth.currentUser;
+                    console.log('User authenticated:', currentUser);
+                }
+            } catch (error) {
+                console.error('Auth check error:', error);
+            }
+            
+            // Initialize form
             initializeForm();
         });
         
@@ -1176,12 +1182,56 @@
             document.getElementById('loading').style.display = 'block';
             document.querySelector('.form-container').style.display = 'none';
             
-            // Save to localStorage instead of Firebase to avoid auth requirements
-            const records = JSON.parse(localStorage.getItem('serviceHistory') || '[]');
-            records.push(formData);
-            localStorage.setItem('serviceHistory', JSON.stringify(records));
-            
-            console.log('Record saved to localStorage:', records);
+            // Save to AWS DynamoDB
+            try {
+                if (currentUser) {
+                    // Get existing service records
+                    const params = {
+                        TableName: process.env.NESTMATE_DDB_USERS_TABLE,
+                        Key: { userId: currentUser.userId }
+                    };
+                    
+                    const result = await dynamodb.get(params).promise();
+                    const existingRecords = result.Item?.serviceRecordsList || [];
+                    
+                    // Add new record
+                    const newRecord = {
+                        id: Date.now().toString(),
+                        ...formData,
+                        userId: currentUser.userId,
+                        createdAt: new Date().toISOString()
+                    };
+                    
+                    const updatedRecords = [...existingRecords, newRecord];
+                    
+                    // Save to DynamoDB
+                    const updateParams = {
+                        TableName: process.env.NESTMATE_DDB_USERS_TABLE,
+                        Key: { userId: currentUser.userId },
+                        UpdateExpression: 'SET serviceRecordsList = :records, lastUpdated = :ts',
+                        ExpressionAttributeValues: {
+                            ':records': updatedRecords,
+                            ':ts': new Date().toISOString()
+                        }
+                    };
+                    
+                    await dynamodb.update(updateParams).promise();
+                    console.log('Record saved to AWS DynamoDB:', newRecord);
+                } else {
+                    // Fallback to localStorage if not authenticated
+                    const records = JSON.parse(localStorage.getItem('serviceHistory') || '[]');
+                    records.push(formData);
+                    localStorage.setItem('serviceHistory', JSON.stringify(records));
+                    console.log('Record saved to localStorage (fallback):', records);
+                }
+            } catch (error) {
+                console.error('Error saving record:', error);
+                // Fallback to localStorage on error
+                const records = JSON.parse(localStorage.getItem('serviceHistory') || '[]');
+                records.push(formData);
+                localStorage.setItem('serviceHistory', JSON.stringify(records));
+                console.log('Record saved to localStorage (error fallback):', records);
+            }
             
             // Hide loading
             document.getElementById('loading').style.display = 'none';
