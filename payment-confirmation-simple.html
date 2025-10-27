@@ -101,35 +101,37 @@
         <a href="#" class="btn" id="dashboardLink">Go to Dashboard</a>
     </div>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <!-- AWS SDK -->
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1491.0.min.js"></script>
+    <script src="auth-aws.js"></script>
     
     <script>
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
-            authDomain: "data-41fa8.firebaseapp.com",
-            projectId: "data-41fa8",
-            storageBucket: "data-41fa8.firebasestorage.app",
-            messagingSenderId: "865171535257",
-            appId: "1:865171535257:web:9944a48a952e99f55f0f08",
-            measurementId: "G-1DYR2RGY4G"
-        };
+        // AWS Configuration
+        AWS.config.update({
+            region: 'us-east-2',
+            accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
+            secretAccessKey: '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'
+        });
+
+        const dynamodb = new AWS.DynamoDB.DocumentClient();
         
-        let auth, db;
-        
-        // Initialize Firebase
-        function initFirebase() {
+        // Initialize AWS
+        async function initAWS() {
             try {
-                firebase.initializeApp(firebaseConfig);
-                auth = firebase.auth();
-                db = firebase.firestore();
-                console.log('✅ Firebase initialized');
+                // Wait for auth to initialize
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // Check authentication
+                const isAuthenticated = await nestMateAuth.isAuthenticated();
+                if (!isAuthenticated) {
+                    console.log('❌ User not authenticated');
+                    return false;
+                }
+                
+                console.log('✅ AWS initialized');
                 return true;
             } catch (error) {
-                console.error('❌ Firebase init error:', error);
+                console.error('❌ AWS init error:', error);
                 return false;
             }
         }
@@ -156,50 +158,44 @@
                 updateDebug('Getting user...', 'Checking...', planType);
                 
                 // Wait for user to be available
-                let user = auth.currentUser;
-                let attempts = 0;
-                
-                while (!user && attempts < 10) {
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-                    user = auth.currentUser;
-                    attempts++;
-                    updateDebug(`Waiting for user... (${attempts}/10)`, 'Checking...', planType);
-                }
+                const user = nestMateAuth.currentUser;
                 
                 if (!user) {
-                    throw new Error('User not found after 10 seconds');
+                    throw new Error('User not authenticated');
                 }
                 
                 updateDebug('User found!', user.email, planType);
                 
                 // Simple update data
                 const updateData = {
-                    accountType: planType,
-                    plan: planType,
-                    subscriptionStatus: 'active',
-                    subscriptionDate: new Date().toISOString(),
+                    subscription: {
+                        plan: planType,
+                        status: 'active',
+                        startDate: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    },
                     email: user.email,
-                    uid: user.uid
+                    userId: user.userId,
+                    lastUpdated: new Date().toISOString()
                 };
                 
                 updateDebug('Updating account...', user.email, planType);
                 
-                // Try to update userProfiles (most reliable)
-                await db.collection('userProfiles').doc(user.uid).set(updateData, { merge: true });
-                console.log('✅ UserProfiles updated');
-                
-                // Try to update specific collection
-                const collectionName = planType === 'basic' ? 'Basic User Accounts' : 
-                                     planType === 'pro' ? 'Pro User Accounts' : 
-                                     planType === 'advanced' ? 'Advanced Pro User Accounts' : 
-                                     'Basic User Accounts';
-                
-                try {
-                    await db.collection(collectionName).doc(user.uid).set(updateData, { merge: true });
-                    console.log('✅ Specific collection updated');
-                } catch (error) {
-                    console.log('⚠️ Specific collection failed, but userProfiles succeeded');
-                }
+                // Update user in DynamoDB
+                const params = {
+                    TableName: process.env.NESTMATE_DDB_USERS_TABLE,
+                    Key: { userId: user.userId },
+                    UpdateExpression: 'SET subscription = :subscription, email = :email, lastUpdated = :lastUpdated',
+                    ExpressionAttributeValues: {
+                        ':subscription': updateData.subscription,
+                        ':email': updateData.email,
+                        ':lastUpdated': updateData.lastUpdated
+                    },
+                    ReturnValues: 'UPDATED_NEW'
+                };
+
+                await dynamodb.update(params).promise();
+                console.log('✅ Account updated successfully');
                 
                 updateDebug('Account updated!', user.email, planType);
                 return true;
@@ -216,12 +212,12 @@
             try {
                 updateDebug('Starting...', 'Loading...', 'Loading...');
                 
-                // Initialize Firebase
-                if (!initFirebase()) {
-                    throw new Error('Firebase initialization failed');
+                // Initialize AWS
+                if (!(await initAWS())) {
+                    throw new Error('AWS initialization failed');
                 }
                 
-                updateDebug('Firebase ready', 'Loading...', 'Loading...');
+                updateDebug('AWS ready', 'Loading...', 'Loading...');
                 
                 // Get URL parameters
                 const params = getUrlParams();
@@ -244,14 +240,14 @@
                     };
                     
                     const dashboardUrls = {
-                        'basic': 'dashboard-basic-new.html',
-                        'pro': 'dashboard-pro-new.html',
-                        'advanced': 'dashboard-advanced-pro-new.html'
+                        'basic': 'dashboard-basic-clean.html',
+                        'pro': 'dashboard-advanced.html',
+                        'advanced': 'dashboard-advanced-pro.html'
                     };
                     
                     document.getElementById('planName').textContent = planNames[planType] || planType;
                     document.getElementById('planPrice').textContent = planPrices[planType] || '';
-                    document.getElementById('dashboardLink').href = dashboardUrls[planType] || 'dashboard-basic-new.html';
+                    document.getElementById('dashboardLink').href = dashboardUrls[planType] || 'dashboard-basic-clean.html';
                     
                     // Update account
                     const success = await updateAccount(planType);
@@ -264,7 +260,7 @@
                     
                 } else {
                     // Not a successful payment
-                    window.location.href = 'dashboard-basic-new.html';
+                    window.location.href = 'dashboard-basic-clean.html';
                 }
                 
             } catch (error) {
