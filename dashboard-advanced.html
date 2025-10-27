@@ -4435,6 +4435,11 @@
                 return;
             }
 
+            // Initialize AWS Data Service
+            const awsDataService = new AWSDataService();
+            await awsDataService.initialize(nestMateAuth.currentUser.userId);
+            window.awsDataService = awsDataService; // Make it globally available
+
             // Load homes using AWS (Basic Dashboard pattern)
             await loadHomes();
             

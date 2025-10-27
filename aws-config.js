@@ -1,20 +1,35 @@
 // AWS Configuration for NestMate
 // This file contains all AWS service configurations
 
-// Load AWS configuration from JSON file
-let awsConfig = {};
-
-// Try to load from aws-config.json if it exists
-try {
-    awsConfig = require('./aws-config.json');
-} catch (error) {
-    console.warn('aws-config.json not found. Using default configuration.');
-    awsConfig = {
-        region: 'us-east-1',
-        projectName: 'nestmate',
-        environment: 'production'
-    };
-}
+// AWS configuration object - hardcoded for browser compatibility
+const awsConfig = {
+    region: 'us-east-2',
+    accountId: '483954734051',
+    projectName: 'nestmate',
+    environment: 'production',
+    dynamodb: {
+        usersTable: 'nestmate-users',
+        homesTable: 'nestmate-homes',
+        tasksTable: 'nestmate-tasks',
+        serviceRecordsTable: 'nestmate-service-records',
+        photosTable: 'nestmate-photos',
+        subscriptionsTable: 'nestmate-subscriptions'
+    },
+    cognito: {
+        userPoolId: 'us-east-2_2aUT3c65F',
+        clientId: '3a603s7kgoc0e47cjjtj1nugfe',
+        clientSecret: '',
+        identityPoolId: ''
+    },
+    s3: {
+        userDataBucket: 'nestmate-files-483954734051',
+        staticAssetsBucket: 'nestmate-files-483954734051'
+    },
+    apiGateway: {
+        restApiId: '',
+        stage: 'production'
+    }
+};
 
 // AWS SDK Configuration
 const AWS_CONFIG = {
