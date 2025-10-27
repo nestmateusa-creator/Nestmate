@@ -220,44 +220,41 @@
     </div>
 
     <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    
+    <!-- AWS SDK -->
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1491.0.min.js"></script>
+    <script src="auth-aws.js"></script>
 
     <script>
-        // Firebase configuration - CORRECTED PROJECT ID
-        const firebaseConfig = {
-            apiKey: "AIzaSyC7vRXVWl64DyBHywDOcRHAwm5Oij5G7yI",
-            authDomain: "data-41fa8.firebaseapp.com",
-            projectId: "data-41fa8",
-            storageBucket: "data-41fa8.firebasestorage.app",
-            messagingSenderId: "865171535257",
-            appId: "1:865171535257:web:9944a48a952e99f55f0f08",
-            measurementId: "G-1DYR2RGY4G"
-        };
+        // AWS Configuration
+        AWS.config.update({
+            region: 'us-east-2',
+            accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
+            secretAccessKey: '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'
+        });
 
-        let auth, db;
-        let isFirebaseReady = false;
+        const dynamodb = new AWS.DynamoDB.DocumentClient();
+        let isAWSReady = false;
 
-        // Initialize Firebase
-        async function initFirebase() {
+        // Initialize AWS
+        async function initAWS() {
             try {
-                console.log('🔄 Initializing Firebase...');
+                console.log('🔄 Initializing AWS...');
                 
-                while (typeof firebase === 'undefined') {
-                    await new Promise(resolve => setTimeout(resolve, 100));
+                // Wait for auth to initialize
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // Check authentication
+                const isAuthenticated = await nestMateAuth.isAuthenticated();
+                if (!isAuthenticated) {
+                    console.log('❌ User not authenticated');
+                    return false;
                 }
                 
-                firebase.initializeApp(firebaseConfig);
-                auth = firebase.auth();
-                db = firebase.firestore();
-                
-                console.log('✅ Firebase initialized successfully');
-                isFirebaseReady = true;
+                console.log('✅ AWS initialized successfully');
+                isAWSReady = true;
                 return true;
             } catch (error) {
-                console.error('❌ Firebase initialization failed:', error);
+                console.error('❌ AWS initialization failed:', error);
                 return false;
             }
         }
@@ -279,32 +276,12 @@
                 console.log('🚨 updateUserAccount called with plan:', planType);
                 
                 // Get current user immediately
-                let user = auth.currentUser;
+                const user = nestMateAuth.currentUser;
                 console.log('🚨 Current user:', user ? user.email : 'No user');
                 updateDebugInfo(planType, user ? user.email : 'No user', 'Checking auth...');
                 
-                // If no user, wait a moment and try again
                 if (!user) {
-                    console.log('🚨 No user found, waiting for auth state...');
-                    updateDebugInfo(planType, 'Waiting...', 'Checking auth...');
-                    await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
-                    user = auth.currentUser;
-                    console.log('🚨 User after wait:', user ? user.email : 'No user');
-                    updateDebugInfo(planType, user ? user.email : 'No user', 'Auth check complete');
-                }
-                
-                if (!user) {
-                    // If still no user, try one more time with a longer wait
-                    console.log('🚨 Still no user, trying one more time...');
-                    updateDebugInfo(planType, 'Final attempt...', 'Checking auth...');
-                    await new Promise(resolve => setTimeout(resolve, 3000)); // Wait 3 more seconds
-                    user = auth.currentUser;
-                    console.log('🚨 User after final wait:', user ? user.email : 'No user');
-                }
-                
-                if (!user) {
-                    // If still no user, show error but don't redirect
-                    console.log('🚨 User not authenticated after all attempts');
+                    console.log('🚨 User not authenticated');
                     updateDebugInfo(planType, 'Not authenticated', 'Auth failed');
                     throw new Error('User not authenticated. Please sign in and try again.');
                 }
@@ -312,90 +289,43 @@
                 console.log('🚨 Updating user account to:', planType);
 
                 const updateData = {
-                    accountType: planType,
-                    plan: planType,
-                    subscriptionStatus: 'active',
-                    subscriptionDate: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
+                    subscription: {
+                        plan: planType,
+                        status: 'active',
+                        startDate: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    },
                     email: user.email,
-                    uid: user.uid
+                    userId: user.userId,
+                    lastUpdated: new Date().toISOString()
                 };
 
+                // Update user in DynamoDB
+                const params = {
+                    TableName: process.env.NESTMATE_DDB_USERS_TABLE,
+                    Key: { userId: user.userId },
+                    UpdateExpression: 'SET subscription = :subscription, email = :email, lastUpdated = :lastUpdated',
+                    ExpressionAttributeValues: {
+                        ':subscription': updateData.subscription,
+                        ':email': updateData.email,
+                        ':lastUpdated': updateData.lastUpdated
+                    },
+                    ReturnValues: 'UPDATED_NEW'
+                };
+
+                await dynamodb.update(params).promise();
+                console.log('✅ User subscription updated successfully');
+                updateDebugInfo(planType, user.email, 'Subscription updated successfully');
+
                 console.log('🚨 Update data:', updateData);
 
-                // Determine the correct collection based on plan type
-                let collectionName = 'Basic User Accounts'; // default
-                switch (planType.toLowerCase()) {
-                    case 'basic':
-                        collectionName = 'Basic User Accounts';
-                        break;
-                    case 'pro':
-                        collectionName = 'Pro User Accounts';
-                        break;
-                    case 'advanced':
-                        collectionName = 'Advanced Pro User Accounts';
-                        break;
-                    default:
-                        collectionName = 'Basic User Accounts';
-                }
+                // Show success message
+                showSuccess(planType);
                 
-                console.log('🚨 Writing user to collection:', collectionName);
-                console.log('🚨 User UID:', user.uid);
-                console.log('🚨 Update data:', updateData);
-                
-                // Write user to the correct subscription collection
-                let collectionWriteSuccess = false;
-                try {
-                    updateDebugInfo(planType, user.email, `Writing to ${collectionName}...`);
-                    await db.collection(collectionName).doc(user.uid).set(updateData, { merge: true });
-                    console.log('✅ User added to', collectionName, 'collection');
-                    updateDebugInfo(planType, user.email, `Successfully added to ${collectionName}`);
-                    collectionWriteSuccess = true;
-                } catch (collectionError) {
-                    console.error('❌ Failed to write to', collectionName, 'collection:', collectionError);
-                    console.log('🔄 Falling back to userProfiles collection...');
-                    updateDebugInfo(planType, user.email, `Failed to write to ${collectionName}, using fallback...`);
-                    
-                    // Fallback: write to userProfiles with the correct accountType
-                    const fallbackData = {
-                        ...updateData,
-                        accountType: planType,
-                        plan: planType,
-                        subscriptionStatus: 'active'
-                    };
-                    
-                    try {
-                        await db.collection('userProfiles').doc(user.uid).set(fallbackData, { merge: true });
-                        console.log('✅ Fallback: User added to userProfiles collection with', planType, 'account type');
-                        collectionWriteSuccess = true;
-                    } catch (fallbackError) {
-                        console.error('❌ Fallback also failed:', fallbackError);
-                        throw new Error('Failed to update user account in any collection');
-                    }
-                }
-                
-                // Also keep userProfiles for backward compatibility
-                console.log('🚨 Updating userProfiles collection for compatibility...');
-                try {
-                    await db.collection('userProfiles').doc(user.uid).set(updateData, { merge: true });
-                    console.log('✅ User profile updated for compatibility');
-                } catch (userProfilesError) {
-                    console.error('❌ Failed to update userProfiles collection:', userProfilesError);
-                    // Continue anyway - the main collection update succeeded
-                }
-
-                if (collectionWriteSuccess) {
-                    console.log('✅ User account updated successfully');
-                    updateDebugInfo(planType, user.email, 'Account updated successfully!');
-                    return true;
-                } else {
-                    console.log('❌ Collection write failed');
-                    updateDebugInfo(planType, user.email, 'Collection write failed');
-                    throw new Error('Failed to write to any collection');
-                }
             } catch (error) {
-                console.error('❌ Failed to update user account:', error);
-                throw error;
+                console.error('❌ Error updating user account:', error);
+                updateDebugInfo(planType, 'Error occurred', error.message);
+                showError(error.message);
             }
         }
 
@@ -416,9 +346,9 @@
             };
 
             const dashboardUrls = {
-                'basic': 'dashboard-basic-new.html',
-                'pro': 'dashboard-pro-new.html',
-                'advanced': 'dashboard-advanced-pro-new.html'
+                'basic': 'dashboard-basic-clean.html',
+                'pro': 'dashboard-advanced.html',
+                'advanced': 'dashboard-advanced-pro.html'
             };
 
             console.log('🚨 Dashboard URL for planType:', planType, '=', dashboardUrls[planType]);
@@ -464,9 +394,9 @@
                 // Update debug info
                 updateDebugInfo('Loading...', 'Checking...', 'Starting...');
                 
-                // Initialize Firebase
-                await initFirebase();
-                console.log('🚨 Firebase initialized');
+                // Initialize AWS
+                await initAWS();
+                console.log('🚨 AWS initialized');
                 
                 // Get URL parameters
                 const params = getUrlParams();
