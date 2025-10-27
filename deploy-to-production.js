@@ -14,7 +14,7 @@ const requiredFiles = [
     'index.html',
     'login-aws.html',
     'register-aws.html',
-    'dashboard-basic-aws.html',
+    'dashboard-basic-clean.html',
     'auth-aws.js',
     'aws-nestmate-services.js',
     'aws-config.json',
@@ -80,7 +80,7 @@ const deploymentFiles = [
     'index.html',
     'login-aws.html',
     'register-aws.html',
-    'dashboard-basic-aws.html',
+    'dashboard-basic-clean.html',
     
     // AWS Services
     'auth-aws.js',
