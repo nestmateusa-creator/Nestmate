@@ -4104,6 +4104,9 @@
         }
 
         function addNewHome() {
+            // Clear the form to prevent validation errors
+            document.getElementById('homeForm').reset();
+            document.getElementById('homeForm').removeAttribute('data-home-id');
             openHomeModal();
         }
 
@@ -4150,7 +4153,7 @@
 
             // Validate required fields
             if (!homeData.address || !homeData.type) {
-                showAlert('Please fill in all required fields', 'error');
+                showAlert('Please fill in all required fields (Address and Type are required)', 'error');
                 return;
             }
 
@@ -4191,6 +4194,7 @@
                 try {
                     localStorage.setItem('homes', JSON.stringify(homes));
                     console.log('Home saved to localStorage fallback');
+                    showAlert('Home saved successfully (using local storage)', 'success');
                 } catch (localError) {
                     console.error('Error saving to localStorage:', localError);
                     showAlert('Error saving home. Please try again.', 'error');
