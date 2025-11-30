@@ -96,26 +96,29 @@ class NestMateAuth {
 
     // Helper to check if AWS services are available and wait if needed
     async _ensureAWSAvailable(service, method, serviceName = 'AWS') {
-        console.log(`_ensureAWSAvailable called for ${serviceName}.${method}, service exists:`, !!service, 'method exists:', service && typeof service[method] === 'function');
+        console.log(`_ensureAWSAvailable called for ${serviceName}.${method}`);
+        console.log('Current cognito:', cognito);
+        console.log('Current dynamodb:', dynamodb);
+        console.log('AWS defined:', typeof AWS !== 'undefined');
+        console.log('AWS.CognitoIdentityServiceProvider:', typeof AWS !== 'undefined' && AWS.CognitoIdentityServiceProvider);
+        
+        // Always check the global variables, not the parameter
+        let targetService = serviceName.includes('Cognito') ? cognito : dynamodb;
         
         // If service is not available, try to initialize
-        if (!service || typeof service[method] !== 'function') {
+        if (!targetService || typeof targetService[method] !== 'function') {
             console.log('Service not available, attempting to initialize...');
             
             // Try to initialize multiple times
-            for (let i = 0; i < 30; i++) {
+            for (let i = 0; i < 50; i++) {
                 if (typeof AWS !== 'undefined' && AWS.CognitoIdentityServiceProvider && AWS.DynamoDB) {
                     const initialized = initAWSServices();
                     if (initialized) {
                         console.log('AWS services initialized in _ensureAWSAvailable');
-                        // Update service references
-                        if (serviceName.includes('Cognito')) {
-                            service = cognito;
-                        } else if (serviceName.includes('DynamoDB')) {
-                            service = dynamodb;
-                        }
+                        // Update target service reference
+                        targetService = serviceName.includes('Cognito') ? cognito : dynamodb;
                         // Check if it's now available
-                        if (service && typeof service[method] === 'function') {
+                        if (targetService && typeof targetService[method] === 'function') {
                             console.log('Service is now available!');
                             return;
                         }
@@ -124,15 +127,13 @@ class NestMateAuth {
                 await new Promise(resolve => setTimeout(resolve, 100));
             }
             
-            // Final check
-            if (serviceName.includes('Cognito')) {
-                service = cognito;
-            } else if (serviceName.includes('DynamoDB')) {
-                service = dynamodb;
-            }
+            // Final check - update references
+            targetService = serviceName.includes('Cognito') ? cognito : dynamodb;
             
-            if (!service || typeof service[method] !== 'function') {
+            if (!targetService || typeof targetService[method] !== 'function') {
                 console.error(`${serviceName} service still not available after waiting`);
+                console.error('Final cognito:', cognito);
+                console.error('Final dynamodb:', dynamodb);
                 throw new Error(`${serviceName} service not available. Please check your AWS account status and ensure AWS SDK is loaded.`);
             }
         }
@@ -405,6 +406,10 @@ class NestMateAuth {
             };
 
             await this._ensureAWSAvailable(cognito, 'initiateAuth', 'AWS Cognito');
+            // Use global cognito variable after ensuring it's available
+            if (!cognito || typeof cognito.initiateAuth !== 'function') {
+                throw new Error('AWS Cognito service not initialized. Please refresh the page and try again.');
+            }
             const result = await cognito.initiateAuth(params).promise();
             
             this.accessToken = result.AuthenticationResult.AccessToken;
