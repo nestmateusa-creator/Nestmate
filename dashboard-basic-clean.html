@@ -3164,12 +3164,36 @@
             showSection('basic');
         }
 
-        // AWS Configuration
-        AWS.config.update({
-            region: 'us-east-2',
-            accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
-            secretAccessKey: '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'
-        });
+        // AWS Configuration - wait for AWS SDK to load
+        function configureAWS() {
+            if (typeof AWS !== 'undefined' && AWS.config) {
+                AWS.config.update({
+                    region: 'us-east-2',
+                    accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
+                    secretAccessKey: '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'
+                });
+                console.log('AWS configuration updated');
+                return true;
+            }
+            return false;
+        }
+        
+        // Try to configure immediately, or wait for SDK
+        if (!configureAWS()) {
+            let configAttempts = 0;
+            const maxConfigAttempts = 50;
+            function waitForAWSConfig() {
+                if (configureAWS()) {
+                    console.log('AWS configured after wait');
+                } else if (configAttempts < maxConfigAttempts) {
+                    configAttempts++;
+                    setTimeout(waitForAWSConfig, 100);
+                } else {
+                    console.warn('AWS SDK not available for configuration');
+                }
+            }
+            setTimeout(waitForAWSConfig, 100);
+        }
 
         // DynamoDB client - get from auth-aws.js or initialize if needed
         // Use window.dynamodb if available, otherwise create a local reference
@@ -3181,9 +3205,13 @@
             if (window.dynamodb) {
                 return window.dynamodb;
             }
-            // Otherwise try to initialize
-            if (typeof AWS !== 'undefined' && AWS.DynamoDB && AWS.DynamoDB.DocumentClient) {
+            // Otherwise try to initialize - ensure AWS is available
+            if (typeof AWS !== 'undefined' && AWS && AWS.DynamoDB && AWS.DynamoDB.DocumentClient) {
                 try {
+                    // Ensure AWS is configured
+                    if (!AWS.config.region) {
+                        configureAWS();
+                    }
                     const db = new AWS.DynamoDB.DocumentClient();
                     window.dynamodb = db; // Store for future use
                     console.log('DynamoDB initialized in dashboard');
@@ -3191,6 +3219,8 @@
                 } catch (error) {
                     console.warn('Error initializing DynamoDB:', error);
                 }
+            } else {
+                console.warn('AWS SDK not available for DynamoDB initialization');
             }
             return null;
         }
