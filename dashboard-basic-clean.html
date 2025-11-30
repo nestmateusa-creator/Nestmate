@@ -149,6 +149,11 @@
             overflow-y: auto;
             height: 100vh;
             box-sizing: border-box;
+            position: relative;
+        }
+        .main-content-wrapper > * {
+            max-width: 100%;
+            box-sizing: border-box;
         }
 
         /* Header */
@@ -638,6 +643,9 @@
             color: #e5e7eb;
             outline: none;
             transition: border-color 140ms ease, box-shadow 140ms ease;
+            box-sizing: border-box;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
         .content-section .form-group input::placeholder,
         .content-section .form-group textarea::placeholder {
@@ -651,13 +659,35 @@
         }
         .content-section [id$='Form'] {
             display: none;
+        }
+        .content-section [id$='Form'].active {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 1rem 1.25rem;
+            width: 100%;
+            box-sizing: border-box;
+            position: relative;
         }
         .content-section [id$='Form'] > div[style*='display: flex'] {
             grid-column: 1 / -1;
             margin-top: 0.25rem;
+        }
+        .content-section [id$='Form'] .form-group {
+            min-width: 0;
+            overflow: visible;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        .content-section [id$='Form'] input,
+        .content-section [id$='Form'] textarea,
+        .content-section [id$='Form'] select {
+            width: 100%;
+            box-sizing: border-box;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            position: relative;
+            display: block;
         }
         .card.editing {
             border: 1px solid rgba(34, 211, 238, 0.35);
@@ -706,6 +736,9 @@
             align-items: center;
             justify-content: center;
             z-index: 3000;
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
         }
         .modal {
             background: #1f2937;
@@ -714,8 +747,11 @@
             max-width: 800px;
             max-height: 90vh;
             overflow-y: auto;
+            overflow-x: hidden;
             padding: 2rem;
             position: relative;
+            box-sizing: border-box;
+            margin: auto;
         }
         .modal-content {
             width: min(900px, 92vw);
@@ -725,6 +761,10 @@
             border: 1px solid #334155;
             box-shadow: 0 10px 30px rgba(0,0,0,0.35);
             overflow-y: auto;
+            overflow-x: hidden;
+            position: relative;
+            margin: 5% auto;
+            box-sizing: border-box;
         }
         .modal-header {
             padding: 20px;
@@ -755,6 +795,37 @@
         }
         .modal-body {
             padding: 20px;
+            box-sizing: border-box;
+            overflow-x: hidden;
+            word-wrap: break-word;
+        }
+        .modal-body .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            box-sizing: border-box;
+        }
+        .modal-body .form-row .form-group {
+            min-width: 0;
+            box-sizing: border-box;
+        }
+        .modal-body .form-group {
+            margin-bottom: 1rem;
+            box-sizing: border-box;
+        }
+        .modal-body .form-group input,
+        .modal-body .form-group select,
+        .modal-body .form-group textarea {
+            width: 100%;
+            box-sizing: border-box;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        @media (max-width: 768px) {
+            .modal-body .form-row {
+                grid-template-columns: 1fr;
+            }
         }
         .modal-footer {
             padding: 20px;
@@ -769,6 +840,9 @@
             background: #1a1d29;
             border-radius: 8px;
             border: 1px solid #334155;
+            box-sizing: border-box;
+            width: 100%;
+            overflow-x: hidden;
         }
         .upload-section h4 {
             margin: 0 0 15px 0;
@@ -783,6 +857,17 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
+            box-sizing: border-box;
+            width: 100%;
+        }
+        .upload-item input[type="file"] {
+            width: 100%;
+            box-sizing: border-box;
+            word-wrap: break-word;
+        }
+        .upload-item label {
+            box-sizing: border-box;
+            word-wrap: break-word;
         }
         .file-list {
             margin-top: 10px;
@@ -2808,12 +2893,16 @@
         // Structure CRUD Functions
         function editStructure() {
             document.getElementById('structureDisplay').style.display = 'none';
-            document.getElementById('structureForm').style.display = 'block';
+            const form = document.getElementById('structureForm');
+            form.style.display = 'grid';
+            form.classList.add('active');
         }
 
         function cancelEditStructure() {
             document.getElementById('structureDisplay').style.display = 'block';
-            document.getElementById('structureForm').style.display = 'none';
+            const form = document.getElementById('structureForm');
+            form.style.display = 'none';
+            form.classList.remove('active');
         }
 
         async function saveStructure() {
@@ -2856,7 +2945,9 @@
                 
                 // Hide form
                 document.getElementById('structureDisplay').style.display = 'block';
-                document.getElementById('structureForm').style.display = 'none';
+                const form = document.getElementById('structureForm');
+                form.style.display = 'none';
+                form.classList.remove('active');
                 
                 showAlert('Structure information saved successfully!', 'success');
             } catch (error) {
@@ -2868,12 +2959,16 @@
         // Systems CRUD Functions
         function editSystems() {
             document.getElementById('systemsDisplay').style.display = 'none';
-            document.getElementById('systemsForm').style.display = 'block';
+            const form = document.getElementById('systemsForm');
+            form.style.display = 'grid';
+            form.classList.add('active');
         }
 
         function cancelEditSystems() {
             document.getElementById('systemsDisplay').style.display = 'block';
-            document.getElementById('systemsForm').style.display = 'none';
+            const form = document.getElementById('systemsForm');
+            form.style.display = 'none';
+            form.classList.remove('active');
         }
 
         async function saveSystems() {
@@ -2916,7 +3011,9 @@
                 
                 // Hide form
                 document.getElementById('systemsDisplay').style.display = 'block';
-                document.getElementById('systemsForm').style.display = 'none';
+                const form = document.getElementById('systemsForm');
+            form.style.display = 'none';
+            form.classList.remove('active');
                 
                 showAlert('Systems information saved successfully!', 'success');
             } catch (error) {
@@ -3009,12 +3106,16 @@
         // Bedrooms CRUD Functions
         function editBedrooms() {
             document.getElementById('bedroomsDisplay').style.display = 'none';
-            document.getElementById('bedroomsForm').style.display = 'block';
+            const form = document.getElementById('bedroomsForm');
+            form.style.display = 'grid';
+            form.classList.add('active');
         }
 
         function cancelEditBedrooms() {
             document.getElementById('bedroomsDisplay').style.display = 'block';
-            document.getElementById('bedroomsForm').style.display = 'none';
+            const form = document.getElementById('bedroomsForm');
+            form.style.display = 'none';
+            form.classList.remove('active');
         }
 
         async function saveBedrooms() {
@@ -3057,7 +3158,9 @@
                 
                 // Hide form
                 document.getElementById('bedroomsDisplay').style.display = 'block';
-                document.getElementById('bedroomsForm').style.display = 'none';
+                const form = document.getElementById('bedroomsForm');
+            form.style.display = 'none';
+            form.classList.remove('active');
                 
                 showAlert('Bedroom information saved successfully!', 'success');
             } catch (error) {
@@ -3069,12 +3172,16 @@
         // Bathrooms CRUD Functions
         function editBathrooms() {
             document.getElementById('bathroomsDisplay').style.display = 'none';
-            document.getElementById('bathroomsForm').style.display = 'block';
+            const form = document.getElementById('bathroomsForm');
+            form.style.display = 'grid';
+            form.classList.add('active');
         }
 
         function cancelEditBathrooms() {
             document.getElementById('bathroomsDisplay').style.display = 'block';
-            document.getElementById('bathroomsForm').style.display = 'none';
+            const form = document.getElementById('bathroomsForm');
+            form.style.display = 'none';
+            form.classList.remove('active');
         }
 
         async function saveBathrooms() {
@@ -3117,7 +3224,9 @@
                 
                 // Hide form
                 document.getElementById('bathroomsDisplay').style.display = 'block';
-                document.getElementById('bathroomsForm').style.display = 'none';
+                const form = document.getElementById('bathroomsForm');
+            form.style.display = 'none';
+            form.classList.remove('active');
                 
                 showAlert('Bathroom information saved successfully!', 'success');
             } catch (error) {
@@ -3129,12 +3238,16 @@
         // Kitchen CRUD Functions
         function editKitchen() {
             document.getElementById('kitchenDisplay').style.display = 'none';
-            document.getElementById('kitchenForm').style.display = 'block';
+            const form = document.getElementById('kitchenForm');
+            form.style.display = 'grid';
+            form.classList.add('active');
         }
 
         function cancelEditKitchen() {
             document.getElementById('kitchenDisplay').style.display = 'block';
-            document.getElementById('kitchenForm').style.display = 'none';
+            const form = document.getElementById('kitchenForm');
+            form.style.display = 'none';
+            form.classList.remove('active');
         }
 
         async function saveKitchen() {
@@ -3177,7 +3290,9 @@
                 
                 // Hide form
                 document.getElementById('kitchenDisplay').style.display = 'block';
-                document.getElementById('kitchenForm').style.display = 'none';
+                const form = document.getElementById('kitchenForm');
+            form.style.display = 'none';
+            form.classList.remove('active');
                 
                 showAlert('Kitchen information saved successfully!', 'success');
             } catch (error) {
@@ -3199,12 +3314,16 @@
         // Living Areas CRUD Functions
         function editLivingAreas() {
             document.getElementById('livingDisplay').style.display = 'none';
-            document.getElementById('livingForm').style.display = 'block';
+            const form = document.getElementById('livingForm');
+            form.style.display = 'grid';
+            form.classList.add('active');
         }
 
         function cancelEditLivingAreas() {
             document.getElementById('livingDisplay').style.display = 'block';
-            document.getElementById('livingForm').style.display = 'none';
+            const form = document.getElementById('livingForm');
+            form.style.display = 'none';
+            form.classList.remove('active');
         }
 
         async function saveLivingAreas() {
@@ -3247,7 +3366,9 @@
                 
                 // Hide form
                 document.getElementById('livingDisplay').style.display = 'block';
-                document.getElementById('livingForm').style.display = 'none';
+                const form = document.getElementById('livingForm');
+            form.style.display = 'none';
+            form.classList.remove('active');
                 
                 showAlert('Living areas information saved successfully!', 'success');
             } catch (error) {
@@ -3259,12 +3380,16 @@
         // Garage CRUD Functions
         function editGarage() {
             document.getElementById('garageDisplay').style.display = 'none';
-            document.getElementById('garageForm').style.display = 'block';
+            const form = document.getElementById('garageForm');
+            form.style.display = 'grid';
+            form.classList.add('active');
         }
 
         function cancelEditGarage() {
             document.getElementById('garageDisplay').style.display = 'block';
-            document.getElementById('garageForm').style.display = 'none';
+            const form = document.getElementById('garageForm');
+            form.style.display = 'none';
+            form.classList.remove('active');
         }
 
         async function saveGarage() {
@@ -3307,7 +3432,9 @@
                 
                 // Hide form
                 document.getElementById('garageDisplay').style.display = 'block';
-                document.getElementById('garageForm').style.display = 'none';
+                const form = document.getElementById('garageForm');
+            form.style.display = 'none';
+            form.classList.remove('active');
                 
                 showAlert('Garage information saved successfully!', 'success');
             } catch (error) {
@@ -3326,12 +3453,16 @@
         // Exterior CRUD Functions
         function editExterior() {
             document.getElementById('exteriorDisplay').style.display = 'none';
-            document.getElementById('exteriorForm').style.display = 'block';
+            const form = document.getElementById('exteriorForm');
+            form.style.display = 'grid';
+            form.classList.add('active');
         }
 
         function cancelEditExterior() {
             document.getElementById('exteriorDisplay').style.display = 'block';
-            document.getElementById('exteriorForm').style.display = 'none';
+            const form = document.getElementById('exteriorForm');
+            form.style.display = 'none';
+            form.classList.remove('active');
         }
 
         async function saveExterior() {
@@ -3374,7 +3505,9 @@
                 
                 // Hide form
                 document.getElementById('exteriorDisplay').style.display = 'block';
-                document.getElementById('exteriorForm').style.display = 'none';
+                const form = document.getElementById('exteriorForm');
+            form.style.display = 'none';
+            form.classList.remove('active');
                 
                 showAlert('Exterior information saved successfully!', 'success');
             } catch (error) {
@@ -3386,12 +3519,16 @@
         // Appliances CRUD Functions
         function editAppliances() {
             document.getElementById('appliancesDisplay').style.display = 'none';
-            document.getElementById('appliancesForm').style.display = 'block';
+            const form = document.getElementById('appliancesForm');
+            form.style.display = 'grid';
+            form.classList.add('active');
         }
 
         function cancelEditAppliances() {
             document.getElementById('appliancesDisplay').style.display = 'block';
-            document.getElementById('appliancesForm').style.display = 'none';
+            const form = document.getElementById('appliancesForm');
+            form.style.display = 'none';
+            form.classList.remove('active');
         }
 
         async function saveAppliances() {
@@ -3434,7 +3571,9 @@
                 
                 // Hide form
                 document.getElementById('appliancesDisplay').style.display = 'block';
-                document.getElementById('appliancesForm').style.display = 'none';
+                const form = document.getElementById('appliancesForm');
+            form.style.display = 'none';
+            form.classList.remove('active');
                 
                 showAlert('Appliances information saved successfully!', 'success');
             } catch (error) {
@@ -3453,12 +3592,16 @@
         // Favorites CRUD Functions
         function editFavorites() {
             document.getElementById('favoritesDisplay').style.display = 'none';
-            document.getElementById('favoritesForm').style.display = 'block';
+            const form = document.getElementById('favoritesForm');
+            form.style.display = 'grid';
+            form.classList.add('active');
         }
 
         function cancelEditFavorites() {
             document.getElementById('favoritesDisplay').style.display = 'block';
-            document.getElementById('favoritesForm').style.display = 'none';
+            const form = document.getElementById('favoritesForm');
+            form.style.display = 'none';
+            form.classList.remove('active');
         }
 
         function addFavorite() {
@@ -3482,19 +3625,25 @@
         function saveFavorites() {
             // Nothing persisted yet; just close form
             document.getElementById('favoritesDisplay').style.display = 'block';
-            document.getElementById('favoritesForm').style.display = 'none';
+            const form = document.getElementById('favoritesForm');
+            form.style.display = 'none';
+            form.classList.remove('active');
             showAlert('Favorites saved!', 'success');
         }
 
         // Photos CRUD Functions
         function editPhotos() {
             document.getElementById('photosDisplay').style.display = 'none';
-            document.getElementById('photosForm').style.display = 'block';
+            const form = document.getElementById('photosForm');
+            form.style.display = 'grid';
+            form.classList.add('active');
         }
 
         function cancelEditPhotos() {
             document.getElementById('photosDisplay').style.display = 'block';
-            document.getElementById('photosForm').style.display = 'none';
+            const form = document.getElementById('photosForm');
+            form.style.display = 'none';
+            form.classList.remove('active');
         }
 
         // Photos CRUD Functions with S3 Upload
@@ -3802,7 +3951,9 @@
                 if (response.ok) {
                     console.log('Photos saved successfully to database');
                     document.getElementById('photosDisplay').style.display = 'block';
-                    document.getElementById('photosForm').style.display = 'none';
+                    const form = document.getElementById('photosForm');
+            form.style.display = 'none';
+            form.classList.remove('active');
                     showAlert('Photos saved to database!', 'success');
                 } else {
                     console.error('Save failed with status:', response.status, 'Response:', responseText);
@@ -3817,12 +3968,16 @@
         // Floorplan CRUD Functions
         function editFloorplan() {
             document.getElementById('floorplanDisplay').style.display = 'none';
-            document.getElementById('floorplanForm').style.display = 'block';
+            const form = document.getElementById('floorplanForm');
+            form.style.display = 'grid';
+            form.classList.add('active');
         }
 
         function cancelEditFloorplan() {
             document.getElementById('floorplanDisplay').style.display = 'block';
-            document.getElementById('floorplanForm').style.display = 'none';
+            const form = document.getElementById('floorplanForm');
+            form.style.display = 'none';
+            form.classList.remove('active');
         }
 
         // Floor Plan CRUD Functions with S3 Upload
@@ -3901,7 +4056,9 @@
                 await dynamodb.update(params).promise();
                 
                 document.getElementById('floorplanDisplay').style.display = 'block';
-                document.getElementById('floorplanForm').style.display = 'none';
+                const form = document.getElementById('floorplanForm');
+            form.style.display = 'none';
+            form.classList.remove('active');
                 showAlert('Floor plan saved to database!', 'success');
             } catch (error) {
                 console.error('Save floorplan error:', error);
@@ -5276,12 +5433,16 @@
         // Emergency CRUD Functions
         function editEmergency() {
             document.getElementById('emergencyDisplay').style.display = 'none';
-            document.getElementById('emergencyForm').style.display = 'block';
+            const form = document.getElementById('emergencyForm');
+            form.style.display = 'grid';
+            form.classList.add('active');
         }
 
         function cancelEditEmergency() {
             document.getElementById('emergencyDisplay').style.display = 'block';
-            document.getElementById('emergencyForm').style.display = 'none';
+            const form = document.getElementById('emergencyForm');
+            form.style.display = 'none';
+            form.classList.remove('active');
         }
 
         function saveEmergency() {
@@ -5291,7 +5452,9 @@
             document.getElementById('displayPlumber').textContent = document.getElementById('plumber').value || '(555) 987-6543';
             document.getElementById('displayEmergencyNotes').textContent = document.getElementById('emergencyNotes').value || 'None';
             document.getElementById('emergencyDisplay').style.display = 'block';
-            document.getElementById('emergencyForm').style.display = 'none';
+            const form = document.getElementById('emergencyForm');
+            form.style.display = 'none';
+            form.classList.remove('active');
             showAlert('Emergency contacts saved!', 'success');
         }
 
@@ -6007,12 +6170,16 @@
         // Basic Info CRUD Functions
         function editBasicInfo() {
             document.getElementById('basicInfoDisplay').style.display = 'none';
-            document.getElementById('basicInfoForm').style.display = 'block';
+            const form = document.getElementById('basicInfoForm');
+            form.style.display = 'grid';
+            form.classList.add('active');
         }
 
         function cancelEditBasicInfo() {
             document.getElementById('basicInfoDisplay').style.display = 'block';
-            document.getElementById('basicInfoForm').style.display = 'none';
+            const form = document.getElementById('basicInfoForm');
+            form.style.display = 'none';
+            form.classList.remove('active');
         }
 
         async function saveBasicInfo() {
@@ -6055,7 +6222,9 @@
                 
                 // Hide form
                 document.getElementById('basicInfoDisplay').style.display = 'block';
-                document.getElementById('basicInfoForm').style.display = 'none';
+                const form = document.getElementById('basicInfoForm');
+            form.style.display = 'none';
+            form.classList.remove('active');
                 
                 showAlert('Basic info saved successfully!', 'success');
             } catch (error) {
