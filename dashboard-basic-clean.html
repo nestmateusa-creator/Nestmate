@@ -3173,30 +3173,42 @@
 
         // DynamoDB client - get from auth-aws.js or initialize if needed
         let dynamodb;
+        let dynamodbInitAttempts = 0;
+        const maxDynamoDBInitAttempts = 50; // 5 seconds max
+        
         function initDynamoDB() {
-            if (typeof AWS !== 'undefined' && AWS.DynamoDB) {
-                dynamodb = new AWS.DynamoDB.DocumentClient();
-                console.log('DynamoDB initialized in dashboard');
-                return true;
+            try {
+                if (typeof AWS !== 'undefined' && AWS.DynamoDB && AWS.DynamoDB.DocumentClient) {
+                    dynamodb = new AWS.DynamoDB.DocumentClient();
+                    console.log('DynamoDB initialized in dashboard');
+                    return true;
+                }
+            } catch (error) {
+                console.warn('Error initializing DynamoDB:', error);
             }
             return false;
         }
         
         // Try to get from window (set by auth-aws.js) or initialize
-        if (window.dynamodb) {
-            dynamodb = window.dynamodb;
-            console.log('Using DynamoDB from auth-aws.js');
-        } else {
-            // Wait for AWS SDK and initialize
-            function waitForDynamoDB() {
-                if (initDynamoDB()) {
-                    console.log('DynamoDB initialized');
-                } else {
-                    setTimeout(waitForDynamoDB, 100);
-                }
+        function ensureDynamoDB() {
+            if (window.dynamodb) {
+                dynamodb = window.dynamodb;
+                console.log('Using DynamoDB from auth-aws.js');
+                return true;
+            } else if (initDynamoDB()) {
+                return true;
+            } else if (dynamodbInitAttempts < maxDynamoDBInitAttempts) {
+                dynamodbInitAttempts++;
+                setTimeout(ensureDynamoDB, 100);
+                return false;
+            } else {
+                console.warn('DynamoDB initialization timeout - some features may not work');
+                return false;
             }
-            waitForDynamoDB();
         }
+        
+        // Initialize asynchronously without blocking
+        setTimeout(ensureDynamoDB, 100);
 
         // S3 Upload Functions
         async function getS3PresignedUrl(key, contentType) {
