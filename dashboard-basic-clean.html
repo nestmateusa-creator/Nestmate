@@ -3300,6 +3300,11 @@
 
             try {
                 // Save to DynamoDB
+                const dynamodb = getDynamoDB();
+                if (!dynamodb) {
+                    throw new Error('DynamoDB not initialized');
+                }
+                
                 const userId = nestMateAuth.currentUser.userId;
                 console.log('Saving structure data for userId:', userId);
                 console.log('Structure data:', structureData);
@@ -6282,6 +6287,10 @@
                     Key: { userId }
                 };
 
+                const dynamodb = getDynamoDB();
+                if (!dynamodb) {
+                    throw new Error('DynamoDB not initialized');
+                }
                 const result = await dynamodb.get(params).promise();
                 const userData = result.Item || {};
                 tasksData = userData.tasks || [];
@@ -6879,6 +6888,10 @@
                 };
                 
                 console.log('DynamoDB params:', params);
+                const dynamodb = getDynamoDB();
+                if (!dynamodb) {
+                    throw new Error('DynamoDB not initialized');
+                }
                 const result = await dynamodb.get(params).promise();
                 console.log('DynamoDB result:', result);
                 const userData = result.Item || {};
@@ -7039,6 +7052,10 @@
                     Key: { userId: userId }
                 };
                 
+                const dynamodb = getDynamoDB();
+                if (!dynamodb) {
+                    throw new Error('DynamoDB not initialized');
+                }
                 const result = await dynamodb.get(params).promise();
                 
                 if (result.Item && result.Item.renovations) {
