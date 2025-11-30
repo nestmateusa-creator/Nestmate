@@ -17,6 +17,8 @@ function initAWSServices() {
             
             cognito = new AWS.CognitoIdentityServiceProvider();
             dynamodb = new AWS.DynamoDB.DocumentClient();
+            // Make dynamodb globally accessible
+            window.dynamodb = dynamodb;
             awsInitialized = true;
             console.log('AWS services initialized successfully');
             return true;

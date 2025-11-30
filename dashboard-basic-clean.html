@@ -3171,7 +3171,32 @@
             secretAccessKey: 'wolmLksFIm5go0kLZVelnfLnw7NGIxyZD9EvIu5O'
         });
 
-        // DynamoDB client is already initialized in auth-aws.js
+        // DynamoDB client - get from auth-aws.js or initialize if needed
+        let dynamodb;
+        function initDynamoDB() {
+            if (typeof AWS !== 'undefined' && AWS.DynamoDB) {
+                dynamodb = new AWS.DynamoDB.DocumentClient();
+                console.log('DynamoDB initialized in dashboard');
+                return true;
+            }
+            return false;
+        }
+        
+        // Try to get from window (set by auth-aws.js) or initialize
+        if (window.dynamodb) {
+            dynamodb = window.dynamodb;
+            console.log('Using DynamoDB from auth-aws.js');
+        } else {
+            // Wait for AWS SDK and initialize
+            function waitForDynamoDB() {
+                if (initDynamoDB()) {
+                    console.log('DynamoDB initialized');
+                } else {
+                    setTimeout(waitForDynamoDB, 100);
+                }
+            }
+            waitForDynamoDB();
+        }
 
         // S3 Upload Functions
         async function getS3PresignedUrl(key, contentType) {
@@ -6186,7 +6211,25 @@
 
         async function saveTasksToDB() {
             try {
+                if (!dynamodb) {
+                    // Try to get from window or initialize
+                    if (window.dynamodb) {
+                        dynamodb = window.dynamodb;
+                    } else if (typeof AWS !== 'undefined' && AWS.DynamoDB) {
+                        dynamodb = new AWS.DynamoDB.DocumentClient();
+                    } else {
+                        throw new Error('DynamoDB not initialized');
+                    }
+                }
+                
+                if (!nestMateAuth || !nestMateAuth.currentUser || !nestMateAuth.currentUser.userId) {
+                    throw new Error('User not authenticated');
+                }
+                
                 const userId = nestMateAuth.currentUser.userId;
+                console.log('Saving tasks to DB for userId:', userId);
+                console.log('Tasks data:', tasksData);
+                
                 const params = {
                     TableName: 'nestmate-users',
                     Key: { userId },
@@ -6198,8 +6241,8 @@
                     ReturnValues: 'UPDATED_NEW'
                 };
 
-                await dynamodb.update(params).promise();
-                console.log('Tasks saved to DynamoDB');
+                const result = await dynamodb.update(params).promise();
+                console.log('Tasks saved to DynamoDB successfully:', result);
             } catch (error) {
                 console.error('Error saving tasks to DB:', error);
                 throw error;
@@ -6215,7 +6258,23 @@
                     return;
                 }
                 
+                if (!dynamodb) {
+                    // Try to get from window or initialize
+                    if (window.dynamodb) {
+                        dynamodb = window.dynamodb;
+                    } else if (typeof AWS !== 'undefined' && AWS.DynamoDB) {
+                        dynamodb = new AWS.DynamoDB.DocumentClient();
+                    } else {
+                        console.warn('DynamoDB not initialized, tasks will not load');
+                        tasksData = [];
+                        renderTasks();
+                        return;
+                    }
+                }
+                
                 const userId = nestMateAuth.currentUser.userId;
+                console.log('Loading tasks for userId:', userId);
+                
                 const params = {
                     TableName: 'nestmate-users',
                     Key: { userId }
@@ -6224,7 +6283,7 @@
                 const result = await dynamodb.get(params).promise();
                 const userData = result.Item || {};
                 tasksData = userData.tasks || [];
-                console.log('Tasks loaded:', tasksData.length);
+                console.log('Tasks loaded from DB:', tasksData.length, tasksData);
                 renderTasks();
                 // Only render calendar if calendar view is visible
                 if (document.getElementById('calendarView') && document.getElementById('calendarView').style.display !== 'none') {
