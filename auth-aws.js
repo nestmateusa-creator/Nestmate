@@ -96,36 +96,43 @@ class NestMateAuth {
 
     // Helper to check if AWS services are available and wait if needed
     async _ensureAWSAvailable(service, method, serviceName = 'AWS') {
+        console.log(`_ensureAWSAvailable called for ${serviceName}.${method}, service exists:`, !!service, 'method exists:', service && typeof service[method] === 'function');
+        
         // If service is not available, try to initialize
         if (!service || typeof service[method] !== 'function') {
-            // Try to initialize
-            if (typeof AWS !== 'undefined' && AWS.CognitoIdentityServiceProvider) {
-                initAWSServices();
-                // Wait a bit for initialization
-                await new Promise(resolve => setTimeout(resolve, 200));
-                // Update service references
-                if (serviceName.includes('Cognito')) {
-                    service = cognito;
-                } else if (serviceName.includes('DynamoDB')) {
-                    service = dynamodb;
-                }
-            }
-            // Wait up to 3 seconds for AWS to load
-            let waitAttempts = 0;
-            while ((!service || typeof service[method] !== 'function') && waitAttempts < 30) {
-                await new Promise(resolve => setTimeout(resolve, 100));
-                if (typeof AWS !== 'undefined' && AWS.CognitoIdentityServiceProvider) {
-                    initAWSServices();
-                    if (serviceName.includes('Cognito')) {
-                        service = cognito;
-                    } else if (serviceName.includes('DynamoDB')) {
-                        service = dynamodb;
+            console.log('Service not available, attempting to initialize...');
+            
+            // Try to initialize multiple times
+            for (let i = 0; i < 30; i++) {
+                if (typeof AWS !== 'undefined' && AWS.CognitoIdentityServiceProvider && AWS.DynamoDB) {
+                    const initialized = initAWSServices();
+                    if (initialized) {
+                        console.log('AWS services initialized in _ensureAWSAvailable');
+                        // Update service references
+                        if (serviceName.includes('Cognito')) {
+                            service = cognito;
+                        } else if (serviceName.includes('DynamoDB')) {
+                            service = dynamodb;
+                        }
+                        // Check if it's now available
+                        if (service && typeof service[method] === 'function') {
+                            console.log('Service is now available!');
+                            return;
+                        }
                     }
                 }
-                waitAttempts++;
+                await new Promise(resolve => setTimeout(resolve, 100));
             }
+            
             // Final check
+            if (serviceName.includes('Cognito')) {
+                service = cognito;
+            } else if (serviceName.includes('DynamoDB')) {
+                service = dynamodb;
+            }
+            
             if (!service || typeof service[method] !== 'function') {
+                console.error(`${serviceName} service still not available after waiting`);
                 throw new Error(`${serviceName} service not available. Please check your AWS account status and ensure AWS SDK is loaded.`);
             }
         }
