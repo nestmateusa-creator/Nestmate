@@ -207,7 +207,16 @@ class NestMateAuth {
 
     // Sign in an existing user
     async signIn(email, password) {
+        console.log('=== SIGN IN START ===');
+        console.log('Email:', email);
+        console.log('Cognito object:', cognito);
+        console.log('AWS initialized:', awsInitialized);
+        console.log('AWS defined:', typeof AWS !== 'undefined');
+        
         try {
+            // Ensure AWS is ready
+            await this._ensureAWSAvailable(cognito, 'initiateAuth', 'AWS Cognito');
+            
             const params = {
                 AuthFlow: 'USER_PASSWORD_AUTH',
                 ClientId: COGNITO_CONFIG.clientId,
@@ -216,9 +225,10 @@ class NestMateAuth {
                     PASSWORD: password
                 }
             };
-
-            await this._ensureAWSAvailable(cognito, 'initiateAuth', 'AWS Cognito');
+            
+            console.log('Calling cognito.initiateAuth with params:', { ...params, AuthParameters: { USERNAME: email, PASSWORD: '***' } });
             const result = await cognito.initiateAuth(params).promise();
+            console.log('Cognito initiateAuth result:', result);
             
             // Store tokens
             this.accessToken = result.AuthenticationResult.AccessToken;
