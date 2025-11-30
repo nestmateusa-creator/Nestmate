@@ -5894,7 +5894,7 @@
             // Wait a bit for auth to initialize
             await new Promise(resolve => setTimeout(resolve, 500));
             
-            // Check authentication
+            // Check authentication and get user
             console.log('Checking authentication...');
             const isAuthenticated = await nestMateAuth.isAuthenticated();
             console.log('Authentication result:', isAuthenticated);
@@ -5907,9 +5907,9 @@
 
             // Get user info from AWS authentication - try multiple sources
             let user = nestMateAuth.currentUser;
-            console.log('Current user from auth:', user);
+            console.log('Current user from auth after isAuthenticated:', user);
             
-            // If no user from auth, try localStorage
+            // If no user from auth, try localStorage first (faster)
             if (!user) {
                 const storedUser = localStorage.getItem('currentUser');
                 if (storedUser) {
@@ -5924,19 +5924,33 @@
                 }
             }
             
-            // If still no user, try to get from access token
-            if (!user && nestMateAuth.accessToken) {
+            // If still no user, explicitly call getCurrentUser
+            if (!user) {
                 try {
-                    console.log('Attempting to get current user from token...');
+                    console.log('No user found, calling getCurrentUser()...');
                     user = await nestMateAuth.getCurrentUser();
                     console.log('Got user from getCurrentUser:', user);
                 } catch (e) {
-                    console.warn('Failed to get user from token:', e);
+                    console.warn('Failed to get user from getCurrentUser:', e);
+                }
+            }
+            
+            // Final check - if still no user, try localStorage again
+            if (!user) {
+                const storedUser = localStorage.getItem('currentUser');
+                if (storedUser) {
+                    try {
+                        user = JSON.parse(storedUser);
+                        console.log('Final attempt - using stored user:', user);
+                        nestMateAuth.currentUser = user;
+                    } catch (e) {
+                        console.error('Error parsing stored user on final attempt:', e);
+                    }
                 }
             }
             
             if (!user) {
-                console.log('No user found, redirecting to login');
+                console.log('No user found after all attempts, redirecting to login');
                 window.location.href = 'login-aws.html';
                 return;
             }
@@ -5965,17 +5979,45 @@
 
             console.log('Final display info:', { displayName, displayEmail });
             
-            // Force update user display immediately
-            if (displayEmail) {
-                document.getElementById('userName').textContent = displayName || 'User';
-                document.getElementById('userEmail').textContent = displayEmail;
-                document.getElementById('userAvatar').textContent = (displayName || 'U').charAt(0).toUpperCase();
-                console.log('User display updated immediately:', displayName, displayEmail);
+            // Force update user display immediately - use any available data
+            const finalDisplayName = displayName || (finalUser && finalUser.email ? finalUser.email.split('@')[0] : 'User');
+            const finalDisplayEmail = displayEmail || (finalUser && finalUser.email ? finalUser.email : '');
+            
+            if (finalDisplayEmail || finalDisplayName !== 'User') {
+                document.getElementById('userName').textContent = finalDisplayName;
+                document.getElementById('userEmail').textContent = finalDisplayEmail || 'User';
+                document.getElementById('userAvatar').textContent = finalDisplayName.charAt(0).toUpperCase();
+                console.log('User display updated immediately:', finalDisplayName, finalDisplayEmail);
             } else {
-                // Final fallback
-                document.getElementById('userName').textContent = 'User';
-                document.getElementById('userEmail').textContent = 'Loading...';
-                document.getElementById('userAvatar').textContent = 'U';
+                // Try one more time with localStorage
+                const storedUser = localStorage.getItem('currentUser');
+                if (storedUser) {
+                    try {
+                        const parsedUser = JSON.parse(storedUser);
+                        if (parsedUser.email) {
+                            const name = parsedUser.name || parsedUser.email.split('@')[0];
+                            document.getElementById('userName').textContent = name;
+                            document.getElementById('userEmail').textContent = parsedUser.email;
+                            document.getElementById('userAvatar').textContent = name.charAt(0).toUpperCase();
+                            console.log('User display updated from localStorage fallback:', name, parsedUser.email);
+                        } else {
+                            // Final fallback
+                            document.getElementById('userName').textContent = 'User';
+                            document.getElementById('userEmail').textContent = 'Loading...';
+                            document.getElementById('userAvatar').textContent = 'U';
+                        }
+                    } catch (e) {
+                        console.error('Error in final localStorage fallback:', e);
+                        document.getElementById('userName').textContent = 'User';
+                        document.getElementById('userEmail').textContent = 'Loading...';
+                        document.getElementById('userAvatar').textContent = 'U';
+                    }
+                } else {
+                    // Final fallback
+                    document.getElementById('userName').textContent = 'User';
+                    document.getElementById('userEmail').textContent = 'Loading...';
+                    document.getElementById('userAvatar').textContent = 'U';
+                }
             }
             
             // Load dashboard data
