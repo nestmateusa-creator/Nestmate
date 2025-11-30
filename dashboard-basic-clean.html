@@ -732,7 +732,7 @@
             position: fixed;
             inset: 0;
             background: rgba(0,0,0,0.6);
-            display: flex;
+            display: none;
             align-items: center;
             justify-content: center;
             z-index: 3000;
@@ -740,7 +740,11 @@
             padding: 20px;
             box-sizing: border-box;
         }
+        .modal-overlay.active {
+            display: flex;
+        }
         .modal {
+            display: none;
             background: #1f2937;
             border-radius: 12px;
             width: 90%;
@@ -752,6 +756,9 @@
             position: relative;
             box-sizing: border-box;
             margin: auto;
+        }
+        .modal.show {
+            display: block;
         }
         .modal-content {
             width: min(900px, 92vw);
@@ -5500,7 +5507,23 @@
             document.getElementById('renovationModalTitle').textContent = 'Add Renovation Project';
             document.getElementById('renovationForm').reset();
             clearFileLists();
-            document.getElementById('renovationModal').style.display = 'flex';
+            const modal = document.getElementById('renovationModal');
+            modal.style.display = 'block';
+            modal.classList.add('show');
+            // Create overlay if it doesn't exist
+            let overlay = document.querySelector('.modal-overlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.className = 'modal-overlay';
+                overlay.onclick = function(e) {
+                    if (e.target === overlay) {
+                        closeRenovationModal();
+                    }
+                };
+                document.body.appendChild(overlay);
+            }
+            overlay.classList.add('active');
+            overlay.appendChild(modal);
             setupRenovationFileUploads();
         }
 
@@ -5533,7 +5556,17 @@
         }
 
         function closeRenovationModal() {
-            document.getElementById('renovationModal').style.display = 'none';
+            const modal = document.getElementById('renovationModal');
+            modal.style.display = 'none';
+            modal.classList.remove('show');
+            const overlay = document.querySelector('.modal-overlay');
+            if (overlay) {
+                overlay.classList.remove('active');
+                // Move modal back to body if it was in overlay
+                if (overlay.contains(modal)) {
+                    document.body.appendChild(modal);
+                }
+            }
             document.getElementById('renovationForm').reset();
             document.getElementById('renovationForm').dataset.editingId = '';
             clearFileLists();
@@ -5812,12 +5845,38 @@
                 return;
             }
 
-            // Get user info from AWS authentication
-            const user = nestMateAuth.currentUser;
+            // Get user info from AWS authentication - try multiple sources
+            let user = nestMateAuth.currentUser;
             console.log('Current user from auth:', user);
             
+            // If no user from auth, try localStorage
             if (!user) {
-                console.log('No user from auth, redirecting to login');
+                const storedUser = localStorage.getItem('currentUser');
+                if (storedUser) {
+                    try {
+                        user = JSON.parse(storedUser);
+                        console.log('Using stored user from localStorage:', user);
+                        // Update nestMateAuth.currentUser for consistency
+                        nestMateAuth.currentUser = user;
+                    } catch (e) {
+                        console.error('Error parsing stored user:', e);
+                    }
+                }
+            }
+            
+            // If still no user, try to get from access token
+            if (!user && nestMateAuth.accessToken) {
+                try {
+                    console.log('Attempting to get current user from token...');
+                    user = await nestMateAuth.getCurrentUser();
+                    console.log('Got user from getCurrentUser:', user);
+                } catch (e) {
+                    console.warn('Failed to get user from token:', e);
+                }
+            }
+            
+            if (!user) {
+                console.log('No user found, redirecting to login');
                 window.location.href = 'login-aws.html';
                 return;
             }
@@ -5828,6 +5887,7 @@
             let displayName = (finalUser && (finalUser.name || (finalUser.email ? finalUser.email.split('@')[0] : ''))) || 'User';
             let displayEmail = (finalUser && finalUser.email) || '';
 
+            // Try to get full user record from DynamoDB
             try {
                 if (finalUser && finalUser.userId && nestMateAuth.getUserRecord) {
                     console.log('Loading user record for userId:', finalUser.userId);
@@ -5852,18 +5912,10 @@
                 document.getElementById('userAvatar').textContent = (displayName || 'U').charAt(0).toUpperCase();
                 console.log('User display updated immediately:', displayName, displayEmail);
             } else {
-                // Fallback to any available user data
-                const fallbackEmail = localStorage.getItem('currentUser') ? JSON.parse(localStorage.getItem('currentUser')).email : '';
-                if (fallbackEmail) {
-                    document.getElementById('userName').textContent = fallbackEmail.split('@')[0];
-                    document.getElementById('userEmail').textContent = fallbackEmail;
-                    document.getElementById('userAvatar').textContent = fallbackEmail.charAt(0).toUpperCase();
-                    console.log('Using fallback user data:', fallbackEmail);
-                } else {
-                    document.getElementById('userName').textContent = 'User';
-                    document.getElementById('userEmail').textContent = 'Loading...';
-                    document.getElementById('userAvatar').textContent = 'U';
-                }
+                // Final fallback
+                document.getElementById('userName').textContent = 'User';
+                document.getElementById('userEmail').textContent = 'Loading...';
+                document.getElementById('userAvatar').textContent = 'U';
             }
             
             // Load dashboard data
