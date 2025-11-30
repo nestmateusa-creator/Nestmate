@@ -3120,6 +3120,13 @@
         function openTasksCalendar() {
             console.log('✅ Opening Tasks & Calendar');
             showSection('tasks');
+            // Ensure calendar is ready when section is shown
+            setTimeout(() => {
+                if (document.getElementById('tasksView') && document.getElementById('calendarView')) {
+                    // Make sure tasks view is shown by default
+                    switchTasksView('tasks');
+                }
+            }, 100);
         }
 
         function openProducts() {
@@ -5840,21 +5847,34 @@
 
         // Tasks & Calendar Functions
         function switchTasksView(view) {
+            const tasksView = document.getElementById('tasksView');
+            const calendarView = document.getElementById('calendarView');
+            const tasksViewBtn = document.getElementById('tasksViewBtn');
+            const calendarViewBtn = document.getElementById('calendarViewBtn');
+            
+            if (!tasksView || !calendarView || !tasksViewBtn || !calendarViewBtn) {
+                console.error('Tasks/Calendar elements not found');
+                return;
+            }
+            
             if (view === 'tasks') {
-                document.getElementById('tasksView').style.display = 'block';
-                document.getElementById('calendarView').style.display = 'none';
-                document.getElementById('tasksViewBtn').classList.remove('btn-secondary');
-                document.getElementById('tasksViewBtn').classList.add('btn');
-                document.getElementById('calendarViewBtn').classList.remove('btn');
-                document.getElementById('calendarViewBtn').classList.add('btn-secondary');
+                tasksView.style.display = 'block';
+                calendarView.style.display = 'none';
+                tasksViewBtn.classList.remove('btn-secondary');
+                tasksViewBtn.classList.add('btn');
+                calendarViewBtn.classList.remove('btn');
+                calendarViewBtn.classList.add('btn-secondary');
             } else {
-                document.getElementById('tasksView').style.display = 'none';
-                document.getElementById('calendarView').style.display = 'block';
-                document.getElementById('calendarViewBtn').classList.remove('btn-secondary');
-                document.getElementById('calendarViewBtn').classList.add('btn');
-                document.getElementById('tasksViewBtn').classList.remove('btn');
-                document.getElementById('tasksViewBtn').classList.add('btn-secondary');
-                renderCalendar();
+                tasksView.style.display = 'none';
+                calendarView.style.display = 'block';
+                calendarViewBtn.classList.remove('btn-secondary');
+                calendarViewBtn.classList.add('btn');
+                tasksViewBtn.classList.remove('btn');
+                tasksViewBtn.classList.add('btn-secondary');
+                // Render calendar when switching to calendar view
+                setTimeout(() => {
+                    renderCalendar();
+                }, 50);
             }
         }
 
@@ -6078,7 +6098,12 @@
         function renderCalendar() {
             const calendarGrid = document.getElementById('calendarGrid');
             const monthYear = document.getElementById('calendarMonthYear');
-            if (!calendarGrid || !monthYear) return;
+            if (!calendarGrid || !monthYear) {
+                console.error('Calendar elements not found');
+                return;
+            }
+            
+            console.log('Rendering calendar for', currentMonth, currentYear);
 
             const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
                               'July', 'August', 'September', 'October', 'November', 'December'];
@@ -6174,6 +6199,13 @@
 
         async function loadTasksData() {
             try {
+                if (!nestMateAuth || !nestMateAuth.currentUser || !nestMateAuth.currentUser.userId) {
+                    console.warn('No user available for loading tasks');
+                    tasksData = [];
+                    renderTasks();
+                    return;
+                }
+                
                 const userId = nestMateAuth.currentUser.userId;
                 const params = {
                     TableName: 'nestmate-users',
@@ -6185,10 +6217,14 @@
                 tasksData = userData.tasks || [];
                 console.log('Tasks loaded:', tasksData.length);
                 renderTasks();
-                renderCalendar();
+                // Only render calendar if calendar view is visible
+                if (document.getElementById('calendarView') && document.getElementById('calendarView').style.display !== 'none') {
+                    renderCalendar();
+                }
             } catch (error) {
                 console.error('Error loading tasks:', error);
                 tasksData = [];
+                renderTasks();
             }
         }
 
@@ -6631,40 +6667,47 @@
             const finalDisplayName = displayName || (finalUser && finalUser.email ? finalUser.email.split('@')[0] : 'User');
             const finalDisplayEmail = displayEmail || (finalUser && finalUser.email ? finalUser.email : '');
             
-            if (finalDisplayEmail || finalDisplayName !== 'User') {
-                document.getElementById('userName').textContent = finalDisplayName;
-                document.getElementById('userEmail').textContent = finalDisplayEmail || 'User';
-                document.getElementById('userAvatar').textContent = finalDisplayName.charAt(0).toUpperCase();
-                console.log('User display updated immediately:', finalDisplayName, finalDisplayEmail);
-            } else {
-                // Try one more time with localStorage
-                const storedUser = localStorage.getItem('currentUser');
-                if (storedUser) {
-                    try {
-                        const parsedUser = JSON.parse(storedUser);
-                        if (parsedUser.email) {
-                            const name = parsedUser.name || parsedUser.email.split('@')[0];
-                            document.getElementById('userName').textContent = name;
-                            document.getElementById('userEmail').textContent = parsedUser.email;
-                            document.getElementById('userAvatar').textContent = name.charAt(0).toUpperCase();
-                            console.log('User display updated from localStorage fallback:', name, parsedUser.email);
-                        } else {
-                            // Final fallback
-                            document.getElementById('userName').textContent = 'User';
-                            document.getElementById('userEmail').textContent = 'Loading...';
-                            document.getElementById('userAvatar').textContent = 'U';
-                        }
-                    } catch (e) {
-                        console.error('Error in final localStorage fallback:', e);
-                        document.getElementById('userName').textContent = 'User';
-                        document.getElementById('userEmail').textContent = 'Loading...';
-                        document.getElementById('userAvatar').textContent = 'U';
-                    }
+            // Always try to update user display
+            const userNameEl = document.getElementById('userName');
+            const userEmailEl = document.getElementById('userEmail');
+            const userAvatarEl = document.getElementById('userAvatar');
+            
+            if (userNameEl && userEmailEl && userAvatarEl) {
+                if (finalDisplayEmail || finalDisplayName !== 'User') {
+                    userNameEl.textContent = finalDisplayName;
+                    userEmailEl.textContent = finalDisplayEmail || 'User';
+                    userAvatarEl.textContent = finalDisplayName.charAt(0).toUpperCase();
+                    console.log('User display updated immediately:', finalDisplayName, finalDisplayEmail);
                 } else {
-                    // Final fallback
-                    document.getElementById('userName').textContent = 'User';
-                    document.getElementById('userEmail').textContent = 'Loading...';
-                    document.getElementById('userAvatar').textContent = 'U';
+                    // Try one more time with localStorage
+                    const storedUser = localStorage.getItem('currentUser');
+                    if (storedUser) {
+                        try {
+                            const parsedUser = JSON.parse(storedUser);
+                            if (parsedUser.email) {
+                                const name = parsedUser.name || parsedUser.email.split('@')[0];
+                                userNameEl.textContent = name;
+                                userEmailEl.textContent = parsedUser.email;
+                                userAvatarEl.textContent = name.charAt(0).toUpperCase();
+                                console.log('User display updated from localStorage fallback:', name, parsedUser.email);
+                            } else {
+                                // Final fallback
+                                userNameEl.textContent = 'User';
+                                userEmailEl.textContent = 'Loading...';
+                                userAvatarEl.textContent = 'U';
+                            }
+                        } catch (e) {
+                            console.error('Error in final localStorage fallback:', e);
+                            userNameEl.textContent = 'User';
+                            userEmailEl.textContent = 'Loading...';
+                            userAvatarEl.textContent = 'U';
+                        }
+                    } else {
+                        // Final fallback
+                        userNameEl.textContent = 'User';
+                        userEmailEl.textContent = 'Loading...';
+                        userAvatarEl.textContent = 'U';
+                    }
                 }
             }
             
