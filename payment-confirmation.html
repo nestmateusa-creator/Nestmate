@@ -221,7 +221,48 @@
 
     <!-- Firebase SDK -->
     <!-- AWS SDK -->
-    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1491.0.min.js"></script>
+    <script>
+    // AWS SDK with fallback CDNs
+    (function() {
+        const cdnUrls = [
+            'https://sdk.amazonaws.com/js/aws-sdk-2.1491.0.min.js',
+            'https://cdn.jsdelivr.net/npm/aws-sdk@2.1491.0/dist/aws-sdk.min.js',
+            'https://unpkg.com/aws-sdk@2.1491.0/dist/aws-sdk.min.js'
+        ];
+        
+        let loaded = false;
+        let currentIndex = 0;
+        
+        function loadNext() {
+            if (currentIndex >= cdnUrls.length) {
+                console.error('Failed to load AWS SDK from all CDNs');
+                // Create a minimal AWS stub to prevent errors
+                window.AWS = window.AWS || {
+                    config: { update: function() {} },
+                    CognitoIdentityServiceProvider: function() {},
+                    DynamoDB: { DocumentClient: function() {} },
+                    S3: function() {}
+                };
+                return;
+            }
+            
+            const script = document.createElement('script');
+            script.src = cdnUrls[currentIndex];
+            script.onload = function() {
+                loaded = true;
+                console.log('AWS SDK loaded from:', cdnUrls[currentIndex]);
+            };
+            script.onerror = function() {
+                console.warn('Failed to load AWS SDK from:', cdnUrls[currentIndex]);
+                currentIndex++;
+                loadNext();
+            };
+            document.head.appendChild(script);
+        }
+        
+        loadNext();
+    })();
+</script>
     <script src="auth-aws.js"></script>
 
     <script>

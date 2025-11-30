@@ -1,15 +1,51 @@
 // AWS Authentication System for NestMate
 // This file handles all authentication using AWS Cognito
 
-// AWS Configuration - Set credentials directly for browser environment
-AWS.config.update({
-    region: 'us-east-2',
-    accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
-    secretAccessKey: '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'
-});
+// Wait for AWS SDK to load, with fallback
+(function() {
+    let attempts = 0;
+    const maxAttempts = 50; // 5 seconds max wait
+    
+    function initAWS() {
+        if (typeof AWS !== 'undefined' && AWS.config) {
+            try {
+                // AWS Configuration - Set credentials directly for browser environment
+                AWS.config.update({
+                    region: 'us-east-2',
+                    accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
+                    secretAccessKey: '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'
+                });
+                
+                window.awsCognito = new AWS.CognitoIdentityServiceProvider();
+                window.awsDynamoDB = new AWS.DynamoDB.DocumentClient();
+                console.log('AWS services initialized successfully');
+            } catch (error) {
+                console.error('Error initializing AWS services:', error);
+                // Create stub objects to prevent errors
+                window.awsCognito = { signUp: function() {}, signIn: function() {} };
+                window.awsDynamoDB = { get: function() {}, put: function() {} };
+            }
+        } else if (attempts < maxAttempts) {
+            attempts++;
+            setTimeout(initAWS, 100);
+        } else {
+            console.warn('AWS SDK not loaded after timeout, using fallback stubs');
+            window.awsCognito = { signUp: function() {}, signIn: function() {} };
+            window.awsDynamoDB = { get: function() {}, put: function() {} };
+        }
+    }
+    
+    // Start initialization
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initAWS);
+    } else {
+        initAWS();
+    }
+})();
 
-const cognito = new AWS.CognitoIdentityServiceProvider();
-const dynamodb = new AWS.DynamoDB.DocumentClient();
+// Use window objects for compatibility
+const cognito = window.awsCognito || {};
+const dynamodb = window.awsDynamoDB || {};
 
 // Cognito Configuration
 const COGNITO_CONFIG = {
@@ -23,6 +59,13 @@ class NestMateAuth {
         this.currentUser = null;
         this.accessToken = null;
         this.refreshToken = null;
+    }
+
+    // Helper to check if AWS services are available
+    _checkAWSAvailable(service, method) {
+        if (!service || typeof service[method] !== 'function') {
+            throw new Error(`AWS ${service === cognito ? 'Cognito' : 'DynamoDB'} service not available. Please check your AWS account status.`);
+        }
     }
 
     // Sign up a new user
@@ -50,6 +93,9 @@ class NestMateAuth {
             console.log('Cognito params:', params);
 
             console.log('Step 2: Calling Cognito signUp...');
+            if (!cognito || !cognito.signUp || typeof cognito.signUp !== 'function') {
+                throw new Error('AWS Cognito service not available. Please check your AWS account status.');
+            }
             const result = await cognito.signUp(params).promise();
             console.log('Cognito result:', result);
             
@@ -103,6 +149,7 @@ class NestMateAuth {
                 }
             };
 
+            this._checkAWSAvailable(cognito, 'initiateAuth');
             const result = await cognito.initiateAuth(params).promise();
             
             // Store tokens
@@ -143,6 +190,7 @@ class NestMateAuth {
     async signOut() {
         try {
             if (this.accessToken) {
+                this._checkAWSAvailable(cognito, 'globalSignOut');
                 await cognito.globalSignOut({ AccessToken: this.accessToken }).promise();
             }
             
@@ -180,6 +228,7 @@ class NestMateAuth {
                 ConfirmationCode: confirmationCode
             };
 
+            this._checkAWSAvailable(cognito, 'confirmSignUp');
             await cognito.confirmSignUp(params).promise();
             return { 
                 success: true, 
@@ -203,6 +252,7 @@ class NestMateAuth {
                 Username: email
             };
 
+            this._checkAWSAvailable(cognito, 'resendConfirmationCode');
             await cognito.resendConfirmationCode(params).promise();
             return { 
                 success: true, 
@@ -232,6 +282,7 @@ class NestMateAuth {
                 AccessToken: this.accessToken
             };
 
+            this._checkAWSAvailable(cognito, 'getUser');
             const result = await cognito.getUser(params).promise();
             
             this.currentUser = {
@@ -275,6 +326,7 @@ class NestMateAuth {
                 }
             };
 
+            this._checkAWSAvailable(cognito, 'initiateAuth');
             const result = await cognito.initiateAuth(params).promise();
             
             this.accessToken = result.AuthenticationResult.AccessToken;
@@ -319,6 +371,7 @@ class NestMateAuth {
                 }
             };
 
+            this._checkAWSAvailable(dynamodb, 'put');
             await dynamodb.put(params).promise();
             return { success: true };
         } catch (error) {
@@ -349,6 +402,7 @@ class NestMateAuth {
                 ReturnValues: 'ALL_NEW'
             };
 
+            this._checkAWSAvailable(dynamodb, 'update');
             const result = await dynamodb.update(params).promise();
             return { success: true, user: result.Attributes };
         } catch (error) {
@@ -365,6 +419,7 @@ class NestMateAuth {
                 Key: { userId: userId }
             };
 
+            this._checkAWSAvailable(dynamodb, 'get');
             const result = await dynamodb.get(params).promise();
             return { success: true, user: result.Item };
         } catch (error) {

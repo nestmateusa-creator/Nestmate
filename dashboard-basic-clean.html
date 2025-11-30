@@ -4,10 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Basic Dashboard - NestMate</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" onerror="this.onerror=null; this.href='';">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" onerror="this.onerror=null; this.href='';">
+    <style>
+        /* Font fallbacks */
+        body, * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+        }
+    </style>
     <!-- AWS SDK and Authentication -->
-    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1491.0.min.js"></script>
+    <script>
+    // AWS SDK with fallback CDNs
+    (function() {
+        const cdnUrls = [
+            'https://sdk.amazonaws.com/js/aws-sdk-2.1491.0.min.js',
+            'https://cdn.jsdelivr.net/npm/aws-sdk@2.1491.0/dist/aws-sdk.min.js',
+            'https://unpkg.com/aws-sdk@2.1491.0/dist/aws-sdk.min.js'
+        ];
+        
+        let loaded = false;
+        let currentIndex = 0;
+        
+        function loadNext() {
+            if (currentIndex >= cdnUrls.length) {
+                console.error('Failed to load AWS SDK from all CDNs');
+                // Create a minimal AWS stub to prevent errors
+                window.AWS = window.AWS || {
+                    config: { update: function() {} },
+                    CognitoIdentityServiceProvider: function() {},
+                    DynamoDB: { DocumentClient: function() {} },
+                    S3: function() {}
+                };
+                return;
+            }
+            
+            const script = document.createElement('script');
+            script.src = cdnUrls[currentIndex];
+            script.onload = function() {
+                loaded = true;
+                console.log('AWS SDK loaded from:', cdnUrls[currentIndex]);
+            };
+            script.onerror = function() {
+                console.warn('Failed to load AWS SDK from:', cdnUrls[currentIndex]);
+                currentIndex++;
+                loadNext();
+            };
+            document.head.appendChild(script);
+        }
+        
+        loadNext();
+    })();
+</script>
     <script src="auth-aws.js"></script>
     
     <style>
@@ -98,6 +145,10 @@
             margin-left: 280px;
             padding: 2rem;
             max-width: calc(100vw - 280px);
+            overflow-x: hidden;
+            overflow-y: auto;
+            height: 100vh;
+            box-sizing: border-box;
         }
 
         /* Header */
@@ -414,6 +465,10 @@
                 margin-left: 0;
                 padding: 1rem;
                 max-width: 100vw;
+                overflow-x: hidden;
+                overflow-y: auto;
+                height: 100vh;
+                box-sizing: border-box;
             }
 
             .user-info {
@@ -3588,22 +3643,25 @@
                     img.src = photo.url;
                 }
                 
-                // Add error handling for image loading
+                // Add error handling for image loading with better fallback
                 img.onerror = function() {
                     console.error('Failed to load image:', img.src);
                     // Try to show a placeholder or error message
-                    img.style.display = 'none';
-                    const errorDiv = document.createElement('div');
-                    errorDiv.style.width = '100%';
-                    errorDiv.style.height = '120px';
-                    errorDiv.style.display = 'flex';
-                    errorDiv.style.alignItems = 'center';
-                    errorDiv.style.justifyContent = 'center';
-                    errorDiv.style.backgroundColor = '#f3f4f6';
-                    errorDiv.style.borderRadius = '0.375rem';
-                    errorDiv.style.color = '#6b7280';
-                    errorDiv.innerHTML = '<i class="fas fa-image"></i> Image not available';
-                    container.appendChild(errorDiv);
+                    if (img.parentNode) {
+                        img.style.display = 'none';
+                        const errorDiv = document.createElement('div');
+                        errorDiv.style.width = '100%';
+                        errorDiv.style.height = '120px';
+                        errorDiv.style.display = 'flex';
+                        errorDiv.style.alignItems = 'center';
+                        errorDiv.style.justifyContent = 'center';
+                        errorDiv.style.backgroundColor = '#1e293b';
+                        errorDiv.style.borderRadius = '0.375rem';
+                        errorDiv.style.color = '#94a3b8';
+                        errorDiv.style.border = '1px solid #334155';
+                        errorDiv.innerHTML = '<i class="fas fa-image" style="margin-right: 8px;"></i> Image not available';
+                        img.parentNode.insertBefore(errorDiv, img);
+                    }
                 };
                 
                 img.alt = photo.filename || 'Home Photo';
@@ -5556,6 +5614,22 @@
         }
 
         // Initialize dashboard
+        // Global error handler for AWS failures
+        window.addEventListener('error', function(e) {
+            if (e.message && (e.message.includes('AWS') || e.message.includes('Cognito') || e.message.includes('DynamoDB') || e.message.includes('S3'))) {
+                console.warn('AWS service error detected, continuing with fallback:', e.message);
+                e.preventDefault();
+            }
+        });
+
+        // Handle unhandled promise rejections from AWS
+        window.addEventListener('unhandledrejection', function(e) {
+            if (e.reason && (e.reason.message && (e.reason.message.includes('AWS') || e.reason.message.includes('Cognito') || e.reason.message.includes('DynamoDB') || e.reason.message.includes('S3')))) {
+                console.warn('AWS promise rejection handled:', e.reason.message);
+                e.preventDefault();
+            }
+        });
+
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('🚀 Command Center Dashboard Starting...');
             console.log('nestMateAuth object:', nestMateAuth);
