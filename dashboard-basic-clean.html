@@ -3105,6 +3105,15 @@
             if (targetSection) {
                 targetSection.classList.add('active');
                 console.log('Added active to:', targetSection.id);
+                
+                // If tasks section is shown, ensure calendar is ready
+                if (sectionName === 'tasks') {
+                    setTimeout(() => {
+                        if (document.getElementById('calendarView') && document.getElementById('calendarView').style.display !== 'none') {
+                            renderCalendar();
+                        }
+                    }, 100);
+                }
             } else {
                 console.error('Section not found:', sectionName + 'Section');
             }
