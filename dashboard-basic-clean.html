@@ -3172,38 +3172,38 @@
         });
 
         // DynamoDB client - get from auth-aws.js or initialize if needed
-        let dynamodb;
+        // Use window.dynamodb if available, otherwise create a local reference
         let dynamodbInitAttempts = 0;
         const maxDynamoDBInitAttempts = 50; // 5 seconds max
         
-        function initDynamoDB() {
-            try {
-                if (typeof AWS !== 'undefined' && AWS.DynamoDB && AWS.DynamoDB.DocumentClient) {
-                    dynamodb = new AWS.DynamoDB.DocumentClient();
-                    console.log('DynamoDB initialized in dashboard');
-                    return true;
-                }
-            } catch (error) {
-                console.warn('Error initializing DynamoDB:', error);
+        function getDynamoDB() {
+            // First try to get from window (set by auth-aws.js)
+            if (window.dynamodb) {
+                return window.dynamodb;
             }
-            return false;
+            // Otherwise try to initialize
+            if (typeof AWS !== 'undefined' && AWS.DynamoDB && AWS.DynamoDB.DocumentClient) {
+                try {
+                    const db = new AWS.DynamoDB.DocumentClient();
+                    window.dynamodb = db; // Store for future use
+                    console.log('DynamoDB initialized in dashboard');
+                    return db;
+                } catch (error) {
+                    console.warn('Error initializing DynamoDB:', error);
+                }
+            }
+            return null;
         }
         
-        // Try to get from window (set by auth-aws.js) or initialize
+        // Try to get DynamoDB asynchronously without blocking
         function ensureDynamoDB() {
-            if (window.dynamodb) {
-                dynamodb = window.dynamodb;
-                console.log('Using DynamoDB from auth-aws.js');
-                return true;
-            } else if (initDynamoDB()) {
-                return true;
+            if (getDynamoDB()) {
+                console.log('DynamoDB is ready');
             } else if (dynamodbInitAttempts < maxDynamoDBInitAttempts) {
                 dynamodbInitAttempts++;
                 setTimeout(ensureDynamoDB, 100);
-                return false;
             } else {
                 console.warn('DynamoDB initialization timeout - some features may not work');
-                return false;
             }
         }
         
@@ -6223,15 +6223,10 @@
 
         async function saveTasksToDB() {
             try {
+                // Get DynamoDB instance
+                const dynamodb = getDynamoDB();
                 if (!dynamodb) {
-                    // Try to get from window or initialize
-                    if (window.dynamodb) {
-                        dynamodb = window.dynamodb;
-                    } else if (typeof AWS !== 'undefined' && AWS.DynamoDB) {
-                        dynamodb = new AWS.DynamoDB.DocumentClient();
-                    } else {
-                        throw new Error('DynamoDB not initialized');
-                    }
+                    throw new Error('DynamoDB not initialized');
                 }
                 
                 if (!nestMateAuth || !nestMateAuth.currentUser || !nestMateAuth.currentUser.userId) {
@@ -6270,18 +6265,13 @@
                     return;
                 }
                 
+                // Get DynamoDB instance
+                const dynamodb = getDynamoDB();
                 if (!dynamodb) {
-                    // Try to get from window or initialize
-                    if (window.dynamodb) {
-                        dynamodb = window.dynamodb;
-                    } else if (typeof AWS !== 'undefined' && AWS.DynamoDB) {
-                        dynamodb = new AWS.DynamoDB.DocumentClient();
-                    } else {
-                        console.warn('DynamoDB not initialized, tasks will not load');
-                        tasksData = [];
-                        renderTasks();
-                        return;
-                    }
+                    console.warn('DynamoDB not initialized, tasks will not load');
+                    tasksData = [];
+                    renderTasks();
+                    return;
                 }
                 
                 const userId = nestMateAuth.currentUser.userId;
