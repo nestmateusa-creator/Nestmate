@@ -5828,6 +5828,74 @@
             });
         }
 
+        // Helper function to update user display elements
+        function updateUserDisplayElements(displayName, displayEmail, userData) {
+            const userNameEl = document.getElementById('userName');
+            const userEmailEl = document.getElementById('userEmail');
+            const userAvatarEl = document.getElementById('userAvatar');
+            
+            if (!userNameEl || !userEmailEl || !userAvatarEl) {
+                console.warn('User display elements not found');
+                return;
+            }
+            
+            if (displayEmail || (displayName && displayName !== 'User')) {
+                userNameEl.textContent = displayName || 'User';
+                userEmailEl.textContent = displayEmail || 'Loading...';
+                userAvatarEl.textContent = (displayName || 'U').charAt(0).toUpperCase();
+                console.log('User display updated:', displayName, displayEmail);
+            } else {
+                // Try localStorage as fallback
+                const storedUser = localStorage.getItem('currentUser');
+                if (storedUser) {
+                    try {
+                        const parsedUser = JSON.parse(storedUser);
+                        if (parsedUser.email) {
+                            const name = parsedUser.name || parsedUser.email.split('@')[0];
+                            userNameEl.textContent = name;
+                            userEmailEl.textContent = parsedUser.email;
+                            userAvatarEl.textContent = name.charAt(0).toUpperCase();
+                            console.log('User display updated from localStorage:', name, parsedUser.email);
+                        } else {
+                            userNameEl.textContent = 'User';
+                            userEmailEl.textContent = 'Loading...';
+                            userAvatarEl.textContent = 'U';
+                        }
+                    } catch (e) {
+                        console.error('Error parsing stored user:', e);
+                        userNameEl.textContent = 'User';
+                        userEmailEl.textContent = 'Loading...';
+                        userAvatarEl.textContent = 'U';
+                    }
+                } else {
+                    userNameEl.textContent = 'User';
+                    userEmailEl.textContent = 'Loading...';
+                    userAvatarEl.textContent = 'U';
+                }
+            }
+        }
+
+        // Update user display
+        function updateUserDisplay() {
+            try {
+                console.log('updateUserDisplay called');
+                console.log('nestMateAuth:', nestMateAuth);
+                console.log('nestMateAuth.currentUser:', nestMateAuth?.currentUser);
+                
+                if (nestMateAuth && nestMateAuth.currentUser) {
+                    const userName = nestMateAuth.currentUser.name || nestMateAuth.currentUser.email?.split('@')[0] || 'User';
+                    const userEmail = nestMateAuth.currentUser.email || 'Loading...';
+                    updateUserDisplayElements(userName, userEmail, nestMateAuth.currentUser);
+                } else {
+                    console.log('No current user found, setting default values');
+                    updateUserDisplayElements('User', 'Loading...', null);
+                }
+            } catch (error) {
+                console.error('Error updating user display:', error);
+                updateUserDisplayElements('User', 'Error', null);
+            }
+        }
+
         // Emergency CRUD Functions
         function editEmergency() {
             document.getElementById('emergencyDisplay').style.display = 'none';
@@ -6792,17 +6860,15 @@
                 console.log('Stored user:', storedUser);
                 
                 if (nestMateAuth.currentUser && nestMateAuth.currentUser.email) {
-                    document.getElementById('userName').textContent = nestMateAuth.currentUser.name || nestMateAuth.currentUser.email.split('@')[0];
-                    document.getElementById('userEmail').textContent = nestMateAuth.currentUser.email;
-                    document.getElementById('userAvatar').textContent = (nestMateAuth.currentUser.name || nestMateAuth.currentUser.email.split('@')[0]).charAt(0).toUpperCase();
+                    const name = nestMateAuth.currentUser.name || nestMateAuth.currentUser.email.split('@')[0];
+                    updateUserDisplayElements(name, nestMateAuth.currentUser.email, nestMateAuth.currentUser);
                     console.log('Updated from nestMateAuth.currentUser');
                 } else if (storedUser) {
                     try {
                         const parsedUser = JSON.parse(storedUser);
                         if (parsedUser.email) {
-                            document.getElementById('userName').textContent = parsedUser.name || parsedUser.email.split('@')[0];
-                            document.getElementById('userEmail').textContent = parsedUser.email;
-                            document.getElementById('userAvatar').textContent = (parsedUser.name || parsedUser.email.split('@')[0]).charAt(0).toUpperCase();
+                            const name = parsedUser.name || parsedUser.email.split('@')[0];
+                            updateUserDisplayElements(name, parsedUser.email, parsedUser);
                             console.log('Updated from localStorage:', parsedUser.email);
                         }
                     } catch (e) {
@@ -6819,9 +6885,8 @@
                     try {
                         const parsedUser = JSON.parse(storedUser);
                         if (parsedUser.email) {
-                            document.getElementById('userName').textContent = parsedUser.name || parsedUser.email.split('@')[0];
-                            document.getElementById('userEmail').textContent = parsedUser.email;
-                            document.getElementById('userAvatar').textContent = (parsedUser.name || parsedUser.email.split('@')[0]).charAt(0).toUpperCase();
+                            const name = parsedUser.name || parsedUser.email.split('@')[0];
+                            updateUserDisplayElements(name, parsedUser.email, parsedUser);
                             console.log('Final update from localStorage:', parsedUser.email);
                         }
                     } catch (e) {
