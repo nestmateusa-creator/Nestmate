@@ -6633,16 +6633,40 @@
         }
 
         // Initialize dashboard
-        // Global error handler for AWS failures
+        // Global error handler for AWS failures and browser extension errors
         window.addEventListener('error', function(e) {
+            // Suppress browser extension connection errors (common and harmless)
+            if (e.message && (
+                e.message.includes('Could not establish connection') ||
+                e.message.includes('Receiving end does not exist') ||
+                e.message.includes('Extension context invalidated')
+            )) {
+                // Silently ignore browser extension errors - they're harmless
+                e.preventDefault();
+                return;
+            }
+            
+            // Handle AWS-related errors
             if (e.message && (e.message.includes('AWS') || e.message.includes('Cognito') || e.message.includes('DynamoDB') || e.message.includes('S3'))) {
                 console.warn('AWS service error detected, continuing with fallback:', e.message);
                 e.preventDefault();
             }
         });
 
-        // Handle unhandled promise rejections from AWS
+        // Handle unhandled promise rejections from AWS and browser extensions
         window.addEventListener('unhandledrejection', function(e) {
+            // Suppress browser extension connection errors (common and harmless)
+            if (e.reason && e.reason.message && (
+                e.reason.message.includes('Could not establish connection') ||
+                e.reason.message.includes('Receiving end does not exist') ||
+                e.reason.message.includes('Extension context invalidated')
+            )) {
+                // Silently ignore browser extension errors - they're harmless
+                e.preventDefault();
+                return;
+            }
+            
+            // Handle AWS-related errors
             if (e.reason && (e.reason.message && (e.reason.message.includes('AWS') || e.reason.message.includes('Cognito') || e.reason.message.includes('DynamoDB') || e.reason.message.includes('S3')))) {
                 console.warn('AWS promise rejection handled:', e.reason.message);
                 e.preventDefault();
