@@ -296,12 +296,27 @@
 
     <script src="auth-aws.js"></script>
     <script>
-        // AWS Configuration for login
-        AWS.config.update({
-            region: 'us-east-2',
-            accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
-            secretAccessKey: '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'
-        });
+        // Wait for AWS SDK to be ready before configuring
+        function configureAWS() {
+            if (typeof AWS !== 'undefined' && AWS.config) {
+                try {
+                    AWS.config.update({
+                        region: 'us-east-2',
+                        accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
+                        secretAccessKey: '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'
+                    });
+                    console.log('AWS configured in login page');
+                } catch (error) {
+                    console.error('Error configuring AWS:', error);
+                }
+            }
+        }
+        
+        // Try immediately and also after delays
+        configureAWS();
+        setTimeout(configureAWS, 500);
+        setTimeout(configureAWS, 1000);
+        
         // Form elements
         const loginForm = document.getElementById('loginForm');
         const loading = document.getElementById('loading');
