@@ -6287,10 +6287,6 @@
                     Key: { userId }
                 };
 
-                const dynamodb = getDynamoDB();
-                if (!dynamodb) {
-                    throw new Error('DynamoDB not initialized');
-                }
                 const result = await dynamodb.get(params).promise();
                 const userData = result.Item || {};
                 tasksData = userData.tasks || [];
@@ -6770,49 +6766,8 @@
             const finalDisplayName = displayName || (finalUser && finalUser.email ? finalUser.email.split('@')[0] : 'User');
             const finalDisplayEmail = displayEmail || (finalUser && finalUser.email ? finalUser.email : '');
             
-            // Always try to update user display
-            const userNameEl = document.getElementById('userName');
-            const userEmailEl = document.getElementById('userEmail');
-            const userAvatarEl = document.getElementById('userAvatar');
-            
-            if (userNameEl && userEmailEl && userAvatarEl) {
-                if (finalDisplayEmail || finalDisplayName !== 'User') {
-                    userNameEl.textContent = finalDisplayName;
-                    userEmailEl.textContent = finalDisplayEmail || 'User';
-                    userAvatarEl.textContent = finalDisplayName.charAt(0).toUpperCase();
-                    console.log('User display updated immediately:', finalDisplayName, finalDisplayEmail);
-                } else {
-                    // Try one more time with localStorage
-                    const storedUser = localStorage.getItem('currentUser');
-                    if (storedUser) {
-                        try {
-                            const parsedUser = JSON.parse(storedUser);
-                            if (parsedUser.email) {
-                                const name = parsedUser.name || parsedUser.email.split('@')[0];
-                                userNameEl.textContent = name;
-                                userEmailEl.textContent = parsedUser.email;
-                                userAvatarEl.textContent = name.charAt(0).toUpperCase();
-                                console.log('User display updated from localStorage fallback:', name, parsedUser.email);
-                            } else {
-                                // Final fallback
-                                userNameEl.textContent = 'User';
-                                userEmailEl.textContent = 'Loading...';
-                                userAvatarEl.textContent = 'U';
-                            }
-                        } catch (e) {
-                            console.error('Error in final localStorage fallback:', e);
-                            userNameEl.textContent = 'User';
-                            userEmailEl.textContent = 'Loading...';
-                            userAvatarEl.textContent = 'U';
-                        }
-                    } else {
-                        // Final fallback
-                        userNameEl.textContent = 'User';
-                        userEmailEl.textContent = 'Loading...';
-                        userAvatarEl.textContent = 'U';
-                    }
-                }
-            }
+            // Always try to update user display immediately
+            updateUserDisplayElements(finalDisplayName, finalDisplayEmail, finalUser);
             
             // Load dashboard data
             await loadUserData();
