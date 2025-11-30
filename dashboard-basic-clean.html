@@ -5551,7 +5551,22 @@
             
             clearFileLists();
             displayExistingFiles(renovation);
-            document.getElementById('renovationModal').style.display = 'flex';
+            const modal = document.getElementById('renovationModal');
+            modal.style.display = 'block';
+            modal.classList.add('show');
+            let overlay = document.querySelector('.modal-overlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.className = 'modal-overlay';
+                overlay.onclick = function(e) {
+                    if (e.target === overlay) {
+                        closeRenovationModal();
+                    }
+                };
+                document.body.appendChild(overlay);
+            }
+            overlay.classList.add('active');
+            overlay.appendChild(modal);
             setupRenovationFileUploads();
         }
 
