@@ -51,7 +51,6 @@
 </script>
     <script src="auth-aws.js"></script>
     <script src="aws-data-service.js"></script>
-    <script src="localStorage-replacement.js"></script>
     
     <style>
         * {
@@ -3243,9 +3242,34 @@
             const address = document.getElementById('address').value;
             const yearBuilt = document.getElementById('yearBuilt').value;
             const squareFootage = document.getElementById('squareFootage').value;
-            const bedrooms = document.getElementById('bedrooms').value;
-            const bathrooms = document.getElementById('bathrooms').value;
+            const bedrooms = document.getElementById('bedroomsInput').value;
+            const bathrooms = document.getElementById('bathroomsInput').value;
             const homeType = document.getElementById('homeType').value;
+
+            const basicInfoData = {
+                address: address,
+                yearBuilt: yearBuilt,
+                squareFootage: squareFootage,
+                bedrooms: bedrooms,
+                bathrooms: bathrooms,
+                homeType: homeType
+            };
+
+            // Save to AWS
+            try {
+                if (window.awsDataService) {
+                    const userData = await window.awsDataService.getUserData();
+                    userData.basicInfo = basicInfoData;
+                    await window.awsDataService.saveUserData(userData);
+                    console.log('Basic info saved to AWS');
+                } else {
+                    console.error('AWS Data Service not initialized');
+                }
+            } catch (error) {
+                console.error('Error saving basic info to AWS:', error);
+                showAlert('Error saving basic info. Please try again.', 'error');
+                return;
+            }
 
             // Update display
             document.getElementById('displayAddress').textContent = address || 'Not set';
@@ -3279,6 +3303,29 @@
             const exteriorMaterial = document.getElementById('exteriorMaterial').value;
             const windows = document.getElementById('windows').value;
 
+            const structureData = {
+                foundation: foundation,
+                roofType: roofType,
+                exteriorMaterial: exteriorMaterial,
+                windows: windows
+            };
+
+            // Save to AWS
+            try {
+                if (window.awsDataService) {
+                    const userData = await window.awsDataService.getUserData();
+                    userData.structure = structureData;
+                    await window.awsDataService.saveUserData(userData);
+                    console.log('Structure info saved to AWS');
+                } else {
+                    console.error('AWS Data Service not initialized');
+                }
+            } catch (error) {
+                console.error('Error saving structure info to AWS:', error);
+                showAlert('Error saving structure info. Please try again.', 'error');
+                return;
+            }
+
             // Update display
             document.getElementById('displayFoundation').textContent = foundation || 'Not set';
             document.getElementById('displayRoofType').textContent = roofType || 'Not set';
@@ -3309,6 +3356,29 @@
             const plumbing = document.getElementById('plumbing').value;
             const waterHeater = document.getElementById('waterHeater').value;
 
+            const systemsData = {
+                hvac: hvac,
+                electrical: electrical,
+                plumbing: plumbing,
+                waterHeater: waterHeater
+            };
+
+            // Save to AWS
+            try {
+                if (window.awsDataService) {
+                    const userData = await window.awsDataService.getUserData();
+                    userData.systems = systemsData;
+                    await window.awsDataService.saveUserData(userData);
+                    console.log('Systems info saved to AWS');
+                } else {
+                    console.error('AWS Data Service not initialized');
+                }
+            } catch (error) {
+                console.error('Error saving systems info to AWS:', error);
+                showAlert('Error saving systems info. Please try again.', 'error');
+                return;
+            }
+
             // Update display
             document.getElementById('displayHVAC').textContent = hvac || 'Not set';
             document.getElementById('displayElectrical').textContent = electrical || 'Not set';
@@ -3329,6 +3399,37 @@
 
         function addBathroom() {
             showAlert('Add bathroom functionality coming soon!', 'info');
+        }
+
+        // Kitchen form functions (for legacy form)
+        function saveKitchen() {
+            const kitchenData = {
+                size: document.getElementById('kitchenSize').value,
+                appliances: document.getElementById('kitchenAppliances').value,
+                countertops: document.getElementById('kitchenCountertops').value,
+                cabinets: document.getElementById('kitchenCabinets').value,
+                flooring: document.getElementById('kitchenFlooring').value,
+                lastRenovation: document.getElementById('kitchenRenovation').value
+            };
+            
+            // Save to AWS via kitchensList
+            (async () => {
+                try {
+                    const state = await ensureDashboardState();
+                    if (!state.kitchensList) state.kitchensList = [];
+                    state.kitchensList.push({ name: 'Main Kitchen', ...kitchenData });
+                    await saveKitchensList();
+                    showAlert('Kitchen info saved successfully!', 'success');
+                    document.getElementById('kitchenForm').style.display = 'none';
+                } catch (error) {
+                    console.error('Error saving kitchen:', error);
+                    showAlert('Error saving kitchen. Please try again.', 'error');
+                }
+            })();
+        }
+
+        function cancelEditKitchen() {
+            document.getElementById('kitchenForm').style.display = 'none';
         }
 
         function addLivingArea() {
@@ -3399,11 +3500,12 @@
         }
 
         // ===== Dynamic Bedrooms Helpers =====
-        function renderBedroomsList() {
+        async function renderBedroomsList() {
             const container = document.getElementById('bedroomsList');
             if (!container) return;
             container.innerHTML = '';
-            const list = ensureDashboardState().bedroomsList || [];
+            const state = await ensureDashboardState();
+            const list = state.bedroomsList || [];
             if (list.length === 0) {
                 const empty = document.createElement('div');
                 empty.className = 'empty-state';
@@ -3427,7 +3529,7 @@
                         <div class="list-item-sub">${details || 'No details added'}</div>
                     </div>
                     <div class="list-item-actions">
-                        <button class="btn btn-secondary" onclick="openEditBedroomModal(${idx})"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-secondary" onclick="openEditBedroomModal(${idx}).catch(console.error)"><i class="fas fa-edit"></i></button>
                         <button class="btn btn-secondary" onclick="deleteBedroom(${idx})"><i class="fas fa-trash"></i></button>
                     </div>
                 `;
@@ -3436,11 +3538,11 @@
         }
 
         function openAddBedroomModal() {
-            openBedroomModal();
+            openBedroomModal(null, null);
         }
 
-        function openEditBedroomModal(index) {
-            const state = ensureDashboardState();
+        async function openEditBedroomModal(index) {
+            const state = await ensureDashboardState();
             const data = state.bedroomsList[index];
             openBedroomModal(data, index);
         }
@@ -3665,33 +3767,48 @@
         }
 
         async function upsertBedroom(index, data) {
-            const state = ensureDashboardState();
-            if (index === null || index === undefined) state.bedroomsList.push(data); else state.bedroomsList[index] = data;
-            await saveBedroomsList();
-            renderBedroomsList();
-            showAlert('Bedroom saved successfully!', 'success');
+            try {
+                const state = await ensureDashboardState();
+                if (index === null || index === undefined) state.bedroomsList.push(data); else state.bedroomsList[index] = data;
+                await saveBedroomsList();
+                await renderBedroomsList();
+                showAlert('Bedroom saved successfully!', 'success');
+            } catch (error) {
+                console.error('Error saving bedroom:', error);
+                showAlert('Error saving bedroom. Please try again.', 'error');
+            }
         }
 
         async function deleteBedroom(index) {
             if (!confirm('Are you sure you want to delete this bedroom?')) return;
-            const state = ensureDashboardState();
-            state.bedroomsList.splice(index, 1);
-            await saveBedroomsList();
-            renderBedroomsList();
-            showAlert('Bedroom deleted successfully!', 'success');
+            try {
+                const state = await ensureDashboardState();
+                state.bedroomsList.splice(index, 1);
+                await saveBedroomsList();
+                await renderBedroomsList();
+                showAlert('Bedroom deleted successfully!', 'success');
+            } catch (error) {
+                console.error('Error deleting bedroom:', error);
+                showAlert('Error deleting bedroom. Please try again.', 'error');
+            }
         }
 
         async function saveBedroomsList() {
-            const state = ensureDashboardState();
-            localStorage.setItem('dashboardState', JSON.stringify(state));
+            const state = await ensureDashboardState();
+            if (!window.awsDataService) {
+                throw new Error('AWS Data Service not initialized');
+            }
+            await window.awsDataService.saveBedroomsList(state.bedroomsList || []);
+            console.log('Bedrooms list saved to AWS');
         }
 
         // ===== Dynamic Bathrooms Helpers =====
-        function renderBathroomsList() {
+        async function renderBathroomsList() {
             const container = document.getElementById('bathroomsList');
             if (!container) return;
             container.innerHTML = '';
-            const list = ensureDashboardState().bathroomsList || [];
+            const state = await ensureDashboardState();
+            const list = state.bathroomsList || [];
             if (list.length === 0) {
                 const empty = document.createElement('div');
                 empty.className = 'empty-state';
@@ -3714,7 +3831,7 @@
                         <div class="list-item-sub">${details || 'No details added'}</div>
                     </div>
                     <div class="list-item-actions">
-                        <button class="btn btn-secondary" onclick="openBathroomModal(${idx})"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-secondary" onclick="openBathroomModal(${idx}).catch(console.error)"><i class="fas fa-edit"></i></button>
                         <button class="btn btn-secondary" onclick="deleteBathroom(${idx})"><i class="fas fa-trash"></i></button>
                     </div>
                 `;
@@ -3722,10 +3839,13 @@
             });
         }
 
-        function openAddBathroomModal() { openBathroomModal(null); }
+        function openAddBathroomModal() { 
+            openBathroomModal(null).catch(console.error);
+        }
 
-        function openBathroomModal(index) {
-            const existing = (index !== null && index !== undefined) ? ensureDashboardState().bathroomsList[index] : null;
+        async function openBathroomModal(index) {
+            const state = await ensureDashboardState();
+            const existing = (index !== null && index !== undefined) ? state.bathroomsList[index] : null;
             const overlay = document.createElement('div');
             overlay.className = 'modal-overlay';
             const modal = document.createElement('div');
@@ -3786,33 +3906,48 @@
         }
 
         async function upsertBathroom(index, data) {
-            const state = ensureDashboardState();
-            if (index === null || index === undefined) state.bathroomsList.push(data); else state.bathroomsList[index] = data;
-            await saveBathroomsList();
-            renderBathroomsList();
-            showAlert('Bathroom saved successfully!', 'success');
+            try {
+                const state = await ensureDashboardState();
+                if (index === null || index === undefined) state.bathroomsList.push(data); else state.bathroomsList[index] = data;
+                await saveBathroomsList();
+                await renderBathroomsList();
+                showAlert('Bathroom saved successfully!', 'success');
+            } catch (error) {
+                console.error('Error saving bathroom:', error);
+                showAlert('Error saving bathroom. Please try again.', 'error');
+            }
         }
 
         async function deleteBathroom(index) {
             if (!confirm('Are you sure you want to delete this bathroom?')) return;
-            const state = ensureDashboardState();
-            state.bathroomsList.splice(index, 1);
-            await saveBathroomsList();
-            renderBathroomsList();
-            showAlert('Bathroom deleted successfully!', 'success');
+            try {
+                const state = await ensureDashboardState();
+                state.bathroomsList.splice(index, 1);
+                await saveBathroomsList();
+                await renderBathroomsList();
+                showAlert('Bathroom deleted successfully!', 'success');
+            } catch (error) {
+                console.error('Error deleting bathroom:', error);
+                showAlert('Error deleting bathroom. Please try again.', 'error');
+            }
         }
 
         async function saveBathroomsList() {
-            const state = ensureDashboardState();
-            localStorage.setItem('dashboardState', JSON.stringify(state));
+            const state = await ensureDashboardState();
+            if (!window.awsDataService) {
+                throw new Error('AWS Data Service not initialized');
+            }
+            await window.awsDataService.saveBathroomsList(state.bathroomsList || []);
+            console.log('Bathrooms list saved to AWS');
         }
 
         // ===== Dynamic Kitchens Helpers =====
-        function renderKitchensList() {
+        async function renderKitchensList() {
             const container = document.getElementById('kitchensList');
             if (!container) return;
             container.innerHTML = '';
-            const list = ensureDashboardState().kitchensList || [];
+            const state = await ensureDashboardState();
+            const list = state.kitchensList || [];
             if (list.length === 0) {
                 const empty = document.createElement('div');
                 empty.className = 'empty-state';
@@ -3835,7 +3970,7 @@
                         <div class="list-item-sub">${details || 'No details added'}</div>
                     </div>
                     <div class="list-item-actions">
-                        <button class="btn btn-secondary" onclick="openKitchenModal(${idx})"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-secondary" onclick="openKitchenModal(${idx}).catch(console.error)"><i class="fas fa-edit"></i></button>
                         <button class="btn btn-secondary" onclick="deleteKitchen(${idx})"><i class="fas fa-trash"></i></button>
                     </div>
                 `;
@@ -3843,10 +3978,13 @@
             });
         }
 
-        function openAddKitchenModal() { openKitchenModal(null); }
+        function openAddKitchenModal() { 
+            openKitchenModal(null).catch(console.error);
+        }
 
-        function openKitchenModal(index) {
-            const existing = (index !== null && index !== undefined) ? ensureDashboardState().kitchensList[index] : null;
+        async function openKitchenModal(index) {
+            const state = await ensureDashboardState();
+            const existing = (index !== null && index !== undefined) ? state.kitchensList[index] : null;
             const overlay = document.createElement('div');
             overlay.className = 'modal-overlay';
             const modal = document.createElement('div');
@@ -3936,33 +4074,71 @@
         }
 
         async function upsertKitchen(index, data) {
-            const state = ensureDashboardState();
-            if (index === null || index === undefined) state.kitchensList.push(data); else state.kitchensList[index] = data;
-            await saveKitchensList();
-            renderKitchensList();
-            showAlert('Kitchen saved successfully!', 'success');
+            try {
+                const state = await ensureDashboardState();
+                if (index === null || index === undefined) state.kitchensList.push(data); else state.kitchensList[index] = data;
+                await saveKitchensList();
+                await renderKitchensList();
+                showAlert('Kitchen saved successfully!', 'success');
+            } catch (error) {
+                console.error('Error saving kitchen:', error);
+                showAlert('Error saving kitchen. Please try again.', 'error');
+            }
         }
 
         async function deleteKitchen(index) {
             if (!confirm('Are you sure you want to delete this kitchen?')) return;
-            const state = ensureDashboardState();
-            state.kitchensList.splice(index, 1);
-            await saveKitchensList();
-            renderKitchensList();
-            showAlert('Kitchen deleted successfully!', 'success');
+            try {
+                const state = await ensureDashboardState();
+                state.kitchensList.splice(index, 1);
+                await saveKitchensList();
+                await renderKitchensList();
+                showAlert('Kitchen deleted successfully!', 'success');
+            } catch (error) {
+                console.error('Error deleting kitchen:', error);
+                showAlert('Error deleting kitchen. Please try again.', 'error');
+            }
         }
 
         async function saveKitchensList() {
-            const state = ensureDashboardState();
-            localStorage.setItem('dashboardState', JSON.stringify(state));
+            const state = await ensureDashboardState();
+            if (!window.awsDataService) {
+                throw new Error('AWS Data Service not initialized');
+            }
+            await window.awsDataService.saveKitchensList(state.kitchensList || []);
+            console.log('Kitchens list saved to AWS');
         }
 
         // ===== Dashboard State Management =====
-        function ensureDashboardState() {
-            let state = JSON.parse(localStorage.getItem('dashboardState') || '{}');
+        async function ensureDashboardState() {
+            if (!window.awsDataService) {
+                throw new Error('AWS Data Service not initialized');
+            }
+            
+            let state = {};
+            
+            // Load from AWS only
+            try {
+                const bedroomsList = await window.awsDataService.getBedroomsList();
+                const bathroomsList = await window.awsDataService.getBathroomsList();
+                const kitchensList = await window.awsDataService.getKitchensList();
+                
+                state.bedroomsList = bedroomsList || [];
+                state.bathroomsList = bathroomsList || [];
+                state.kitchensList = kitchensList || [];
+            } catch (error) {
+                console.error('Error loading dashboard state from AWS:', error);
+                // Initialize empty state if error occurs
+                state.bedroomsList = [];
+                state.bathroomsList = [];
+                state.kitchensList = [];
+            }
+            
+            // Ensure arrays exist
             if (!state.bedroomsList) state.bedroomsList = [];
             if (!state.bathroomsList) state.bathroomsList = [];
             if (!state.kitchensList) state.kitchensList = [];
+            
             return state;
         }
 
@@ -4015,12 +4191,11 @@
             showAlert('Schedule service functionality coming soon!', 'info');
         }
 
-        // Remove old AWS-based functions - using localStorage structure now
-        // Data Storage - Using localStorage like bedrooms
+        // Data Storage - Using AWS only
         let tasks = [];
         let homes = [];
 
-        // Multi-Home Functions - Using Basic Dashboard Pattern
+        // Multi-Home Functions - Using AWS Data Service
         async function saveHome() {
             const form = document.getElementById('homeForm');
             
@@ -4041,12 +4216,14 @@
             }
 
             try {
-                const userId = nestMateAuth.currentUser.userId;
-                console.log('Saving home data for userId:', userId);
-                console.log('Home data:', homeData);
+                if (!window.awsDataService) {
+                    throw new Error('AWS Data Service not initialized');
+                }
+                
+                console.log('Saving home data:', homeData);
                 
                 // Get existing homes list
-                const existingHomes = await getHomesList();
+                const existingHomes = await window.awsDataService.getHomesList();
                 
                 // Add new home or update existing
                 const homeId = homeData.address.toLowerCase().replace(/\s+/g, '-');
@@ -4054,32 +4231,25 @@
                 
                 let updatedHomes;
                 if (form.dataset.homeId) {
-                    // Edit existing home
-                    const index = parseInt(form.dataset.homeId);
-                    updatedHomes = [...existingHomes];
-                    updatedHomes[index] = homeData;
+                    // Edit existing home - find by id
+                    const index = existingHomes.findIndex(h => h.id === form.dataset.homeId);
+                    if (index !== -1) {
+                        updatedHomes = [...existingHomes];
+                        updatedHomes[index] = { ...updatedHomes[index], ...homeData };
+                    } else {
+                        updatedHomes = [...existingHomes, homeData];
+                    }
                 } else {
                     // Add new home
                     updatedHomes = [...existingHomes, homeData];
                 }
                 
-                const params = {
-                    TableName: 'nestmate-users',
-                    Key: { userId: userId },
-                    UpdateExpression: 'SET homesList = :homes, lastUpdated = :timestamp',
-                    ExpressionAttributeValues: {
-                        ':homes': updatedHomes,
-                        ':timestamp': new Date().toISOString()
-                    },
-                    ReturnValues: 'UPDATED_NEW'
-                };
-                
-                const result = await dynamodb.update(params).promise();
-                console.log('Home saved successfully:', result);
+                await window.awsDataService.saveHomesList(updatedHomes);
+                console.log('Home saved successfully to AWS');
                 
                 showAlert('Home saved successfully!', 'success');
                 closeHomeModal();
-                loadHomes();
+                await loadHomes();
                 
             } catch (error) {
                 console.error('Save home error:', error);
@@ -4089,14 +4259,12 @@
 
         async function getHomesList() {
             try {
-                const userId = nestMateAuth.currentUser.userId;
-                const params = {
-                    TableName: 'nestmate-users',
-                    Key: { userId: userId }
-                };
-                
-                const result = await dynamodb.get(params).promise();
-                return result.Item?.homesList || [];
+                if (window.awsDataService) {
+                    return await window.awsDataService.getHomesList();
+                } else {
+                    console.error('AWS Data Service not initialized');
+                    return [];
+                }
             } catch (error) {
                 console.error('Get homes list error:', error);
                 return [];
@@ -4229,30 +4397,7 @@
             document.getElementById('homeModal').style.display = 'none';
         }
 
-        async function saveHome() {
-            const form = document.getElementById('homeForm');
-            const formData = new FormData(form);
-            
-            const homeData = {
-                address: document.getElementById('homeAddress').value,
-                type: document.getElementById('homeType').value,
-                bedrooms: parseInt(document.getElementById('homeBedrooms').value) || 0,
-                bathrooms: parseFloat(document.getElementById('homeBathrooms').value) || 0,
-                squareFootage: parseInt(document.getElementById('homeSquareFootage').value) || 0,
-                yearBuilt: parseInt(document.getElementById('homeYearBuilt').value) || new Date().getFullYear(),
-                healthScore: Math.floor(Math.random() * 20) + 80 // Random health score
-            };
-
-            // Validate required fields
-            if (!homeData.address || !homeData.type) {
-                showAlert('Please fill in all required fields (Address and Type are required)', 'error');
-                return;
-            }
-
-            const index = form.dataset.homeId ? parseInt(form.dataset.homeId) : null;
-            await upsertHome(index, homeData);
-            closeHomeModal();
-        }
+        // Removed duplicate saveHome function - using the one above
 
         // Task Functions
         function filterTasks(filter) {
@@ -4295,8 +4440,8 @@
                 
                 // Save to AWS
                 try {
-                    if (awsDataService) {
-                        await awsDataService.saveTasksList(tasks);
+                    if (window.awsDataService) {
+                        await window.awsDataService.saveTasksList(tasks);
                         console.log('Task completed and saved to AWS');
                     }
                 } catch (error) {
@@ -4316,8 +4461,8 @@
                 
                 // Save to AWS
                 try {
-                    if (awsDataService) {
-                        await awsDataService.saveTasksList(tasks);
+                    if (window.awsDataService) {
+                        await window.awsDataService.saveTasksList(tasks);
                         console.log('Task undone and saved to AWS');
                     }
                 } catch (error) {
@@ -4391,8 +4536,8 @@
 
             // Save to AWS
             try {
-                if (awsDataService) {
-                    await awsDataService.saveList('tasks', tasks);
+                if (window.awsDataService) {
+                    await window.awsDataService.saveTasksList(tasks);
                     console.log('Task saved to AWS successfully');
                 } else {
                     console.error('AWS Data Service not initialized');
@@ -4407,9 +4552,53 @@
         }
 
         // Load Functions
-        function loadTasks() {
-            // This would update the task list in the UI
-            console.log('Loading tasks:', tasks);
+        async function loadTasks() {
+            try {
+                if (window.awsDataService) {
+                    tasks = await window.awsDataService.getTasksList();
+                }
+                
+                const container = document.getElementById('tasksList');
+                if (!container) return;
+                
+                container.innerHTML = '';
+                
+                if (tasks.length === 0) {
+                    const empty = document.createElement('div');
+                    empty.className = 'empty-state';
+                    empty.textContent = 'No tasks added yet. Click "Add Task" to create one.';
+                    container.appendChild(empty);
+                    return;
+                }
+                
+                tasks.forEach(task => {
+                    const taskItem = document.createElement('div');
+                    taskItem.className = `task-item ${task.completed ? 'completed' : ''}`;
+                    taskItem.innerHTML = `
+                        <div class="task-content">
+                            <h4>${task.title}</h4>
+                            <p>${task.description || ''}</p>
+                            <div class="task-meta">
+                                <span class="task-priority ${task.priority}">${task.priority}</span>
+                                <span class="task-category">${task.category || 'Uncategorized'}</span>
+                                <span class="task-due">Due: ${task.dueDate || 'No due date'}</span>
+                            </div>
+                        </div>
+                        <div class="task-actions">
+                            ${task.completed 
+                                ? `<button class="btn btn-secondary" onclick="undoTask('${task.id}')">Undo</button>`
+                                : `<button class="btn btn-secondary" onclick="editTask('${task.id}')">Edit</button>
+                                   <button class="btn btn-primary" onclick="completeTask('${task.id}')">Complete</button>`
+                            }
+                        </div>
+                    `;
+                    container.appendChild(taskItem);
+                });
+                
+                console.log('Tasks loaded:', tasks);
+            } catch (error) {
+                console.error('Error loading tasks:', error);
+            }
         }
 
         // Old loadHomes function removed - using renderHomesList() now
@@ -4484,6 +4673,17 @@
             // Load homes using AWS (Basic Dashboard pattern)
             await loadHomes();
             
+            // Load and render rooms data
+            await renderBedroomsList();
+            await renderBathroomsList();
+            await renderKitchensList();
+            
+            // Load tasks
+            if (window.awsDataService) {
+                tasks = await window.awsDataService.getTasksList();
+                loadTasks();
+            }
+            
             console.log('Advanced Dashboard initialized');
         });
 
@@ -4503,18 +4703,7 @@
                 let userData = null;
                 let userEmail = null;
                 
-                // Check if user data is in localStorage
-                const localUser = localStorage.getItem('currentUser');
-                if (localUser) {
-                    try {
-                        userData = JSON.parse(localUser);
-                        userEmail = userData.email;
-                        console.log('Found user data in localStorage:', userData);
-                    } catch (error) {
-                        console.error('Error parsing localStorage user data:', error);
-                    }
-                }
-                
+                // Get user data from authentication only (no localStorage)
                 // If no user data found, create demo user data
                 if (!userData) {
                     userData = {
