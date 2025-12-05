@@ -3260,6 +3260,38 @@
             window.open('service-records.html', '_blank');
         }
 
+        // Load Basic Info from AWS
+        async function loadBasicInfo() {
+            try {
+                if (window.awsDataService) {
+                    const userData = await window.awsDataService.getUserData();
+                    const basicInfo = userData.basicInfo || {};
+                    
+                    if (Object.keys(basicInfo).length > 0) {
+                        // Update display
+                        document.getElementById('displayAddress').textContent = basicInfo.address || 'Not set';
+                        document.getElementById('displayYearBuilt').textContent = basicInfo.yearBuilt || 'Not set';
+                        document.getElementById('displaySquareFootage').textContent = basicInfo.squareFootage || 'Not set';
+                        document.getElementById('displayBedrooms').textContent = basicInfo.bedrooms || 'Not set';
+                        document.getElementById('displayBathrooms').textContent = basicInfo.bathrooms || 'Not set';
+                        document.getElementById('displayHomeType').textContent = basicInfo.homeType || 'Not set';
+                        
+                        // Also populate form fields for editing
+                        document.getElementById('address').value = basicInfo.address || '';
+                        document.getElementById('yearBuilt').value = basicInfo.yearBuilt || '';
+                        document.getElementById('squareFootage').value = basicInfo.squareFootage || '';
+                        document.getElementById('bedroomsInput').value = basicInfo.bedrooms || '';
+                        document.getElementById('bathroomsInput').value = basicInfo.bathrooms || '';
+                        document.getElementById('homeType').value = basicInfo.homeType || '';
+                        
+                        console.log('✅ Basic info loaded from AWS');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading basic info:', error);
+            }
+        }
+
         // Basic Info Functions
         function editBasicInfo() {
             document.getElementById('basicInfoDisplay').style.display = 'none';
@@ -3293,14 +3325,22 @@
                 if (window.awsDataService) {
                     const userData = await window.awsDataService.getUserData();
                     userData.basicInfo = basicInfoData;
-                    await window.awsDataService.saveUserData(userData);
-                    console.log('Basic info saved to AWS');
+                    const result = await window.awsDataService.saveUserData(userData);
+                    if (result && result.success) {
+                        console.log('✅ Basic info saved to AWS successfully');
+                    } else {
+                        console.error('❌ Save failed:', result);
+                        showAlert('Error saving basic info. Please try again.', 'error');
+                        return;
+                    }
                 } else {
                     console.error('AWS Data Service not initialized');
+                    showAlert('Data service not available. Please refresh the page.', 'error');
+                    return;
                 }
             } catch (error) {
                 console.error('Error saving basic info to AWS:', error);
-                showAlert('Error saving basic info. Please try again.', 'error');
+                showAlert('Error saving basic info: ' + (error.message || 'Unknown error'), 'error');
                 return;
             }
 
@@ -3317,6 +3357,34 @@
             document.getElementById('basicInfoDisplay').style.display = 'block';
 
             showAlert('Basic info saved successfully!', 'success');
+        }
+
+        // Load Structure from AWS
+        async function loadStructure() {
+            try {
+                if (window.awsDataService) {
+                    const userData = await window.awsDataService.getUserData();
+                    const structure = userData.structure || {};
+                    
+                    if (Object.keys(structure).length > 0) {
+                        // Update display
+                        document.getElementById('displayFoundation').textContent = structure.foundation || 'Not set';
+                        document.getElementById('displayRoofType').textContent = structure.roofType || 'Not set';
+                        document.getElementById('displayExteriorMaterial').textContent = structure.exteriorMaterial || 'Not set';
+                        document.getElementById('displayWindows').textContent = structure.windows || 'Not set';
+                        
+                        // Also populate form fields for editing
+                        document.getElementById('foundation').value = structure.foundation || '';
+                        document.getElementById('roofType').value = structure.roofType || '';
+                        document.getElementById('exteriorMaterial').value = structure.exteriorMaterial || '';
+                        document.getElementById('windows').value = structure.windows || '';
+                        
+                        console.log('✅ Structure info loaded from AWS');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading structure info:', error);
+            }
         }
 
         // Structure Functions
@@ -3348,14 +3416,22 @@
                 if (window.awsDataService) {
                     const userData = await window.awsDataService.getUserData();
                     userData.structure = structureData;
-                    await window.awsDataService.saveUserData(userData);
-                    console.log('Structure info saved to AWS');
+                    const result = await window.awsDataService.saveUserData(userData);
+                    if (result && result.success) {
+                        console.log('✅ Structure info saved to AWS successfully');
+                    } else {
+                        console.error('❌ Save failed:', result);
+                        showAlert('Error saving structure info. Please try again.', 'error');
+                        return;
+                    }
                 } else {
                     console.error('AWS Data Service not initialized');
+                    showAlert('Data service not available. Please refresh the page.', 'error');
+                    return;
                 }
             } catch (error) {
                 console.error('Error saving structure info to AWS:', error);
-                showAlert('Error saving structure info. Please try again.', 'error');
+                showAlert('Error saving structure info: ' + (error.message || 'Unknown error'), 'error');
                 return;
             }
 
@@ -3370,6 +3446,34 @@
             document.getElementById('structureDisplay').style.display = 'block';
 
             showAlert('Structure info saved successfully!', 'success');
+        }
+
+        // Load Systems from AWS
+        async function loadSystems() {
+            try {
+                if (window.awsDataService) {
+                    const userData = await window.awsDataService.getUserData();
+                    const systems = userData.systems || {};
+                    
+                    if (Object.keys(systems).length > 0) {
+                        // Update display
+                        document.getElementById('displayHVAC').textContent = systems.hvac || 'Not set';
+                        document.getElementById('displayElectrical').textContent = systems.electrical || 'Not set';
+                        document.getElementById('displayPlumbing').textContent = systems.plumbing || 'Not set';
+                        document.getElementById('displayWaterHeater').textContent = systems.waterHeater || 'Not set';
+                        
+                        // Also populate form fields for editing
+                        document.getElementById('hvac').value = systems.hvac || '';
+                        document.getElementById('electrical').value = systems.electrical || '';
+                        document.getElementById('plumbing').value = systems.plumbing || '';
+                        document.getElementById('waterHeater').value = systems.waterHeater || '';
+                        
+                        console.log('✅ Systems info loaded from AWS');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading systems info:', error);
+            }
         }
 
         // Systems Functions
@@ -3401,14 +3505,22 @@
                 if (window.awsDataService) {
                     const userData = await window.awsDataService.getUserData();
                     userData.systems = systemsData;
-                    await window.awsDataService.saveUserData(userData);
-                    console.log('Systems info saved to AWS');
+                    const result = await window.awsDataService.saveUserData(userData);
+                    if (result && result.success) {
+                        console.log('✅ Systems info saved to AWS successfully');
+                    } else {
+                        console.error('❌ Save failed:', result);
+                        showAlert('Error saving systems info. Please try again.', 'error');
+                        return;
+                    }
                 } else {
                     console.error('AWS Data Service not initialized');
+                    showAlert('Data service not available. Please refresh the page.', 'error');
+                    return;
                 }
             } catch (error) {
                 console.error('Error saving systems info to AWS:', error);
-                showAlert('Error saving systems info. Please try again.', 'error');
+                showAlert('Error saving systems info: ' + (error.message || 'Unknown error'), 'error');
                 return;
             }
 
@@ -4735,6 +4847,11 @@
                     // Load tasks
                     tasks = await window.awsDataService.getTasksList();
                     await loadTasks();
+                    
+                    // Load and display saved user data (basicInfo, structure, systems)
+                    await loadBasicInfo();
+                    await loadStructure();
+                    await loadSystems();
                 } catch (error) {
                     console.error('❌ Error initializing AWS Data Service:', error);
                     showAlert('Error initializing data service. Some features may not work.', 'error');
