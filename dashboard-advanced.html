@@ -4471,11 +4471,31 @@
         // ===== Photos Functions =====
         let photosData = [];
 
-        function openPhotoUpload() {
-            const form = document.getElementById('photosUploadForm');
-            if (form) {
-                form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        // Initialize photos data on page load
+        async function initPhotos() {
+            if (window.awsDataService) {
+                try {
+                    photosData = await window.awsDataService.getPhotosList();
+                    console.log('📷 Photos initialized:', photosData.length, 'photos');
+                } catch (error) {
+                    console.error('❌ Error initializing photos:', error);
+                    photosData = [];
+                }
             }
+        }
+
+        function openPhotoUpload() {
+            console.log('📷 openPhotoUpload called');
+            const form = document.getElementById('photosUploadForm');
+            if (!form) {
+                console.error('❌ photosUploadForm not found');
+                showAlert('Upload form not found. Please refresh the page.', 'error');
+                return;
+            }
+            
+            const isHidden = form.style.display === 'none' || !form.style.display;
+            form.style.display = isHidden ? 'block' : 'none';
+            console.log('📷 Upload form', isHidden ? 'shown' : 'hidden');
         }
 
         function cancelPhotoUpload() {
@@ -4489,7 +4509,7 @@
 
         async function getS3PresignedUrl(key, contentType) {
             try {
-                console.log('Getting presigned URL for:', key, contentType);
+                console.log('🔗 Getting presigned URL for:', key, contentType);
                 const response = await fetch('/.netlify/functions/s3-presign', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -4499,33 +4519,53 @@
                         contentType 
                     })
                 });
-                console.log('Presigned URL response status:', response.status);
+                
+                console.log('🔗 Presigned URL response status:', response.status);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('❌ Presigned URL error response:', errorText);
+                    throw new Error(`Failed to get presigned URL: ${response.status} - ${errorText}`);
+                }
+                
                 const data = await response.json();
-                console.log('Presigned URL data:', data);
+                console.log('✅ Presigned URL data:', data);
+                
+                if (!data.uploadUrl || !data.publicUrl) {
+                    throw new Error('Invalid presigned URL response');
+                }
+                
                 return data;
             } catch (error) {
-                console.error('Error getting presigned URL:', error);
+                console.error('❌ Error getting presigned URL:', error);
                 throw error;
             }
         }
 
         async function uploadToS3(file, key) {
             try {
+                console.log('☁️ Uploading to S3:', file.name, 'key:', key);
                 const { uploadUrl, publicUrl } = await getS3PresignedUrl(key, file.type);
                 
+                console.log('☁️ Upload URL obtained, uploading file...');
                 const response = await fetch(uploadUrl, {
                     method: 'PUT',
                     body: file,
                     headers: { 'Content-Type': file.type }
                 });
 
-                if (response.ok) {
-                    return publicUrl;
-                } else {
-                    throw new Error('Upload failed');
+                console.log('☁️ Upload response status:', response.status);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('❌ S3 upload failed:', response.status, errorText);
+                    throw new Error(`S3 upload failed: ${response.status} - ${errorText}`);
                 }
+                
+                console.log('✅ File uploaded successfully, public URL:', publicUrl);
+                return publicUrl;
             } catch (error) {
-                console.error('S3 upload error:', error);
+                console.error('❌ S3 upload error:', error);
                 throw error;
             }
         }
@@ -4533,62 +4573,76 @@
         async function uploadPhotos() {
             console.log('💾 uploadPhotos called');
             const fileInput = document.getElementById('photoFileInput');
-            const files = fileInput?.files;
+            if (!fileInput) {
+                console.error('❌ photoFileInput not found');
+                showAlert('Upload form not found. Please refresh the page.', 'error');
+                return;
+            }
+            
+            const files = fileInput.files;
             
             if (!files || files.length === 0) {
                 showAlert('Please select files to upload', 'error');
                 return;
             }
 
+            console.log(`📤 Uploading ${files.length} file(s)...`);
             showAlert('Uploading photos...', 'info');
             
             try {
                 if (!nestMateAuth || !nestMateAuth.currentUser) {
-                    throw new Error('User not authenticated');
+                    throw new Error('User not authenticated. Please log in again.');
                 }
 
                 const userId = nestMateAuth.currentUser.userId;
                 console.log('User ID for upload:', userId);
                 
+                if (!window.awsDataService) {
+                    throw new Error('AWS Data Service not initialized. Please refresh the page.');
+                }
+                
                 const uploadPromises = Array.from(files).map(async (file, index) => {
-                    const key = `users/${userId}/photos/${Date.now()}-${index}-${file.name}`;
-                    console.log('Uploading file:', file.name, 'with key:', key);
-                    const url = await uploadToS3(file, key);
-                    console.log('Upload successful, URL:', url);
-                    return { 
-                        url, 
-                        key, 
-                        type: 's3', 
-                        filename: file.name,
-                        uploadedAt: new Date().toISOString()
-                    };
+                    try {
+                        const key = `users/${userId}/photos/${Date.now()}-${index}-${file.name}`;
+                        console.log(`📤 Uploading file ${index + 1}/${files.length}:`, file.name, 'with key:', key);
+                        const url = await uploadToS3(file, key);
+                        console.log('✅ Upload successful, URL:', url);
+                        return { 
+                            url, 
+                            key, 
+                            type: 's3', 
+                            filename: file.name,
+                            uploadedAt: new Date().toISOString()
+                        };
+                    } catch (fileError) {
+                        console.error(`❌ Error uploading file ${file.name}:`, fileError);
+                        throw new Error(`Failed to upload ${file.name}: ${fileError.message}`);
+                    }
                 });
 
                 const uploadedPhotos = await Promise.all(uploadPromises);
-                console.log('All uploads completed:', uploadedPhotos);
+                console.log('✅ All uploads completed:', uploadedPhotos);
                 
                 // Get existing photos and add new ones
-                if (!window.awsDataService) {
-                    throw new Error('AWS Data Service not initialized');
-                }
-                
                 const existingPhotos = await window.awsDataService.getPhotosList();
+                console.log('📋 Existing photos:', existingPhotos);
                 photosData = [...existingPhotos, ...uploadedPhotos];
+                console.log('💾 Combined photos data:', photosData);
                 
                 // Save to AWS
                 const result = await window.awsDataService.savePhotosList(photosData);
                 if (result && result.success) {
-                    console.log('✅ Photos saved to AWS');
+                    console.log('✅ Photos saved to AWS successfully');
                     await displayPhotos();
-                    if (fileInput) fileInput.value = '';
+                    fileInput.value = '';
                     cancelPhotoUpload();
-                    showAlert(`${uploadedPhotos.length} photos uploaded successfully!`, 'success');
+                    showAlert(`${uploadedPhotos.length} photo(s) uploaded successfully!`, 'success');
                 } else {
-                    throw new Error(result?.error || 'Failed to save photos');
+                    throw new Error(result?.error || 'Failed to save photos to database');
                 }
             } catch (error) {
                 console.error('❌ Error uploading photos:', error);
-                showAlert('Upload failed. Please try again.', 'error');
+                showAlert('Upload failed: ' + error.message, 'error');
             }
         }
 
@@ -4637,73 +4691,102 @@
             const empty = document.getElementById('photosEmpty');
             
             if (!gallery) {
-                console.warn('⚠️ photosGallery container not found');
+                console.error('❌ photosGallery container not found');
+                showAlert('Photos gallery not found. Please refresh the page.', 'error');
                 return;
             }
             
             if (!window.awsDataService) {
-                console.warn('⚠️ AWS Data Service not available');
+                console.error('❌ AWS Data Service not available');
+                showAlert('Data service not available. Please refresh the page.', 'error');
                 return;
             }
             
-            photosData = await window.awsDataService.getPhotosList();
-            console.log('🔍 Photos list:', photosData);
-            
-            gallery.innerHTML = '';
-            
-            if (!photosData || photosData.length === 0) {
-                if (empty) empty.style.display = 'block';
-                if (gallery) gallery.style.display = 'none';
-                return;
-            }
-            
-            if (empty) empty.style.display = 'none';
-            if (gallery) gallery.style.display = 'grid';
-            
-            photosData.forEach((photo, index) => {
-                const container = document.createElement('div');
-                container.className = 'photo-container';
-                container.style.position = 'relative';
-                container.style.aspectRatio = '1';
-                container.style.overflow = 'hidden';
-                container.style.borderRadius = '8px';
-                container.style.backgroundColor = '#f1f5f9';
+            try {
+                photosData = await window.awsDataService.getPhotosList();
+                console.log('🔍 Photos list loaded:', photosData.length, 'photos');
+                console.log('🔍 Photos data:', photosData);
                 
-                const img = document.createElement('img');
-                img.src = photo.url || '';
-                img.alt = photo.filename || 'Photo';
-                img.style.width = '100%';
-                img.style.height = '100%';
-                img.style.objectFit = 'cover';
-                img.style.cursor = 'pointer';
+                gallery.innerHTML = '';
                 
-                img.onerror = () => {
-                    img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%23e2e8f0" width="200" height="200"/%3E%3Ctext fill="%2394a3b8" font-family="sans-serif" font-size="14" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3EFailed to load%3C/text%3E%3C/svg%3E';
-                };
-                
-                img.onclick = () => {
-                    window.open(photo.url, '_blank');
-                };
-                
-                const deleteBtn = document.createElement('button');
-                deleteBtn.className = 'btn btn-secondary';
-                deleteBtn.style.position = 'absolute';
-                deleteBtn.style.top = '0.5rem';
-                deleteBtn.style.right = '0.5rem';
-                deleteBtn.style.padding = '0.25rem 0.5rem';
-                deleteBtn.style.fontSize = '0.75rem';
-                deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
-                deleteBtn.onclick = async (e) => {
-                    e.stopPropagation();
-                    if (confirm('Are you sure you want to delete this photo?')) {
-                        await deletePhoto(index);
+                if (!photosData || photosData.length === 0) {
+                    console.log('📷 No photos to display');
+                    if (empty) {
+                        empty.style.display = 'block';
                     }
-                };
+                    if (gallery) {
+                        gallery.style.display = 'none';
+                    }
+                    return;
+                }
                 
-                container.appendChild(img);
-                container.appendChild(deleteBtn);
-                gallery.appendChild(container);
-            });
+                if (empty) empty.style.display = 'none';
+                if (gallery) {
+                    gallery.style.display = 'grid';
+                    gallery.style.gridTemplateColumns = 'repeat(auto-fill, minmax(200px, 1fr))';
+                    gallery.style.gap = '1rem';
+                }
+                
+                photosData.forEach((photo, index) => {
+                    if (!photo || !photo.url) {
+                        console.warn('⚠️ Invalid photo data at index', index, photo);
+                        return;
+                    }
+                    
+                    const container = document.createElement('div');
+                    container.className = 'photo-container';
+                    container.style.position = 'relative';
+                    container.style.aspectRatio = '1';
+                    container.style.overflow = 'hidden';
+                    container.style.borderRadius = '8px';
+                    container.style.backgroundColor = '#f1f5f9';
+                    container.style.cursor = 'pointer';
+                    
+                    const img = document.createElement('img');
+                    img.src = photo.url;
+                    img.alt = photo.filename || 'Photo';
+                    img.style.width = '100%';
+                    img.style.height = '100%';
+                    img.style.objectFit = 'cover';
+                    img.style.cursor = 'pointer';
+                    
+                    img.onerror = () => {
+                        console.error('❌ Failed to load image:', photo.url);
+                        img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%23e2e8f0" width="200" height="200"/%3E%3Ctext fill="%2394a3b8" font-family="sans-serif" font-size="14" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3EFailed to load%3C/text%3E%3C/svg%3E';
+                    };
+                    
+                    img.onclick = () => {
+                        window.open(photo.url, '_blank');
+                    };
+                    
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'btn btn-secondary';
+                    deleteBtn.style.position = 'absolute';
+                    deleteBtn.style.top = '0.5rem';
+                    deleteBtn.style.right = '0.5rem';
+                    deleteBtn.style.padding = '0.25rem 0.5rem';
+                    deleteBtn.style.fontSize = '0.75rem';
+                    deleteBtn.style.zIndex = '10';
+                    deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                    deleteBtn.onclick = async (e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        console.log('🗑️ Delete button clicked for photo index:', index);
+                        if (confirm('Are you sure you want to delete this photo?')) {
+                            await deletePhoto(index);
+                        }
+                    };
+                    
+                    container.appendChild(img);
+                    container.appendChild(deleteBtn);
+                    gallery.appendChild(container);
+                });
+                
+                console.log('✅ Photos displayed successfully');
+            } catch (error) {
+                console.error('❌ Error displaying photos:', error);
+                showAlert('Error loading photos: ' + error.message, 'error');
+            }
         }
 
         async function deletePhoto(index) {
@@ -4713,10 +4796,20 @@
                     throw new Error('AWS Data Service not initialized');
                 }
                 
+                // Get current photos list from AWS
+                photosData = await window.awsDataService.getPhotosList();
+                console.log('🗑️ Current photos before delete:', photosData);
+                
+                if (index < 0 || index >= photosData.length) {
+                    throw new Error('Invalid photo index');
+                }
+                
                 photosData.splice(index, 1);
+                console.log('🗑️ Photos after delete:', photosData);
                 
                 const result = await window.awsDataService.savePhotosList(photosData);
                 if (result && result.success) {
+                    console.log('✅ Photo deleted from AWS');
                     await displayPhotos();
                     showAlert('Photo deleted successfully!', 'success');
                 } else {
@@ -4724,7 +4817,7 @@
                 }
             } catch (error) {
                 console.error('❌ Error deleting photo:', error);
-                showAlert('Error deleting photo. Please try again.', 'error');
+                showAlert('Error deleting photo: ' + error.message, 'error');
             }
         }
 
@@ -6625,6 +6718,7 @@
                     await loadExterior();
                     
                     // Load photos
+                    await initPhotos();
                     await displayPhotos();
                     
                     // Load renovations
