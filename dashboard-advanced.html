@@ -2873,11 +2873,43 @@
                                 </button>
                             </div>
                         </div>
-                        <div id="garageInfo">
+                        <div id="garageDisplay">
                             <p><strong>Garage Type:</strong> <span id="displayGarageType">Not set</span></p>
                             <p><strong>Capacity:</strong> <span id="displayGarageCapacity">Not set</span></p>
                             <p><strong>Features:</strong> <span id="displayGarageFeatures">Not set</span></p>
                             <p><strong>Last Maintenance:</strong> <span id="displayGarageMaintenance">Not set</span></p>
+                        </div>
+                        <div id="garageForm" style="display: none;">
+                            <div class="form-group">
+                                <label for="garageType">Garage Type</label>
+                                <select id="garageType">
+                                    <option value="">Select garage type</option>
+                                    <option value="attached">Attached</option>
+                                    <option value="detached">Detached</option>
+                                    <option value="carport">Carport</option>
+                                    <option value="none">No Garage</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="garageCapacity">Capacity (cars)</label>
+                                <input type="number" id="garageCapacity" min="0" placeholder="e.g., 2">
+                            </div>
+                            <div class="form-group">
+                                <label for="garageFeatures">Features</label>
+                                <input type="text" id="garageFeatures" placeholder="e.g., Automatic door, Storage">
+                            </div>
+                            <div class="form-group">
+                                <label for="garageMaintenance">Last Maintenance Date</label>
+                                <input type="date" id="garageMaintenance">
+                            </div>
+                            <div style="display: flex; gap: 1rem;">
+                                <button class="btn" onclick="saveGarage()">
+                                    <i class="fas fa-save"></i> Save
+                                </button>
+                                <button class="btn btn-secondary" onclick="cancelEditGarage()">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -2893,12 +2925,57 @@
                                 </button>
                             </div>
                         </div>
-                        <div id="exteriorInfo">
-                            <p><strong>Exterior Material:</strong> <span id="displayExteriorMaterial">Not set</span></p>
-                            <p><strong>Roof Type:</strong> <span id="displayRoofType">Not set</span></p>
+                        <div id="exteriorDisplay">
+                            <p><strong>Exterior Material:</strong> <span id="displayExteriorMaterialInfo">Not set</span></p>
+                            <p><strong>Roof Type:</strong> <span id="displayExteriorRoofType">Not set</span></p>
                             <p><strong>Landscaping:</strong> <span id="displayLandscaping">Not set</span></p>
                             <p><strong>Outdoor Features:</strong> <span id="displayOutdoorFeatures">Not set</span></p>
                             <p><strong>Last Inspection:</strong> <span id="displayExteriorInspection">Not set</span></p>
+                        </div>
+                        <div id="exteriorForm" style="display: none;">
+                            <div class="form-group">
+                                <label for="exteriorMaterialInfo">Exterior Material</label>
+                                <select id="exteriorMaterialInfo">
+                                    <option value="">Select exterior material</option>
+                                    <option value="vinyl-siding">Vinyl Siding</option>
+                                    <option value="brick">Brick</option>
+                                    <option value="wood">Wood</option>
+                                    <option value="stucco">Stucco</option>
+                                    <option value="stone">Stone</option>
+                                    <option value="fiber-cement">Fiber Cement</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="exteriorRoofType">Roof Type</label>
+                                <select id="exteriorRoofType">
+                                    <option value="">Select roof type</option>
+                                    <option value="asphalt-shingles">Asphalt Shingles</option>
+                                    <option value="metal">Metal</option>
+                                    <option value="tile">Tile</option>
+                                    <option value="slate">Slate</option>
+                                    <option value="wood-shingles">Wood Shingles</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="landscaping">Landscaping</label>
+                                <input type="text" id="landscaping" placeholder="e.g., Lawn, Trees, Garden">
+                            </div>
+                            <div class="form-group">
+                                <label for="outdoorFeatures">Outdoor Features</label>
+                                <input type="text" id="outdoorFeatures" placeholder="e.g., Deck, Patio, Pool">
+                            </div>
+                            <div class="form-group">
+                                <label for="exteriorInspection">Last Inspection Date</label>
+                                <input type="date" id="exteriorInspection">
+                            </div>
+                            <div style="display: flex; gap: 1rem;">
+                                <button class="btn" onclick="saveExterior()">
+                                    <i class="fas fa-save"></i> Save
+                                </button>
+                                <button class="btn btn-secondary" onclick="cancelEditExterior()">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -3160,6 +3237,20 @@
                         await loadStructure();
                     } else if (sectionId === 'systems') {
                         await loadSystems();
+                    } else if (sectionId === 'garage') {
+                        await loadGarage();
+                    } else if (sectionId === 'exterior') {
+                        await loadExterior();
+                    } else if (sectionId === 'living-areas') {
+                        await renderLivingAreasList();
+                    } else if (sectionId === 'appliances') {
+                        await renderAppliancesList();
+                    } else if (sectionId === 'bedrooms') {
+                        await renderBedroomsList();
+                    } else if (sectionId === 'bathrooms') {
+                        await renderBathroomsList();
+                    } else if (sectionId === 'kitchens') {
+                        await renderKitchensList();
                     }
                 }, 100);
             } else {
@@ -3647,12 +3738,514 @@
             document.getElementById('kitchenForm').style.display = 'none';
         }
 
+        // ===== Living Areas Functions =====
+        async function renderLivingAreasList() {
+            console.log('🔍 renderLivingAreasList called');
+            const container = document.getElementById('livingAreasList');
+            if (!container) {
+                console.warn('⚠️ livingAreasList container not found');
+                return;
+            }
+            container.innerHTML = '';
+            
+            if (!window.awsDataService) {
+                console.warn('⚠️ AWS Data Service not available');
+                return;
+            }
+            
+            const list = await window.awsDataService.getLivingAreasList();
+            console.log('🔍 Living areas list:', list);
+            
+            if (list.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'empty-state';
+                empty.textContent = 'No living areas added yet. Click "Add Living Area" to create one.';
+                container.appendChild(empty);
+                return;
+            }
+            
+            list.forEach((area, idx) => {
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                const details = [
+                    area.type && `Type: ${area.type}`,
+                    area.size && `Size: ${area.size}`,
+                    area.flooring && `Flooring: ${area.flooring}`,
+                    area.condition && `Condition: ${area.condition}`
+                ].filter(Boolean).join(' · ');
+                item.innerHTML = `
+                    <div class="list-item-main">
+                        <div class="list-item-title">${area.name || `Living Area ${idx + 1}`}</div>
+                        <div class="list-item-sub">${details || 'No details added'}</div>
+                    </div>
+                    <div class="list-item-actions">
+                        <button class="btn btn-secondary" onclick="openEditLivingAreaModal(${idx}).catch(console.error)"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-secondary" onclick="deleteLivingArea(${idx})"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
         function addLivingArea() {
-            showAlert('Add living area functionality coming soon!', 'info');
+            openLivingAreaModal(null, null);
+        }
+
+        async function openEditLivingAreaModal(index) {
+            const list = await window.awsDataService.getLivingAreasList();
+            const data = list[index];
+            openLivingAreaModal(data, index);
+        }
+
+        function openLivingAreaModal(existing = null, index = null) {
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <h3>${existing ? 'Edit Living Area' : 'Add Living Area'}</h3>
+                <div class="form-grid">
+                    <div class="form-group"><label>Name</label><input id="laName" type="text" placeholder="e.g., Living Room" value="${existing?.name || ''}"></div>
+                    <div class="form-group"><label>Type</label>
+                        <select id="laType">
+                            <option value="">Select</option>
+                            <option value="living-room" ${existing?.type==='living-room'?'selected':''}>Living Room</option>
+                            <option value="family-room" ${existing?.type==='family-room'?'selected':''}>Family Room</option>
+                            <option value="dining-room" ${existing?.type==='dining-room'?'selected':''}>Dining Room</option>
+                            <option value="den" ${existing?.type==='den'?'selected':''}>Den</option>
+                            <option value="sunroom" ${existing?.type==='sunroom'?'selected':''}>Sunroom</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Size</label><input id="laSize" type="text" placeholder="e.g., 15' x 12'" value="${existing?.size || ''}"></div>
+                    <div class="form-group"><label>Flooring</label>
+                        <select id="laFlooring">
+                            <option value="">Select</option>
+                            <option value="hardwood" ${existing?.flooring==='hardwood'?'selected':''}>Hardwood</option>
+                            <option value="carpet" ${existing?.flooring==='carpet'?'selected':''}>Carpet</option>
+                            <option value="tile" ${existing?.flooring==='tile'?'selected':''}>Tile</option>
+                            <option value="laminate" ${existing?.flooring==='laminate'?'selected':''}>Laminate</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Condition</label>
+                        <select id="laCondition">
+                            <option value="">Select</option>
+                            <option value="excellent" ${existing?.condition==='excellent'?'selected':''}>Excellent</option>
+                            <option value="good" ${existing?.condition==='good'?'selected':''}>Good</option>
+                            <option value="fair" ${existing?.condition==='fair'?'selected':''}>Fair</option>
+                            <option value="poor" ${existing?.condition==='poor'?'selected':''}>Poor</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / -1;"><label>Notes</label><textarea id="laNotes" rows="3" placeholder="Any details...">${existing?.notes || ''}</textarea></div>
+                </div>
+                <div style="display:flex; gap: .75rem; justify-content:flex-end; margin-top: 1rem;">
+                    <button class="btn" id="laSaveBtn"><i class="fas fa-save"></i> Save</button>
+                    <button class="btn btn-secondary" id="laCancelBtn"><i class="fas fa-times"></i> Cancel</button>
+                </div>
+            `;
+            overlay.appendChild(modal);
+            document.body.appendChild(overlay);
+
+            modal.querySelector('#laCancelBtn').onclick = () => overlay.remove();
+            modal.querySelector('#laSaveBtn').onclick = async () => {
+                const payload = {
+                    name: document.getElementById('laName').value.trim(),
+                    type: document.getElementById('laType').value,
+                    size: document.getElementById('laSize').value.trim(),
+                    flooring: document.getElementById('laFlooring').value,
+                    condition: document.getElementById('laCondition').value,
+                    notes: document.getElementById('laNotes').value.trim()
+                };
+                await upsertLivingArea(index, payload);
+                overlay.remove();
+            };
+        }
+
+        async function upsertLivingArea(index, data) {
+            try {
+                console.log('💾 upsertLivingArea called with index:', index, 'data:', data);
+                if (!window.awsDataService) {
+                    throw new Error('AWS Data Service not initialized');
+                }
+                
+                const list = await window.awsDataService.getLivingAreasList();
+                if (index === null || index === undefined) {
+                    list.push(data);
+                } else {
+                    list[index] = data;
+                }
+                
+                const result = await window.awsDataService.saveLivingAreasList(list);
+                if (result && result.success) {
+                    console.log('✅ Living area saved successfully');
+                    await renderLivingAreasList();
+                    showAlert('Living area saved successfully!', 'success');
+                } else {
+                    throw new Error(result?.error || 'Failed to save');
+                }
+            } catch (error) {
+                console.error('❌ Error saving living area:', error);
+                showAlert('Error saving living area. Please try again.', 'error');
+            }
+        }
+
+        async function deleteLivingArea(index) {
+            if (!confirm('Are you sure you want to delete this living area?')) return;
+            try {
+                const list = await window.awsDataService.getLivingAreasList();
+                list.splice(index, 1);
+                const result = await window.awsDataService.saveLivingAreasList(list);
+                if (result && result.success) {
+                    await renderLivingAreasList();
+                    showAlert('Living area deleted successfully!', 'success');
+                }
+            } catch (error) {
+                console.error('❌ Error deleting living area:', error);
+                showAlert('Error deleting living area. Please try again.', 'error');
+            }
+        }
+
+        // ===== Appliances Functions =====
+        async function renderAppliancesList() {
+            console.log('🔍 renderAppliancesList called');
+            const container = document.getElementById('appliancesList');
+            if (!container) {
+                console.warn('⚠️ appliancesList container not found');
+                return;
+            }
+            container.innerHTML = '';
+            
+            if (!window.awsDataService) {
+                console.warn('⚠️ AWS Data Service not available');
+                return;
+            }
+            
+            const list = await window.awsDataService.getAppliancesList();
+            console.log('🔍 Appliances list:', list);
+            
+            if (list.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'empty-state';
+                empty.textContent = 'No appliances added yet. Click "Add Appliance" to create one.';
+                container.appendChild(empty);
+                return;
+            }
+            
+            list.forEach((appliance, idx) => {
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                const details = [
+                    appliance.brand && `Brand: ${appliance.brand}`,
+                    appliance.model && `Model: ${appliance.model}`,
+                    appliance.type && `Type: ${appliance.type}`,
+                    appliance.condition && `Condition: ${appliance.condition}`
+                ].filter(Boolean).join(' · ');
+                item.innerHTML = `
+                    <div class="list-item-main">
+                        <div class="list-item-title">${appliance.name || `Appliance ${idx + 1}`}</div>
+                        <div class="list-item-sub">${details || 'No details added'}</div>
+                    </div>
+                    <div class="list-item-actions">
+                        <button class="btn btn-secondary" onclick="openEditApplianceModal(${idx}).catch(console.error)"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-secondary" onclick="deleteAppliance(${idx})"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
         }
 
         function addAppliance() {
-            showAlert('Add appliance functionality coming soon!', 'info');
+            openApplianceModal(null, null);
+        }
+
+        async function openEditApplianceModal(index) {
+            const list = await window.awsDataService.getAppliancesList();
+            const data = list[index];
+            openApplianceModal(data, index);
+        }
+
+        function openApplianceModal(existing = null, index = null) {
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <h3>${existing ? 'Edit Appliance' : 'Add Appliance'}</h3>
+                <div class="form-grid">
+                    <div class="form-group"><label>Name</label><input id="appName" type="text" placeholder="e.g., Refrigerator" value="${existing?.name || ''}"></div>
+                    <div class="form-group"><label>Type</label>
+                        <select id="appType">
+                            <option value="">Select</option>
+                            <option value="refrigerator" ${existing?.type==='refrigerator'?'selected':''}>Refrigerator</option>
+                            <option value="dishwasher" ${existing?.type==='dishwasher'?'selected':''}>Dishwasher</option>
+                            <option value="washer" ${existing?.type==='washer'?'selected':''}>Washer</option>
+                            <option value="dryer" ${existing?.type==='dryer'?'selected':''}>Dryer</option>
+                            <option value="stove" ${existing?.type==='stove'?'selected':''}>Stove</option>
+                            <option value="oven" ${existing?.type==='oven'?'selected':''}>Oven</option>
+                            <option value="microwave" ${existing?.type==='microwave'?'selected':''}>Microwave</option>
+                            <option value="other" ${existing?.type==='other'?'selected':''}>Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Brand</label><input id="appBrand" type="text" placeholder="e.g., Samsung" value="${existing?.brand || ''}"></div>
+                    <div class="form-group"><label>Model</label><input id="appModel" type="text" placeholder="e.g., RF28R7351SG" value="${existing?.model || ''}"></div>
+                    <div class="form-group"><label>Purchase Date</label><input id="appPurchaseDate" type="date" value="${existing?.purchaseDate || ''}"></div>
+                    <div class="form-group"><label>Warranty Expires</label><input id="appWarranty" type="date" value="${existing?.warrantyExpires || ''}"></div>
+                    <div class="form-group"><label>Condition</label>
+                        <select id="appCondition">
+                            <option value="">Select</option>
+                            <option value="excellent" ${existing?.condition==='excellent'?'selected':''}>Excellent</option>
+                            <option value="good" ${existing?.condition==='good'?'selected':''}>Good</option>
+                            <option value="fair" ${existing?.condition==='fair'?'selected':''}>Fair</option>
+                            <option value="poor" ${existing?.condition==='poor'?'selected':''}>Poor</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / -1;"><label>Notes</label><textarea id="appNotes" rows="3" placeholder="Any details...">${existing?.notes || ''}</textarea></div>
+                </div>
+                <div style="display:flex; gap: .75rem; justify-content:flex-end; margin-top: 1rem;">
+                    <button class="btn" id="appSaveBtn"><i class="fas fa-save"></i> Save</button>
+                    <button class="btn btn-secondary" id="appCancelBtn"><i class="fas fa-times"></i> Cancel</button>
+                </div>
+            `;
+            overlay.appendChild(modal);
+            document.body.appendChild(overlay);
+
+            modal.querySelector('#appCancelBtn').onclick = () => overlay.remove();
+            modal.querySelector('#appSaveBtn').onclick = async () => {
+                const payload = {
+                    name: document.getElementById('appName').value.trim(),
+                    type: document.getElementById('appType').value,
+                    brand: document.getElementById('appBrand').value.trim(),
+                    model: document.getElementById('appModel').value.trim(),
+                    purchaseDate: document.getElementById('appPurchaseDate').value,
+                    warrantyExpires: document.getElementById('appWarranty').value,
+                    condition: document.getElementById('appCondition').value,
+                    notes: document.getElementById('appNotes').value.trim()
+                };
+                await upsertAppliance(index, payload);
+                overlay.remove();
+            };
+        }
+
+        async function upsertAppliance(index, data) {
+            try {
+                console.log('💾 upsertAppliance called with index:', index, 'data:', data);
+                if (!window.awsDataService) {
+                    throw new Error('AWS Data Service not initialized');
+                }
+                
+                const list = await window.awsDataService.getAppliancesList();
+                if (index === null || index === undefined) {
+                    list.push(data);
+                } else {
+                    list[index] = data;
+                }
+                
+                const result = await window.awsDataService.saveAppliancesList(list);
+                if (result && result.success) {
+                    console.log('✅ Appliance saved successfully');
+                    await renderAppliancesList();
+                    showAlert('Appliance saved successfully!', 'success');
+                } else {
+                    throw new Error(result?.error || 'Failed to save');
+                }
+            } catch (error) {
+                console.error('❌ Error saving appliance:', error);
+                showAlert('Error saving appliance. Please try again.', 'error');
+            }
+        }
+
+        async function deleteAppliance(index) {
+            if (!confirm('Are you sure you want to delete this appliance?')) return;
+            try {
+                const list = await window.awsDataService.getAppliancesList();
+                list.splice(index, 1);
+                const result = await window.awsDataService.saveAppliancesList(list);
+                if (result && result.success) {
+                    await renderAppliancesList();
+                    showAlert('Appliance deleted successfully!', 'success');
+                }
+            } catch (error) {
+                console.error('❌ Error deleting appliance:', error);
+                showAlert('Error deleting appliance. Please try again.', 'error');
+            }
+        }
+
+        // ===== Garage Functions =====
+        async function loadGarage() {
+            console.log('🔍 loadGarage called');
+            try {
+                if (!window.awsDataService) {
+                    console.warn('⚠️ AWS Data Service not available');
+                    return;
+                }
+                
+                const garageInfo = await window.awsDataService.getGarageInfo();
+                console.log('🔍 Garage info loaded:', garageInfo);
+                
+                // Update display
+                const displayGarageType = document.getElementById('displayGarageType');
+                const displayGarageCapacity = document.getElementById('displayGarageCapacity');
+                const displayGarageFeatures = document.getElementById('displayGarageFeatures');
+                const displayGarageMaintenance = document.getElementById('displayGarageMaintenance');
+                
+                if (displayGarageType) displayGarageType.textContent = garageInfo.type || 'Not set';
+                if (displayGarageCapacity) displayGarageCapacity.textContent = garageInfo.capacity || 'Not set';
+                if (displayGarageFeatures) displayGarageFeatures.textContent = garageInfo.features || 'Not set';
+                if (displayGarageMaintenance) displayGarageMaintenance.textContent = garageInfo.lastMaintenance || 'Not set';
+                
+                // Update form fields if form is visible
+                const garageType = document.getElementById('garageType');
+                const garageCapacity = document.getElementById('garageCapacity');
+                const garageFeatures = document.getElementById('garageFeatures');
+                const garageMaintenance = document.getElementById('garageMaintenance');
+                
+                if (garageType) garageType.value = garageInfo.type || '';
+                if (garageCapacity) garageCapacity.value = garageInfo.capacity || '';
+                if (garageFeatures) garageFeatures.value = garageInfo.features || '';
+                if (garageMaintenance) garageMaintenance.value = garageInfo.lastMaintenance || '';
+                
+            } catch (error) {
+                console.error('❌ Error loading garage info:', error);
+            }
+        }
+
+        function editGarage() {
+            const display = document.getElementById('garageDisplay');
+            const form = document.getElementById('garageForm');
+            if (display) display.style.display = 'none';
+            if (form) {
+                form.style.display = 'block';
+                loadGarage(); // Load current data into form
+            }
+        }
+
+        function cancelEditGarage() {
+            const display = document.getElementById('garageDisplay');
+            const form = document.getElementById('garageForm');
+            if (display) display.style.display = 'block';
+            if (form) form.style.display = 'none';
+        }
+
+        async function saveGarage() {
+            console.log('💾 saveGarage called');
+            try {
+                const garageData = {
+                    type: document.getElementById('garageType').value,
+                    capacity: document.getElementById('garageCapacity').value,
+                    features: document.getElementById('garageFeatures').value.trim(),
+                    lastMaintenance: document.getElementById('garageMaintenance').value
+                };
+                
+                console.log('💾 Garage data:', garageData);
+                
+                if (!window.awsDataService) {
+                    throw new Error('AWS Data Service not initialized');
+                }
+                
+                const result = await window.awsDataService.saveGarageInfo(garageData);
+                if (result && result.success) {
+                    console.log('✅ Garage info saved successfully');
+                    await loadGarage(); // Reload to verify persistence
+                    cancelEditGarage();
+                    showAlert('Garage info saved successfully!', 'success');
+                } else {
+                    throw new Error(result?.error || 'Failed to save');
+                }
+            } catch (error) {
+                console.error('❌ Error saving garage info:', error);
+                showAlert('Error saving garage info. Please try again.', 'error');
+            }
+        }
+
+        // ===== Exterior Functions =====
+        async function loadExterior() {
+            console.log('🔍 loadExterior called');
+            try {
+                if (!window.awsDataService) {
+                    console.warn('⚠️ AWS Data Service not available');
+                    return;
+                }
+                
+                const exteriorInfo = await window.awsDataService.getExteriorInfo();
+                console.log('🔍 Exterior info loaded:', exteriorInfo);
+                
+                // Update display
+                const displayExteriorMaterialInfo = document.getElementById('displayExteriorMaterialInfo');
+                const displayExteriorRoofType = document.getElementById('displayExteriorRoofType');
+                const displayLandscaping = document.getElementById('displayLandscaping');
+                const displayOutdoorFeatures = document.getElementById('displayOutdoorFeatures');
+                const displayExteriorInspection = document.getElementById('displayExteriorInspection');
+                
+                if (displayExteriorMaterialInfo) displayExteriorMaterialInfo.textContent = exteriorInfo.material || 'Not set';
+                if (displayExteriorRoofType) displayExteriorRoofType.textContent = exteriorInfo.roofType || 'Not set';
+                if (displayLandscaping) displayLandscaping.textContent = exteriorInfo.landscaping || 'Not set';
+                if (displayOutdoorFeatures) displayOutdoorFeatures.textContent = exteriorInfo.outdoorFeatures || 'Not set';
+                if (displayExteriorInspection) displayExteriorInspection.textContent = exteriorInfo.lastInspection || 'Not set';
+                
+                // Update form fields if form is visible
+                const exteriorMaterialInfo = document.getElementById('exteriorMaterialInfo');
+                const exteriorRoofType = document.getElementById('exteriorRoofType');
+                const landscaping = document.getElementById('landscaping');
+                const outdoorFeatures = document.getElementById('outdoorFeatures');
+                const exteriorInspection = document.getElementById('exteriorInspection');
+                
+                if (exteriorMaterialInfo) exteriorMaterialInfo.value = exteriorInfo.material || '';
+                if (exteriorRoofType) exteriorRoofType.value = exteriorInfo.roofType || '';
+                if (landscaping) landscaping.value = exteriorInfo.landscaping || '';
+                if (outdoorFeatures) outdoorFeatures.value = exteriorInfo.outdoorFeatures || '';
+                if (exteriorInspection) exteriorInspection.value = exteriorInfo.lastInspection || '';
+                
+            } catch (error) {
+                console.error('❌ Error loading exterior info:', error);
+            }
+        }
+
+        function editExterior() {
+            const display = document.getElementById('exteriorDisplay');
+            const form = document.getElementById('exteriorForm');
+            if (display) display.style.display = 'none';
+            if (form) {
+                form.style.display = 'block';
+                loadExterior(); // Load current data into form
+            }
+        }
+
+        function cancelEditExterior() {
+            const display = document.getElementById('exteriorDisplay');
+            const form = document.getElementById('exteriorForm');
+            if (display) display.style.display = 'block';
+            if (form) form.style.display = 'none';
+        }
+
+        async function saveExterior() {
+            console.log('💾 saveExterior called');
+            try {
+                const exteriorData = {
+                    material: document.getElementById('exteriorMaterialInfo').value,
+                    roofType: document.getElementById('exteriorRoofType').value,
+                    landscaping: document.getElementById('landscaping').value.trim(),
+                    outdoorFeatures: document.getElementById('outdoorFeatures').value.trim(),
+                    lastInspection: document.getElementById('exteriorInspection').value
+                };
+                
+                console.log('💾 Exterior data:', exteriorData);
+                
+                if (!window.awsDataService) {
+                    throw new Error('AWS Data Service not initialized');
+                }
+                
+                const result = await window.awsDataService.saveExteriorInfo(exteriorData);
+                if (result && result.success) {
+                    console.log('✅ Exterior info saved successfully');
+                    await loadExterior(); // Reload to verify persistence
+                    cancelEditExterior();
+                    showAlert('Exterior info saved successfully!', 'success');
+                } else {
+                    throw new Error(result?.error || 'Failed to save');
+                }
+            } catch (error) {
+                console.error('❌ Error saving exterior info:', error);
+                showAlert('Error saving exterior info. Please try again.', 'error');
+            }
         }
 
         function uploadPhoto() {
@@ -3716,11 +4309,19 @@
 
         // ===== Dynamic Bedrooms Helpers =====
         async function renderBedroomsList() {
+            console.log('🔍 renderBedroomsList called');
             const container = document.getElementById('bedroomsList');
-            if (!container) return;
+            if (!container) {
+                console.warn('⚠️ bedroomsList container not found');
+                return;
+            }
             container.innerHTML = '';
+            
+            console.log('🔍 Loading bedrooms state from AWS...');
             const state = await ensureDashboardState();
+            console.log('🔍 Dashboard state:', state);
             const list = state.bedroomsList || [];
+            console.log('🔍 Bedrooms list:', list);
             if (list.length === 0) {
                 const empty = document.createElement('div');
                 empty.className = 'empty-state';
@@ -3983,13 +4584,24 @@
 
         async function upsertBedroom(index, data) {
             try {
+                console.log('💾 upsertBedroom called with index:', index, 'data:', data);
                 const state = await ensureDashboardState();
-                if (index === null || index === undefined) state.bedroomsList.push(data); else state.bedroomsList[index] = data;
-                await saveBedroomsList();
+                console.log('💾 Current state before update:', state);
+                
+                if (index === null || index === undefined) {
+                    state.bedroomsList.push(data);
+                    console.log('💾 Added new bedroom to list');
+                } else {
+                    state.bedroomsList[index] = data;
+                    console.log('💾 Updated bedroom at index:', index);
+                }
+                
+                console.log('💾 Updated state bedroomsList:', state.bedroomsList);
+                await saveBedroomsList(state.bedroomsList);
                 await renderBedroomsList();
                 showAlert('Bedroom saved successfully!', 'success');
             } catch (error) {
-                console.error('Error saving bedroom:', error);
+                console.error('❌ Error saving bedroom:', error);
                 showAlert('Error saving bedroom. Please try again.', 'error');
             }
         }
@@ -3997,33 +4609,68 @@
         async function deleteBedroom(index) {
             if (!confirm('Are you sure you want to delete this bedroom?')) return;
             try {
+                console.log('🗑️ deleteBedroom called with index:', index);
                 const state = await ensureDashboardState();
+                console.log('🗑️ Current state before delete:', state);
                 state.bedroomsList.splice(index, 1);
-                await saveBedroomsList();
+                console.log('🗑️ Updated state after delete:', state.bedroomsList);
+                await saveBedroomsList(state.bedroomsList);
                 await renderBedroomsList();
                 showAlert('Bedroom deleted successfully!', 'success');
             } catch (error) {
-                console.error('Error deleting bedroom:', error);
+                console.error('❌ Error deleting bedroom:', error);
                 showAlert('Error deleting bedroom. Please try again.', 'error');
             }
         }
 
-        async function saveBedroomsList() {
-            const state = await ensureDashboardState();
+        async function saveBedroomsList(bedroomsListToSave = null) {
+            console.log('💾 saveBedroomsList called');
+            
+            let listToSave;
+            if (bedroomsListToSave !== null) {
+                // Use the provided list (from upsertBedroom)
+                listToSave = bedroomsListToSave;
+                console.log('💾 Using provided bedroomsList:', listToSave);
+            } else {
+                // Get from state (for other operations like delete)
+                const state = await ensureDashboardState();
+                listToSave = state.bedroomsList || [];
+                console.log('💾 Using state bedroomsList:', listToSave);
+            }
+            
             if (!window.awsDataService) {
+                console.error('❌ AWS Data Service not initialized');
                 throw new Error('AWS Data Service not initialized');
             }
-            await window.awsDataService.saveBedroomsList(state.bedroomsList || []);
-            console.log('Bedrooms list saved to AWS');
+            
+            const result = await window.awsDataService.saveBedroomsList(listToSave);
+            console.log('💾 Save result:', result);
+            
+            if (result && result.success) {
+                console.log('✅ Bedrooms list saved to AWS successfully');
+            } else {
+                console.error('❌ Failed to save bedrooms list:', result);
+                throw new Error(result?.error || 'Failed to save bedrooms list');
+            }
         }
 
         // ===== Dynamic Bathrooms Helpers =====
         async function renderBathroomsList() {
+            console.log('🔍 renderBathroomsList called');
             const container = document.getElementById('bathroomsList');
-            if (!container) return;
+            if (!container) {
+                console.warn('⚠️ bathroomsList container not found');
+                return;
+            }
             container.innerHTML = '';
-            const state = await ensureDashboardState();
-            const list = state.bathroomsList || [];
+            
+            if (!window.awsDataService) {
+                console.warn('⚠️ AWS Data Service not available');
+                return;
+            }
+            
+            const list = await window.awsDataService.getBathroomsList();
+            console.log('🔍 Bathrooms list:', list);
             if (list.length === 0) {
                 const empty = document.createElement('div');
                 empty.className = 'empty-state';
@@ -4059,8 +4706,8 @@
         }
 
         async function openBathroomModal(index) {
-            const state = await ensureDashboardState();
-            const existing = (index !== null && index !== undefined) ? state.bathroomsList[index] : null;
+            const list = await window.awsDataService.getBathroomsList();
+            const existing = (index !== null && index !== undefined) ? list[index] : null;
             const overlay = document.createElement('div');
             overlay.className = 'modal-overlay';
             const modal = document.createElement('div');
@@ -4122,13 +4769,28 @@
 
         async function upsertBathroom(index, data) {
             try {
-                const state = await ensureDashboardState();
-                if (index === null || index === undefined) state.bathroomsList.push(data); else state.bathroomsList[index] = data;
-                await saveBathroomsList();
-                await renderBathroomsList();
-                showAlert('Bathroom saved successfully!', 'success');
+                console.log('💾 upsertBathroom called with index:', index, 'data:', data);
+                if (!window.awsDataService) {
+                    throw new Error('AWS Data Service not initialized');
+                }
+                
+                const list = await window.awsDataService.getBathroomsList();
+                if (index === null || index === undefined) {
+                    list.push(data);
+                } else {
+                    list[index] = data;
+                }
+                
+                const result = await window.awsDataService.saveBathroomsList(list);
+                if (result && result.success) {
+                    console.log('✅ Bathroom saved successfully');
+                    await renderBathroomsList();
+                    showAlert('Bathroom saved successfully!', 'success');
+                } else {
+                    throw new Error(result?.error || 'Failed to save');
+                }
             } catch (error) {
-                console.error('Error saving bathroom:', error);
+                console.error('❌ Error saving bathroom:', error);
                 showAlert('Error saving bathroom. Please try again.', 'error');
             }
         }
@@ -4136,33 +4798,62 @@
         async function deleteBathroom(index) {
             if (!confirm('Are you sure you want to delete this bathroom?')) return;
             try {
-                const state = await ensureDashboardState();
-                state.bathroomsList.splice(index, 1);
-                await saveBathroomsList();
-                await renderBathroomsList();
-                showAlert('Bathroom deleted successfully!', 'success');
+                const list = await window.awsDataService.getBathroomsList();
+                list.splice(index, 1);
+                const result = await window.awsDataService.saveBathroomsList(list);
+                if (result && result.success) {
+                    await renderBathroomsList();
+                    showAlert('Bathroom deleted successfully!', 'success');
+                }
             } catch (error) {
-                console.error('Error deleting bathroom:', error);
+                console.error('❌ Error deleting bathroom:', error);
                 showAlert('Error deleting bathroom. Please try again.', 'error');
             }
         }
 
-        async function saveBathroomsList() {
-            const state = await ensureDashboardState();
+        async function saveBathroomsList(bathroomsListToSave = null) {
+            console.log('💾 saveBathroomsList called');
+            
+            let listToSave;
+            if (bathroomsListToSave !== null) {
+                listToSave = bathroomsListToSave;
+                console.log('💾 Using provided bathroomsList:', listToSave);
+            } else {
+                const state = await ensureDashboardState();
+                listToSave = state.bathroomsList || [];
+                console.log('💾 Using state bathroomsList:', listToSave);
+            }
+            
             if (!window.awsDataService) {
                 throw new Error('AWS Data Service not initialized');
             }
-            await window.awsDataService.saveBathroomsList(state.bathroomsList || []);
-            console.log('Bathrooms list saved to AWS');
+            
+            const result = await window.awsDataService.saveBathroomsList(listToSave);
+            if (result && result.success) {
+                console.log('✅ Bathrooms list saved to AWS');
+            } else {
+                console.error('❌ Failed to save bathrooms list:', result);
+                throw new Error(result?.error || 'Failed to save bathrooms list');
+            }
         }
 
         // ===== Dynamic Kitchens Helpers =====
         async function renderKitchensList() {
+            console.log('🔍 renderKitchensList called');
             const container = document.getElementById('kitchensList');
-            if (!container) return;
+            if (!container) {
+                console.warn('⚠️ kitchensList container not found');
+                return;
+            }
             container.innerHTML = '';
-            const state = await ensureDashboardState();
-            const list = state.kitchensList || [];
+            
+            if (!window.awsDataService) {
+                console.warn('⚠️ AWS Data Service not available');
+                return;
+            }
+            
+            const list = await window.awsDataService.getKitchensList();
+            console.log('🔍 Kitchens list:', list);
             if (list.length === 0) {
                 const empty = document.createElement('div');
                 empty.className = 'empty-state';
@@ -4198,8 +4889,8 @@
         }
 
         async function openKitchenModal(index) {
-            const state = await ensureDashboardState();
-            const existing = (index !== null && index !== undefined) ? state.kitchensList[index] : null;
+            const list = await window.awsDataService.getKitchensList();
+            const existing = (index !== null && index !== undefined) ? list[index] : null;
             const overlay = document.createElement('div');
             overlay.className = 'modal-overlay';
             const modal = document.createElement('div');
@@ -4290,13 +4981,28 @@
 
         async function upsertKitchen(index, data) {
             try {
-                const state = await ensureDashboardState();
-                if (index === null || index === undefined) state.kitchensList.push(data); else state.kitchensList[index] = data;
-                await saveKitchensList();
-                await renderKitchensList();
-                showAlert('Kitchen saved successfully!', 'success');
+                console.log('💾 upsertKitchen called with index:', index, 'data:', data);
+                if (!window.awsDataService) {
+                    throw new Error('AWS Data Service not initialized');
+                }
+                
+                const list = await window.awsDataService.getKitchensList();
+                if (index === null || index === undefined) {
+                    list.push(data);
+                } else {
+                    list[index] = data;
+                }
+                
+                const result = await window.awsDataService.saveKitchensList(list);
+                if (result && result.success) {
+                    console.log('✅ Kitchen saved successfully');
+                    await renderKitchensList();
+                    showAlert('Kitchen saved successfully!', 'success');
+                } else {
+                    throw new Error(result?.error || 'Failed to save');
+                }
             } catch (error) {
-                console.error('Error saving kitchen:', error);
+                console.error('❌ Error saving kitchen:', error);
                 showAlert('Error saving kitchen. Please try again.', 'error');
             }
         }
@@ -4304,29 +5010,49 @@
         async function deleteKitchen(index) {
             if (!confirm('Are you sure you want to delete this kitchen?')) return;
             try {
-                const state = await ensureDashboardState();
-                state.kitchensList.splice(index, 1);
-                await saveKitchensList();
-                await renderKitchensList();
-                showAlert('Kitchen deleted successfully!', 'success');
+                const list = await window.awsDataService.getKitchensList();
+                list.splice(index, 1);
+                const result = await window.awsDataService.saveKitchensList(list);
+                if (result && result.success) {
+                    await renderKitchensList();
+                    showAlert('Kitchen deleted successfully!', 'success');
+                }
             } catch (error) {
-                console.error('Error deleting kitchen:', error);
+                console.error('❌ Error deleting kitchen:', error);
                 showAlert('Error deleting kitchen. Please try again.', 'error');
             }
         }
 
-        async function saveKitchensList() {
-            const state = await ensureDashboardState();
+        async function saveKitchensList(kitchensListToSave = null) {
+            console.log('💾 saveKitchensList called');
+            
+            let listToSave;
+            if (kitchensListToSave !== null) {
+                listToSave = kitchensListToSave;
+                console.log('💾 Using provided kitchensList:', listToSave);
+            } else {
+                const state = await ensureDashboardState();
+                listToSave = state.kitchensList || [];
+                console.log('💾 Using state kitchensList:', listToSave);
+            }
+            
             if (!window.awsDataService) {
                 throw new Error('AWS Data Service not initialized');
             }
-            await window.awsDataService.saveKitchensList(state.kitchensList || []);
-            console.log('Kitchens list saved to AWS');
+            
+            const result = await window.awsDataService.saveKitchensList(listToSave);
+            if (result && result.success) {
+                console.log('✅ Kitchens list saved to AWS');
+            } else {
+                console.error('❌ Failed to save kitchens list:', result);
+                throw new Error(result?.error || 'Failed to save kitchens list');
+            }
         }
 
         // ===== Dashboard State Management =====
         async function ensureDashboardState() {
             if (!window.awsDataService) {
+                console.error('❌ AWS Data Service not initialized');
                 throw new Error('AWS Data Service not initialized');
             }
             
@@ -4334,15 +5060,29 @@
             
             // Load from AWS only
             try {
+                console.log('🔍 Loading bedrooms list from AWS...');
                 const bedroomsList = await window.awsDataService.getBedroomsList();
+                console.log('🔍 Retrieved bedroomsList:', bedroomsList);
+                
+                console.log('🔍 Loading bathrooms list from AWS...');
                 const bathroomsList = await window.awsDataService.getBathroomsList();
+                console.log('🔍 Retrieved bathroomsList:', bathroomsList);
+                
+                console.log('🔍 Loading kitchens list from AWS...');
                 const kitchensList = await window.awsDataService.getKitchensList();
+                console.log('🔍 Retrieved kitchensList:', kitchensList);
                 
                 state.bedroomsList = bedroomsList || [];
                 state.bathroomsList = bathroomsList || [];
                 state.kitchensList = kitchensList || [];
+                
+                console.log('✅ Dashboard state loaded:', {
+                    bedroomsCount: state.bedroomsList.length,
+                    bathroomsCount: state.bathroomsList.length,
+                    kitchensCount: state.kitchensList.length
+                });
             } catch (error) {
-                console.error('Error loading dashboard state from AWS:', error);
+                console.error('❌ Error loading dashboard state from AWS:', error);
                 // Initialize empty state if error occurs
                 state.bedroomsList = [];
                 state.bathroomsList = [];
@@ -4913,6 +5653,14 @@
                     await renderBedroomsList();
                     await renderBathroomsList();
                     await renderKitchensList();
+                    
+                    // Load living areas, appliances
+                    await renderLivingAreasList();
+                    await renderAppliancesList();
+                    
+                    // Load garage and exterior
+                    await loadGarage();
+                    await loadExterior();
                     
                     // Load tasks
                     tasks = await window.awsDataService.getTasksList();

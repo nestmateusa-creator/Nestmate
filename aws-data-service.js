@@ -236,9 +236,13 @@ class AWSDataService {
     async saveBedroomsList(bedroomsList) {
         try {
             if (!this.currentUserId) {
+                console.error('❌ saveBedroomsList: User not authenticated');
                 throw new Error('User not authenticated');
             }
 
+            console.log('💾 saveBedroomsList: Saving for userId:', this.currentUserId);
+            console.log('💾 saveBedroomsList: Data to save:', bedroomsList);
+            
             const params = {
                 TableName: 'nestmate-users',
                 Key: { userId: this.currentUserId },
@@ -249,12 +253,15 @@ class AWSDataService {
                 }
             };
 
-            await this.dynamodb.update(params).promise();
+            console.log('💾 saveBedroomsList: DynamoDB params:', params);
+            const result = await this.dynamodb.update(params).promise();
+            console.log('💾 saveBedroomsList: DynamoDB result:', result);
             console.log('✅ Bedrooms list saved to AWS');
             return { success: true };
 
         } catch (error) {
             console.error('❌ Error saving bedrooms list:', error);
+            console.error('❌ Error details:', error.message, error.code);
             return { success: false, error: error.message };
         }
     }
@@ -262,16 +269,25 @@ class AWSDataService {
     async getBedroomsList() {
         try {
             if (!this.currentUserId) {
+                console.error('❌ getBedroomsList: User not authenticated');
                 throw new Error('User not authenticated');
             }
 
+            console.log('🔍 getBedroomsList: Getting data for userId:', this.currentUserId);
             const params = {
                 TableName: 'nestmate-users',
                 Key: { userId: this.currentUserId }
             };
 
+            console.log('🔍 getBedroomsList: DynamoDB params:', params);
             const result = await this.dynamodb.get(params).promise();
-            return result.Item ? result.Item.bedroomsList || [] : [];
+            console.log('🔍 getBedroomsList: DynamoDB result:', result);
+            console.log('🔍 getBedroomsList: Result.Item:', result.Item);
+            console.log('🔍 getBedroomsList: Result.Item?.bedroomsList:', result.Item?.bedroomsList);
+            
+            const bedroomsList = result.Item ? result.Item.bedroomsList || [] : [];
+            console.log('🔍 getBedroomsList: Returning bedroomsList:', bedroomsList);
+            return bedroomsList;
 
         } catch (error) {
             console.error('❌ Error getting bedrooms list:', error);
@@ -367,6 +383,198 @@ class AWSDataService {
 
         } catch (error) {
             console.error('❌ Error getting kitchens list:', error);
+            return [];
+        }
+    }
+
+    // ==================== LIVING AREAS DATA ====================
+
+    async saveLivingAreasList(livingAreasList) {
+        try {
+            if (!this.currentUserId) {
+                throw new Error('User not authenticated');
+            }
+
+            const params = {
+                TableName: 'nestmate-users',
+                Key: { userId: this.currentUserId },
+                UpdateExpression: 'SET livingAreasList = :livingAreas, updatedAt = :updated',
+                ExpressionAttributeValues: {
+                    ':livingAreas': livingAreasList,
+                    ':updated': new Date().toISOString()
+                }
+            };
+
+            await this.dynamodb.update(params).promise();
+            console.log('✅ Living areas list saved to AWS');
+            return { success: true };
+
+        } catch (error) {
+            console.error('❌ Error saving living areas list:', error);
+            return { success: false, error: error.message };
+        }
+    }
+
+    async getLivingAreasList() {
+        try {
+            if (!this.currentUserId) {
+                throw new Error('User not authenticated');
+            }
+
+            const params = {
+                TableName: 'nestmate-users',
+                Key: { userId: this.currentUserId }
+            };
+
+            const result = await this.dynamodb.get(params).promise();
+            return result.Item ? result.Item.livingAreasList || [] : [];
+
+        } catch (error) {
+            console.error('❌ Error getting living areas list:', error);
+            return [];
+        }
+    }
+
+    // ==================== GARAGE DATA ====================
+
+    async saveGarageInfo(garageInfo) {
+        try {
+            if (!this.currentUserId) {
+                throw new Error('User not authenticated');
+            }
+
+            const params = {
+                TableName: 'nestmate-users',
+                Key: { userId: this.currentUserId },
+                UpdateExpression: 'SET garageInfo = :garage, updatedAt = :updated',
+                ExpressionAttributeValues: {
+                    ':garage': garageInfo,
+                    ':updated': new Date().toISOString()
+                }
+            };
+
+            await this.dynamodb.update(params).promise();
+            console.log('✅ Garage info saved to AWS');
+            return { success: true };
+
+        } catch (error) {
+            console.error('❌ Error saving garage info:', error);
+            return { success: false, error: error.message };
+        }
+    }
+
+    async getGarageInfo() {
+        try {
+            if (!this.currentUserId) {
+                throw new Error('User not authenticated');
+            }
+
+            const params = {
+                TableName: 'nestmate-users',
+                Key: { userId: this.currentUserId }
+            };
+
+            const result = await this.dynamodb.get(params).promise();
+            return result.Item ? result.Item.garageInfo || {} : {};
+
+        } catch (error) {
+            console.error('❌ Error getting garage info:', error);
+            return {};
+        }
+    }
+
+    // ==================== EXTERIOR DATA ====================
+
+    async saveExteriorInfo(exteriorInfo) {
+        try {
+            if (!this.currentUserId) {
+                throw new Error('User not authenticated');
+            }
+
+            const params = {
+                TableName: 'nestmate-users',
+                Key: { userId: this.currentUserId },
+                UpdateExpression: 'SET exteriorInfo = :exterior, updatedAt = :updated',
+                ExpressionAttributeValues: {
+                    ':exterior': exteriorInfo,
+                    ':updated': new Date().toISOString()
+                }
+            };
+
+            await this.dynamodb.update(params).promise();
+            console.log('✅ Exterior info saved to AWS');
+            return { success: true };
+
+        } catch (error) {
+            console.error('❌ Error saving exterior info:', error);
+            return { success: false, error: error.message };
+        }
+    }
+
+    async getExteriorInfo() {
+        try {
+            if (!this.currentUserId) {
+                throw new Error('User not authenticated');
+            }
+
+            const params = {
+                TableName: 'nestmate-users',
+                Key: { userId: this.currentUserId }
+            };
+
+            const result = await this.dynamodb.get(params).promise();
+            return result.Item ? result.Item.exteriorInfo || {} : {};
+
+        } catch (error) {
+            console.error('❌ Error getting exterior info:', error);
+            return {};
+        }
+    }
+
+    // ==================== APPLIANCES DATA ====================
+
+    async saveAppliancesList(appliancesList) {
+        try {
+            if (!this.currentUserId) {
+                throw new Error('User not authenticated');
+            }
+
+            const params = {
+                TableName: 'nestmate-users',
+                Key: { userId: this.currentUserId },
+                UpdateExpression: 'SET appliancesList = :appliances, updatedAt = :updated',
+                ExpressionAttributeValues: {
+                    ':appliances': appliancesList,
+                    ':updated': new Date().toISOString()
+                }
+            };
+
+            await this.dynamodb.update(params).promise();
+            console.log('✅ Appliances list saved to AWS');
+            return { success: true };
+
+        } catch (error) {
+            console.error('❌ Error saving appliances list:', error);
+            return { success: false, error: error.message };
+        }
+    }
+
+    async getAppliancesList() {
+        try {
+            if (!this.currentUserId) {
+                throw new Error('User not authenticated');
+            }
+
+            const params = {
+                TableName: 'nestmate-users',
+                Key: { userId: this.currentUserId }
+            };
+
+            const result = await this.dynamodb.get(params).promise();
+            return result.Item ? result.Item.appliancesList || [] : [];
+
+        } catch (error) {
+            console.error('❌ Error getting appliances list:', error);
             return [];
         }
     }
