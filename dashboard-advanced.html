@@ -3321,11 +3321,11 @@
                         await renderLivingAreasList();
                     } else if (sectionId === 'appliances') {
                         await renderAppliancesList();
-                    } else if (sectionId === 'bedrooms') {
+                    } else if (sectionId === 'bedroomsSection') {
                         await renderBedroomsList();
-                    } else if (sectionId === 'bathrooms') {
+                    } else if (sectionId === 'bathroomsSection') {
                         await renderBathroomsList();
-                    } else if (sectionId === 'kitchens') {
+                    } else if (sectionId === 'kitchenSection') {
                         await renderKitchensList();
                     } else if (sectionId === 'photos') {
                         await displayPhotos();
@@ -3340,8 +3340,19 @@
                 console.error('Section not found:', sectionId);
             }
             
-            // Add active class to clicked nav item
-            event.target.classList.add('active');
+            // Add active class to clicked nav item (if event exists)
+            if (event && event.target) {
+                event.target.classList.add('active');
+            } else {
+                // Find the nav item by sectionId and add active class
+                const navItems = document.querySelectorAll('.nav-item');
+                navItems.forEach(item => {
+                    const onclickAttr = item.getAttribute('onclick');
+                    if (onclickAttr && onclickAttr.includes(`'${sectionId}'`) || onclickAttr && onclickAttr.includes(`"${sectionId}"`)) {
+                        item.classList.add('active');
+                    }
+                });
+            }
         }
 
         // User authentication and data loading
@@ -4770,10 +4781,12 @@
                     gallery.style.gap = '1rem';
                 }
                 
-                photosData.forEach((photo, index) => {
+                // Use for...of loop instead of forEach for async operations
+                for (let index = 0; index < photosData.length; index++) {
+                    const photo = photosData[index];
                     if (!photo || !photo.url) {
                         console.warn('⚠️ Invalid photo data at index', index, photo);
-                        return;
+                        continue;
                     }
                     
                     const container = document.createElement('div');
@@ -4786,20 +4799,48 @@
                     container.style.cursor = 'pointer';
                     
                     const img = document.createElement('img');
-                    img.src = photo.url;
                     img.alt = photo.filename || 'Photo';
                     img.style.width = '100%';
                     img.style.height = '100%';
                     img.style.objectFit = 'cover';
                     img.style.cursor = 'pointer';
                     
+                    // For S3 photos, get presigned URL for viewing
+                    let imageUrl = photo.url;
+                    if (photo.type === 's3' && photo.key) {
+                        try {
+                            console.log('🔗 Getting presigned URL for viewing:', photo.key);
+                            const presignedResponse = await fetch('/.netlify/functions/s3-get-presigned-url', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    bucket: 'nestmate-files-483954734051',
+                                    key: photo.key
+                                })
+                            });
+                            
+                            if (presignedResponse.ok) {
+                                const responseData = await presignedResponse.json();
+                                imageUrl = responseData.presignedUrl;
+                                console.log('✅ Using presigned URL for image');
+                            } else {
+                                console.warn('⚠️ Failed to get presigned URL, using original URL');
+                            }
+                        } catch (error) {
+                            console.error('❌ Error getting presigned URL:', error);
+                            // Fall back to original URL
+                        }
+                    }
+                    
+                    img.src = imageUrl;
+                    
                     img.onerror = () => {
-                        console.error('❌ Failed to load image:', photo.url);
+                        console.error('❌ Failed to load image:', imageUrl);
                         img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%23e2e8f0" width="200" height="200"/%3E%3Ctext fill="%2394a3b8" font-family="sans-serif" font-size="14" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3EFailed to load%3C/text%3E%3C/svg%3E';
                     };
                     
                     img.onclick = () => {
-                        window.open(photo.url, '_blank');
+                        window.open(imageUrl, '_blank');
                     };
                     
                     const deleteBtn = document.createElement('button');
@@ -4823,7 +4864,7 @@
                     container.appendChild(img);
                     container.appendChild(deleteBtn);
                     gallery.appendChild(container);
-                });
+                }
                 
                 console.log('✅ Photos displayed successfully');
             } catch (error) {
