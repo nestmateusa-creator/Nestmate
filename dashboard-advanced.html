@@ -149,7 +149,8 @@
         .main-content-wrapper {
             flex: 1;
             margin-left: 280px;
-            padding: 2rem;
+            padding: 1rem 2rem 2rem 2rem;
+            padding-left: 4rem;
             box-sizing: border-box;
             overflow-x: hidden;
             min-width: 0;
@@ -159,6 +160,7 @@
             max-width: 1000px;
             width: 1000px;
             margin: 0 auto;
+            margin-left: 0;
             box-sizing: border-box;
             overflow-x: hidden;
         }
@@ -169,17 +171,25 @@
         }
 
         /* Ensure all sections are properly constrained and positioned */
-        .main-content .dashboard-section,
+        .main-content .dashboard-section:not(#overview):not(#photos),
         .main-content .content-section {
             width: 1000px !important;
             max-width: 1000px !important;
-            margin-left: auto !important;
+            margin-left: 0 !important;
             margin-right: auto !important;
             margin-top: 0 !important;
             margin-bottom: 0 !important;
             padding: 0 !important;
             position: relative !important;
-            transform: translateX(100px) !important;
+        }
+
+        /* Overview and photos stay centered */
+        .main-content #overview,
+        .main-content #photos {
+            width: 1000px !important;
+            max-width: 1000px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
         }
 
         /* Ensure cards inside sections don't add extra spacing */
