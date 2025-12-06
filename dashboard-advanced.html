@@ -185,14 +185,6 @@
             border-bottom: 1px solid #334155;
         }
 
-        /* Ensure sections appear right after header */
-        .main-content .dashboard-section:not(#overview):not(#photos),
-        .main-content .content-section {
-            display: block !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-        }
-
         .header h1 {
             font-size: 2rem;
             font-weight: 700;
@@ -3316,7 +3308,11 @@
             
             // Hide all sections (both dashboard-section and content-section)
             const sections = document.querySelectorAll('.dashboard-section, .content-section');
-            sections.forEach(section => section.style.display = 'none');
+            console.log('Total sections found:', sections.length);
+            sections.forEach(section => {
+                section.style.display = 'none';
+                console.log('Hiding section:', section.id);
+            });
             
             // Remove active class from all nav items
             const navItems = document.querySelectorAll('.nav-item');
@@ -3325,10 +3321,20 @@
             // Show selected section
             const targetSection = document.getElementById(sectionId);
             console.log('Target section found:', targetSection);
+            console.log('Target section ID:', targetSection ? targetSection.id : 'NOT FOUND');
             
             if (targetSection) {
                 targetSection.style.display = 'block';
                 console.log('Section displayed:', sectionId);
+                
+                // Double-check: hide 'homes' section explicitly if it's not the target
+                if (sectionId !== 'homes') {
+                    const homesSection = document.getElementById('homes');
+                    if (homesSection) {
+                        homesSection.style.display = 'none';
+                        console.log('Explicitly hid homes section');
+                    }
+                }
                 
                 // Reload data when section is shown (in case it was saved while on another section)
                 setTimeout(async () => {
