@@ -2377,27 +2377,99 @@
                 <!-- Photo Management -->
                 <div id="photos" class="dashboard-section" style="display: none;">
                     <div class="card">
-                        <h3>Advanced Photo Management</h3>
-                        <div class="photo-filters">
-                            <button class="filter-btn active">All Photos</button>
-                            <button class="filter-btn">By Room</button>
-                            <button class="filter-btn">By Date</button>
-                            <button class="filter-btn">By Home</button>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3>Advanced Photo Management</h3>
+                            <div>
+                                <button class="btn" onclick="openPhotoUpload()">
+                                    <i class="fas fa-upload"></i> Upload Photos
+                                </button>
+                            </div>
                         </div>
                         
-                        <div class="photo-grid">
-                            <div class="photo-item">
-                                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPktpdGNoZW48L3RleHQ+PC9zdmc+" alt="Kitchen">
-                                <div class="photo-overlay">
-                                    <span class="photo-label">Kitchen</span>
-                                    <div class="photo-actions">
-                                        <button><i class="fas fa-edit"></i></button>
-                                        <button><i class="fas fa-trash"></i></button>
-                                    </div>
-                                </div>
+                        <div class="photo-filters" style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                            <button class="filter-btn active" onclick="filterPhotos('all')">All Photos</button>
+                            <button class="filter-btn" onclick="filterPhotos('room')">By Room</button>
+                            <button class="filter-btn" onclick="filterPhotos('date')">By Date</button>
+                            <button class="filter-btn" onclick="filterPhotos('home')">By Home</button>
+                        </div>
+                        
+                        <div id="photosUploadForm" style="display: none; margin-bottom: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                            <div class="form-group">
+                                <label for="photoFileInput">Select Photos</label>
+                                <input type="file" id="photoFileInput" accept="image/*" multiple>
+                                <small style="color: #94a3b8; margin-top: 0.5rem; display: block;">You can select multiple images at once</small>
                             </div>
-                            
-                            <div class="photo-item">
+                            <div class="form-group">
+                                <label for="photoUrlInput">Or paste image URL</label>
+                                <input type="url" id="photoUrlInput" placeholder="https://example.com/image.jpg">
+                            </div>
+                            <div style="display: flex; gap: 0.75rem; margin-top: 1rem;">
+                                <button class="btn" onclick="uploadPhotos()">
+                                    <i class="fas fa-upload"></i> Upload Files
+                                </button>
+                                <button class="btn" onclick="addPhotoFromUrl()">
+                                    <i class="fas fa-plus"></i> Add URL
+                                </button>
+                                <button class="btn btn-secondary" onclick="cancelPhotoUpload()">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="photosGallery" class="photo-gallery" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;">
+                            <!-- dynamically rendered -->
+                        </div>
+                        <div id="photosEmpty" class="empty-state" style="display: none; text-align: center; padding: 2rem; color: #94a3b8;">
+                            <i class="fas fa-images" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                            <p>No photos uploaded yet. Click "Upload Photos" to get started.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Remove duplicate photos section below -->
+                <!--
+                <div id="photos" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3>Home Photos</h3>
+                            <div>
+                                <button class="btn" onclick="openPhotoUpload()">
+                                    <i class="fas fa-upload"></i> Upload Photos
+                                </button>
+                            </div>
+                        </div>
+                        <div id="photosUploadForm" style="display: none; margin-bottom: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                            <div class="form-group">
+                                <label for="photoFileInput">Select Photos</label>
+                                <input type="file" id="photoFileInput" accept="image/*" multiple>
+                                <small style="color: #94a3b8; margin-top: 0.5rem; display: block;">You can select multiple images at once</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="photoUrlInput">Or paste image URL</label>
+                                <input type="url" id="photoUrlInput" placeholder="https://example.com/image.jpg">
+                            </div>
+                            <div style="display: flex; gap: 0.75rem; margin-top: 1rem;">
+                                <button class="btn" onclick="uploadPhotos()">
+                                    <i class="fas fa-upload"></i> Upload Files
+                                </button>
+                                <button class="btn" onclick="addPhotoFromUrl()">
+                                    <i class="fas fa-plus"></i> Add URL
+                                </button>
+                                <button class="btn btn-secondary" onclick="cancelPhotoUpload()">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
+                            </div>
+                        </div>
+                        <div id="photosGallery" class="photo-gallery" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;">
+                            <!-- dynamically rendered -->
+                        </div>
+                        <div id="photosEmpty" class="empty-state" style="display: none; text-align: center; padding: 2rem; color: #94a3b8;">
+                            <i class="fas fa-images" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                            <p>No photos uploaded yet. Click "Upload Photos" to get started.</p>
+                        </div>
+                    </div>
+                </div>
+                -->
                                 <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkxpdmluZyBSb29tPC90ZXh0Pjwvc3ZnPg==" alt="Living Room">
                                 <div class="photo-overlay">
                                     <span class="photo-label">Living Room</span>
@@ -3003,48 +3075,6 @@
                     </div>
                 </div>
 
-                <!-- Photos Section -->
-                <div id="photos" class="dashboard-section" style="display: none;">
-                    <div class="card">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                            <h3>Home Photos</h3>
-                            <div>
-                                <button class="btn" onclick="openPhotoUpload()">
-                                    <i class="fas fa-upload"></i> Upload Photos
-                                </button>
-                            </div>
-                        </div>
-                        <div id="photosUploadForm" style="display: none; margin-bottom: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
-                            <div class="form-group">
-                                <label for="photoFileInput">Select Photos</label>
-                                <input type="file" id="photoFileInput" accept="image/*" multiple>
-                                <small style="color: #94a3b8; margin-top: 0.5rem; display: block;">You can select multiple images at once</small>
-                            </div>
-                            <div class="form-group">
-                                <label for="photoUrlInput">Or paste image URL</label>
-                                <input type="url" id="photoUrlInput" placeholder="https://example.com/image.jpg">
-                            </div>
-                            <div style="display: flex; gap: 0.75rem; margin-top: 1rem;">
-                                <button class="btn" onclick="uploadPhotos()">
-                                    <i class="fas fa-upload"></i> Upload Files
-                                </button>
-                                <button class="btn" onclick="addPhotoFromUrl()">
-                                    <i class="fas fa-plus"></i> Add URL
-                                </button>
-                                <button class="btn btn-secondary" onclick="cancelPhotoUpload()">
-                                    <i class="fas fa-times"></i> Cancel
-                                </button>
-                            </div>
-                        </div>
-                        <div id="photosGallery" class="photo-gallery" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;">
-                            <!-- dynamically rendered -->
-                        </div>
-                        <div id="photosEmpty" class="empty-state" style="display: none; text-align: center; padding: 2rem; color: #94a3b8;">
-                            <i class="fas fa-images" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
-                            <p>No photos uploaded yet. Click "Upload Photos" to get started.</p>
-                        </div>
-                    </div>
-                </div>
 
                 <!-- Renovations Section -->
                 <div id="renovations" class="dashboard-section" style="display: none;">
@@ -4482,6 +4512,19 @@
                     photosData = [];
                 }
             }
+        }
+
+        // Photo filter function (placeholder for future filtering)
+        function filterPhotos(filterType) {
+            console.log('🔍 Filtering photos by:', filterType);
+            // Remove active class from all filter buttons
+            document.querySelectorAll('.photo-filters .filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            // Add active class to clicked button
+            event.target.classList.add('active');
+            // For now, just reload all photos (filtering can be added later)
+            displayPhotos();
         }
 
         function openPhotoUpload() {
