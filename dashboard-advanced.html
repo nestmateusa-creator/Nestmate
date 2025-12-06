@@ -3768,9 +3768,10 @@
                 const item = document.createElement('div');
                 item.className = 'list-item';
                 const details = [
-                    area.type && `Type: ${area.type}`,
                     area.size && `Size: ${area.size}`,
-                    area.flooring && `Flooring: ${area.flooring}`,
+                    area.floorType && `Floor: ${area.floorType}`,
+                    area.windowCount && `Windows: ${area.windowCount}`,
+                    area.outlets && `Outlets: ${area.outlets}`,
                     area.condition && `Condition: ${area.condition}`
                 ].filter(Boolean).join(' · ');
                 item.innerHTML = `
@@ -3817,25 +3818,165 @@
                         </select>
                     </div>
                     <div class="form-group"><label>Size</label><input id="laSize" type="text" placeholder="e.g., 15' x 12'" value="${existing?.size || ''}"></div>
-                    <div class="form-group"><label>Flooring</label>
-                        <select id="laFlooring">
+                    <div class="form-group"><label>Ceiling Height</label><input id="laCeilingHeight" type="text" placeholder="e.g., 9 feet" value="${existing?.ceilingHeight || ''}"></div>
+                    <div class="form-group"><label>Floor Type</label>
+                        <select id="laFloor">
                             <option value="">Select</option>
-                            <option value="hardwood" ${existing?.flooring==='hardwood'?'selected':''}>Hardwood</option>
-                            <option value="carpet" ${existing?.flooring==='carpet'?'selected':''}>Carpet</option>
-                            <option value="tile" ${existing?.flooring==='tile'?'selected':''}>Tile</option>
-                            <option value="laminate" ${existing?.flooring==='laminate'?'selected':''}>Laminate</option>
+                            <option value="carpet" ${existing?.floorType === 'carpet' ? 'selected' : ''}>Carpet</option>
+                            <option value="hardwood" ${existing?.floorType === 'hardwood' ? 'selected' : ''}>Hardwood</option>
+                            <option value="laminate" ${existing?.floorType === 'laminate' ? 'selected' : ''}>Laminate</option>
+                            <option value="tile" ${existing?.floorType === 'tile' ? 'selected' : ''}>Tile</option>
+                            <option value="vinyl" ${existing?.floorType === 'vinyl' ? 'selected' : ''}>Vinyl</option>
+                            <option value="bamboo" ${existing?.floorType === 'bamboo' ? 'selected' : ''}>Bamboo</option>
+                            <option value="cork" ${existing?.floorType === 'cork' ? 'selected' : ''}>Cork</option>
                         </select>
                     </div>
+                    <div class="form-group"><label>Floor Color/Material</label><input id="laFloorDetails" type="text" placeholder="e.g., Oak, Gray Berber" value="${existing?.floorDetails || ''}"></div>
+                    <div class="form-group"><label>Wall Color</label><input id="laWallColor" type="text" placeholder="e.g., Light Blue, White" value="${existing?.wallColor || ''}"></div>
+                    <div class="form-group"><label>Trim Style</label>
+                        <select id="laTrimStyle">
+                            <option value="">Select</option>
+                            <option value="colonial" ${existing?.trimStyle === 'colonial' ? 'selected' : ''}>Colonial</option>
+                            <option value="craftsman" ${existing?.trimStyle === 'craftsman' ? 'selected' : ''}>Craftsman</option>
+                            <option value="modern" ${existing?.trimStyle === 'modern' ? 'selected' : ''}>Modern</option>
+                            <option value="traditional" ${existing?.trimStyle === 'traditional' ? 'selected' : ''}>Traditional</option>
+                            <option value="minimal" ${existing?.trimStyle === 'minimal' ? 'selected' : ''}>Minimal</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Trim Color</label><input id="laTrimColor" type="text" placeholder="e.g., White, Cream" value="${existing?.trimColor || ''}"></div>
+                    <div class="form-group"><label>Window Count</label><input id="laWindowCount" type="number" min="0" placeholder="e.g., 2" value="${existing?.windowCount ?? ''}"></div>
+                    <div class="form-group"><label>Window Sizes</label><input id="laWindows" type="text" placeholder="e.g., 36x48, 24x36" value="${existing?.windowSizes || ''}"></div>
+                    <div class="form-group"><label>Window Type</label>
+                        <select id="laWindowType">
+                            <option value="">Select</option>
+                            <option value="single-hung" ${existing?.windowType === 'single-hung' ? 'selected' : ''}>Single Hung</option>
+                            <option value="double-hung" ${existing?.windowType === 'double-hung' ? 'selected' : ''}>Double Hung</option>
+                            <option value="casement" ${existing?.windowType === 'casement' ? 'selected' : ''}>Casement</option>
+                            <option value="sliding" ${existing?.windowType === 'sliding' ? 'selected' : ''}>Sliding</option>
+                            <option value="bay" ${existing?.windowType === 'bay' ? 'selected' : ''}>Bay</option>
+                            <option value="picture" ${existing?.windowType === 'picture' ? 'selected' : ''}>Picture</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Blind Sizes</label><input id="laBlinds" type="text" placeholder="e.g., 36x48, 24x36" value="${existing?.blindSizes || ''}"></div>
+                    <div class="form-group"><label>Blind Type</label>
+                        <select id="laBlindType">
+                            <option value="">Select</option>
+                            <option value="venetian" ${existing?.blindType === 'venetian' ? 'selected' : ''}>Venetian</option>
+                            <option value="vertical" ${existing?.blindType === 'vertical' ? 'selected' : ''}>Vertical</option>
+                            <option value="roller" ${existing?.blindType === 'roller' ? 'selected' : ''}>Roller</option>
+                            <option value="cellular" ${existing?.blindType === 'cellular' ? 'selected' : ''}>Cellular</option>
+                            <option value="roman" ${existing?.blindType === 'roman' ? 'selected' : ''}>Roman</option>
+                            <option value="none" ${existing?.blindType === 'none' ? 'selected' : ''}>None</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Curtain Sizes</label><input id="laCurtains" type="text" placeholder="e.g., 84\" panels" value="${existing?.curtainSizes || ''}"></div>
+                    <div class="form-group"><label>Curtain Style</label>
+                        <select id="laCurtainStyle">
+                            <option value="">Select</option>
+                            <option value="grommet" ${existing?.curtainStyle === 'grommet' ? 'selected' : ''}>Grommet</option>
+                            <option value="rod-pocket" ${existing?.curtainStyle === 'rod-pocket' ? 'selected' : ''}>Rod Pocket</option>
+                            <option value="tab-top" ${existing?.curtainStyle === 'tab-top' ? 'selected' : ''}>Tab Top</option>
+                            <option value="pinch-pleat" ${existing?.curtainStyle === 'pinch-pleat' ? 'selected' : ''}>Pinch Pleat</option>
+                            <option value="none" ${existing?.curtainStyle === 'none' ? 'selected' : ''}>None</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Electrical Outlets</label><input id="laOutlets" type="number" min="0" placeholder="e.g., 6" value="${existing?.outlets ?? ''}"></div>
+                    <div class="form-group"><label>Outlet Type</label>
+                        <select id="laOutletType">
+                            <option value="">Select</option>
+                            <option value="standard" ${existing?.outletType === 'standard' ? 'selected' : ''}>Standard</option>
+                            <option value="gfci" ${existing?.outletType === 'gfci' ? 'selected' : ''}>GFCI</option>
+                            <option value="usb" ${existing?.outletType === 'usb' ? 'selected' : ''}>USB Outlets</option>
+                            <option value="smart" ${existing?.outletType === 'smart' ? 'selected' : ''}>Smart Outlets</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Light Fixtures</label><input id="laLights" type="number" min="0" placeholder="e.g., 2" value="${existing?.lights ?? ''}"></div>
+                    <div class="form-group"><label>Lighting Type</label>
+                        <select id="laLightingType">
+                            <option value="">Select</option>
+                            <option value="ceiling-fan" ${existing?.lightingType === 'ceiling-fan' ? 'selected' : ''}>Ceiling Fan</option>
+                            <option value="recessed" ${existing?.lightingType === 'recessed' ? 'selected' : ''}>Recessed</option>
+                            <option value="chandelier" ${existing?.lightingType === 'chandelier' ? 'selected' : ''}>Chandelier</option>
+                            <option value="pendant" ${existing?.lightingType === 'pendant' ? 'selected' : ''}>Pendant</option>
+                            <option value="table-lamp" ${existing?.lightingType === 'table-lamp' ? 'selected' : ''}>Table Lamp</option>
+                            <option value="floor-lamp" ${existing?.lightingType === 'floor-lamp' ? 'selected' : ''}>Floor Lamp</option>
+                            <option value="wall-sconce" ${existing?.lightingType === 'wall-sconce' ? 'selected' : ''}>Wall Sconce</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Ceiling Fan</label>
+                        <select id="laCeilingFan">
+                            <option value="no" ${existing?.ceilingFan ? '' : 'selected'}>No</option>
+                            <option value="yes" ${existing?.ceilingFan ? 'selected' : ''}>Yes</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Fan Brand/Model</label><input id="laFanDetails" type="text" placeholder="e.g., Hunter, 52\"" value="${existing?.fanDetails || ''}"></div>
+                    <div class="form-group"><label>Storage Type</label>
+                        <select id="laStorageType">
+                            <option value="">Select</option>
+                            <option value="built-in-cabinets" ${existing?.storageType === 'built-in-cabinets' ? 'selected' : ''}>Built-in Cabinets</option>
+                            <option value="shelving" ${existing?.storageType === 'shelving' ? 'selected' : ''}>Shelving</option>
+                            <option value="entertainment-center" ${existing?.storageType === 'entertainment-center' ? 'selected' : ''}>Entertainment Center</option>
+                            <option value="none" ${existing?.storageType === 'none' ? 'selected' : ''}>None</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Storage Size</label><input id="laStorageSize" type="text" placeholder="e.g., 6' x 4'" value="${existing?.storageSize || ''}"></div>
+                    <div class="form-group"><label>Storage Organization</label>
+                        <select id="laStorageOrg">
+                            <option value="">Select</option>
+                            <option value="shelving" ${existing?.storageOrg === 'shelving' ? 'selected' : ''}>Shelving</option>
+                            <option value="drawers" ${existing?.storageOrg === 'drawers' ? 'selected' : ''}>Drawers</option>
+                            <option value="custom-system" ${existing?.storageOrg === 'custom-system' ? 'selected' : ''}>Custom System</option>
+                            <option value="basic" ${existing?.storageOrg === 'basic' ? 'selected' : ''}>Basic</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Attached Bathroom</label>
+                        <select id="laBath">
+                            <option value="no" ${existing?.attachedBath ? '' : 'selected'}>No</option>
+                            <option value="yes" ${existing?.attachedBath ? 'selected' : ''}>Yes</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Bathroom Access</label>
+                        <select id="laBathAccess">
+                            <option value="">Select</option>
+                            <option value="private" ${existing?.bathAccess === 'private' ? 'selected' : ''}>Private</option>
+                            <option value="shared" ${existing?.bathAccess === 'shared' ? 'selected' : ''}>Shared</option>
+                            <option value="jack-jill" ${existing?.bathAccess === 'jack-jill' ? 'selected' : ''}>Jack & Jill</option>
+                            <option value="none" ${existing?.bathAccess === 'none' ? 'selected' : ''}>None</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Heating/Cooling</label>
+                        <select id="laHVAC">
+                            <option value="">Select</option>
+                            <option value="central" ${existing?.hvac === 'central' ? 'selected' : ''}>Central</option>
+                            <option value="window-unit" ${existing?.hvac === 'window-unit' ? 'selected' : ''}>Window Unit</option>
+                            <option value="baseboard" ${existing?.hvac === 'baseboard' ? 'selected' : ''}>Baseboard</option>
+                            <option value="radiator" ${existing?.hvac === 'radiator' ? 'selected' : ''}>Radiator</option>
+                            <option value="fireplace" ${existing?.hvac === 'fireplace' ? 'selected' : ''}>Fireplace</option>
+                            <option value="none" ${existing?.hvac === 'none' ? 'selected' : ''}>None</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Security Features</label>
+                        <select id="laSecurity">
+                            <option value="">Select</option>
+                            <option value="motion-sensor" ${existing?.security === 'motion-sensor' ? 'selected' : ''}>Motion Sensor</option>
+                            <option value="window-sensor" ${existing?.security === 'window-sensor' ? 'selected' : ''}>Window Sensor</option>
+                            <option value="door-sensor" ${existing?.security === 'door-sensor' ? 'selected' : ''}>Door Sensor</option>
+                            <option value="camera" ${existing?.security === 'camera' ? 'selected' : ''}>Camera</option>
+                            <option value="none" ${existing?.security === 'none' ? 'selected' : ''}>None</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Last Renovation</label><input id="laLastRenovation" type="text" placeholder="e.g., 2020" value="${existing?.lastRenovation || ''}"></div>
                     <div class="form-group"><label>Condition</label>
                         <select id="laCondition">
                             <option value="">Select</option>
-                            <option value="excellent" ${existing?.condition==='excellent'?'selected':''}>Excellent</option>
-                            <option value="good" ${existing?.condition==='good'?'selected':''}>Good</option>
-                            <option value="fair" ${existing?.condition==='fair'?'selected':''}>Fair</option>
-                            <option value="poor" ${existing?.condition==='poor'?'selected':''}>Poor</option>
+                            <option value="excellent" ${existing?.condition === 'excellent' ? 'selected' : ''}>Excellent</option>
+                            <option value="good" ${existing?.condition === 'good' ? 'selected' : ''}>Good</option>
+                            <option value="fair" ${existing?.condition === 'fair' ? 'selected' : ''}>Fair</option>
+                            <option value="poor" ${existing?.condition === 'poor' ? 'selected' : ''}>Poor</option>
+                            <option value="needs-renovation" ${existing?.condition === 'needs-renovation' ? 'selected' : ''}>Needs Renovation</option>
                         </select>
                     </div>
-                    <div class="form-group" style="grid-column: 1 / -1;"><label>Notes</label><textarea id="laNotes" rows="3" placeholder="Any details...">${existing?.notes || ''}</textarea></div>
+                    <div class="form-group" style="grid-column: 1 / -1"><label>Notes</label><textarea id="laNotes" rows="3" placeholder="Any additional notes...">${existing?.notes || ''}</textarea></div>
                 </div>
                 <div style="display:flex; gap: .75rem; justify-content:flex-end; margin-top: 1rem;">
                     <button class="btn" id="laSaveBtn"><i class="fas fa-save"></i> Save</button>
@@ -3851,7 +3992,33 @@
                     name: document.getElementById('laName').value.trim(),
                     type: document.getElementById('laType').value,
                     size: document.getElementById('laSize').value.trim(),
-                    flooring: document.getElementById('laFlooring').value,
+                    ceilingHeight: document.getElementById('laCeilingHeight').value.trim(),
+                    floorType: document.getElementById('laFloor').value,
+                    floorDetails: document.getElementById('laFloorDetails').value.trim(),
+                    wallColor: document.getElementById('laWallColor').value.trim(),
+                    trimStyle: document.getElementById('laTrimStyle').value,
+                    trimColor: document.getElementById('laTrimColor').value.trim(),
+                    windowCount: parseInt(document.getElementById('laWindowCount').value) || 0,
+                    windowSizes: document.getElementById('laWindows').value.trim(),
+                    windowType: document.getElementById('laWindowType').value,
+                    blindSizes: document.getElementById('laBlinds').value.trim(),
+                    blindType: document.getElementById('laBlindType').value,
+                    curtainSizes: document.getElementById('laCurtains').value.trim(),
+                    curtainStyle: document.getElementById('laCurtainStyle').value,
+                    outlets: parseInt(document.getElementById('laOutlets').value) || 0,
+                    outletType: document.getElementById('laOutletType').value,
+                    lights: parseInt(document.getElementById('laLights').value) || 0,
+                    lightingType: document.getElementById('laLightingType').value,
+                    ceilingFan: document.getElementById('laCeilingFan').value === 'yes',
+                    fanDetails: document.getElementById('laFanDetails').value.trim(),
+                    storageType: document.getElementById('laStorageType').value,
+                    storageSize: document.getElementById('laStorageSize').value.trim(),
+                    storageOrg: document.getElementById('laStorageOrg').value,
+                    attachedBath: document.getElementById('laBath').value === 'yes',
+                    bathAccess: document.getElementById('laBathAccess').value,
+                    hvac: document.getElementById('laHVAC').value,
+                    security: document.getElementById('laSecurity').value,
+                    lastRenovation: document.getElementById('laLastRenovation').value.trim(),
                     condition: document.getElementById('laCondition').value,
                     notes: document.getElementById('laNotes').value.trim()
                 };
