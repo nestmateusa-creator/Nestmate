@@ -135,6 +135,10 @@ class AWSDataService {
                 bedroomsList: [],
                 bathroomsList: [],
                 kitchensList: [],
+                livingAreasList: [],
+                appliancesList: [],
+                garageInfo: {},
+                exteriorInfo: {},
                 preferences: {},
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
@@ -301,6 +305,22 @@ class AWSDataService {
                 throw new Error('User not authenticated');
             }
 
+            // Check if user record exists, create if not
+            try {
+                const checkParams = {
+                    TableName: 'nestmate-users',
+                    Key: { userId: this.currentUserId }
+                };
+                const checkResult = await this.dynamodb.get(checkParams).promise();
+                if (!checkResult.Item) {
+                    console.log('🆕 User record not found, creating...');
+                    await this.createUserRecord([]);
+                }
+            } catch (createError) {
+                console.error('❌ Error checking/creating user record:', createError);
+                // Continue anyway, try the update
+            }
+
             const params = {
                 TableName: 'nestmate-users',
                 Key: { userId: this.currentUserId },
@@ -345,6 +365,22 @@ class AWSDataService {
         try {
             if (!this.currentUserId) {
                 throw new Error('User not authenticated');
+            }
+
+            // Check if user record exists, create if not
+            try {
+                const checkParams = {
+                    TableName: 'nestmate-users',
+                    Key: { userId: this.currentUserId }
+                };
+                const checkResult = await this.dynamodb.get(checkParams).promise();
+                if (!checkResult.Item) {
+                    console.log('🆕 User record not found, creating...');
+                    await this.createUserRecord([]);
+                }
+            } catch (createError) {
+                console.error('❌ Error checking/creating user record:', createError);
+                // Continue anyway, try the update
             }
 
             const params = {
@@ -395,6 +431,22 @@ class AWSDataService {
                 throw new Error('User not authenticated');
             }
 
+            // Check if user record exists, create if not
+            try {
+                const checkParams = {
+                    TableName: 'nestmate-users',
+                    Key: { userId: this.currentUserId }
+                };
+                const checkResult = await this.dynamodb.get(checkParams).promise();
+                if (!checkResult.Item) {
+                    console.log('🆕 User record not found, creating...');
+                    await this.createUserRecord([]);
+                }
+            } catch (createError) {
+                console.error('❌ Error checking/creating user record:', createError);
+                // Continue anyway, try the update
+            }
+
             const params = {
                 TableName: 'nestmate-users',
                 Key: { userId: this.currentUserId },
@@ -441,6 +493,22 @@ class AWSDataService {
         try {
             if (!this.currentUserId) {
                 throw new Error('User not authenticated');
+            }
+
+            // Check if user record exists, create if not
+            try {
+                const checkParams = {
+                    TableName: 'nestmate-users',
+                    Key: { userId: this.currentUserId }
+                };
+                const checkResult = await this.dynamodb.get(checkParams).promise();
+                if (!checkResult.Item) {
+                    console.log('🆕 User record not found, creating...');
+                    await this.createUserRecord([]);
+                }
+            } catch (createError) {
+                console.error('❌ Error checking/creating user record:', createError);
+                // Continue anyway, try the update
             }
 
             const params = {
@@ -491,6 +559,22 @@ class AWSDataService {
                 throw new Error('User not authenticated');
             }
 
+            // Check if user record exists, create if not
+            try {
+                const checkParams = {
+                    TableName: 'nestmate-users',
+                    Key: { userId: this.currentUserId }
+                };
+                const checkResult = await this.dynamodb.get(checkParams).promise();
+                if (!checkResult.Item) {
+                    console.log('🆕 User record not found, creating...');
+                    await this.createUserRecord([]);
+                }
+            } catch (createError) {
+                console.error('❌ Error checking/creating user record:', createError);
+                // Continue anyway, try the update
+            }
+
             const params = {
                 TableName: 'nestmate-users',
                 Key: { userId: this.currentUserId },
@@ -537,6 +621,22 @@ class AWSDataService {
         try {
             if (!this.currentUserId) {
                 throw new Error('User not authenticated');
+            }
+
+            // Check if user record exists, create if not
+            try {
+                const checkParams = {
+                    TableName: 'nestmate-users',
+                    Key: { userId: this.currentUserId }
+                };
+                const checkResult = await this.dynamodb.get(checkParams).promise();
+                if (!checkResult.Item) {
+                    console.log('🆕 User record not found, creating...');
+                    await this.createUserRecord([]);
+                }
+            } catch (createError) {
+                console.error('❌ Error checking/creating user record:', createError);
+                // Continue anyway, try the update
             }
 
             const params = {
