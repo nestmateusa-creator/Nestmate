@@ -834,6 +834,15 @@
             background: #475569;
         }
 
+        .btn-secondary.active {
+            background: #00d4aa;
+            color: white;
+        }
+
+        .contact-list-container {
+            min-height: 200px;
+        }
+
         /* Task Management Styles */
         .task-stats {
             display: grid;
@@ -3000,13 +3009,39 @@
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                             <h3>Home Photos</h3>
                             <div>
-                                <button class="btn" onclick="uploadPhoto()">
-                                    <i class="fas fa-upload"></i> Upload Photo
+                                <button class="btn" onclick="openPhotoUpload()">
+                                    <i class="fas fa-upload"></i> Upload Photos
                                 </button>
                             </div>
                         </div>
-                        <div id="photosGallery" class="photo-gallery">
+                        <div id="photosUploadForm" style="display: none; margin-bottom: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                            <div class="form-group">
+                                <label for="photoFileInput">Select Photos</label>
+                                <input type="file" id="photoFileInput" accept="image/*" multiple>
+                                <small style="color: #94a3b8; margin-top: 0.5rem; display: block;">You can select multiple images at once</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="photoUrlInput">Or paste image URL</label>
+                                <input type="url" id="photoUrlInput" placeholder="https://example.com/image.jpg">
+                            </div>
+                            <div style="display: flex; gap: 0.75rem; margin-top: 1rem;">
+                                <button class="btn" onclick="uploadPhotos()">
+                                    <i class="fas fa-upload"></i> Upload Files
+                                </button>
+                                <button class="btn" onclick="addPhotoFromUrl()">
+                                    <i class="fas fa-plus"></i> Add URL
+                                </button>
+                                <button class="btn btn-secondary" onclick="cancelPhotoUpload()">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
+                            </div>
+                        </div>
+                        <div id="photosGallery" class="photo-gallery" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;">
                             <!-- dynamically rendered -->
+                        </div>
+                        <div id="photosEmpty" class="empty-state" style="display: none; text-align: center; padding: 2rem; color: #94a3b8;">
+                            <i class="fas fa-images" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                            <p>No photos uploaded yet. Click "Upload Photos" to get started.</p>
                         </div>
                     </div>
                 </div>
@@ -3034,13 +3069,44 @@
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                             <h3>Emergency Contacts</h3>
                             <div>
-                                <button class="btn" onclick="addEmergencyContact()">
+                                <button class="btn" onclick="openAddContactModal()">
                                     <i class="fas fa-plus"></i> Add Contact
                                 </button>
                             </div>
                         </div>
-                        <div id="emergencyContacts" class="list-container">
-                            <!-- dynamically rendered -->
+                        
+                        <!-- Contact Type Tabs -->
+                        <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; border-bottom: 2px solid #374151;">
+                            <button class="btn btn-secondary" id="tabFamily" onclick="showContactTab('family')" style="border-radius: 0.5rem 0.5rem 0 0; border-bottom: none;">
+                                <i class="fas fa-users"></i> Family
+                            </button>
+                            <button class="btn btn-secondary" id="tabEmergency" onclick="showContactTab('emergency')" style="border-radius: 0.5rem 0.5rem 0 0; border-bottom: none;">
+                                <i class="fas fa-phone-alt"></i> Emergency
+                            </button>
+                            <button class="btn btn-secondary" id="tabServices" onclick="showContactTab('services')" style="border-radius: 0.5rem 0.5rem 0 0; border-bottom: none;">
+                                <i class="fas fa-tools"></i> Services
+                            </button>
+                        </div>
+                        
+                        <!-- Family Contacts -->
+                        <div id="familyContacts" class="contact-list-container">
+                            <div id="familyContactsList" class="list-container">
+                                <!-- dynamically rendered -->
+                            </div>
+                        </div>
+                        
+                        <!-- Emergency Contacts -->
+                        <div id="emergencyContacts" class="contact-list-container" style="display: none;">
+                            <div id="emergencyContactsList" class="list-container">
+                                <!-- dynamically rendered -->
+                            </div>
+                        </div>
+                        
+                        <!-- Service Contacts -->
+                        <div id="servicesContacts" class="contact-list-container" style="display: none;">
+                            <div id="servicesContactsList" class="list-container">
+                                <!-- dynamically rendered -->
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -3231,6 +3297,13 @@
                         await renderBathroomsList();
                     } else if (sectionId === 'kitchens') {
                         await renderKitchensList();
+                    } else if (sectionId === 'photos') {
+                        await displayPhotos();
+                    } else if (sectionId === 'renovations') {
+                        await renderRenovationsList();
+                    } else if (sectionId === 'emergency') {
+                        initEmergencyContacts();
+                        await renderAllContacts();
                     }
                 }, 100);
             } else {
@@ -4395,16 +4468,758 @@
             }
         }
 
-        function uploadPhoto() {
-            showAlert('Photo upload functionality coming soon!', 'info');
+        // ===== Photos Functions =====
+        let photosData = [];
+
+        function openPhotoUpload() {
+            const form = document.getElementById('photosUploadForm');
+            if (form) {
+                form.style.display = form.style.display === 'none' ? 'block' : 'none';
+            }
+        }
+
+        function cancelPhotoUpload() {
+            const form = document.getElementById('photosUploadForm');
+            const fileInput = document.getElementById('photoFileInput');
+            const urlInput = document.getElementById('photoUrlInput');
+            if (form) form.style.display = 'none';
+            if (fileInput) fileInput.value = '';
+            if (urlInput) urlInput.value = '';
+        }
+
+        async function getS3PresignedUrl(key, contentType) {
+            try {
+                console.log('Getting presigned URL for:', key, contentType);
+                const response = await fetch('/.netlify/functions/s3-presign', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        bucket: 'nestmate-files-483954734051',
+                        key, 
+                        contentType 
+                    })
+                });
+                console.log('Presigned URL response status:', response.status);
+                const data = await response.json();
+                console.log('Presigned URL data:', data);
+                return data;
+            } catch (error) {
+                console.error('Error getting presigned URL:', error);
+                throw error;
+            }
+        }
+
+        async function uploadToS3(file, key) {
+            try {
+                const { uploadUrl, publicUrl } = await getS3PresignedUrl(key, file.type);
+                
+                const response = await fetch(uploadUrl, {
+                    method: 'PUT',
+                    body: file,
+                    headers: { 'Content-Type': file.type }
+                });
+
+                if (response.ok) {
+                    return publicUrl;
+                } else {
+                    throw new Error('Upload failed');
+                }
+            } catch (error) {
+                console.error('S3 upload error:', error);
+                throw error;
+            }
+        }
+
+        async function uploadPhotos() {
+            console.log('💾 uploadPhotos called');
+            const fileInput = document.getElementById('photoFileInput');
+            const files = fileInput?.files;
+            
+            if (!files || files.length === 0) {
+                showAlert('Please select files to upload', 'error');
+                return;
+            }
+
+            showAlert('Uploading photos...', 'info');
+            
+            try {
+                if (!nestMateAuth || !nestMateAuth.currentUser) {
+                    throw new Error('User not authenticated');
+                }
+
+                const userId = nestMateAuth.currentUser.userId;
+                console.log('User ID for upload:', userId);
+                
+                const uploadPromises = Array.from(files).map(async (file, index) => {
+                    const key = `users/${userId}/photos/${Date.now()}-${index}-${file.name}`;
+                    console.log('Uploading file:', file.name, 'with key:', key);
+                    const url = await uploadToS3(file, key);
+                    console.log('Upload successful, URL:', url);
+                    return { 
+                        url, 
+                        key, 
+                        type: 's3', 
+                        filename: file.name,
+                        uploadedAt: new Date().toISOString()
+                    };
+                });
+
+                const uploadedPhotos = await Promise.all(uploadPromises);
+                console.log('All uploads completed:', uploadedPhotos);
+                
+                // Get existing photos and add new ones
+                if (!window.awsDataService) {
+                    throw new Error('AWS Data Service not initialized');
+                }
+                
+                const existingPhotos = await window.awsDataService.getPhotosList();
+                photosData = [...existingPhotos, ...uploadedPhotos];
+                
+                // Save to AWS
+                const result = await window.awsDataService.savePhotosList(photosData);
+                if (result && result.success) {
+                    console.log('✅ Photos saved to AWS');
+                    await displayPhotos();
+                    if (fileInput) fileInput.value = '';
+                    cancelPhotoUpload();
+                    showAlert(`${uploadedPhotos.length} photos uploaded successfully!`, 'success');
+                } else {
+                    throw new Error(result?.error || 'Failed to save photos');
+                }
+            } catch (error) {
+                console.error('❌ Error uploading photos:', error);
+                showAlert('Upload failed. Please try again.', 'error');
+            }
+        }
+
+        async function addPhotoFromUrl() {
+            const urlInput = document.getElementById('photoUrlInput');
+            const url = urlInput?.value.trim();
+            
+            if (!url) {
+                showAlert('Please enter a valid image URL', 'error');
+                return;
+            }
+
+            try {
+                if (!window.awsDataService) {
+                    throw new Error('AWS Data Service not initialized');
+                }
+                
+                const existingPhotos = await window.awsDataService.getPhotosList();
+                const newPhoto = {
+                    url,
+                    type: 'url',
+                    filename: url.split('/').pop() || 'image.jpg',
+                    uploadedAt: new Date().toISOString()
+                };
+                
+                photosData = [...existingPhotos, newPhoto];
+                
+                const result = await window.awsDataService.savePhotosList(photosData);
+                if (result && result.success) {
+                    await displayPhotos();
+                    if (urlInput) urlInput.value = '';
+                    cancelPhotoUpload();
+                    showAlert('Photo added successfully!', 'success');
+                } else {
+                    throw new Error(result?.error || 'Failed to save photo');
+                }
+            } catch (error) {
+                console.error('❌ Error adding photo from URL:', error);
+                showAlert('Failed to add photo. Please try again.', 'error');
+            }
+        }
+
+        async function displayPhotos() {
+            console.log('🔍 displayPhotos called');
+            const gallery = document.getElementById('photosGallery');
+            const empty = document.getElementById('photosEmpty');
+            
+            if (!gallery) {
+                console.warn('⚠️ photosGallery container not found');
+                return;
+            }
+            
+            if (!window.awsDataService) {
+                console.warn('⚠️ AWS Data Service not available');
+                return;
+            }
+            
+            photosData = await window.awsDataService.getPhotosList();
+            console.log('🔍 Photos list:', photosData);
+            
+            gallery.innerHTML = '';
+            
+            if (!photosData || photosData.length === 0) {
+                if (empty) empty.style.display = 'block';
+                if (gallery) gallery.style.display = 'none';
+                return;
+            }
+            
+            if (empty) empty.style.display = 'none';
+            if (gallery) gallery.style.display = 'grid';
+            
+            photosData.forEach((photo, index) => {
+                const container = document.createElement('div');
+                container.className = 'photo-container';
+                container.style.position = 'relative';
+                container.style.aspectRatio = '1';
+                container.style.overflow = 'hidden';
+                container.style.borderRadius = '8px';
+                container.style.backgroundColor = '#f1f5f9';
+                
+                const img = document.createElement('img');
+                img.src = photo.url || '';
+                img.alt = photo.filename || 'Photo';
+                img.style.width = '100%';
+                img.style.height = '100%';
+                img.style.objectFit = 'cover';
+                img.style.cursor = 'pointer';
+                
+                img.onerror = () => {
+                    img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%23e2e8f0" width="200" height="200"/%3E%3Ctext fill="%2394a3b8" font-family="sans-serif" font-size="14" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3EFailed to load%3C/text%3E%3C/svg%3E';
+                };
+                
+                img.onclick = () => {
+                    window.open(photo.url, '_blank');
+                };
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'btn btn-secondary';
+                deleteBtn.style.position = 'absolute';
+                deleteBtn.style.top = '0.5rem';
+                deleteBtn.style.right = '0.5rem';
+                deleteBtn.style.padding = '0.25rem 0.5rem';
+                deleteBtn.style.fontSize = '0.75rem';
+                deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                deleteBtn.onclick = async (e) => {
+                    e.stopPropagation();
+                    if (confirm('Are you sure you want to delete this photo?')) {
+                        await deletePhoto(index);
+                    }
+                };
+                
+                container.appendChild(img);
+                container.appendChild(deleteBtn);
+                gallery.appendChild(container);
+            });
+        }
+
+        async function deletePhoto(index) {
+            try {
+                console.log('🗑️ deletePhoto called with index:', index);
+                if (!window.awsDataService) {
+                    throw new Error('AWS Data Service not initialized');
+                }
+                
+                photosData.splice(index, 1);
+                
+                const result = await window.awsDataService.savePhotosList(photosData);
+                if (result && result.success) {
+                    await displayPhotos();
+                    showAlert('Photo deleted successfully!', 'success');
+                } else {
+                    throw new Error(result?.error || 'Failed to delete photo');
+                }
+            } catch (error) {
+                console.error('❌ Error deleting photo:', error);
+                showAlert('Error deleting photo. Please try again.', 'error');
+            }
+        }
+
+        // ===== Renovations Functions =====
+        async function renderRenovationsList() {
+            console.log('🔍 renderRenovationsList called');
+            const container = document.getElementById('renovationsList');
+            if (!container) {
+                console.warn('⚠️ renovationsList container not found');
+                return;
+            }
+            container.innerHTML = '';
+            
+            if (!window.awsDataService) {
+                console.warn('⚠️ AWS Data Service not available');
+                return;
+            }
+            
+            const list = await window.awsDataService.getRenovationsList();
+            console.log('🔍 Renovations list:', list);
+            
+            if (list.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'empty-state';
+                empty.textContent = 'No renovation projects yet. Click "Add Renovation" to create one.';
+                container.appendChild(empty);
+                return;
+            }
+            
+            list.forEach((renovation, idx) => {
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                const details = [
+                    renovation.projectType && `Type: ${renovation.projectType}`,
+                    renovation.status && `Status: ${renovation.status}`,
+                    renovation.startDate && `Start: ${renovation.startDate}`,
+                    renovation.totalCost && `Cost: $${renovation.totalCost}`
+                ].filter(Boolean).join(' · ');
+                item.innerHTML = `
+                    <div class="list-item-main">
+                        <div class="list-item-title">${renovation.projectName || `Renovation ${idx + 1}`}</div>
+                        <div class="list-item-sub">${details || 'No details added'}</div>
+                        ${renovation.projectDescription ? `<div class="list-item-desc" style="margin-top: 0.5rem; color: #94a3b8; font-size: 0.9rem;">${renovation.projectDescription}</div>` : ''}
+                    </div>
+                    <div class="list-item-actions">
+                        <button class="btn btn-secondary" onclick="openEditRenovationModal(${idx}).catch(console.error)"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-secondary" onclick="deleteRenovation(${idx})"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
         }
 
         function addRenovation() {
-            showAlert('Add renovation functionality coming soon!', 'info');
+            openRenovationModal(null, null);
+        }
+
+        async function openEditRenovationModal(index) {
+            const list = await window.awsDataService.getRenovationsList();
+            const data = list[index];
+            openRenovationModal(data, index);
+        }
+
+        function openRenovationModal(existing = null, index = null) {
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.maxWidth = '800px';
+            modal.style.maxHeight = '90vh';
+            modal.style.overflowY = 'auto';
+            modal.innerHTML = `
+                <h3>${existing ? 'Edit Renovation Project' : 'Add Renovation Project'}</h3>
+                <div class="form-grid">
+                    <div class="form-group"><label>Project Name</label><input id="renovName" type="text" placeholder="e.g., Kitchen Remodel" value="${existing?.projectName || ''}"></div>
+                    <div class="form-group"><label>Project Type</label>
+                        <select id="renovType">
+                            <option value="">Select</option>
+                            <option value="kitchen" ${existing?.projectType==='kitchen'?'selected':''}>Kitchen</option>
+                            <option value="bathroom" ${existing?.projectType==='bathroom'?'selected':''}>Bathroom</option>
+                            <option value="flooring" ${existing?.projectType==='flooring'?'selected':''}>Flooring</option>
+                            <option value="roofing" ${existing?.projectType==='roofing'?'selected':''}>Roofing</option>
+                            <option value="plumbing" ${existing?.projectType==='plumbing'?'selected':''}>Plumbing</option>
+                            <option value="electrical" ${existing?.projectType==='electrical'?'selected':''}>Electrical</option>
+                            <option value="hvac" ${existing?.projectType==='hvac'?'selected':''}>HVAC</option>
+                            <option value="windows" ${existing?.projectType==='windows'?'selected':''}>Windows</option>
+                            <option value="exterior" ${existing?.projectType==='exterior'?'selected':''}>Exterior</option>
+                            <option value="interior" ${existing?.projectType==='interior'?'selected':''}>Interior</option>
+                            <option value="other" ${existing?.projectType==='other'?'selected':''}>Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Start Date</label><input id="renovStartDate" type="date" value="${existing?.startDate || ''}"></div>
+                    <div class="form-group"><label>End Date</label><input id="renovEndDate" type="date" value="${existing?.endDate || ''}"></div>
+                    <div class="form-group"><label>Status</label>
+                        <select id="renovStatus">
+                            <option value="planned" ${existing?.status==='planned'?'selected':''}>Planned</option>
+                            <option value="in-progress" ${existing?.status==='in-progress'?'selected':''}>In Progress</option>
+                            <option value="completed" ${existing?.status==='completed'?'selected':''}>Completed</option>
+                            <option value="on-hold" ${existing?.status==='on-hold'?'selected':''}>On Hold</option>
+                            <option value="cancelled" ${existing?.status==='cancelled'?'selected':''}>Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Total Cost</label><input id="renovCost" type="number" step="0.01" placeholder="0.00" value="${existing?.totalCost || ''}"></div>
+                    <div class="form-group"><label>Contractor Name</label><input id="renovContractor" type="text" placeholder="e.g., ABC Construction" value="${existing?.contractor || ''}"></div>
+                    <div class="form-group"><label>Contractor Phone</label><input id="renovContractorPhone" type="tel" placeholder="(555) 123-4567" value="${existing?.contractorPhone || ''}"></div>
+                    <div class="form-group" style="grid-column: 1 / -1;"><label>Project Description</label><textarea id="renovDescription" rows="3" placeholder="Describe the renovation project...">${existing?.projectDescription || ''}</textarea></div>
+                    <div class="form-group" style="grid-column: 1 / -1;"><label>Warranty Information</label><textarea id="renovWarranty" rows="2" placeholder="Warranty details...">${existing?.warrantyInfo || ''}</textarea></div>
+                    <div class="form-group" style="grid-column: 1 / -1;"><label>Notes</label><textarea id="renovNotes" rows="3" placeholder="Additional notes...">${existing?.notes || ''}</textarea></div>
+                </div>
+                <div style="display:flex; gap: .75rem; justify-content:flex-end; margin-top: 1rem;">
+                    <button class="btn" id="renovSaveBtn"><i class="fas fa-save"></i> Save</button>
+                    <button class="btn btn-secondary" id="renovCancelBtn"><i class="fas fa-times"></i> Cancel</button>
+                </div>
+            `;
+            overlay.appendChild(modal);
+            document.body.appendChild(overlay);
+
+            modal.querySelector('#renovCancelBtn').onclick = () => overlay.remove();
+            modal.querySelector('#renovSaveBtn').onclick = async () => {
+                const payload = {
+                    projectName: document.getElementById('renovName').value.trim(),
+                    projectType: document.getElementById('renovType').value,
+                    startDate: document.getElementById('renovStartDate').value,
+                    endDate: document.getElementById('renovEndDate').value,
+                    status: document.getElementById('renovStatus').value,
+                    totalCost: parseFloat(document.getElementById('renovCost').value) || 0,
+                    contractor: document.getElementById('renovContractor').value.trim(),
+                    contractorPhone: document.getElementById('renovContractorPhone').value.trim(),
+                    projectDescription: document.getElementById('renovDescription').value.trim(),
+                    warrantyInfo: document.getElementById('renovWarranty').value.trim(),
+                    notes: document.getElementById('renovNotes').value.trim(),
+                    createdAt: existing?.createdAt || new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+                await upsertRenovation(index, payload);
+                overlay.remove();
+            };
+        }
+
+        async function upsertRenovation(index, data) {
+            try {
+                console.log('💾 upsertRenovation called with index:', index, 'data:', data);
+                if (!window.awsDataService) {
+                    throw new Error('AWS Data Service not initialized');
+                }
+                
+                const list = await window.awsDataService.getRenovationsList();
+                if (index === null || index === undefined) {
+                    data.id = Date.now().toString();
+                    list.push(data);
+                } else {
+                    list[index] = { ...list[index], ...data };
+                }
+                
+                const result = await window.awsDataService.saveRenovationsList(list);
+                if (result && result.success) {
+                    console.log('✅ Renovation saved successfully');
+                    await renderRenovationsList();
+                    showAlert('Renovation project saved successfully!', 'success');
+                } else {
+                    throw new Error(result?.error || 'Failed to save');
+                }
+            } catch (error) {
+                console.error('❌ Error saving renovation:', error);
+                showAlert('Error saving renovation. Please try again.', 'error');
+            }
+        }
+
+        async function deleteRenovation(index) {
+            if (!confirm('Are you sure you want to delete this renovation project?')) return;
+            try {
+                const list = await window.awsDataService.getRenovationsList();
+                list.splice(index, 1);
+                const result = await window.awsDataService.saveRenovationsList(list);
+                if (result && result.success) {
+                    await renderRenovationsList();
+                    showAlert('Renovation deleted successfully!', 'success');
+                }
+            } catch (error) {
+                console.error('❌ Error deleting renovation:', error);
+                showAlert('Error deleting renovation. Please try again.', 'error');
+            }
+        }
+
+        // ===== Emergency Contacts Functions =====
+        let currentContactTab = 'family';
+
+        // Initialize tabs on first load
+        function initEmergencyContacts() {
+            showContactTab('family');
+        }
+
+        function showContactTab(tab) {
+            currentContactTab = tab;
+            
+            // Hide all contact lists
+            document.getElementById('familyContacts').style.display = 'none';
+            document.getElementById('emergencyContacts').style.display = 'none';
+            document.getElementById('servicesContacts').style.display = 'none';
+            
+            // Remove active class from all tabs
+            document.getElementById('tabFamily').classList.remove('active');
+            document.getElementById('tabEmergency').classList.remove('active');
+            document.getElementById('tabServices').classList.remove('active');
+            
+            // Show selected tab and add active class
+            if (tab === 'family') {
+                document.getElementById('familyContacts').style.display = 'block';
+                document.getElementById('tabFamily').classList.add('active');
+                renderFamilyContacts();
+            } else if (tab === 'emergency') {
+                document.getElementById('emergencyContacts').style.display = 'block';
+                document.getElementById('tabEmergency').classList.add('active');
+                renderEmergencyContacts();
+            } else if (tab === 'services') {
+                document.getElementById('servicesContacts').style.display = 'block';
+                document.getElementById('tabServices').classList.add('active');
+                renderServiceContacts();
+            }
+        }
+
+        async function renderFamilyContacts() {
+            console.log('🔍 renderFamilyContacts called');
+            const container = document.getElementById('familyContactsList');
+            if (!container) return;
+            
+            if (!window.awsDataService) return;
+            
+            const contacts = await window.awsDataService.getEmergencyContacts();
+            const list = contacts.family || [];
+            
+            container.innerHTML = '';
+            
+            if (list.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'empty-state';
+                empty.textContent = 'No family contacts added yet. Click "Add Contact" to create one.';
+                container.appendChild(empty);
+                return;
+            }
+            
+            list.forEach((contact, idx) => {
+                const item = createContactItem(contact, idx, 'family');
+                container.appendChild(item);
+            });
+        }
+
+        async function renderEmergencyContacts() {
+            console.log('🔍 renderEmergencyContacts called');
+            const container = document.getElementById('emergencyContactsList');
+            if (!container) return;
+            
+            if (!window.awsDataService) return;
+            
+            const contacts = await window.awsDataService.getEmergencyContacts();
+            const list = contacts.emergency || [];
+            
+            container.innerHTML = '';
+            
+            if (list.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'empty-state';
+                empty.textContent = 'No emergency contacts added yet. Click "Add Contact" to create one.';
+                container.appendChild(empty);
+                return;
+            }
+            
+            list.forEach((contact, idx) => {
+                const item = createContactItem(contact, idx, 'emergency');
+                container.appendChild(item);
+            });
+        }
+
+        async function renderServiceContacts() {
+            console.log('🔍 renderServiceContacts called');
+            const container = document.getElementById('servicesContactsList');
+            if (!container) return;
+            
+            if (!window.awsDataService) return;
+            
+            const contacts = await window.awsDataService.getEmergencyContacts();
+            const list = contacts.services || [];
+            
+            container.innerHTML = '';
+            
+            if (list.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'empty-state';
+                empty.textContent = 'No service contacts added yet. Click "Add Contact" to create one.';
+                container.appendChild(empty);
+                return;
+            }
+            
+            list.forEach((contact, idx) => {
+                const item = createContactItem(contact, idx, 'services');
+                container.appendChild(item);
+            });
+        }
+
+        function createContactItem(contact, idx, type) {
+            const item = document.createElement('div');
+            item.className = 'list-item';
+            const details = [
+                contact.phone && `Phone: ${contact.phone}`,
+                contact.email && `Email: ${contact.email}`,
+                contact.relationship && `Relationship: ${contact.relationship}`,
+                contact.serviceType && `Service: ${contact.serviceType}`
+            ].filter(Boolean).join(' · ');
+            
+            item.innerHTML = `
+                <div class="list-item-main">
+                    <div class="list-item-title">${contact.name || 'Unnamed Contact'}</div>
+                    <div class="list-item-sub">${details || 'No details added'}</div>
+                    ${contact.notes ? `<div class="list-item-desc" style="margin-top: 0.5rem; color: #94a3b8; font-size: 0.9rem;">${contact.notes}</div>` : ''}
+                </div>
+                <div class="list-item-actions">
+                    ${contact.phone ? `<a href="tel:${contact.phone}" class="btn btn-secondary" title="Call"><i class="fas fa-phone"></i></a>` : ''}
+                    <button class="btn btn-secondary" onclick="openEditContactModal(${idx}, '${type}').catch(console.error)"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-secondary" onclick="deleteContact(${idx}, '${type}')"><i class="fas fa-trash"></i></button>
+                </div>
+            `;
+            return item;
+        }
+
+        function openAddContactModal() {
+            openContactModal(null, null, currentContactTab);
+        }
+
+        async function openEditContactModal(index, type) {
+            const contacts = await window.awsDataService.getEmergencyContacts();
+            const list = contacts[type] || [];
+            const data = list[index];
+            openContactModal(data, index, type);
+        }
+
+        function openContactModal(existing = null, index = null, type = 'family') {
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.maxWidth = '600px';
+            
+            const isService = type === 'services';
+            const isEmergency = type === 'emergency';
+            
+            modal.innerHTML = `
+                <h3>${existing ? 'Edit Contact' : 'Add Contact'}</h3>
+                <div class="form-grid">
+                    <div class="form-group"><label>Contact Type</label>
+                        <select id="contactTypeSelect" onchange="updateContactForm()">
+                            <option value="family" ${type==='family'?'selected':''}>Family Contact</option>
+                            <option value="emergency" ${type==='emergency'?'selected':''}>Emergency Contact</option>
+                            <option value="services" ${type==='services'?'selected':''}>Service Provider</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Name</label><input id="contactName" type="text" placeholder="e.g., John Doe" value="${existing?.name || ''}"></div>
+                    <div class="form-group"><label>Phone</label><input id="contactPhone" type="tel" placeholder="(555) 123-4567" value="${existing?.phone || ''}"></div>
+                    <div class="form-group"><label>Email</label><input id="contactEmail" type="email" placeholder="john@example.com" value="${existing?.email || ''}"></div>
+                    ${isService ? `
+                        <div class="form-group"><label>Service Type</label>
+                            <select id="contactServiceType">
+                                <option value="">Select</option>
+                                <option value="plumber" ${existing?.serviceType==='plumber'?'selected':''}>Plumber</option>
+                                <option value="electrician" ${existing?.serviceType==='electrician'?'selected':''}>Electrician</option>
+                                <option value="hvac" ${existing?.serviceType==='hvac'?'selected':''}>HVAC</option>
+                                <option value="locksmith" ${existing?.serviceType==='locksmith'?'selected':''}>Locksmith</option>
+                                <option value="handyman" ${existing?.serviceType==='handyman'?'selected':''}>Handyman</option>
+                                <option value="roofer" ${existing?.serviceType==='roofer'?'selected':''}>Roofer</option>
+                                <option value="pest-control" ${existing?.serviceType==='pest-control'?'selected':''}>Pest Control</option>
+                                <option value="security" ${existing?.serviceType==='security'?'selected':''}>Security</option>
+                                <option value="other" ${existing?.serviceType==='other'?'selected':''}>Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>Company</label><input id="contactCompany" type="text" placeholder="Company name" value="${existing?.company || ''}"></div>
+                    ` : ''}
+                    ${!isService ? `
+                        <div class="form-group"><label>${isEmergency ? 'Relationship' : 'Relationship'}</label><input id="contactRelationship" type="text" placeholder="e.g., Spouse, Parent, Friend" value="${existing?.relationship || ''}"></div>
+                    ` : ''}
+                    <div class="form-group"><label>Address</label><input id="contactAddress" type="text" placeholder="Street address" value="${existing?.address || ''}"></div>
+                    <div class="form-group" style="grid-column: 1 / -1;"><label>Notes</label><textarea id="contactNotes" rows="3" placeholder="Additional notes...">${existing?.notes || ''}</textarea></div>
+                </div>
+                <div style="display:flex; gap: .75rem; justify-content:flex-end; margin-top: 1rem;">
+                    <button class="btn" id="contactSaveBtn"><i class="fas fa-save"></i> Save</button>
+                    <button class="btn btn-secondary" id="contactCancelBtn"><i class="fas fa-times"></i> Cancel</button>
+                </div>
+            `;
+            overlay.appendChild(modal);
+            document.body.appendChild(overlay);
+
+            modal.querySelector('#contactCancelBtn').onclick = () => overlay.remove();
+            modal.querySelector('#contactSaveBtn').onclick = async () => {
+                const selectedType = document.getElementById('contactTypeSelect').value;
+                const payload = {
+                    name: document.getElementById('contactName').value.trim(),
+                    phone: document.getElementById('contactPhone').value.trim(),
+                    email: document.getElementById('contactEmail').value.trim(),
+                    address: document.getElementById('contactAddress').value.trim(),
+                    notes: document.getElementById('contactNotes').value.trim(),
+                    createdAt: existing?.createdAt || new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+                
+                if (selectedType === 'services') {
+                    payload.serviceType = document.getElementById('contactServiceType').value;
+                    payload.company = document.getElementById('contactCompany').value.trim();
+                } else {
+                    payload.relationship = document.getElementById('contactRelationship').value.trim();
+                }
+                
+                await upsertContact(index, payload, selectedType);
+                overlay.remove();
+            };
+        }
+
+        async function upsertContact(index, data, type) {
+            try {
+                console.log('💾 upsertContact called with index:', index, 'type:', type, 'data:', data);
+                if (!window.awsDataService) {
+                    throw new Error('AWS Data Service not initialized');
+                }
+                
+                const contacts = await window.awsDataService.getEmergencyContacts();
+                const list = contacts[type] || [];
+                
+                if (index === null || index === undefined) {
+                    data.id = Date.now().toString();
+                    list.push(data);
+                } else {
+                    list[index] = { ...list[index], ...data };
+                }
+                
+                contacts[type] = list;
+                
+                const result = await window.awsDataService.saveEmergencyContacts(contacts);
+                if (result && result.success) {
+                    console.log('✅ Contact saved successfully');
+                    await renderAllContacts();
+                    showAlert('Contact saved successfully!', 'success');
+                } else {
+                    throw new Error(result?.error || 'Failed to save');
+                }
+            } catch (error) {
+                console.error('❌ Error saving contact:', error);
+                showAlert('Error saving contact. Please try again.', 'error');
+            }
+        }
+
+        async function deleteContact(index, type) {
+            if (!confirm('Are you sure you want to delete this contact?')) return;
+            try {
+                const contacts = await window.awsDataService.getEmergencyContacts();
+                const list = contacts[type] || [];
+                list.splice(index, 1);
+                contacts[type] = list;
+                
+                const result = await window.awsDataService.saveEmergencyContacts(contacts);
+                if (result && result.success) {
+                    await renderAllContacts();
+                    showAlert('Contact deleted successfully!', 'success');
+                }
+            } catch (error) {
+                console.error('❌ Error deleting contact:', error);
+                showAlert('Error deleting contact. Please try again.', 'error');
+            }
+        }
+
+        async function renderAllContacts() {
+            if (currentContactTab === 'family') {
+                await renderFamilyContacts();
+            } else if (currentContactTab === 'emergency') {
+                await renderEmergencyContacts();
+            } else if (currentContactTab === 'services') {
+                await renderServiceContacts();
+            }
         }
 
         function addEmergencyContact() {
-            showAlert('Add emergency contact functionality coming soon!', 'info');
+            openAddContactModal();
+        }
+
+        function updateContactForm() {
+            const type = document.getElementById('contactTypeSelect').value;
+            const serviceTypeGroup = document.getElementById('contactServiceType')?.closest('.form-group');
+            const companyGroup = document.getElementById('contactCompany')?.closest('.form-group');
+            const relationshipGroup = document.getElementById('contactRelationship')?.closest('.form-group');
+            
+            if (type === 'services') {
+                if (serviceTypeGroup) serviceTypeGroup.style.display = 'block';
+                if (companyGroup) companyGroup.style.display = 'block';
+                if (relationshipGroup) relationshipGroup.style.display = 'none';
+            } else {
+                if (serviceTypeGroup) serviceTypeGroup.style.display = 'none';
+                if (companyGroup) companyGroup.style.display = 'none';
+                if (relationshipGroup) relationshipGroup.style.display = 'block';
+            }
         }
 
         // Quick Action Functions
@@ -5808,6 +6623,15 @@
                     // Load garage and exterior
                     await loadGarage();
                     await loadExterior();
+                    
+                    // Load photos
+                    await displayPhotos();
+                    
+                    // Load renovations
+                    await renderRenovationsList();
+                    
+                    // Load emergency contacts
+                    await renderAllContacts();
                     
                     // Load tasks
                     tasks = await window.awsDataService.getTasksList();

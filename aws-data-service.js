@@ -137,6 +137,9 @@ class AWSDataService {
                 kitchensList: [],
                 livingAreasList: [],
                 appliancesList: [],
+                photosList: [],
+                renovationsList: [],
+                emergencyContacts: { family: [], emergency: [], services: [] },
                 garageInfo: {},
                 exteriorInfo: {},
                 preferences: {},
@@ -676,6 +679,198 @@ class AWSDataService {
         } catch (error) {
             console.error('❌ Error getting appliances list:', error);
             return [];
+        }
+    }
+
+    // ==================== PHOTOS DATA ====================
+
+    async savePhotosList(photosList) {
+        try {
+            if (!this.currentUserId) {
+                throw new Error('User not authenticated');
+            }
+
+            // Check if user record exists, create if not
+            try {
+                const checkParams = {
+                    TableName: 'nestmate-users',
+                    Key: { userId: this.currentUserId }
+                };
+                const checkResult = await this.dynamodb.get(checkParams).promise();
+                if (!checkResult.Item) {
+                    console.log('🆕 User record not found, creating...');
+                    await this.createUserRecord([]);
+                }
+            } catch (createError) {
+                console.error('❌ Error checking/creating user record:', createError);
+                // Continue anyway, try the update
+            }
+
+            const params = {
+                TableName: 'nestmate-users',
+                Key: { userId: this.currentUserId },
+                UpdateExpression: 'SET photosList = :photos, updatedAt = :updated',
+                ExpressionAttributeValues: {
+                    ':photos': photosList,
+                    ':updated': new Date().toISOString()
+                }
+            };
+
+            await this.dynamodb.update(params).promise();
+            console.log('✅ Photos list saved to AWS');
+            return { success: true };
+
+        } catch (error) {
+            console.error('❌ Error saving photos list:', error);
+            return { success: false, error: error.message };
+        }
+    }
+
+    async getPhotosList() {
+        try {
+            if (!this.currentUserId) {
+                throw new Error('User not authenticated');
+            }
+
+            const params = {
+                TableName: 'nestmate-users',
+                Key: { userId: this.currentUserId }
+            };
+
+            const result = await this.dynamodb.get(params).promise();
+            return result.Item ? result.Item.photosList || [] : [];
+
+        } catch (error) {
+            console.error('❌ Error getting photos list:', error);
+            return [];
+        }
+    }
+
+    // ==================== RENOVATIONS DATA ====================
+
+    async saveRenovationsList(renovationsList) {
+        try {
+            if (!this.currentUserId) {
+                throw new Error('User not authenticated');
+            }
+
+            // Check if user record exists, create if not
+            try {
+                const checkParams = {
+                    TableName: 'nestmate-users',
+                    Key: { userId: this.currentUserId }
+                };
+                const checkResult = await this.dynamodb.get(checkParams).promise();
+                if (!checkResult.Item) {
+                    console.log('🆕 User record not found, creating...');
+                    await this.createUserRecord([]);
+                }
+            } catch (createError) {
+                console.error('❌ Error checking/creating user record:', createError);
+                // Continue anyway, try the update
+            }
+
+            const params = {
+                TableName: 'nestmate-users',
+                Key: { userId: this.currentUserId },
+                UpdateExpression: 'SET renovationsList = :renovations, updatedAt = :updated',
+                ExpressionAttributeValues: {
+                    ':renovations': renovationsList,
+                    ':updated': new Date().toISOString()
+                }
+            };
+
+            await this.dynamodb.update(params).promise();
+            console.log('✅ Renovations list saved to AWS');
+            return { success: true };
+
+        } catch (error) {
+            console.error('❌ Error saving renovations list:', error);
+            return { success: false, error: error.message };
+        }
+    }
+
+    async getRenovationsList() {
+        try {
+            if (!this.currentUserId) {
+                throw new Error('User not authenticated');
+            }
+
+            const params = {
+                TableName: 'nestmate-users',
+                Key: { userId: this.currentUserId }
+            };
+
+            const result = await this.dynamodb.get(params).promise();
+            return result.Item ? result.Item.renovationsList || [] : [];
+
+        } catch (error) {
+            console.error('❌ Error getting renovations list:', error);
+            return [];
+        }
+    }
+
+    // ==================== EMERGENCY CONTACTS DATA ====================
+
+    async saveEmergencyContacts(emergencyContacts) {
+        try {
+            if (!this.currentUserId) {
+                throw new Error('User not authenticated');
+            }
+
+            // Check if user record exists, create if not
+            try {
+                const checkParams = {
+                    TableName: 'nestmate-users',
+                    Key: { userId: this.currentUserId }
+                };
+                const checkResult = await this.dynamodb.get(checkParams).promise();
+                if (!checkResult.Item) {
+                    console.log('🆕 User record not found, creating...');
+                    await this.createUserRecord([]);
+                }
+            } catch (createError) {
+                console.error('❌ Error checking/creating user record:', createError);
+                // Continue anyway, try the update
+            }
+
+            const params = {
+                TableName: 'nestmate-users',
+                Key: { userId: this.currentUserId },
+                UpdateExpression: 'SET emergencyContacts = :contacts, updatedAt = :updated',
+                ExpressionAttributeValues: {
+                    ':contacts': emergencyContacts,
+                    ':updated': new Date().toISOString()
+                }
+            };
+
+            await this.dynamodb.update(params).promise();
+            console.log('✅ Emergency contacts saved to AWS');
+            return { success: true };
+
+        } catch (error) {
+            console.error('❌ Error saving emergency contacts:', error);
+            return { success: false, error: error.message };
+        }
+    }
+
+    async getEmergencyContacts() {
+        try {
+            if (!this.currentUserId) {
+                throw new Error('User not authenticated');
+            }
+
+            const params = {
+                TableName: 'nestmate-users',
+                Key: { userId: this.currentUserId }
+            };
+
+            const result = await this.dynamodb.get(params).promise();
+            return result.Item ? result.Item.emergencyContacts || { family: [], emergency: [], services: [] } : { family: [], emergency: [], services: [] };
+
+        } catch (error) {
+            console.error('❌ Error getting emergency contacts:', error);
+            return { family: [], emergency: [], services: [] };
         }
     }
 
