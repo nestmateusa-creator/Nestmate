@@ -170,21 +170,11 @@
 
         /* Overview and photos - DO NOT TOUCH, they are perfect - no special rules needed */
 
-        /* Position all sections except overview/photos */
-        .main-content .dashboard-section:not(#overview):not(#photos),
+        /* All sections use normal flow - no special positioning */
+        .main-content .dashboard-section,
         .main-content .content-section {
-            position: absolute !important;
-            top: -2000px !important;
-            left: 50% !important;
-            transform: translateX(calc(-50% + 1200px)) !important;
-            width: 1000px !important;
-            max-width: 1000px !important;
-        }
-
-        /* Overview and photos stay in normal flow */
-        .main-content #overview,
-        .main-content #photos {
-            position: relative;
+            width: 100%;
+            max-width: 100%;
         }
 
         /* Ensure cards inside sections don't add extra spacing */
