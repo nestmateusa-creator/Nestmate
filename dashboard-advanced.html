@@ -541,6 +541,21 @@
             margin-bottom: 0 !important;
         }
 
+        /* Ensure sections are visible when displayed */
+        .dashboard-section[style*="display: block"],
+        .dashboard-section:not([style*="display: none"]) {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        /* Ensure cards inside sections are visible */
+        .dashboard-section .card {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
         /* Content Section default display */
         .content-section {
             display: none;
