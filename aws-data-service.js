@@ -125,13 +125,10 @@ class AWSDataService {
 
     // Create user record if it doesn't exist
     async createUserRecord(homesList = []) {
-        const params = {
-            TableName: 'nestmate-users',
-            Item: {
-                userId: this.currentUserId,
-                email: this.currentUserId, // Assuming userId is the email
-                homesList: homesList,
-                tasksList: [],
+        // Initialize homesData structure for per-home data storage
+        const homesData = {};
+        homesList.forEach(home => {
+            homesData[home.id] = {
                 bedroomsList: [],
                 bathroomsList: [],
                 kitchensList: [],
@@ -141,7 +138,18 @@ class AWSDataService {
                 renovationsList: [],
                 emergencyContacts: { family: [], emergency: [], services: [] },
                 garageInfo: {},
-                exteriorInfo: {},
+                exteriorInfo: {}
+            };
+        });
+
+        const params = {
+            TableName: 'nestmate-users',
+            Item: {
+                userId: this.currentUserId,
+                email: this.currentUserId, // Assuming userId is the email
+                homesList: homesList,
+                homesData: homesData, // Per-home data storage
+                tasksList: [],
                 preferences: {},
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
@@ -240,22 +248,60 @@ class AWSDataService {
 
     // ==================== ROOMS DATA ====================
 
-    async saveBedroomsList(bedroomsList) {
+    async saveBedroomsList(bedroomsList, homeId = null) {
         try {
             if (!this.currentUserId) {
                 console.error('❌ saveBedroomsList: User not authenticated');
                 throw new Error('User not authenticated');
             }
 
-            console.log('💾 saveBedroomsList: Saving for userId:', this.currentUserId);
+            if (!homeId) {
+                console.warn('⚠️ saveBedroomsList: No homeId provided, using default');
+                // Try to get first home or use a default
+                const homes = await this.getHomesList();
+                if (homes.length > 0) {
+                    homeId = homes[0].id;
+                } else {
+                    throw new Error('No home selected and no homes available');
+                }
+            }
+
+            console.log('💾 saveBedroomsList: Saving for userId:', this.currentUserId, 'homeId:', homeId);
             console.log('💾 saveBedroomsList: Data to save:', bedroomsList);
+            
+            // Get current user data
+            const getParams = {
+                TableName: 'nestmate-users',
+                Key: { userId: this.currentUserId }
+            };
+            const userData = await this.dynamodb.get(getParams).promise();
+            
+            // Initialize homesData if it doesn't exist
+            let homesData = userData.Item?.homesData || {};
+            if (!homesData[homeId]) {
+                homesData[homeId] = {
+                    bedroomsList: [],
+                    bathroomsList: [],
+                    kitchensList: [],
+                    livingAreasList: [],
+                    appliancesList: [],
+                    photosList: [],
+                    renovationsList: [],
+                    emergencyContacts: { family: [], emergency: [], services: [] },
+                    garageInfo: {},
+                    exteriorInfo: {}
+                };
+            }
+            
+            // Update bedroomsList for this home
+            homesData[homeId].bedroomsList = bedroomsList;
             
             const params = {
                 TableName: 'nestmate-users',
                 Key: { userId: this.currentUserId },
-                UpdateExpression: 'SET bedroomsList = :bedrooms, updatedAt = :updated',
+                UpdateExpression: 'SET homesData = :homesData, updatedAt = :updated',
                 ExpressionAttributeValues: {
-                    ':bedrooms': bedroomsList,
+                    ':homesData': homesData,
                     ':updated': new Date().toISOString()
                 }
             };
@@ -263,7 +309,7 @@ class AWSDataService {
             console.log('💾 saveBedroomsList: DynamoDB params:', params);
             const result = await this.dynamodb.update(params).promise();
             console.log('💾 saveBedroomsList: DynamoDB result:', result);
-            console.log('✅ Bedrooms list saved to AWS');
+            console.log('✅ Bedrooms list saved to AWS for home:', homeId);
             return { success: true };
 
         } catch (error) {
