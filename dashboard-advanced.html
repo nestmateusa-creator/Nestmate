@@ -3496,6 +3496,7 @@
             
             // Find the nav item by sectionId and add active class
             navItems.forEach(item => {
+                if (!item || !item.classList) return; // Safety check
                 const onclickAttr = item.getAttribute('onclick');
                 if (onclickAttr && (onclickAttr.includes(`'${sectionId}'`) || onclickAttr.includes(`"${sectionId}"`))) {
                     item.classList.add('active');
