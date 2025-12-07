@@ -4003,7 +4003,7 @@
 
         // ===== Living Areas Functions =====
         async function renderLivingAreasList() {
-            console.log('🔍 renderLivingAreasList called');
+            console.log('🔍 renderLivingAreasList called with currentHomeId:', currentHomeId);
             const container = document.getElementById('livingAreasList');
             if (!container) {
                 console.warn('⚠️ livingAreasList container not found');
@@ -4016,6 +4016,7 @@
                 return;
             }
             
+            console.log('🔍 Loading living areas for homeId:', currentHomeId);
             const list = await window.awsDataService.getLivingAreasList(currentHomeId);
             console.log('🔍 Living areas list:', list);
             
@@ -4336,7 +4337,7 @@
 
         // ===== Appliances Functions =====
         async function renderAppliancesList() {
-            console.log('🔍 renderAppliancesList called');
+            console.log('🔍 renderAppliancesList called with currentHomeId:', currentHomeId);
             const container = document.getElementById('appliancesList');
             if (!container) {
                 console.warn('⚠️ appliancesList container not found');
@@ -4501,13 +4502,14 @@
 
         // ===== Garage Functions =====
         async function loadGarage() {
-            console.log('🔍 loadGarage called');
+            console.log('🔍 loadGarage called with currentHomeId:', currentHomeId);
             try {
                 if (!window.awsDataService) {
                     console.warn('⚠️ AWS Data Service not available');
                     return;
                 }
                 
+                console.log('🔍 Loading garage info for homeId:', currentHomeId);
                 const garageInfo = await window.awsDataService.getGarageInfo(currentHomeId);
                 console.log('🔍 Garage info loaded:', garageInfo);
                 
@@ -4909,7 +4911,7 @@
         }
 
         async function displayPhotos() {
-            console.log('🔍 displayPhotos called');
+            console.log('🔍 displayPhotos called with currentHomeId:', currentHomeId);
             const gallery = document.getElementById('photosGallery');
             const empty = document.getElementById('photosEmpty');
             
@@ -4926,7 +4928,8 @@
             }
             
             try {
-                photosData = await window.awsDataService.getPhotosList();
+                console.log('🔍 Loading photos for homeId:', currentHomeId);
+                photosData = await window.awsDataService.getPhotosList(currentHomeId);
                 console.log('🔍 Photos list loaded:', photosData.length, 'photos');
                 console.log('🔍 Photos data:', photosData);
                 
@@ -5076,7 +5079,7 @@
 
         // ===== Renovations Functions =====
         async function renderRenovationsList() {
-            console.log('🔍 renderRenovationsList called');
+            console.log('🔍 renderRenovationsList called with currentHomeId:', currentHomeId);
             const container = document.getElementById('renovationsList');
             if (!container) {
                 console.warn('⚠️ renovationsList container not found');
@@ -5089,6 +5092,7 @@
                 return;
             }
             
+            console.log('🔍 Loading renovations for homeId:', currentHomeId);
             const list = await window.awsDataService.getRenovationsList(currentHomeId);
             console.log('🔍 Renovations list:', list);
             
@@ -5293,12 +5297,13 @@
         }
 
         async function renderFamilyContacts() {
-            console.log('🔍 renderFamilyContacts called');
+            console.log('🔍 renderFamilyContacts called with currentHomeId:', currentHomeId);
             const container = document.getElementById('familyContactsList');
             if (!container) return;
             
             if (!window.awsDataService) return;
             
+            console.log('🔍 Loading family contacts for homeId:', currentHomeId);
             const contacts = await window.awsDataService.getEmergencyContacts(currentHomeId);
             const list = contacts.family || [];
             
@@ -5319,12 +5324,13 @@
         }
 
         async function renderEmergencyContacts() {
-            console.log('🔍 renderEmergencyContacts called');
+            console.log('🔍 renderEmergencyContacts called with currentHomeId:', currentHomeId);
             const container = document.getElementById('emergencyContactsList');
             if (!container) return;
             
             if (!window.awsDataService) return;
             
+            console.log('🔍 Loading emergency contacts for homeId:', currentHomeId);
             const contacts = await window.awsDataService.getEmergencyContacts(currentHomeId);
             const list = contacts.emergency || [];
             
@@ -5345,11 +5351,13 @@
         }
 
         async function renderServiceContacts() {
-            console.log('🔍 renderServiceContacts called');
+            console.log('🔍 renderServiceContacts called with currentHomeId:', currentHomeId);
             const container = document.getElementById('servicesContactsList');
             if (!container) return;
             
             if (!window.awsDataService) return;
+            
+            console.log('🔍 Loading service contacts for homeId:', currentHomeId);
             
             const contacts = await window.awsDataService.getEmergencyContacts(currentHomeId);
             const list = contacts.services || [];
@@ -5617,7 +5625,7 @@
 
         // ===== Dynamic Bedrooms Helpers =====
         async function renderBedroomsList() {
-            console.log('🔍 renderBedroomsList called');
+            console.log('🔍 renderBedroomsList called with currentHomeId:', currentHomeId);
             const container = document.getElementById('bedroomsList');
             if (!container) {
                 console.warn('⚠️ bedroomsList container not found');
@@ -5625,7 +5633,7 @@
             }
             container.innerHTML = '';
             
-            console.log('🔍 Loading bedrooms state from AWS...');
+            console.log('🔍 Loading bedrooms state from AWS for homeId:', currentHomeId);
             const state = await ensureDashboardState();
             console.log('🔍 Dashboard state:', state);
             const list = state.bedroomsList || [];
@@ -5964,7 +5972,7 @@
 
         // ===== Dynamic Bathrooms Helpers =====
         async function renderBathroomsList() {
-            console.log('🔍 renderBathroomsList called');
+            console.log('🔍 renderBathroomsList called with currentHomeId:', currentHomeId);
             const container = document.getElementById('bathroomsList');
             if (!container) {
                 console.warn('⚠️ bathroomsList container not found');
@@ -6147,7 +6155,7 @@
 
         // ===== Dynamic Kitchens Helpers =====
         async function renderKitchensList() {
-            console.log('🔍 renderKitchensList called');
+            console.log('🔍 renderKitchensList called with currentHomeId:', currentHomeId);
             const container = document.getElementById('kitchensList');
             if (!container) {
                 console.warn('⚠️ kitchensList container not found');
@@ -6364,11 +6372,13 @@
                 throw new Error('AWS Data Service not initialized');
             }
             
+            console.log('🔍 ensureDashboardState called with currentHomeId:', currentHomeId);
+            
             let state = {};
             
             // Load from AWS only
             try {
-                console.log('🔍 Loading bedrooms list from AWS...');
+                console.log('🔍 Loading bedrooms list from AWS for homeId:', currentHomeId);
                 const bedroomsList = await window.awsDataService.getBedroomsList(currentHomeId);
                 console.log('🔍 Retrieved bedroomsList:', bedroomsList);
                 
