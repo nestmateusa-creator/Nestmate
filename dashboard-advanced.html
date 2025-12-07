@@ -6391,21 +6391,29 @@
         async function saveHome() {
             const form = document.getElementById('homeForm');
             
+            // Get and trim values
+            const addressInput = document.getElementById('homeAddress');
+            const typeInput = document.getElementById('homeType');
+            
+            const address = addressInput ? addressInput.value.trim() : '';
+            const type = typeInput ? typeInput.value.trim() : '';
+            
+            // Validate required fields first
+            if (!address || !type) {
+                console.log('Validation failed - address:', address, 'type:', type);
+                showAlert('Please fill in all required fields (Address and Type are required)', 'error');
+                return;
+            }
+            
             const homeData = {
-                address: document.getElementById('homeAddress').value,
-                type: document.getElementById('homeType').value,
+                address: address,
+                type: type,
                 bedrooms: parseInt(document.getElementById('homeBedrooms').value) || 0,
                 bathrooms: parseFloat(document.getElementById('homeBathrooms').value) || 0,
                 squareFootage: parseInt(document.getElementById('homeSquareFootage').value) || 0,
                 yearBuilt: parseInt(document.getElementById('homeYearBuilt').value) || new Date().getFullYear(),
                 healthScore: Math.floor(Math.random() * 20) + 80
             };
-
-            // Validate required fields
-            if (!homeData.address || !homeData.type) {
-                showAlert('Please fill in all required fields (Address and Type are required)', 'error');
-                return;
-            }
 
             try {
                 if (!window.awsDataService) {
