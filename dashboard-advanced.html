@@ -7170,7 +7170,17 @@
                 // Render in unlimitedTasksList container (for the unlimited tasks section)
                 const unlimitedContainer = document.getElementById('unlimitedTasksList');
                 if (unlimitedContainer) {
-                    renderFilteredTasks(currentTaskFilter);
+                    // If filtering by home, check the dropdown value and filter accordingly
+                    if (currentTaskFilter === 'by-home') {
+                        const homeFilterSelect = document.getElementById('homeFilterSelect');
+                        if (homeFilterSelect && homeFilterSelect.value) {
+                            filterTasksByHome(homeFilterSelect.value);
+                        } else {
+                            renderFilteredTasks(currentTaskFilter);
+                        }
+                    } else {
+                        renderFilteredTasks(currentTaskFilter);
+                    }
                 }
                 
                 // Update task stats
