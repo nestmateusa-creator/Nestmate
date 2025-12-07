@@ -3437,7 +3437,13 @@
             
             // Remove active class from all nav items and find the correct one to activate
             const navItems = document.querySelectorAll('.nav-item');
-            navItems.forEach(item => item.classList.remove('active'));
+            if (navItems && navItems.length > 0) {
+                navItems.forEach(item => {
+                    if (item && item.classList) {
+                        item.classList.remove('active');
+                    }
+                });
+            }
             
             // Show selected section
             const targetSection = document.getElementById(sectionId);
