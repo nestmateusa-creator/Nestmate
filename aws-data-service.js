@@ -138,7 +138,9 @@ class AWSDataService {
                 renovationsList: [],
                 emergencyContacts: { family: [], emergency: [], services: [] },
                 garageInfo: {},
-                exteriorInfo: {}
+                exteriorInfo: {},
+                structureInfo: {},
+                systemsInfo: {}
             };
         });
 
@@ -289,7 +291,9 @@ class AWSDataService {
                     renovationsList: [],
                     emergencyContacts: { family: [], emergency: [], services: [] },
                     garageInfo: {},
-                    exteriorInfo: {}
+                    exteriorInfo: {},
+                    structureInfo: {},
+                    systemsInfo: {}
                 };
             }
             
@@ -386,7 +390,9 @@ class AWSDataService {
                     renovationsList: [],
                     emergencyContacts: { family: [], emergency: [], services: [] },
                     garageInfo: {},
-                    exteriorInfo: {}
+                    exteriorInfo: {},
+                    structureInfo: {},
+                    systemsInfo: {}
                 };
             }
             
@@ -475,7 +481,9 @@ class AWSDataService {
                     renovationsList: [],
                     emergencyContacts: { family: [], emergency: [], services: [] },
                     garageInfo: {},
-                    exteriorInfo: {}
+                    exteriorInfo: {},
+                    structureInfo: {},
+                    systemsInfo: {}
                 };
             }
             
@@ -566,7 +574,9 @@ class AWSDataService {
                     renovationsList: [],
                     emergencyContacts: { family: [], emergency: [], services: [] },
                     garageInfo: {},
-                    exteriorInfo: {}
+                    exteriorInfo: {},
+                    structureInfo: {},
+                    systemsInfo: {}
                 };
             }
             
@@ -657,7 +667,9 @@ class AWSDataService {
                     renovationsList: [],
                     emergencyContacts: { family: [], emergency: [], services: [] },
                     garageInfo: {},
-                    exteriorInfo: {}
+                    exteriorInfo: {},
+                    structureInfo: {},
+                    systemsInfo: {}
                 };
             }
             
@@ -748,7 +760,9 @@ class AWSDataService {
                     renovationsList: [],
                     emergencyContacts: { family: [], emergency: [], services: [] },
                     garageInfo: {},
-                    exteriorInfo: {}
+                    exteriorInfo: {},
+                    structureInfo: {},
+                    systemsInfo: {}
                 };
             }
             
@@ -839,7 +853,9 @@ class AWSDataService {
                     renovationsList: [],
                     emergencyContacts: { family: [], emergency: [], services: [] },
                     garageInfo: {},
-                    exteriorInfo: {}
+                    exteriorInfo: {},
+                    structureInfo: {},
+                    systemsInfo: {}
                 };
             }
             
@@ -930,7 +946,9 @@ class AWSDataService {
                     renovationsList: [],
                     emergencyContacts: { family: [], emergency: [], services: [] },
                     garageInfo: {},
-                    exteriorInfo: {}
+                    exteriorInfo: {},
+                    structureInfo: {},
+                    systemsInfo: {}
                 };
             }
             
@@ -1021,7 +1039,9 @@ class AWSDataService {
                     renovationsList: [],
                     emergencyContacts: { family: [], emergency: [], services: [] },
                     garageInfo: {},
-                    exteriorInfo: {}
+                    exteriorInfo: {},
+                    structureInfo: {},
+                    systemsInfo: {}
                 };
             }
             
@@ -1112,7 +1132,9 @@ class AWSDataService {
                     renovationsList: [],
                     emergencyContacts: { family: [], emergency: [], services: [] },
                     garageInfo: {},
-                    exteriorInfo: {}
+                    exteriorInfo: {},
+                    structureInfo: {},
+                    systemsInfo: {}
                 };
             }
             

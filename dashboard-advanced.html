@@ -3759,12 +3759,9 @@
                     return;
                 }
                 
-                console.log('🔍 Loading structure info from AWS...');
-                const userData = await window.awsDataService.getUserData();
-                console.log('🔍 Retrieved userData:', userData);
-                
-                const structure = userData.structure || {};
-                console.log('🔍 Extracted structure:', structure);
+                console.log('🔍 Loading structure info from AWS for homeId:', currentHomeId);
+                const structure = await window.awsDataService.getStructureInfo(currentHomeId);
+                console.log('🔍 Retrieved structure:', structure);
                 
                 if (Object.keys(structure).length > 0) {
                     // Check if display elements exist
@@ -3825,9 +3822,7 @@
             // Save to AWS
             try {
                 if (window.awsDataService) {
-                    const userData = await window.awsDataService.getUserData();
-                    userData.structure = structureData;
-                    const result = await window.awsDataService.saveUserData(userData);
+                    const result = await window.awsDataService.saveStructureInfo(structureData, currentHomeId);
                     if (result && result.success) {
                         console.log('✅ Structure info saved to AWS successfully');
                     } else {
@@ -3864,12 +3859,9 @@
                     return;
                 }
                 
-                console.log('🔍 Loading systems info from AWS...');
-                const userData = await window.awsDataService.getUserData();
-                console.log('🔍 Retrieved userData:', userData);
-                
-                const systems = userData.systems || {};
-                console.log('🔍 Extracted systems:', systems);
+                console.log('🔍 Loading systems info from AWS for homeId:', currentHomeId);
+                const systems = await window.awsDataService.getSystemsInfo(currentHomeId);
+                console.log('🔍 Retrieved systems:', systems);
                 
                 if (Object.keys(systems).length > 0) {
                     // Check if display elements exist
@@ -3930,9 +3922,7 @@
             // Save to AWS
             try {
                 if (window.awsDataService) {
-                    const userData = await window.awsDataService.getUserData();
-                    userData.systems = systemsData;
-                    const result = await window.awsDataService.saveUserData(userData);
+                    const result = await window.awsDataService.saveSystemsInfo(systemsData, currentHomeId);
                     if (result && result.success) {
                         console.log('✅ Systems info saved to AWS successfully');
                     } else {
