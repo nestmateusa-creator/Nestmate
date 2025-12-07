@@ -3435,7 +3435,7 @@
                 console.log('Hiding section:', section.id);
             });
             
-            // Remove active class from all nav items
+            // Remove active class from all nav items and find the correct one to activate
             const navItems = document.querySelectorAll('.nav-item');
             navItems.forEach(item => item.classList.remove('active'));
             
@@ -3495,10 +3495,6 @@
             }
             
             // Find the nav item by sectionId and add active class
-            const navItems = document.querySelectorAll('.nav-item');
-            navItems.forEach(item => {
-                item.classList.remove('active'); // Remove active from all first
-            });
             navItems.forEach(item => {
                 const onclickAttr = item.getAttribute('onclick');
                 if (onclickAttr && (onclickAttr.includes(`'${sectionId}'`) || onclickAttr.includes(`"${sectionId}"`))) {
