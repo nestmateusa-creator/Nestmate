@@ -3494,19 +3494,17 @@
                 console.error('Section not found:', sectionId);
             }
             
-            // Add active class to clicked nav item (if event exists)
-            if (event && event.target) {
-                event.target.classList.add('active');
-            } else {
-                // Find the nav item by sectionId and add active class
-                const navItems = document.querySelectorAll('.nav-item');
-                navItems.forEach(item => {
-                    const onclickAttr = item.getAttribute('onclick');
-                    if (onclickAttr && onclickAttr.includes(`'${sectionId}'`) || onclickAttr && onclickAttr.includes(`"${sectionId}"`)) {
-                        item.classList.add('active');
-                    }
-                });
-            }
+            // Find the nav item by sectionId and add active class
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.classList.remove('active'); // Remove active from all first
+            });
+            navItems.forEach(item => {
+                const onclickAttr = item.getAttribute('onclick');
+                if (onclickAttr && (onclickAttr.includes(`'${sectionId}'`) || onclickAttr.includes(`"${sectionId}"`))) {
+                    item.classList.add('active');
+                }
+            });
         }
 
         // User authentication and data loading
