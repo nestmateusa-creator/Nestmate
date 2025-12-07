@@ -6391,9 +6391,15 @@
         async function saveHome() {
             const form = document.getElementById('homeForm');
             
-            // Get and trim values
-            const addressInput = document.getElementById('homeAddress');
-            const typeInput = document.getElementById('homeType');
+            if (!form) {
+                console.error('Home form not found');
+                showAlert('Form not found. Please try again.', 'error');
+                return;
+            }
+            
+            // Get values from within the form to avoid duplicate ID conflicts
+            const addressInput = form.querySelector('#homeAddress');
+            const typeInput = form.querySelector('#homeType');
             
             console.log('Address input element:', addressInput);
             console.log('Type input element:', typeInput);
