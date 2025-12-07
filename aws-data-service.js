@@ -1298,6 +1298,192 @@ class AWSDataService {
             return { success: false, error: error.message };
         }
     }
+
+    // ==================== STRUCTURE DATA ====================
+
+    async saveStructureInfo(structureInfo, homeId = null) {
+        try {
+            if (!this.currentUserId) {
+                throw new Error('User not authenticated');
+            }
+
+            if (!homeId) {
+                const homes = await this.getHomesList();
+                if (homes.length > 0) {
+                    homeId = homes[0].id;
+                } else {
+                    throw new Error('No home selected and no homes available');
+                }
+            }
+
+            const getParams = {
+                TableName: 'nestmate-users',
+                Key: { userId: this.currentUserId }
+            };
+            const userData = await this.dynamodb.get(getParams).promise();
+            
+            let homesData = userData.Item?.homesData || {};
+            if (!homesData[homeId]) {
+                homesData[homeId] = {
+                    bedroomsList: [],
+                    bathroomsList: [],
+                    kitchensList: [],
+                    livingAreasList: [],
+                    appliancesList: [],
+                    photosList: [],
+                    renovationsList: [],
+                    emergencyContacts: { family: [], emergency: [], services: [] },
+                    garageInfo: {},
+                    exteriorInfo: {},
+                    structureInfo: {},
+                    systemsInfo: {}
+                };
+            }
+            
+            homesData[homeId].structureInfo = structureInfo;
+            
+            const params = {
+                TableName: 'nestmate-users',
+                Key: { userId: this.currentUserId },
+                UpdateExpression: 'SET homesData = :homesData, updatedAt = :updated',
+                ExpressionAttributeValues: {
+                    ':homesData': homesData,
+                    ':updated': new Date().toISOString()
+                }
+            };
+
+            await this.dynamodb.update(params).promise();
+            console.log('✅ Structure info saved to AWS for home:', homeId);
+            return { success: true };
+
+        } catch (error) {
+            console.error('❌ Error saving structure info:', error);
+            return { success: false, error: error.message };
+        }
+    }
+
+    async getStructureInfo(homeId = null) {
+        try {
+            if (!this.currentUserId) {
+                throw new Error('User not authenticated');
+            }
+
+            if (!homeId) {
+                const homes = await this.getHomesList();
+                if (homes.length > 0) {
+                    homeId = homes[0].id;
+                } else {
+                    return {};
+                }
+            }
+
+            const params = {
+                TableName: 'nestmate-users',
+                Key: { userId: this.currentUserId }
+            };
+
+            const result = await this.dynamodb.get(params).promise();
+            const homesData = result.Item?.homesData || {};
+            return homesData[homeId]?.structureInfo || {};
+
+        } catch (error) {
+            console.error('❌ Error getting structure info:', error);
+            return {};
+        }
+    }
+
+    // ==================== SYSTEMS DATA ====================
+
+    async saveSystemsInfo(systemsInfo, homeId = null) {
+        try {
+            if (!this.currentUserId) {
+                throw new Error('User not authenticated');
+            }
+
+            if (!homeId) {
+                const homes = await this.getHomesList();
+                if (homes.length > 0) {
+                    homeId = homes[0].id;
+                } else {
+                    throw new Error('No home selected and no homes available');
+                }
+            }
+
+            const getParams = {
+                TableName: 'nestmate-users',
+                Key: { userId: this.currentUserId }
+            };
+            const userData = await this.dynamodb.get(getParams).promise();
+            
+            let homesData = userData.Item?.homesData || {};
+            if (!homesData[homeId]) {
+                homesData[homeId] = {
+                    bedroomsList: [],
+                    bathroomsList: [],
+                    kitchensList: [],
+                    livingAreasList: [],
+                    appliancesList: [],
+                    photosList: [],
+                    renovationsList: [],
+                    emergencyContacts: { family: [], emergency: [], services: [] },
+                    garageInfo: {},
+                    exteriorInfo: {},
+                    structureInfo: {},
+                    systemsInfo: {}
+                };
+            }
+            
+            homesData[homeId].systemsInfo = systemsInfo;
+            
+            const params = {
+                TableName: 'nestmate-users',
+                Key: { userId: this.currentUserId },
+                UpdateExpression: 'SET homesData = :homesData, updatedAt = :updated',
+                ExpressionAttributeValues: {
+                    ':homesData': homesData,
+                    ':updated': new Date().toISOString()
+                }
+            };
+
+            await this.dynamodb.update(params).promise();
+            console.log('✅ Systems info saved to AWS for home:', homeId);
+            return { success: true };
+
+        } catch (error) {
+            console.error('❌ Error saving systems info:', error);
+            return { success: false, error: error.message };
+        }
+    }
+
+    async getSystemsInfo(homeId = null) {
+        try {
+            if (!this.currentUserId) {
+                throw new Error('User not authenticated');
+            }
+
+            if (!homeId) {
+                const homes = await this.getHomesList();
+                if (homes.length > 0) {
+                    homeId = homes[0].id;
+                } else {
+                    return {};
+                }
+            }
+
+            const params = {
+                TableName: 'nestmate-users',
+                Key: { userId: this.currentUserId }
+            };
+
+            const result = await this.dynamodb.get(params).promise();
+            const homesData = result.Item?.homesData || {};
+            return homesData[homeId]?.systemsInfo || {};
+
+        } catch (error) {
+            console.error('❌ Error getting systems info:', error);
+            return {};
+        }
+    }
 }
 
 // Export for use in other files
