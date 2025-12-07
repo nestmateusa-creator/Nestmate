@@ -4001,7 +4001,7 @@
                 return;
             }
             
-            const list = await window.awsDataService.getLivingAreasList();
+            const list = await window.awsDataService.getLivingAreasList(currentHomeId);
             console.log('🔍 Living areas list:', list);
             
             if (list.length === 0) {
@@ -4041,7 +4041,7 @@
         }
 
         async function openEditLivingAreaModal(index) {
-            const list = await window.awsDataService.getLivingAreasList();
+            const list = await window.awsDataService.getLivingAreasList(currentHomeId);
             const data = list[index];
             openLivingAreaModal(data, index);
         }
@@ -4282,14 +4282,14 @@
                     throw new Error('AWS Data Service not initialized');
                 }
                 
-                const list = await window.awsDataService.getLivingAreasList();
+                const list = await window.awsDataService.getLivingAreasList(currentHomeId);
                 if (index === null || index === undefined) {
                     list.push(data);
                 } else {
                     list[index] = data;
                 }
                 
-                const result = await window.awsDataService.saveLivingAreasList(list);
+                const result = await window.awsDataService.saveLivingAreasList(list, currentHomeId);
                 if (result && result.success) {
                     console.log('✅ Living area saved successfully');
                     await renderLivingAreasList();
@@ -4306,9 +4306,9 @@
         async function deleteLivingArea(index) {
             if (!confirm('Are you sure you want to delete this living area?')) return;
             try {
-                const list = await window.awsDataService.getLivingAreasList();
+                const list = await window.awsDataService.getLivingAreasList(currentHomeId);
                 list.splice(index, 1);
-                const result = await window.awsDataService.saveLivingAreasList(list);
+                const result = await window.awsDataService.saveLivingAreasList(list, currentHomeId);
                 if (result && result.success) {
                     await renderLivingAreasList();
                     showAlert('Living area deleted successfully!', 'success');
@@ -4334,7 +4334,7 @@
                 return;
             }
             
-            const list = await window.awsDataService.getAppliancesList();
+            const list = await window.awsDataService.getAppliancesList(currentHomeId);
             console.log('🔍 Appliances list:', list);
             
             if (list.length === 0) {
@@ -4373,7 +4373,7 @@
         }
 
         async function openEditApplianceModal(index) {
-            const list = await window.awsDataService.getAppliancesList();
+            const list = await window.awsDataService.getAppliancesList(currentHomeId);
             const data = list[index];
             openApplianceModal(data, index);
         }
@@ -4447,14 +4447,14 @@
                     throw new Error('AWS Data Service not initialized');
                 }
                 
-                const list = await window.awsDataService.getAppliancesList();
+                const list = await window.awsDataService.getAppliancesList(currentHomeId);
                 if (index === null || index === undefined) {
                     list.push(data);
                 } else {
                     list[index] = data;
                 }
                 
-                const result = await window.awsDataService.saveAppliancesList(list);
+                const result = await window.awsDataService.saveAppliancesList(list, currentHomeId);
                 if (result && result.success) {
                     console.log('✅ Appliance saved successfully');
                     await renderAppliancesList();
@@ -4471,9 +4471,9 @@
         async function deleteAppliance(index) {
             if (!confirm('Are you sure you want to delete this appliance?')) return;
             try {
-                const list = await window.awsDataService.getAppliancesList();
+                const list = await window.awsDataService.getAppliancesList(currentHomeId);
                 list.splice(index, 1);
-                const result = await window.awsDataService.saveAppliancesList(list);
+                const result = await window.awsDataService.saveAppliancesList(list, currentHomeId);
                 if (result && result.success) {
                     await renderAppliancesList();
                     showAlert('Appliance deleted successfully!', 'success');
@@ -4493,7 +4493,7 @@
                     return;
                 }
                 
-                const garageInfo = await window.awsDataService.getGarageInfo();
+                const garageInfo = await window.awsDataService.getGarageInfo(currentHomeId);
                 console.log('🔍 Garage info loaded:', garageInfo);
                 
                 // Update display
@@ -4556,7 +4556,7 @@
                     throw new Error('AWS Data Service not initialized');
                 }
                 
-                const result = await window.awsDataService.saveGarageInfo(garageData);
+                const result = await window.awsDataService.saveGarageInfo(garageData, currentHomeId);
                 if (result && result.success) {
                     console.log('✅ Garage info saved successfully');
                     await loadGarage(); // Reload to verify persistence
@@ -4580,7 +4580,7 @@
                     return;
                 }
                 
-                const exteriorInfo = await window.awsDataService.getExteriorInfo();
+                const exteriorInfo = await window.awsDataService.getExteriorInfo(currentHomeId);
                 console.log('🔍 Exterior info loaded:', exteriorInfo);
                 
                 // Update display
@@ -4648,7 +4648,7 @@
                     throw new Error('AWS Data Service not initialized');
                 }
                 
-                const result = await window.awsDataService.saveExteriorInfo(exteriorData);
+                const result = await window.awsDataService.saveExteriorInfo(exteriorData, currentHomeId);
                 if (result && result.success) {
                     console.log('✅ Exterior info saved successfully');
                     await loadExterior(); // Reload to verify persistence
@@ -4670,7 +4670,7 @@
         async function initPhotos() {
             if (window.awsDataService) {
                 try {
-                    photosData = await window.awsDataService.getPhotosList();
+                    photosData = await window.awsDataService.getPhotosList(currentHomeId);
                     console.log('📷 Photos initialized:', photosData.length, 'photos');
                 } catch (error) {
                     console.error('❌ Error initializing photos:', error);
@@ -4832,13 +4832,13 @@
                 console.log('✅ All uploads completed:', uploadedPhotos);
                 
                 // Get existing photos and add new ones
-                const existingPhotos = await window.awsDataService.getPhotosList();
+                const existingPhotos = await window.awsDataService.getPhotosList(currentHomeId);
                 console.log('📋 Existing photos:', existingPhotos);
                 photosData = [...existingPhotos, ...uploadedPhotos];
                 console.log('💾 Combined photos data:', photosData);
                 
                 // Save to AWS
-                const result = await window.awsDataService.savePhotosList(photosData);
+                const result = await window.awsDataService.savePhotosList(photosData, currentHomeId);
                 if (result && result.success) {
                     console.log('✅ Photos saved to AWS successfully');
                     await displayPhotos();
@@ -4868,7 +4868,7 @@
                     throw new Error('AWS Data Service not initialized');
                 }
                 
-                const existingPhotos = await window.awsDataService.getPhotosList();
+                const existingPhotos = await window.awsDataService.getPhotosList(currentHomeId);
                 const newPhoto = {
                     url,
                     type: 'url',
@@ -4878,7 +4878,7 @@
                 
                 photosData = [...existingPhotos, newPhoto];
                 
-                const result = await window.awsDataService.savePhotosList(photosData);
+                const result = await window.awsDataService.savePhotosList(photosData, currentHomeId);
                 if (result && result.success) {
                     await displayPhotos();
                     if (urlInput) urlInput.value = '';
@@ -5045,7 +5045,7 @@
                 photosData.splice(index, 1);
                 console.log('🗑️ Photos after delete:', photosData);
                 
-                const result = await window.awsDataService.savePhotosList(photosData);
+                const result = await window.awsDataService.savePhotosList(photosData, currentHomeId);
                 if (result && result.success) {
                     console.log('✅ Photo deleted from AWS');
                     await displayPhotos();
@@ -5074,7 +5074,7 @@
                 return;
             }
             
-            const list = await window.awsDataService.getRenovationsList();
+            const list = await window.awsDataService.getRenovationsList(currentHomeId);
             console.log('🔍 Renovations list:', list);
             
             if (list.length === 0) {
@@ -5114,7 +5114,7 @@
         }
 
         async function openEditRenovationModal(index) {
-            const list = await window.awsDataService.getRenovationsList();
+            const list = await window.awsDataService.getRenovationsList(currentHomeId);
             const data = list[index];
             openRenovationModal(data, index);
         }
@@ -5202,7 +5202,7 @@
                     throw new Error('AWS Data Service not initialized');
                 }
                 
-                const list = await window.awsDataService.getRenovationsList();
+                const list = await window.awsDataService.getRenovationsList(currentHomeId);
                 if (index === null || index === undefined) {
                     data.id = Date.now().toString();
                     list.push(data);
@@ -5210,7 +5210,7 @@
                     list[index] = { ...list[index], ...data };
                 }
                 
-                const result = await window.awsDataService.saveRenovationsList(list);
+                const result = await window.awsDataService.saveRenovationsList(list, currentHomeId);
                 if (result && result.success) {
                     console.log('✅ Renovation saved successfully');
                     await renderRenovationsList();
@@ -5227,9 +5227,9 @@
         async function deleteRenovation(index) {
             if (!confirm('Are you sure you want to delete this renovation project?')) return;
             try {
-                const list = await window.awsDataService.getRenovationsList();
+                const list = await window.awsDataService.getRenovationsList(currentHomeId);
                 list.splice(index, 1);
-                const result = await window.awsDataService.saveRenovationsList(list);
+                const result = await window.awsDataService.saveRenovationsList(list, currentHomeId);
                 if (result && result.success) {
                     await renderRenovationsList();
                     showAlert('Renovation deleted successfully!', 'success');
@@ -5284,7 +5284,7 @@
             
             if (!window.awsDataService) return;
             
-            const contacts = await window.awsDataService.getEmergencyContacts();
+            const contacts = await window.awsDataService.getEmergencyContacts(currentHomeId);
             const list = contacts.family || [];
             
             container.innerHTML = '';
@@ -5310,7 +5310,7 @@
             
             if (!window.awsDataService) return;
             
-            const contacts = await window.awsDataService.getEmergencyContacts();
+            const contacts = await window.awsDataService.getEmergencyContacts(currentHomeId);
             const list = contacts.emergency || [];
             
             container.innerHTML = '';
@@ -5336,7 +5336,7 @@
             
             if (!window.awsDataService) return;
             
-            const contacts = await window.awsDataService.getEmergencyContacts();
+            const contacts = await window.awsDataService.getEmergencyContacts(currentHomeId);
             const list = contacts.services || [];
             
             container.innerHTML = '';
@@ -5385,7 +5385,7 @@
         }
 
         async function openEditContactModal(index, type) {
-            const contacts = await window.awsDataService.getEmergencyContacts();
+            const contacts = await window.awsDataService.getEmergencyContacts(currentHomeId);
             const list = contacts[type] || [];
             const data = list[index];
             openContactModal(data, index, type);
@@ -5477,7 +5477,7 @@
                     throw new Error('AWS Data Service not initialized');
                 }
                 
-                const contacts = await window.awsDataService.getEmergencyContacts();
+                const contacts = await window.awsDataService.getEmergencyContacts(currentHomeId);
                 const list = contacts[type] || [];
                 
                 if (index === null || index === undefined) {
@@ -5489,7 +5489,7 @@
                 
                 contacts[type] = list;
                 
-                const result = await window.awsDataService.saveEmergencyContacts(contacts);
+                const result = await window.awsDataService.saveEmergencyContacts(contacts, currentHomeId);
                 if (result && result.success) {
                     console.log('✅ Contact saved successfully');
                     await renderAllContacts();
@@ -5506,12 +5506,12 @@
         async function deleteContact(index, type) {
             if (!confirm('Are you sure you want to delete this contact?')) return;
             try {
-                const contacts = await window.awsDataService.getEmergencyContacts();
+                const contacts = await window.awsDataService.getEmergencyContacts(currentHomeId);
                 const list = contacts[type] || [];
                 list.splice(index, 1);
                 contacts[type] = list;
                 
-                const result = await window.awsDataService.saveEmergencyContacts(contacts);
+                const result = await window.awsDataService.saveEmergencyContacts(contacts, currentHomeId);
                 if (result && result.success) {
                     await renderAllContacts();
                     showAlert('Contact deleted successfully!', 'success');
@@ -5936,7 +5936,7 @@
                 throw new Error('AWS Data Service not initialized');
             }
             
-            const result = await window.awsDataService.saveBedroomsList(listToSave);
+            const result = await window.awsDataService.saveBedroomsList(listToSave, currentHomeId);
             console.log('💾 Save result:', result);
             
             if (result && result.success) {
@@ -5962,7 +5962,7 @@
                 return;
             }
             
-            const list = await window.awsDataService.getBathroomsList();
+            const list = await window.awsDataService.getBathroomsList(currentHomeId);
             console.log('🔍 Bathrooms list:', list);
             if (list.length === 0) {
                 const empty = document.createElement('div');
@@ -5999,7 +5999,7 @@
         }
 
         async function openBathroomModal(index) {
-            const list = await window.awsDataService.getBathroomsList();
+            const list = await window.awsDataService.getBathroomsList(currentHomeId);
             const existing = (index !== null && index !== undefined) ? list[index] : null;
             const overlay = document.createElement('div');
             overlay.className = 'modal-overlay';
@@ -6067,14 +6067,14 @@
                     throw new Error('AWS Data Service not initialized');
                 }
                 
-                const list = await window.awsDataService.getBathroomsList();
+                const list = await window.awsDataService.getBathroomsList(currentHomeId);
                 if (index === null || index === undefined) {
                     list.push(data);
                 } else {
                     list[index] = data;
                 }
                 
-                const result = await window.awsDataService.saveBathroomsList(list);
+                const result = await window.awsDataService.saveBathroomsList(list, currentHomeId);
                 if (result && result.success) {
                     console.log('✅ Bathroom saved successfully');
                     await renderBathroomsList();
@@ -6091,9 +6091,9 @@
         async function deleteBathroom(index) {
             if (!confirm('Are you sure you want to delete this bathroom?')) return;
             try {
-                const list = await window.awsDataService.getBathroomsList();
+                const list = await window.awsDataService.getBathroomsList(currentHomeId);
                 list.splice(index, 1);
-                const result = await window.awsDataService.saveBathroomsList(list);
+                const result = await window.awsDataService.saveBathroomsList(list, currentHomeId);
                 if (result && result.success) {
                     await renderBathroomsList();
                     showAlert('Bathroom deleted successfully!', 'success');
@@ -6121,7 +6121,7 @@
                 throw new Error('AWS Data Service not initialized');
             }
             
-            const result = await window.awsDataService.saveBathroomsList(listToSave);
+            const result = await window.awsDataService.saveBathroomsList(listToSave, currentHomeId);
             if (result && result.success) {
                 console.log('✅ Bathrooms list saved to AWS');
             } else {
@@ -6145,7 +6145,7 @@
                 return;
             }
             
-            const list = await window.awsDataService.getKitchensList();
+            const list = await window.awsDataService.getKitchensList(currentHomeId);
             console.log('🔍 Kitchens list:', list);
             if (list.length === 0) {
                 const empty = document.createElement('div');
@@ -6182,7 +6182,7 @@
         }
 
         async function openKitchenModal(index) {
-            const list = await window.awsDataService.getKitchensList();
+            const list = await window.awsDataService.getKitchensList(currentHomeId);
             const existing = (index !== null && index !== undefined) ? list[index] : null;
             const overlay = document.createElement('div');
             overlay.className = 'modal-overlay';
@@ -6279,14 +6279,14 @@
                     throw new Error('AWS Data Service not initialized');
                 }
                 
-                const list = await window.awsDataService.getKitchensList();
+                const list = await window.awsDataService.getKitchensList(currentHomeId);
                 if (index === null || index === undefined) {
                     list.push(data);
                 } else {
                     list[index] = data;
                 }
                 
-                const result = await window.awsDataService.saveKitchensList(list);
+                const result = await window.awsDataService.saveKitchensList(list, currentHomeId);
                 if (result && result.success) {
                     console.log('✅ Kitchen saved successfully');
                     await renderKitchensList();
@@ -6303,9 +6303,9 @@
         async function deleteKitchen(index) {
             if (!confirm('Are you sure you want to delete this kitchen?')) return;
             try {
-                const list = await window.awsDataService.getKitchensList();
+                const list = await window.awsDataService.getKitchensList(currentHomeId);
                 list.splice(index, 1);
-                const result = await window.awsDataService.saveKitchensList(list);
+                const result = await window.awsDataService.saveKitchensList(list, currentHomeId);
                 if (result && result.success) {
                     await renderKitchensList();
                     showAlert('Kitchen deleted successfully!', 'success');
@@ -6333,7 +6333,7 @@
                 throw new Error('AWS Data Service not initialized');
             }
             
-            const result = await window.awsDataService.saveKitchensList(listToSave);
+            const result = await window.awsDataService.saveKitchensList(listToSave, currentHomeId);
             if (result && result.success) {
                 console.log('✅ Kitchens list saved to AWS');
             } else {
@@ -6354,15 +6354,15 @@
             // Load from AWS only
             try {
                 console.log('🔍 Loading bedrooms list from AWS...');
-                const bedroomsList = await window.awsDataService.getBedroomsList();
+                const bedroomsList = await window.awsDataService.getBedroomsList(currentHomeId);
                 console.log('🔍 Retrieved bedroomsList:', bedroomsList);
                 
                 console.log('🔍 Loading bathrooms list from AWS...');
-                const bathroomsList = await window.awsDataService.getBathroomsList();
+                const bathroomsList = await window.awsDataService.getBathroomsList(currentHomeId);
                 console.log('🔍 Retrieved bathroomsList:', bathroomsList);
                 
                 console.log('🔍 Loading kitchens list from AWS...');
-                const kitchensList = await window.awsDataService.getKitchensList();
+                const kitchensList = await window.awsDataService.getKitchensList(currentHomeId);
                 console.log('🔍 Retrieved kitchensList:', kitchensList);
                 
                 state.bedroomsList = bedroomsList || [];
@@ -6603,16 +6603,30 @@
             console.log('Switching to home:', homeId);
             
             // Reload all data for the selected home
-            // Note: This will need to be updated to filter by homeId when data structure supports it
-            // For now, we'll just store the current home ID for future use
-            
-            // Reload dashboard sections
-            const currentSection = document.querySelector('.dashboard-section[style*="display: block"]');
-            if (currentSection && currentSection.id) {
-                showSection(currentSection.id);
+            try {
+                // Reload all sections
+                await renderBedroomsList();
+                await renderBathroomsList();
+                await renderKitchensList();
+                await renderLivingAreasList();
+                await renderAppliancesList();
+                await loadGarage();
+                await loadExterior();
+                await displayPhotos();
+                await renderRenovationsList();
+                await renderAllContacts();
+                
+                // Reload current section to show updated data
+                const currentSection = document.querySelector('.dashboard-section[style*="display: block"]');
+                if (currentSection && currentSection.id) {
+                    showSection(currentSection.id);
+                }
+                
+                showAlert(`Switched to home: ${homeId}`, 'success');
+            } catch (error) {
+                console.error('Error reloading data after home switch:', error);
+                showAlert('Error reloading data. Please refresh the page.', 'error');
             }
-            
-            showAlert(`Switched to home: ${homeId}`, 'success');
         }
 
         async function loadHomes() {

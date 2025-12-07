@@ -319,27 +319,32 @@ class AWSDataService {
         }
     }
 
-    async getBedroomsList() {
+    async getBedroomsList(homeId = null) {
         try {
             if (!this.currentUserId) {
-                console.error('❌ getBedroomsList: User not authenticated');
                 throw new Error('User not authenticated');
             }
 
-            console.log('🔍 getBedroomsList: Getting data for userId:', this.currentUserId);
+            if (!homeId) {
+                const homes = await this.getHomesList();
+                if (homes.length > 0) {
+                    homeId = homes[0].id;
+                } else {
+                    return [];
+                }
+            }
+
+            console.log('🔍 getBedroomsList: Getting data for userId:', this.currentUserId, 'homeId:', homeId);
             const params = {
                 TableName: 'nestmate-users',
                 Key: { userId: this.currentUserId }
             };
 
-            console.log('🔍 getBedroomsList: DynamoDB params:', params);
             const result = await this.dynamodb.get(params).promise();
-            console.log('🔍 getBedroomsList: DynamoDB result:', result);
-            console.log('🔍 getBedroomsList: Result.Item:', result.Item);
-            console.log('🔍 getBedroomsList: Result.Item?.bedroomsList:', result.Item?.bedroomsList);
+            const homesData = result.Item?.homesData || {};
+            const bedroomsList = homesData[homeId]?.bedroomsList || [];
             
-            const bedroomsList = result.Item ? result.Item.bedroomsList || [] : [];
-            console.log('🔍 getBedroomsList: Returning bedroomsList:', bedroomsList);
+            console.log('🔍 getBedroomsList: Returning bedroomsList for home', homeId, ':', bedroomsList);
             return bedroomsList;
 
         } catch (error) {
@@ -348,40 +353,57 @@ class AWSDataService {
         }
     }
 
-    async saveBathroomsList(bathroomsList) {
+    async saveBathroomsList(bathroomsList, homeId = null) {
         try {
             if (!this.currentUserId) {
                 throw new Error('User not authenticated');
             }
 
-            // Check if user record exists, create if not
-            try {
-                const checkParams = {
-                    TableName: 'nestmate-users',
-                    Key: { userId: this.currentUserId }
-                };
-                const checkResult = await this.dynamodb.get(checkParams).promise();
-                if (!checkResult.Item) {
-                    console.log('🆕 User record not found, creating...');
-                    await this.createUserRecord([]);
+            if (!homeId) {
+                const homes = await this.getHomesList();
+                if (homes.length > 0) {
+                    homeId = homes[0].id;
+                } else {
+                    throw new Error('No home selected and no homes available');
                 }
-            } catch (createError) {
-                console.error('❌ Error checking/creating user record:', createError);
-                // Continue anyway, try the update
             }
 
+            const getParams = {
+                TableName: 'nestmate-users',
+                Key: { userId: this.currentUserId }
+            };
+            const userData = await this.dynamodb.get(getParams).promise();
+            
+            let homesData = userData.Item?.homesData || {};
+            if (!homesData[homeId]) {
+                homesData[homeId] = {
+                    bedroomsList: [],
+                    bathroomsList: [],
+                    kitchensList: [],
+                    livingAreasList: [],
+                    appliancesList: [],
+                    photosList: [],
+                    renovationsList: [],
+                    emergencyContacts: { family: [], emergency: [], services: [] },
+                    garageInfo: {},
+                    exteriorInfo: {}
+                };
+            }
+            
+            homesData[homeId].bathroomsList = bathroomsList;
+            
             const params = {
                 TableName: 'nestmate-users',
                 Key: { userId: this.currentUserId },
-                UpdateExpression: 'SET bathroomsList = :bathrooms, updatedAt = :updated',
+                UpdateExpression: 'SET homesData = :homesData, updatedAt = :updated',
                 ExpressionAttributeValues: {
-                    ':bathrooms': bathroomsList,
+                    ':homesData': homesData,
                     ':updated': new Date().toISOString()
                 }
             };
 
             await this.dynamodb.update(params).promise();
-            console.log('✅ Bathrooms list saved to AWS');
+            console.log('✅ Bathrooms list saved to AWS for home:', homeId);
             return { success: true };
 
         } catch (error) {
@@ -390,10 +412,19 @@ class AWSDataService {
         }
     }
 
-    async getBathroomsList() {
+    async getBathroomsList(homeId = null) {
         try {
             if (!this.currentUserId) {
                 throw new Error('User not authenticated');
+            }
+
+            if (!homeId) {
+                const homes = await this.getHomesList();
+                if (homes.length > 0) {
+                    homeId = homes[0].id;
+                } else {
+                    return [];
+                }
             }
 
             const params = {
@@ -402,7 +433,8 @@ class AWSDataService {
             };
 
             const result = await this.dynamodb.get(params).promise();
-            return result.Item ? result.Item.bathroomsList || [] : [];
+            const homesData = result.Item?.homesData || {};
+            return homesData[homeId]?.bathroomsList || [];
 
         } catch (error) {
             console.error('❌ Error getting bathrooms list:', error);
@@ -410,40 +442,57 @@ class AWSDataService {
         }
     }
 
-    async saveKitchensList(kitchensList) {
+    async saveKitchensList(kitchensList, homeId = null) {
         try {
             if (!this.currentUserId) {
                 throw new Error('User not authenticated');
             }
 
-            // Check if user record exists, create if not
-            try {
-                const checkParams = {
-                    TableName: 'nestmate-users',
-                    Key: { userId: this.currentUserId }
-                };
-                const checkResult = await this.dynamodb.get(checkParams).promise();
-                if (!checkResult.Item) {
-                    console.log('🆕 User record not found, creating...');
-                    await this.createUserRecord([]);
+            if (!homeId) {
+                const homes = await this.getHomesList();
+                if (homes.length > 0) {
+                    homeId = homes[0].id;
+                } else {
+                    throw new Error('No home selected and no homes available');
                 }
-            } catch (createError) {
-                console.error('❌ Error checking/creating user record:', createError);
-                // Continue anyway, try the update
             }
 
+            const getParams = {
+                TableName: 'nestmate-users',
+                Key: { userId: this.currentUserId }
+            };
+            const userData = await this.dynamodb.get(getParams).promise();
+            
+            let homesData = userData.Item?.homesData || {};
+            if (!homesData[homeId]) {
+                homesData[homeId] = {
+                    bedroomsList: [],
+                    bathroomsList: [],
+                    kitchensList: [],
+                    livingAreasList: [],
+                    appliancesList: [],
+                    photosList: [],
+                    renovationsList: [],
+                    emergencyContacts: { family: [], emergency: [], services: [] },
+                    garageInfo: {},
+                    exteriorInfo: {}
+                };
+            }
+            
+            homesData[homeId].kitchensList = kitchensList;
+            
             const params = {
                 TableName: 'nestmate-users',
                 Key: { userId: this.currentUserId },
-                UpdateExpression: 'SET kitchensList = :kitchens, updatedAt = :updated',
+                UpdateExpression: 'SET homesData = :homesData, updatedAt = :updated',
                 ExpressionAttributeValues: {
-                    ':kitchens': kitchensList,
+                    ':homesData': homesData,
                     ':updated': new Date().toISOString()
                 }
             };
 
             await this.dynamodb.update(params).promise();
-            console.log('✅ Kitchens list saved to AWS');
+            console.log('✅ Kitchens list saved to AWS for home:', homeId);
             return { success: true };
 
         } catch (error) {
@@ -452,10 +501,19 @@ class AWSDataService {
         }
     }
 
-    async getKitchensList() {
+    async getKitchensList(homeId = null) {
         try {
             if (!this.currentUserId) {
                 throw new Error('User not authenticated');
+            }
+
+            if (!homeId) {
+                const homes = await this.getHomesList();
+                if (homes.length > 0) {
+                    homeId = homes[0].id;
+                } else {
+                    return [];
+                }
             }
 
             const params = {
@@ -464,7 +522,8 @@ class AWSDataService {
             };
 
             const result = await this.dynamodb.get(params).promise();
-            return result.Item ? result.Item.kitchensList || [] : [];
+            const homesData = result.Item?.homesData || {};
+            return homesData[homeId]?.kitchensList || [];
 
         } catch (error) {
             console.error('❌ Error getting kitchens list:', error);
@@ -474,40 +533,57 @@ class AWSDataService {
 
     // ==================== LIVING AREAS DATA ====================
 
-    async saveLivingAreasList(livingAreasList) {
+    async saveLivingAreasList(livingAreasList, homeId = null) {
         try {
             if (!this.currentUserId) {
                 throw new Error('User not authenticated');
             }
 
-            // Check if user record exists, create if not
-            try {
-                const checkParams = {
-                    TableName: 'nestmate-users',
-                    Key: { userId: this.currentUserId }
-                };
-                const checkResult = await this.dynamodb.get(checkParams).promise();
-                if (!checkResult.Item) {
-                    console.log('🆕 User record not found, creating...');
-                    await this.createUserRecord([]);
+            if (!homeId) {
+                const homes = await this.getHomesList();
+                if (homes.length > 0) {
+                    homeId = homes[0].id;
+                } else {
+                    throw new Error('No home selected and no homes available');
                 }
-            } catch (createError) {
-                console.error('❌ Error checking/creating user record:', createError);
-                // Continue anyway, try the update
             }
 
+            const getParams = {
+                TableName: 'nestmate-users',
+                Key: { userId: this.currentUserId }
+            };
+            const userData = await this.dynamodb.get(getParams).promise();
+            
+            let homesData = userData.Item?.homesData || {};
+            if (!homesData[homeId]) {
+                homesData[homeId] = {
+                    bedroomsList: [],
+                    bathroomsList: [],
+                    kitchensList: [],
+                    livingAreasList: [],
+                    appliancesList: [],
+                    photosList: [],
+                    renovationsList: [],
+                    emergencyContacts: { family: [], emergency: [], services: [] },
+                    garageInfo: {},
+                    exteriorInfo: {}
+                };
+            }
+            
+            homesData[homeId].livingAreasList = livingAreasList;
+            
             const params = {
                 TableName: 'nestmate-users',
                 Key: { userId: this.currentUserId },
-                UpdateExpression: 'SET livingAreasList = :livingAreas, updatedAt = :updated',
+                UpdateExpression: 'SET homesData = :homesData, updatedAt = :updated',
                 ExpressionAttributeValues: {
-                    ':livingAreas': livingAreasList,
+                    ':homesData': homesData,
                     ':updated': new Date().toISOString()
                 }
             };
 
             await this.dynamodb.update(params).promise();
-            console.log('✅ Living areas list saved to AWS');
+            console.log('✅ Living areas list saved to AWS for home:', homeId);
             return { success: true };
 
         } catch (error) {
@@ -516,10 +592,19 @@ class AWSDataService {
         }
     }
 
-    async getLivingAreasList() {
+    async getLivingAreasList(homeId = null) {
         try {
             if (!this.currentUserId) {
                 throw new Error('User not authenticated');
+            }
+
+            if (!homeId) {
+                const homes = await this.getHomesList();
+                if (homes.length > 0) {
+                    homeId = homes[0].id;
+                } else {
+                    return [];
+                }
             }
 
             const params = {
@@ -528,7 +613,8 @@ class AWSDataService {
             };
 
             const result = await this.dynamodb.get(params).promise();
-            return result.Item ? result.Item.livingAreasList || [] : [];
+            const homesData = result.Item?.homesData || {};
+            return homesData[homeId]?.livingAreasList || [];
 
         } catch (error) {
             console.error('❌ Error getting living areas list:', error);
@@ -538,40 +624,57 @@ class AWSDataService {
 
     // ==================== GARAGE DATA ====================
 
-    async saveGarageInfo(garageInfo) {
+    async saveGarageInfo(garageInfo, homeId = null) {
         try {
             if (!this.currentUserId) {
                 throw new Error('User not authenticated');
             }
 
-            // Check if user record exists, create if not
-            try {
-                const checkParams = {
-                    TableName: 'nestmate-users',
-                    Key: { userId: this.currentUserId }
-                };
-                const checkResult = await this.dynamodb.get(checkParams).promise();
-                if (!checkResult.Item) {
-                    console.log('🆕 User record not found, creating...');
-                    await this.createUserRecord([]);
+            if (!homeId) {
+                const homes = await this.getHomesList();
+                if (homes.length > 0) {
+                    homeId = homes[0].id;
+                } else {
+                    throw new Error('No home selected and no homes available');
                 }
-            } catch (createError) {
-                console.error('❌ Error checking/creating user record:', createError);
-                // Continue anyway, try the update
             }
 
+            const getParams = {
+                TableName: 'nestmate-users',
+                Key: { userId: this.currentUserId }
+            };
+            const userData = await this.dynamodb.get(getParams).promise();
+            
+            let homesData = userData.Item?.homesData || {};
+            if (!homesData[homeId]) {
+                homesData[homeId] = {
+                    bedroomsList: [],
+                    bathroomsList: [],
+                    kitchensList: [],
+                    livingAreasList: [],
+                    appliancesList: [],
+                    photosList: [],
+                    renovationsList: [],
+                    emergencyContacts: { family: [], emergency: [], services: [] },
+                    garageInfo: {},
+                    exteriorInfo: {}
+                };
+            }
+            
+            homesData[homeId].garageInfo = garageInfo;
+            
             const params = {
                 TableName: 'nestmate-users',
                 Key: { userId: this.currentUserId },
-                UpdateExpression: 'SET garageInfo = :garage, updatedAt = :updated',
+                UpdateExpression: 'SET homesData = :homesData, updatedAt = :updated',
                 ExpressionAttributeValues: {
-                    ':garage': garageInfo,
+                    ':homesData': homesData,
                     ':updated': new Date().toISOString()
                 }
             };
 
             await this.dynamodb.update(params).promise();
-            console.log('✅ Garage info saved to AWS');
+            console.log('✅ Garage info saved to AWS for home:', homeId);
             return { success: true };
 
         } catch (error) {
@@ -580,10 +683,19 @@ class AWSDataService {
         }
     }
 
-    async getGarageInfo() {
+    async getGarageInfo(homeId = null) {
         try {
             if (!this.currentUserId) {
                 throw new Error('User not authenticated');
+            }
+
+            if (!homeId) {
+                const homes = await this.getHomesList();
+                if (homes.length > 0) {
+                    homeId = homes[0].id;
+                } else {
+                    return {};
+                }
             }
 
             const params = {
@@ -592,7 +704,8 @@ class AWSDataService {
             };
 
             const result = await this.dynamodb.get(params).promise();
-            return result.Item ? result.Item.garageInfo || {} : {};
+            const homesData = result.Item?.homesData || {};
+            return homesData[homeId]?.garageInfo || {};
 
         } catch (error) {
             console.error('❌ Error getting garage info:', error);
@@ -602,40 +715,57 @@ class AWSDataService {
 
     // ==================== EXTERIOR DATA ====================
 
-    async saveExteriorInfo(exteriorInfo) {
+    async saveExteriorInfo(exteriorInfo, homeId = null) {
         try {
             if (!this.currentUserId) {
                 throw new Error('User not authenticated');
             }
 
-            // Check if user record exists, create if not
-            try {
-                const checkParams = {
-                    TableName: 'nestmate-users',
-                    Key: { userId: this.currentUserId }
-                };
-                const checkResult = await this.dynamodb.get(checkParams).promise();
-                if (!checkResult.Item) {
-                    console.log('🆕 User record not found, creating...');
-                    await this.createUserRecord([]);
+            if (!homeId) {
+                const homes = await this.getHomesList();
+                if (homes.length > 0) {
+                    homeId = homes[0].id;
+                } else {
+                    throw new Error('No home selected and no homes available');
                 }
-            } catch (createError) {
-                console.error('❌ Error checking/creating user record:', createError);
-                // Continue anyway, try the update
             }
 
+            const getParams = {
+                TableName: 'nestmate-users',
+                Key: { userId: this.currentUserId }
+            };
+            const userData = await this.dynamodb.get(getParams).promise();
+            
+            let homesData = userData.Item?.homesData || {};
+            if (!homesData[homeId]) {
+                homesData[homeId] = {
+                    bedroomsList: [],
+                    bathroomsList: [],
+                    kitchensList: [],
+                    livingAreasList: [],
+                    appliancesList: [],
+                    photosList: [],
+                    renovationsList: [],
+                    emergencyContacts: { family: [], emergency: [], services: [] },
+                    garageInfo: {},
+                    exteriorInfo: {}
+                };
+            }
+            
+            homesData[homeId].exteriorInfo = exteriorInfo;
+            
             const params = {
                 TableName: 'nestmate-users',
                 Key: { userId: this.currentUserId },
-                UpdateExpression: 'SET exteriorInfo = :exterior, updatedAt = :updated',
+                UpdateExpression: 'SET homesData = :homesData, updatedAt = :updated',
                 ExpressionAttributeValues: {
-                    ':exterior': exteriorInfo,
+                    ':homesData': homesData,
                     ':updated': new Date().toISOString()
                 }
             };
 
             await this.dynamodb.update(params).promise();
-            console.log('✅ Exterior info saved to AWS');
+            console.log('✅ Exterior info saved to AWS for home:', homeId);
             return { success: true };
 
         } catch (error) {
@@ -644,10 +774,19 @@ class AWSDataService {
         }
     }
 
-    async getExteriorInfo() {
+    async getExteriorInfo(homeId = null) {
         try {
             if (!this.currentUserId) {
                 throw new Error('User not authenticated');
+            }
+
+            if (!homeId) {
+                const homes = await this.getHomesList();
+                if (homes.length > 0) {
+                    homeId = homes[0].id;
+                } else {
+                    return {};
+                }
             }
 
             const params = {
@@ -656,7 +795,8 @@ class AWSDataService {
             };
 
             const result = await this.dynamodb.get(params).promise();
-            return result.Item ? result.Item.exteriorInfo || {} : {};
+            const homesData = result.Item?.homesData || {};
+            return homesData[homeId]?.exteriorInfo || {};
 
         } catch (error) {
             console.error('❌ Error getting exterior info:', error);
@@ -666,40 +806,57 @@ class AWSDataService {
 
     // ==================== APPLIANCES DATA ====================
 
-    async saveAppliancesList(appliancesList) {
+    async saveAppliancesList(appliancesList, homeId = null) {
         try {
             if (!this.currentUserId) {
                 throw new Error('User not authenticated');
             }
 
-            // Check if user record exists, create if not
-            try {
-                const checkParams = {
-                    TableName: 'nestmate-users',
-                    Key: { userId: this.currentUserId }
-                };
-                const checkResult = await this.dynamodb.get(checkParams).promise();
-                if (!checkResult.Item) {
-                    console.log('🆕 User record not found, creating...');
-                    await this.createUserRecord([]);
+            if (!homeId) {
+                const homes = await this.getHomesList();
+                if (homes.length > 0) {
+                    homeId = homes[0].id;
+                } else {
+                    throw new Error('No home selected and no homes available');
                 }
-            } catch (createError) {
-                console.error('❌ Error checking/creating user record:', createError);
-                // Continue anyway, try the update
             }
 
+            const getParams = {
+                TableName: 'nestmate-users',
+                Key: { userId: this.currentUserId }
+            };
+            const userData = await this.dynamodb.get(getParams).promise();
+            
+            let homesData = userData.Item?.homesData || {};
+            if (!homesData[homeId]) {
+                homesData[homeId] = {
+                    bedroomsList: [],
+                    bathroomsList: [],
+                    kitchensList: [],
+                    livingAreasList: [],
+                    appliancesList: [],
+                    photosList: [],
+                    renovationsList: [],
+                    emergencyContacts: { family: [], emergency: [], services: [] },
+                    garageInfo: {},
+                    exteriorInfo: {}
+                };
+            }
+            
+            homesData[homeId].appliancesList = appliancesList;
+            
             const params = {
                 TableName: 'nestmate-users',
                 Key: { userId: this.currentUserId },
-                UpdateExpression: 'SET appliancesList = :appliances, updatedAt = :updated',
+                UpdateExpression: 'SET homesData = :homesData, updatedAt = :updated',
                 ExpressionAttributeValues: {
-                    ':appliances': appliancesList,
+                    ':homesData': homesData,
                     ':updated': new Date().toISOString()
                 }
             };
 
             await this.dynamodb.update(params).promise();
-            console.log('✅ Appliances list saved to AWS');
+            console.log('✅ Appliances list saved to AWS for home:', homeId);
             return { success: true };
 
         } catch (error) {
@@ -708,10 +865,19 @@ class AWSDataService {
         }
     }
 
-    async getAppliancesList() {
+    async getAppliancesList(homeId = null) {
         try {
             if (!this.currentUserId) {
                 throw new Error('User not authenticated');
+            }
+
+            if (!homeId) {
+                const homes = await this.getHomesList();
+                if (homes.length > 0) {
+                    homeId = homes[0].id;
+                } else {
+                    return [];
+                }
             }
 
             const params = {
@@ -720,7 +886,8 @@ class AWSDataService {
             };
 
             const result = await this.dynamodb.get(params).promise();
-            return result.Item ? result.Item.appliancesList || [] : [];
+            const homesData = result.Item?.homesData || {};
+            return homesData[homeId]?.appliancesList || [];
 
         } catch (error) {
             console.error('❌ Error getting appliances list:', error);
@@ -730,40 +897,57 @@ class AWSDataService {
 
     // ==================== PHOTOS DATA ====================
 
-    async savePhotosList(photosList) {
+    async savePhotosList(photosList, homeId = null) {
         try {
             if (!this.currentUserId) {
                 throw new Error('User not authenticated');
             }
 
-            // Check if user record exists, create if not
-            try {
-                const checkParams = {
-                    TableName: 'nestmate-users',
-                    Key: { userId: this.currentUserId }
-                };
-                const checkResult = await this.dynamodb.get(checkParams).promise();
-                if (!checkResult.Item) {
-                    console.log('🆕 User record not found, creating...');
-                    await this.createUserRecord([]);
+            if (!homeId) {
+                const homes = await this.getHomesList();
+                if (homes.length > 0) {
+                    homeId = homes[0].id;
+                } else {
+                    throw new Error('No home selected and no homes available');
                 }
-            } catch (createError) {
-                console.error('❌ Error checking/creating user record:', createError);
-                // Continue anyway, try the update
             }
 
+            const getParams = {
+                TableName: 'nestmate-users',
+                Key: { userId: this.currentUserId }
+            };
+            const userData = await this.dynamodb.get(getParams).promise();
+            
+            let homesData = userData.Item?.homesData || {};
+            if (!homesData[homeId]) {
+                homesData[homeId] = {
+                    bedroomsList: [],
+                    bathroomsList: [],
+                    kitchensList: [],
+                    livingAreasList: [],
+                    appliancesList: [],
+                    photosList: [],
+                    renovationsList: [],
+                    emergencyContacts: { family: [], emergency: [], services: [] },
+                    garageInfo: {},
+                    exteriorInfo: {}
+                };
+            }
+            
+            homesData[homeId].photosList = photosList;
+            
             const params = {
                 TableName: 'nestmate-users',
                 Key: { userId: this.currentUserId },
-                UpdateExpression: 'SET photosList = :photos, updatedAt = :updated',
+                UpdateExpression: 'SET homesData = :homesData, updatedAt = :updated',
                 ExpressionAttributeValues: {
-                    ':photos': photosList,
+                    ':homesData': homesData,
                     ':updated': new Date().toISOString()
                 }
             };
 
             await this.dynamodb.update(params).promise();
-            console.log('✅ Photos list saved to AWS');
+            console.log('✅ Photos list saved to AWS for home:', homeId);
             return { success: true };
 
         } catch (error) {
@@ -772,10 +956,19 @@ class AWSDataService {
         }
     }
 
-    async getPhotosList() {
+    async getPhotosList(homeId = null) {
         try {
             if (!this.currentUserId) {
                 throw new Error('User not authenticated');
+            }
+
+            if (!homeId) {
+                const homes = await this.getHomesList();
+                if (homes.length > 0) {
+                    homeId = homes[0].id;
+                } else {
+                    return [];
+                }
             }
 
             const params = {
@@ -784,7 +977,8 @@ class AWSDataService {
             };
 
             const result = await this.dynamodb.get(params).promise();
-            return result.Item ? result.Item.photosList || [] : [];
+            const homesData = result.Item?.homesData || {};
+            return homesData[homeId]?.photosList || [];
 
         } catch (error) {
             console.error('❌ Error getting photos list:', error);
@@ -794,40 +988,57 @@ class AWSDataService {
 
     // ==================== RENOVATIONS DATA ====================
 
-    async saveRenovationsList(renovationsList) {
+    async saveRenovationsList(renovationsList, homeId = null) {
         try {
             if (!this.currentUserId) {
                 throw new Error('User not authenticated');
             }
 
-            // Check if user record exists, create if not
-            try {
-                const checkParams = {
-                    TableName: 'nestmate-users',
-                    Key: { userId: this.currentUserId }
-                };
-                const checkResult = await this.dynamodb.get(checkParams).promise();
-                if (!checkResult.Item) {
-                    console.log('🆕 User record not found, creating...');
-                    await this.createUserRecord([]);
+            if (!homeId) {
+                const homes = await this.getHomesList();
+                if (homes.length > 0) {
+                    homeId = homes[0].id;
+                } else {
+                    throw new Error('No home selected and no homes available');
                 }
-            } catch (createError) {
-                console.error('❌ Error checking/creating user record:', createError);
-                // Continue anyway, try the update
             }
 
+            const getParams = {
+                TableName: 'nestmate-users',
+                Key: { userId: this.currentUserId }
+            };
+            const userData = await this.dynamodb.get(getParams).promise();
+            
+            let homesData = userData.Item?.homesData || {};
+            if (!homesData[homeId]) {
+                homesData[homeId] = {
+                    bedroomsList: [],
+                    bathroomsList: [],
+                    kitchensList: [],
+                    livingAreasList: [],
+                    appliancesList: [],
+                    photosList: [],
+                    renovationsList: [],
+                    emergencyContacts: { family: [], emergency: [], services: [] },
+                    garageInfo: {},
+                    exteriorInfo: {}
+                };
+            }
+            
+            homesData[homeId].renovationsList = renovationsList;
+            
             const params = {
                 TableName: 'nestmate-users',
                 Key: { userId: this.currentUserId },
-                UpdateExpression: 'SET renovationsList = :renovations, updatedAt = :updated',
+                UpdateExpression: 'SET homesData = :homesData, updatedAt = :updated',
                 ExpressionAttributeValues: {
-                    ':renovations': renovationsList,
+                    ':homesData': homesData,
                     ':updated': new Date().toISOString()
                 }
             };
 
             await this.dynamodb.update(params).promise();
-            console.log('✅ Renovations list saved to AWS');
+            console.log('✅ Renovations list saved to AWS for home:', homeId);
             return { success: true };
 
         } catch (error) {
@@ -836,10 +1047,19 @@ class AWSDataService {
         }
     }
 
-    async getRenovationsList() {
+    async getRenovationsList(homeId = null) {
         try {
             if (!this.currentUserId) {
                 throw new Error('User not authenticated');
+            }
+
+            if (!homeId) {
+                const homes = await this.getHomesList();
+                if (homes.length > 0) {
+                    homeId = homes[0].id;
+                } else {
+                    return [];
+                }
             }
 
             const params = {
@@ -848,7 +1068,8 @@ class AWSDataService {
             };
 
             const result = await this.dynamodb.get(params).promise();
-            return result.Item ? result.Item.renovationsList || [] : [];
+            const homesData = result.Item?.homesData || {};
+            return homesData[homeId]?.renovationsList || [];
 
         } catch (error) {
             console.error('❌ Error getting renovations list:', error);
@@ -858,40 +1079,57 @@ class AWSDataService {
 
     // ==================== EMERGENCY CONTACTS DATA ====================
 
-    async saveEmergencyContacts(emergencyContacts) {
+    async saveEmergencyContacts(emergencyContacts, homeId = null) {
         try {
             if (!this.currentUserId) {
                 throw new Error('User not authenticated');
             }
 
-            // Check if user record exists, create if not
-            try {
-                const checkParams = {
-                    TableName: 'nestmate-users',
-                    Key: { userId: this.currentUserId }
-                };
-                const checkResult = await this.dynamodb.get(checkParams).promise();
-                if (!checkResult.Item) {
-                    console.log('🆕 User record not found, creating...');
-                    await this.createUserRecord([]);
+            if (!homeId) {
+                const homes = await this.getHomesList();
+                if (homes.length > 0) {
+                    homeId = homes[0].id;
+                } else {
+                    throw new Error('No home selected and no homes available');
                 }
-            } catch (createError) {
-                console.error('❌ Error checking/creating user record:', createError);
-                // Continue anyway, try the update
             }
 
+            const getParams = {
+                TableName: 'nestmate-users',
+                Key: { userId: this.currentUserId }
+            };
+            const userData = await this.dynamodb.get(getParams).promise();
+            
+            let homesData = userData.Item?.homesData || {};
+            if (!homesData[homeId]) {
+                homesData[homeId] = {
+                    bedroomsList: [],
+                    bathroomsList: [],
+                    kitchensList: [],
+                    livingAreasList: [],
+                    appliancesList: [],
+                    photosList: [],
+                    renovationsList: [],
+                    emergencyContacts: { family: [], emergency: [], services: [] },
+                    garageInfo: {},
+                    exteriorInfo: {}
+                };
+            }
+            
+            homesData[homeId].emergencyContacts = emergencyContacts;
+            
             const params = {
                 TableName: 'nestmate-users',
                 Key: { userId: this.currentUserId },
-                UpdateExpression: 'SET emergencyContacts = :contacts, updatedAt = :updated',
+                UpdateExpression: 'SET homesData = :homesData, updatedAt = :updated',
                 ExpressionAttributeValues: {
-                    ':contacts': emergencyContacts,
+                    ':homesData': homesData,
                     ':updated': new Date().toISOString()
                 }
             };
 
             await this.dynamodb.update(params).promise();
-            console.log('✅ Emergency contacts saved to AWS');
+            console.log('✅ Emergency contacts saved to AWS for home:', homeId);
             return { success: true };
 
         } catch (error) {
@@ -900,10 +1138,19 @@ class AWSDataService {
         }
     }
 
-    async getEmergencyContacts() {
+    async getEmergencyContacts(homeId = null) {
         try {
             if (!this.currentUserId) {
                 throw new Error('User not authenticated');
+            }
+
+            if (!homeId) {
+                const homes = await this.getHomesList();
+                if (homes.length > 0) {
+                    homeId = homes[0].id;
+                } else {
+                    return { family: [], emergency: [], services: [] };
+                }
             }
 
             const params = {
@@ -912,7 +1159,8 @@ class AWSDataService {
             };
 
             const result = await this.dynamodb.get(params).promise();
-            return result.Item ? result.Item.emergencyContacts || { family: [], emergency: [], services: [] } : { family: [], emergency: [], services: [] };
+            const homesData = result.Item?.homesData || {};
+            return homesData[homeId]?.emergencyContacts || { family: [], emergency: [], services: [] };
 
         } catch (error) {
             console.error('❌ Error getting emergency contacts:', error);
