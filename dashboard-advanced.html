@@ -1007,6 +1007,21 @@
             border-radius: 8px;
             text-align: center;
         }
+        
+        .stat-item.clickable-stat {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .stat-item.clickable-stat:hover {
+            background: #1e293b;
+            transform: translateY(-2px);
+        }
+        
+        .stat-item.clickable-stat.active {
+            background: #1e293b;
+            border: 2px solid #00d4aa;
+        }
 
         .stat-number {
             font-size: 2rem;
@@ -2313,16 +2328,16 @@
                     <div class="card">
                         <h3>Unlimited Tasks & Reminders</h3>
                         <div class="task-stats">
-                            <div class="stat-item">
-                                <div class="stat-number">24</div>
+                            <div class="stat-item clickable-stat" onclick="filterTasksByStat('active')" title="Click to view active tasks">
+                                <div class="stat-number" id="stat-active-count">0</div>
                                 <div class="stat-label">Active Tasks</div>
                             </div>
-                            <div class="stat-item">
-                                <div class="stat-number">8</div>
+                            <div class="stat-item clickable-stat" onclick="filterTasksByStat('due-this-week')" title="Click to view tasks due this week">
+                                <div class="stat-number" id="stat-due-week-count">0</div>
                                 <div class="stat-label">Due This Week</div>
                             </div>
-                            <div class="stat-item">
-                                <div class="stat-number">156</div>
+                            <div class="stat-item clickable-stat" onclick="filterTasksByStat('completed')" title="Click to view completed tasks">
+                                <div class="stat-number" id="stat-completed-count">0</div>
                                 <div class="stat-label">Completed</div>
                             </div>
                         </div>
@@ -6806,29 +6821,95 @@
         // Removed duplicate saveHome function - using the one above
 
         // Task Functions
-        function filterTasks(filter) {
-            const taskItems = document.querySelectorAll('.task-item');
-            taskItems.forEach(item => {
-                item.style.display = 'block';
-                
-                if (filter === 'due-soon') {
-                    // Show only tasks due within 3 days
-                    const dueText = item.querySelector('.task-content p').textContent;
-                    if (!dueText.includes('Due in') || dueText.includes('week')) {
-                        item.style.display = 'none';
-                    }
-                } else if (filter === 'by-home') {
-                    // Show only tasks for specific home
-                    // This would need more complex logic
-                } else if (filter === 'by-category') {
-                    // Show only tasks by category
-                    // This would need more complex logic
-                }
+        let currentTaskFilter = 'all';
+        
+        function filterTasksByStat(statType) {
+            // Remove active class from all stat items
+            document.querySelectorAll('.stat-item.clickable-stat').forEach(item => {
+                item.classList.remove('active');
             });
             
-            // Update active filter button
-            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+            // Add active class to clicked stat
+            const clickedStat = event?.target?.closest('.stat-item.clickable-stat');
+            if (clickedStat) {
+                clickedStat.classList.add('active');
+            }
+            
+            // Update filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Set the filter and render
+            currentTaskFilter = statType;
+            renderFilteredTasks(statType);
+        }
+        
+        function filterTasks(filter) {
+            currentTaskFilter = filter;
+            
+            // Remove active class from all stat items
+            document.querySelectorAll('.stat-item.clickable-stat').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Update filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Add active class to clicked filter button
+            event?.target?.classList.add('active');
+            
+            renderFilteredTasks(filter);
+        }
+        
+        function renderFilteredTasks(filterType) {
+            const container = document.getElementById('unlimitedTasksList');
+            if (!container) return;
+            
+            let filteredTasks = [];
+            const today = new Date();
+            const weekFromNow = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+            
+            switch(filterType) {
+                case 'active':
+                    filteredTasks = tasks.filter(t => !t.completed);
+                    break;
+                case 'due-this-week':
+                    filteredTasks = tasks.filter(t => {
+                        if (t.completed || !t.dueDate) return false;
+                        const dueDate = new Date(t.dueDate);
+                        return dueDate >= today && dueDate <= weekFromNow;
+                    });
+                    break;
+                case 'completed':
+                    filteredTasks = tasks.filter(t => t.completed);
+                    break;
+                case 'due-soon':
+                    const twoWeeksFromNow = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000);
+                    filteredTasks = tasks.filter(t => {
+                        if (t.completed || !t.dueDate) return false;
+                        const dueDate = new Date(t.dueDate);
+                        return dueDate >= today && dueDate <= twoWeeksFromNow;
+                    });
+                    break;
+                case 'by-home':
+                    // Group by home - show all tasks but organized
+                    filteredTasks = tasks;
+                    break;
+                case 'by-category':
+                    // Group by category - show all tasks but organized
+                    filteredTasks = tasks;
+                    break;
+                case 'all':
+                default:
+                    filteredTasks = tasks;
+                    break;
+            }
+            
+            // Render the filtered tasks
+            renderTasksInUnlimitedSection(container, filteredTasks);
         }
 
         async function editTask(taskId) {
@@ -7001,7 +7082,7 @@
                 // Render in unlimitedTasksList container (for the unlimited tasks section)
                 const unlimitedContainer = document.getElementById('unlimitedTasksList');
                 if (unlimitedContainer) {
-                    renderTasksInUnlimitedSection(unlimitedContainer);
+                    renderFilteredTasks(currentTaskFilter);
                 }
                 
                 // Update task stats
@@ -7049,10 +7130,13 @@
             });
         }
         
-        async function renderTasksInUnlimitedSection(container) {
+        async function renderTasksInUnlimitedSection(container, tasksToRender = null) {
             container.innerHTML = '';
             
-            if (tasks.length === 0) {
+            // Use provided tasks or all tasks
+            const tasksToShow = tasksToRender !== null ? tasksToRender : tasks;
+            
+            if (tasksToShow.length === 0) {
                 const empty = document.createElement('div');
                 empty.className = 'empty-state';
                 empty.textContent = 'No tasks added yet. Click "Add New Task" to create one.';
