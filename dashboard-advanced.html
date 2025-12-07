@@ -6831,10 +6831,10 @@
             event.target.classList.add('active');
         }
 
-        function editTask(taskId) {
+        async function editTask(taskId) {
             const task = tasks.find(t => t.id === taskId);
             if (task) {
-                openTaskModal(task);
+                await openTaskModal(task);
             }
         }
 
@@ -6855,7 +6855,7 @@
                 }
                 
                 showAlert('Task completed!', 'success');
-                loadTasks();
+                await loadTasks();
             }
         }
 
@@ -6876,7 +6876,7 @@
                 }
                 
                 showAlert('Task undone!', 'info');
-                loadTasks();
+                await loadTasks();
             }
         }
 
