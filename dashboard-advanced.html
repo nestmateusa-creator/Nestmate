@@ -6395,11 +6395,19 @@
             const addressInput = document.getElementById('homeAddress');
             const typeInput = document.getElementById('homeType');
             
+            console.log('Address input element:', addressInput);
+            console.log('Type input element:', typeInput);
+            console.log('Address value:', addressInput ? addressInput.value : 'NOT FOUND');
+            console.log('Type value:', typeInput ? typeInput.value : 'NOT FOUND');
+            
             const address = addressInput ? addressInput.value.trim() : '';
             const type = typeInput ? typeInput.value.trim() : '';
             
+            console.log('Trimmed address:', address);
+            console.log('Trimmed type:', type);
+            
             // Validate required fields first
-            if (!address || !type) {
+            if (!address || !type || type === '') {
                 console.log('Validation failed - address:', address, 'type:', type);
                 showAlert('Please fill in all required fields (Address and Type are required)', 'error');
                 return;
