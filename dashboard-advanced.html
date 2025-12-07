@@ -570,7 +570,17 @@
             margin-bottom: 0;
         }
 
-        /* Ensure sections are visible when displayed */
+        /* Ensure sections are visible when displayed - but only if explicitly set */
+        .dashboard-section[style*="display: block"] {
+            display: block !important;
+        }
+        
+        /* Force ALL sections to be hidden by default except overview */
+        .dashboard-section:not(#overview) {
+            display: none !important;
+        }
+        
+        /* Override when explicitly shown via JavaScript */
         .dashboard-section[style*="display: block"] {
             display: block !important;
         }
@@ -3371,6 +3381,7 @@
             console.log('Total sections found:', sections.length);
             sections.forEach(section => {
                 section.style.display = 'none';
+                section.style.setProperty('display', 'none', 'important');
                 console.log('Hiding section:', section.id);
             });
             
