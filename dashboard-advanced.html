@@ -6582,13 +6582,50 @@
                 if (!currentHomeId && homesList.length > 0) {
                     currentHomeId = homesList[0].id;
                     selector.value = currentHomeId;
-                    await switchHome(currentHomeId);
+                    await updateSidebarHomeInfo(currentHomeId);
+                    // Don't call switchHome here to avoid double-loading on initial page load
+                    // switchHome will be called when user manually changes selection
                 } else if (currentHomeId) {
                     selector.value = currentHomeId;
+                    await updateSidebarHomeInfo(currentHomeId);
                 }
                 
             } catch (error) {
                 console.error('Error initializing home selector:', error);
+            }
+        }
+
+        // Update sidebar with selected home's information
+        async function updateSidebarHomeInfo(homeId) {
+            try {
+                if (!homeId) return;
+                
+                const homesList = await getHomesList();
+                const home = homesList.find(h => h.id === homeId);
+                
+                if (!home) {
+                    console.warn('Home not found:', homeId);
+                    return;
+                }
+                
+                // Update sidebar display elements
+                const displayAddress = document.getElementById('displayAddress');
+                const displayYearBuilt = document.getElementById('displayYearBuilt');
+                const displaySquareFootage = document.getElementById('displaySquareFootage');
+                const displayBedrooms = document.getElementById('displayBedrooms');
+                const displayBathrooms = document.getElementById('displayBathrooms');
+                const displayHomeType = document.getElementById('displayHomeType');
+                
+                if (displayAddress) displayAddress.textContent = home.address || 'Not set';
+                if (displayYearBuilt) displayYearBuilt.textContent = home.yearBuilt || 'Not set';
+                if (displaySquareFootage) displaySquareFootage.textContent = home.squareFootage || 'Not set';
+                if (displayBedrooms) displayBedrooms.textContent = home.bedrooms || 'Not set';
+                if (displayBathrooms) displayBathrooms.textContent = home.bathrooms || 'Not set';
+                if (displayHomeType) displayHomeType.textContent = home.type || 'Not set';
+                
+                console.log('✅ Sidebar updated with home info:', home);
+            } catch (error) {
+                console.error('Error updating sidebar home info:', error);
             }
         }
 
@@ -6604,6 +6641,9 @@
             
             // Reload all data for the selected home
             try {
+                // Update sidebar with home information first
+                await updateSidebarHomeInfo(homeId);
+                
                 // Reload all sections
                 await renderBedroomsList();
                 await renderBathroomsList();
