@@ -3483,14 +3483,27 @@
                 <span class="close-btn" onclick="closeScheduleModal()">&times;</span>
             </div>
             <div class="modal-body">
-                <div class="calendar-controls" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                    <button class="btn btn-secondary" onclick="changeCalendarMonth(-1)">
-                        <i class="fas fa-chevron-left"></i> Previous
-                    </button>
-                    <h3 id="calendarMonthYear" style="margin: 0; color: #f1f5f9;"></h3>
-                    <button class="btn btn-secondary" onclick="changeCalendarMonth(1)">
-                        Next <i class="fas fa-chevron-right"></i>
-                    </button>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; gap: 1rem; flex-wrap: wrap;">
+                    <div class="calendar-controls" style="display: flex; justify-content: space-between; align-items: center; flex: 1; min-width: 300px;">
+                        <button class="btn btn-secondary" onclick="changeCalendarMonth(-1)">
+                            <i class="fas fa-chevron-left"></i> Previous
+                        </button>
+                        <h3 id="calendarMonthYear" style="margin: 0; color: #f1f5f9;"></h3>
+                        <button class="btn btn-secondary" onclick="changeCalendarMonth(1)">
+                            Next <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div style="display: flex; gap: 1rem; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <label for="calendarHomeFilter" style="color: #94a3b8; font-size: 0.875rem;">Filter by Home:</label>
+                            <select id="calendarHomeFilter" onchange="renderCalendar()" style="padding: 0.5rem; background: #1e293b; border: 1px solid #334155; border-radius: 6px; color: #e2e8f0;">
+                                <option value="">All Homes</option>
+                            </select>
+                        </div>
+                        <button class="btn" onclick="addTaskFromCalendar()" style="background: #00d4aa; color: white;">
+                            <i class="fas fa-plus"></i> Add Task
+                        </button>
+                    </div>
                 </div>
                 <div id="calendarContainer" class="calendar-container"></div>
                 <div class="calendar-legend" style="margin-top: 1.5rem; padding: 1rem; background: #0f172a; border-radius: 8px;">
@@ -3757,12 +3770,30 @@
             openScheduleModal();
         }
         
-        function openScheduleModal() {
+        async function openScheduleModal() {
             const modal = document.getElementById('scheduleModal');
             if (modal) {
                 modal.style.display = 'flex';
                 currentCalendarDate = new Date(); // Reset to current month
-                renderCalendar();
+                
+                // Populate home filter dropdown
+                const homeFilter = document.getElementById('calendarHomeFilter');
+                if (homeFilter && window.awsDataService) {
+                    try {
+                        const homesList = await window.awsDataService.getHomesList();
+                        homeFilter.innerHTML = '<option value="">All Homes</option>';
+                        homesList.forEach(home => {
+                            const option = document.createElement('option');
+                            option.value = home.id;
+                            option.textContent = home.address || home.id;
+                            homeFilter.appendChild(option);
+                        });
+                    } catch (error) {
+                        console.error('Error loading homes for calendar filter:', error);
+                    }
+                }
+                
+                await renderCalendar();
             }
         }
         
@@ -3809,10 +3840,22 @@
                 }
             }
             
-            // Group tasks by date
+            // Get selected home filter
+            const homeFilter = document.getElementById('calendarHomeFilter');
+            const selectedHomeId = homeFilter ? homeFilter.value : '';
+            
+            // Group tasks by date, filtering by home if selected
             const tasksByDate = {};
             tasks.forEach(task => {
                 if (task.dueDate) {
+                    // Filter by home if selected
+                    if (selectedHomeId) {
+                        const taskHomeId = task.home || task.homeId || '';
+                        if (taskHomeId !== selectedHomeId) {
+                            return; // Skip this task if it doesn't match the selected home
+                        }
+                    }
+                    
                     const taskDate = new Date(task.dueDate);
                     if (taskDate.getFullYear() === year && taskDate.getMonth() === month) {
                         const dateKey = taskDate.getDate();
@@ -3858,7 +3901,8 @@
                         const priorityClass = priority === 'high' ? 'high' : priority === 'low' ? 'low' : 'medium';
                         const completedClass = task.completed ? 'completed' : '';
                         const homeAddress = homesMap[task.home || task.homeId] || task.home || 'Unknown';
-                        calendarHTML += `<div class="calendar-task ${priorityClass} ${completedClass}" title="${task.title} - ${homeAddress}">
+                        calendarHTML += `<div class="calendar-task ${priorityClass} ${completedClass}" onclick="editTaskFromCalendar('${task.id}')" title="${task.title} - ${homeAddress}">
+                            <input type="checkbox" ${task.completed ? 'checked' : ''} onclick="event.stopPropagation(); toggleTaskCompleteFromCalendar('${task.id}')" style="margin-right: 0.25rem; cursor: pointer;">
                             <span class="task-dot"></span>
                             <span class="task-title">${task.title.length > 15 ? task.title.substring(0, 15) + '...' : task.title}</span>
                         </div>`;
@@ -3867,6 +3911,11 @@
                         calendarHTML += `<div class="calendar-task-more">+${dayTasks.length - 3} more</div>`;
                     }
                     calendarHTML += '</div>';
+                } else {
+                    // Allow adding task by clicking on empty day
+                    calendarHTML += `<div class="calendar-add-task" onclick="addTaskForDate(${year}, ${month}, ${day})" title="Click to add task for this date">
+                        <i class="fas fa-plus" style="color: #94a3b8; font-size: 0.75rem;"></i>
+                    </div>`;
                 }
                 
                 calendarHTML += '</div>';
@@ -3874,6 +3923,57 @@
             
             calendarHTML += '</div>';
             container.innerHTML = calendarHTML;
+        }
+        
+        function editTaskFromCalendar(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                closeScheduleModal();
+                openTaskModal(task).then(() => {
+                    // After task is saved, reopen calendar
+                    setTimeout(() => {
+                        openScheduleModal();
+                    }, 100);
+                });
+            }
+        }
+        
+        async function toggleTaskCompleteFromCalendar(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                task.completed = !task.completed;
+                if (task.completed) {
+                    task.completedDate = new Date().toISOString();
+                } else {
+                    delete task.completedDate;
+                }
+                
+                // Save to AWS
+                try {
+                    if (window.awsDataService) {
+                        await window.awsDataService.saveTasksList(tasks);
+                        console.log('Task completion status saved to AWS');
+                    }
+                } catch (error) {
+                    console.error('Error saving task to AWS:', error);
+                }
+                
+                // Reload calendar
+                await renderCalendar();
+                // Also update task stats
+                updateTaskStats();
+            }
+        }
+        
+        async function addTaskFromCalendar() {
+            closeScheduleModal();
+            await openTaskModal();
+        }
+        
+        async function addTaskForDate(year, month, day) {
+            closeScheduleModal();
+            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            await openTaskModal(null, dateStr);
         }
 
         function openProducts() {
@@ -7442,7 +7542,13 @@
             }
 
             closeTaskModal();
-            loadTasks();
+            await loadTasks();
+            
+            // If calendar modal was open, refresh it
+            const scheduleModal = document.getElementById('scheduleModal');
+            if (scheduleModal && scheduleModal.style.display === 'flex') {
+                await renderCalendar();
+            }
         }
 
         // Load Functions
