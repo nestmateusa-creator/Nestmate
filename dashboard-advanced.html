@@ -3385,9 +3385,9 @@
             console.log('Target section ID:', targetSection ? targetSection.id : 'NOT FOUND');
             
             if (targetSection) {
-                targetSection.style.display = 'block';
-                targetSection.style.visibility = 'visible';
-                targetSection.style.opacity = '1';
+                targetSection.style.setProperty('display', 'block', 'important');
+                targetSection.style.setProperty('visibility', 'visible', 'important');
+                targetSection.style.setProperty('opacity', '1', 'important');
                 console.log('Section displayed:', sectionId);
                 
                 // Double-check: hide 'homes' section explicitly if it's not the target
