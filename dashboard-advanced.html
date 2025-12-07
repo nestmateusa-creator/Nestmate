@@ -6928,11 +6928,14 @@
                 // Show all tasks
                 filteredTasks = tasks;
             } else {
-                // Filter tasks by selected home
+                // Filter tasks by selected home - check both home and homeId fields
                 filteredTasks = tasks.filter(task => {
-                    const taskHomeId = task.home || task.homeId;
-                    return taskHomeId === homeId;
+                    const taskHomeId = task.home || task.homeId || '';
+                    const matches = taskHomeId === homeId || taskHomeId.toString() === homeId.toString();
+                    console.log('Filtering task:', task.title, 'taskHomeId:', taskHomeId, 'selectedHomeId:', homeId, 'matches:', matches);
+                    return matches;
                 });
+                console.log('Filtered tasks for home', homeId, ':', filteredTasks.length, 'tasks');
             }
             
             // Render the filtered tasks
