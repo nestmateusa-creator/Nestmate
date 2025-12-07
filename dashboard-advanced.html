@@ -570,9 +570,8 @@
             margin-bottom: 0 !important;
         }
 
-        /* Ensure sections are visible when displayed */
-        .dashboard-section[style*="display: block"],
-        .dashboard-section:not([style*="display: none"]) {
+        /* Ensure sections are visible when displayed - match homes section exactly */
+        .dashboard-section[style*="display: block"] {
             display: block !important;
             visibility: visible !important;
             opacity: 1 !important;
@@ -583,6 +582,27 @@
             display: block !important;
             visibility: visible !important;
             opacity: 1 !important;
+        }
+
+        /* Force all sections to match homes section structure exactly */
+        #basic-info.dashboard-section,
+        #structure.dashboard-section,
+        #systems.dashboard-section,
+        #bedroomsSection.dashboard-section,
+        #bathroomsSection.dashboard-section,
+        #kitchenSection.dashboard-section,
+        #living-areas.dashboard-section,
+        #garage.dashboard-section,
+        #exterior.dashboard-section,
+        #appliances.dashboard-section,
+        #renovations.dashboard-section,
+        #emergency.dashboard-section {
+            width: 1000px !important;
+            max-width: 1000px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            box-sizing: border-box !important;
+            display: block !important;
         }
 
         /* Content Section default display */
@@ -3369,6 +3389,8 @@
             
             if (targetSection) {
                 targetSection.style.display = 'block';
+                targetSection.style.visibility = 'visible';
+                targetSection.style.opacity = '1';
                 console.log('Section displayed:', sectionId);
                 
                 // Double-check: hide 'homes' section explicitly if it's not the target
