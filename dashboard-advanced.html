@@ -3426,6 +3426,16 @@
         function showSection(sectionId) {
             console.log('showSection called with:', sectionId);
             
+            // Show/hide home selector based on section
+            const homeSelectorContainer = document.getElementById('homeSelectorContainer');
+            if (homeSelectorContainer) {
+                if (sectionId === 'overview') {
+                    homeSelectorContainer.style.display = 'block';
+                } else {
+                    homeSelectorContainer.style.display = 'none';
+                }
+            }
+            
             // Hide all sections (both dashboard-section and content-section)
             const sections = document.querySelectorAll('.dashboard-section, .content-section');
             console.log('Total sections found:', sections.length);
@@ -3469,6 +3479,10 @@
                 setTimeout(async () => {
                     if (sectionId === 'basic-info') {
                         await loadBasicInfo();
+                        // Also update sidebar with current home info
+                        if (currentHomeId) {
+                            await updateSidebarHomeInfo(currentHomeId);
+                        }
                     } else if (sectionId === 'structure') {
                         await loadStructure();
                     } else if (sectionId === 'systems') {
