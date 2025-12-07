@@ -6582,11 +6582,11 @@
                 if (!currentHomeId && homesList.length > 0) {
                     currentHomeId = homesList[0].id;
                     selector.value = currentHomeId;
+                    // Update sidebar immediately
                     await updateSidebarHomeInfo(currentHomeId);
-                    // Don't call switchHome here to avoid double-loading on initial page load
-                    // switchHome will be called when user manually changes selection
                 } else if (currentHomeId) {
                     selector.value = currentHomeId;
+                    // Update sidebar for already selected home
                     await updateSidebarHomeInfo(currentHomeId);
                 }
                 
