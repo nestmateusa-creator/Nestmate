@@ -2345,8 +2345,13 @@
                         <div class="task-filters">
                             <button class="filter-btn active" onclick="filterTasks('all')">All Tasks</button>
                             <button class="filter-btn" onclick="filterTasks('due-soon')">Due Soon</button>
-                            <button class="filter-btn" onclick="filterTasks('by-home')">By Home</button>
+                            <button class="filter-btn" onclick="showHomeFilter()">By Home</button>
                             <button class="filter-btn" onclick="filterTasks('by-category')">By Category</button>
+                        </div>
+                        <div id="homeFilterDropdown" class="home-filter-dropdown" style="display: none;">
+                            <select id="homeFilterSelect" onchange="filterTasksByHome(this.value)">
+                                <option value="">All Homes</option>
+                            </select>
                         </div>
                         
                         <div class="task-list" id="unlimitedTasksList">
@@ -6895,7 +6900,7 @@
                     });
                     break;
                 case 'by-home':
-                    // Group by home - show all tasks but organized
+                    // Filter by selected home - will be handled by filterTasksByHome
                     filteredTasks = tasks;
                     break;
                 case 'by-category':
