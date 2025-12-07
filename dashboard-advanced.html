@@ -191,6 +191,50 @@
             color: #f1f5f9;
         }
 
+        /* Home Selector Styling */
+        .home-selector-container {
+            width: 1000px;
+            max-width: 1000px;
+            margin: 0 auto 1.5rem auto;
+        }
+
+        .home-selector-card {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            border: 1px solid #334155;
+        }
+
+        .home-selector-card label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #f1f5f9;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .home-selector {
+            width: 100%;
+            padding: 0.75rem;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: #f1f5f9;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .home-selector:hover {
+            border-color: #00d4aa;
+        }
+
+        .home-selector:focus {
+            outline: none;
+            border-color: #00d4aa;
+            box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.1);
+        }
+
         .user-info {
             display: flex;
             align-items: center;
@@ -2103,6 +2147,18 @@
                         <div class="user-avatar" id="userAvatar">U</div>
                         <span id="userName">Loading...</span>
                         <button class="sign-out-btn" onclick="signOut()">Sign Out</button>
+                    </div>
+                </div>
+
+                <!-- Home Selector -->
+                <div id="homeSelectorContainer" class="home-selector-container" style="display: none; margin-bottom: 1.5rem;">
+                    <div class="home-selector-card">
+                        <label for="homeSelector" style="display: flex; align-items: center; gap: 0.5rem; color: #f1f5f9; font-weight: 600; margin-bottom: 0.5rem;">
+                            <i class="fas fa-home"></i> Select Home:
+                        </label>
+                        <select id="homeSelector" class="home-selector" onchange="switchHome(this.value)">
+                            <option value="">Loading homes...</option>
+                        </select>
                     </div>
                 </div>
 
@@ -6485,6 +6541,80 @@
             }
         }
 
+        // Current selected home ID
+        let currentHomeId = null;
+
+        // Initialize home selector
+        async function initHomeSelector() {
+            try {
+                const homesList = await getHomesList();
+                const selector = document.getElementById('homeSelector');
+                const container = document.getElementById('homeSelectorContainer');
+                
+                if (!selector || !container) return;
+                
+                // Clear existing options
+                selector.innerHTML = '';
+                
+                if (homesList.length === 0) {
+                    container.style.display = 'none';
+                    return;
+                }
+                
+                // Show selector if homes exist
+                container.style.display = 'block';
+                
+                // Add default option
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = 'Select a home...';
+                selector.appendChild(defaultOption);
+                
+                // Add homes to selector
+                homesList.forEach((home) => {
+                    const option = document.createElement('option');
+                    option.value = home.id;
+                    option.textContent = `${home.address} (${home.type})`;
+                    selector.appendChild(option);
+                });
+                
+                // If no home is selected and homes exist, select the first one
+                if (!currentHomeId && homesList.length > 0) {
+                    currentHomeId = homesList[0].id;
+                    selector.value = currentHomeId;
+                    await switchHome(currentHomeId);
+                } else if (currentHomeId) {
+                    selector.value = currentHomeId;
+                }
+                
+            } catch (error) {
+                console.error('Error initializing home selector:', error);
+            }
+        }
+
+        // Switch between homes
+        async function switchHome(homeId) {
+            if (!homeId) {
+                currentHomeId = null;
+                return;
+            }
+            
+            currentHomeId = homeId;
+            console.log('Switching to home:', homeId);
+            
+            // Reload all data for the selected home
+            // Note: This will need to be updated to filter by homeId when data structure supports it
+            // For now, we'll just store the current home ID for future use
+            
+            // Reload dashboard sections
+            const currentSection = document.querySelector('.dashboard-section[style*="display: block"]');
+            if (currentSection && currentSection.id) {
+                showSection(currentSection.id);
+            }
+            
+            showAlert(`Switched to home: ${homeId}`, 'success');
+        }
+
         async function loadHomes() {
             try {
                 const homesList = await getHomesList();
@@ -6492,6 +6622,9 @@
                 if (!container) return;
                 
                 container.innerHTML = '';
+                
+                // Update home selector
+                await initHomeSelector();
                 
                 // Add existing homes
                 homesList.forEach((home, index) => {
@@ -6907,6 +7040,9 @@
 
                     // Load homes using AWS (Basic Dashboard pattern)
                     await loadHomes();
+                    
+                    // Initialize home selector
+                    await initHomeSelector();
                     
                     // Load and render rooms data
                     await renderBedroomsList();
