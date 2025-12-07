@@ -2334,50 +2334,8 @@
                             <button class="filter-btn" onclick="filterTasks('by-category')">By Category</button>
                         </div>
                         
-                        <div class="task-list">
-                            <div class="task-item high-priority">
-                                <div class="task-checkbox">
-                                    <input type="checkbox" id="task1">
-                                    <label for="task1"></label>
-                                </div>
-                                <div class="task-content">
-                                    <h4>Replace HVAC Filter</h4>
-                                    <p>123 Main Street • Due in 2 days</p>
-                                </div>
-                                <div class="task-actions">
-                                    <button class="btn-small" onclick="editTask('task1')">Edit</button>
-                                    <button class="btn-small" onclick="completeTask('task1')">Complete</button>
-                                </div>
-                            </div>
-                            
-                            <div class="task-item medium-priority">
-                                <div class="task-checkbox">
-                                    <input type="checkbox" id="task2">
-                                    <label for="task2"></label>
-                                </div>
-                                <div class="task-content">
-                                    <h4>Schedule Annual Inspection</h4>
-                                    <p>456 Oak Avenue • Due in 1 week</p>
-                                </div>
-                                <div class="task-actions">
-                                    <button class="btn-small" onclick="editTask('task2')">Edit</button>
-                                    <button class="btn-small" onclick="completeTask('task2')">Complete</button>
-                                </div>
-                            </div>
-                            
-                            <div class="task-item low-priority">
-                                <div class="task-checkbox">
-                                    <input type="checkbox" id="task3" checked>
-                                    <label for="task3"></label>
-                                </div>
-                                <div class="task-content completed">
-                                    <h4>Clean Gutters</h4>
-                                    <p>123 Main Street • Completed 2 days ago</p>
-                                </div>
-                                <div class="task-actions">
-                                    <button class="btn-small" onclick="undoTask('task3')">Undo</button>
-                                </div>
-                            </div>
+                        <div class="task-list" id="unlimitedTasksList">
+                            <!-- Tasks will be dynamically rendered here -->
                         </div>
                         
                         <div class="add-task-section">
@@ -3336,8 +3294,6 @@
                         <label for="taskHome">Home</label>
                         <select id="taskHome" required>
                             <option value="">Select Home</option>
-                            <option value="123-main-street">123 Main Street</option>
-                            <option value="456-oak-avenue">456 Oak Avenue</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -6928,16 +6884,39 @@
             openTaskModal();
         }
 
-        function openTaskModal(task = null) {
+        async function openTaskModal(task = null) {
             const modal = document.getElementById('taskModal');
             const title = document.getElementById('taskModalTitle');
             const form = document.getElementById('taskForm');
+            const taskHomeSelect = document.getElementById('taskHome');
+            
+            // Populate home dropdown with actual homes
+            if (window.awsDataService) {
+                try {
+                    const homesList = await window.awsDataService.getHomesList();
+                    taskHomeSelect.innerHTML = '<option value="">Select Home</option>';
+                    
+                    homesList.forEach(home => {
+                        const option = document.createElement('option');
+                        option.value = home.id;
+                        option.textContent = home.address || home.id;
+                        taskHomeSelect.appendChild(option);
+                    });
+                    
+                    // Set default to currentHomeId if available
+                    if (currentHomeId && !task) {
+                        taskHomeSelect.value = currentHomeId;
+                    }
+                } catch (error) {
+                    console.error('Error loading homes for task modal:', error);
+                }
+            }
             
             if (task) {
                 title.textContent = 'Edit Task';
                 document.getElementById('taskTitle').value = task.title;
                 document.getElementById('taskDescription').value = task.description || '';
-                document.getElementById('taskHome').value = task.home;
+                document.getElementById('taskHome').value = task.home || task.homeId || '';
                 document.getElementById('taskPriority').value = task.priority;
                 document.getElementById('taskDueDate').value = task.dueDate;
                 document.getElementById('taskCategory').value = task.category;
@@ -6946,6 +6925,10 @@
                 title.textContent = 'Add New Task';
                 form.reset();
                 delete form.dataset.taskId;
+                // Re-set the home dropdown after reset
+                if (currentHomeId) {
+                    taskHomeSelect.value = currentHomeId;
+                }
             }
             
             modal.style.display = 'flex';
@@ -6963,6 +6946,7 @@
                 title: document.getElementById('taskTitle').value,
                 description: document.getElementById('taskDescription').value,
                 home: document.getElementById('taskHome').value,
+                homeId: document.getElementById('taskHome').value, // Store both for compatibility
                 priority: document.getElementById('taskPriority').value,
                 dueDate: document.getElementById('taskDueDate').value,
                 category: document.getElementById('taskCategory').value,
@@ -7008,46 +6992,161 @@
                     tasks = await window.awsDataService.getTasksList();
                 }
                 
+                // Render in tasksList container (for the tasks section)
                 const container = document.getElementById('tasksList');
-                if (!container) return;
-                
-                container.innerHTML = '';
-                
-                if (tasks.length === 0) {
-                    const empty = document.createElement('div');
-                    empty.className = 'empty-state';
-                    empty.textContent = 'No tasks added yet. Click "Add Task" to create one.';
-                    container.appendChild(empty);
-                    return;
+                if (container) {
+                    renderTasksInContainer(container);
                 }
                 
-                tasks.forEach(task => {
-                    const taskItem = document.createElement('div');
-                    taskItem.className = `task-item ${task.completed ? 'completed' : ''}`;
-                    taskItem.innerHTML = `
-                        <div class="task-content">
-                            <h4>${task.title}</h4>
-                            <p>${task.description || ''}</p>
-                            <div class="task-meta">
-                                <span class="task-priority ${task.priority}">${task.priority}</span>
-                                <span class="task-category">${task.category || 'Uncategorized'}</span>
-                                <span class="task-due">Due: ${task.dueDate || 'No due date'}</span>
-                            </div>
-                        </div>
-                        <div class="task-actions">
-                            ${task.completed 
-                                ? `<button class="btn btn-secondary" onclick="undoTask('${task.id}')">Undo</button>`
-                                : `<button class="btn btn-secondary" onclick="editTask('${task.id}')">Edit</button>
-                                   <button class="btn btn-primary" onclick="completeTask('${task.id}')">Complete</button>`
-                            }
-                        </div>
-                    `;
-                    container.appendChild(taskItem);
-                });
+                // Render in unlimitedTasksList container (for the unlimited tasks section)
+                const unlimitedContainer = document.getElementById('unlimitedTasksList');
+                if (unlimitedContainer) {
+                    renderTasksInUnlimitedSection(unlimitedContainer);
+                }
+                
+                // Update task stats
+                updateTaskStats();
                 
                 console.log('Tasks loaded:', tasks);
             } catch (error) {
                 console.error('Error loading tasks:', error);
+            }
+        }
+        
+        function renderTasksInContainer(container) {
+            container.innerHTML = '';
+            
+            if (tasks.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'empty-state';
+                empty.textContent = 'No tasks added yet. Click "Add Task" to create one.';
+                container.appendChild(empty);
+                return;
+            }
+            
+            tasks.forEach(task => {
+                const taskItem = document.createElement('div');
+                taskItem.className = `task-item ${task.completed ? 'completed' : ''}`;
+                taskItem.innerHTML = `
+                    <div class="task-content">
+                        <h4>${task.title}</h4>
+                        <p>${task.description || ''}</p>
+                        <div class="task-meta">
+                            <span class="task-priority ${task.priority}">${task.priority}</span>
+                            <span class="task-category">${task.category || 'Uncategorized'}</span>
+                            <span class="task-due">Due: ${task.dueDate || 'No due date'}</span>
+                        </div>
+                    </div>
+                    <div class="task-actions">
+                        ${task.completed 
+                            ? `<button class="btn btn-secondary" onclick="undoTask('${task.id}')">Undo</button>`
+                            : `<button class="btn btn-secondary" onclick="editTask('${task.id}')">Edit</button>
+                               <button class="btn btn-primary" onclick="completeTask('${task.id}')">Complete</button>`
+                        }
+                    </div>
+                `;
+                container.appendChild(taskItem);
+            });
+        }
+        
+        async function renderTasksInUnlimitedSection(container) {
+            container.innerHTML = '';
+            
+            if (tasks.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'empty-state';
+                empty.textContent = 'No tasks added yet. Click "Add New Task" to create one.';
+                container.appendChild(empty);
+                return;
+            }
+            
+            // Get homes list for displaying home addresses
+            let homesMap = {};
+            if (window.awsDataService) {
+                try {
+                    const homesList = await window.awsDataService.getHomesList();
+                    homesList.forEach(home => {
+                        homesMap[home.id] = home.address || home.id;
+                    });
+                } catch (error) {
+                    console.error('Error loading homes for task display:', error);
+                }
+            }
+            
+            tasks.forEach(task => {
+                const taskItem = document.createElement('div');
+                const homeAddress = homesMap[task.home || task.homeId] || task.home || 'Unknown Home';
+                const dueDate = task.dueDate ? new Date(task.dueDate) : null;
+                const daysUntilDue = dueDate ? Math.ceil((dueDate - new Date()) / (1000 * 60 * 60 * 24)) : null;
+                let dueText = '';
+                if (task.completed) {
+                    dueText = `Completed ${dueDate ? dueDate.toLocaleDateString() : ''}`;
+                } else if (dueDate) {
+                    if (daysUntilDue < 0) {
+                        dueText = `Overdue by ${Math.abs(daysUntilDue)} day${Math.abs(daysUntilDue) !== 1 ? 's' : ''}`;
+                    } else if (daysUntilDue === 0) {
+                        dueText = 'Due today';
+                    } else if (daysUntilDue === 1) {
+                        dueText = 'Due tomorrow';
+                    } else if (daysUntilDue <= 7) {
+                        dueText = `Due in ${daysUntilDue} days`;
+                    } else {
+                        dueText = `Due ${dueDate.toLocaleDateString()}`;
+                    }
+                } else {
+                    dueText = 'No due date';
+                }
+                
+                taskItem.className = `task-item ${task.priority || 'medium'}-priority ${task.completed ? 'completed' : ''}`;
+                taskItem.innerHTML = `
+                    <div class="task-checkbox">
+                        <input type="checkbox" id="task-${task.id}" ${task.completed ? 'checked' : ''} onchange="toggleTaskComplete('${task.id}')">
+                        <label for="task-${task.id}"></label>
+                    </div>
+                    <div class="task-content ${task.completed ? 'completed' : ''}">
+                        <h4>${task.title}</h4>
+                        <p>${homeAddress} • ${dueText}</p>
+                    </div>
+                    <div class="task-actions">
+                        ${task.completed 
+                            ? `<button class="btn-small" onclick="undoTask('${task.id}')">Undo</button>`
+                            : `<button class="btn-small" onclick="editTask('${task.id}')">Edit</button>
+                               <button class="btn-small" onclick="completeTask('${task.id}')">Complete</button>`
+                        }
+                    </div>
+                `;
+                container.appendChild(taskItem);
+            });
+        }
+        
+        function updateTaskStats() {
+            const activeTasks = tasks.filter(t => !t.completed).length;
+            const today = new Date();
+            const weekFromNow = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+            const dueThisWeek = tasks.filter(t => {
+                if (t.completed || !t.dueDate) return false;
+                const dueDate = new Date(t.dueDate);
+                return dueDate >= today && dueDate <= weekFromNow;
+            }).length;
+            const completed = tasks.filter(t => t.completed).length;
+            
+            // Update stats in unlimited tasks section
+            const statNumbers = document.querySelectorAll('#tasks .stat-number');
+            if (statNumbers.length >= 3) {
+                statNumbers[0].textContent = activeTasks;
+                statNumbers[1].textContent = dueThisWeek;
+                statNumbers[2].textContent = completed;
+            }
+        }
+        
+        async function toggleTaskComplete(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                task.completed = !task.completed;
+                if (window.awsDataService) {
+                    await window.awsDataService.saveTasksList(tasks);
+                }
+                loadTasks();
             }
         }
 
