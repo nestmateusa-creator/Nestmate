@@ -6973,8 +6973,18 @@
                     });
                     break;
                 case 'by-home':
-                    // Filter by selected home - will be handled by filterTasksByHome
-                    filteredTasks = tasks;
+                    // When filtering by home, check if a specific home is selected
+                    const homeFilterSelect = document.getElementById('homeFilterSelect');
+                    if (homeFilterSelect && homeFilterSelect.value) {
+                        // Filter by the selected home
+                        filteredTasks = tasks.filter(task => {
+                            const taskHomeId = task.home || task.homeId || '';
+                            return taskHomeId === homeFilterSelect.value || taskHomeId.toString() === homeFilterSelect.value.toString();
+                        });
+                    } else {
+                        // Show all tasks if no specific home is selected
+                        filteredTasks = tasks;
+                    }
                     break;
                 case 'by-category':
                     // Group by category - show all tasks but organized
