@@ -6653,13 +6653,15 @@
             
             currentHomeId = homeId;
             console.log('Switching to home:', homeId);
+            console.log('Current homeId set to:', currentHomeId);
             
             // Reload all data for the selected home
             try {
                 // Update sidebar with home information first
                 await updateSidebarHomeInfo(homeId);
                 
-                // Reload all sections
+                // Force reload all sections with new homeId
+                console.log('Reloading all sections for home:', homeId);
                 await renderBedroomsList();
                 await renderBathroomsList();
                 await renderKitchensList();
@@ -6674,7 +6676,29 @@
                 // Reload current section to show updated data
                 const currentSection = document.querySelector('.dashboard-section[style*="display: block"]');
                 if (currentSection && currentSection.id) {
-                    showSection(currentSection.id);
+                    // Force reload the current section
+                    const sectionId = currentSection.id;
+                    if (sectionId === 'bedroomsSection') {
+                        await renderBedroomsList();
+                    } else if (sectionId === 'bathroomsSection') {
+                        await renderBathroomsList();
+                    } else if (sectionId === 'kitchenSection') {
+                        await renderKitchensList();
+                    } else if (sectionId === 'living-areas') {
+                        await renderLivingAreasList();
+                    } else if (sectionId === 'appliances') {
+                        await renderAppliancesList();
+                    } else if (sectionId === 'garage') {
+                        await loadGarage();
+                    } else if (sectionId === 'exterior') {
+                        await loadExterior();
+                    } else if (sectionId === 'photos') {
+                        await displayPhotos();
+                    } else if (sectionId === 'renovations') {
+                        await renderRenovationsList();
+                    } else if (sectionId === 'emergency') {
+                        await renderAllContacts();
+                    }
                 }
                 
                 showAlert(`Switched to home: ${homeId}`, 'success');
