@@ -6853,6 +6853,12 @@
         function filterTasks(filter) {
             currentTaskFilter = filter;
             
+            // Hide home filter dropdown if not filtering by home
+            const homeFilterDropdown = document.getElementById('homeFilterDropdown');
+            if (homeFilterDropdown) {
+                homeFilterDropdown.style.display = 'none';
+            }
+            
             // Remove active class from all stat items
             document.querySelectorAll('.stat-item.clickable-stat').forEach(item => {
                 item.classList.remove('active');
@@ -6864,9 +6870,73 @@
             });
             
             // Add active class to clicked filter button
-            event?.target?.classList.add('active');
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
             
             renderFilteredTasks(filter);
+        }
+        
+        async function showHomeFilter() {
+            // Update filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Add active class to "By Home" button
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+            
+            // Show home filter dropdown
+            const homeFilterDropdown = document.getElementById('homeFilterDropdown');
+            const homeFilterSelect = document.getElementById('homeFilterSelect');
+            
+            if (homeFilterDropdown && homeFilterSelect) {
+                // Populate dropdown with homes
+                if (window.awsDataService) {
+                    try {
+                        const homesList = await window.awsDataService.getHomesList();
+                        homeFilterSelect.innerHTML = '<option value="">All Homes</option>';
+                        
+                        homesList.forEach(home => {
+                            const option = document.createElement('option');
+                            option.value = home.id;
+                            option.textContent = home.address || home.id;
+                            homeFilterSelect.appendChild(option);
+                        });
+                    } catch (error) {
+                        console.error('Error loading homes for filter:', error);
+                    }
+                }
+                
+                homeFilterDropdown.style.display = 'block';
+                currentTaskFilter = 'by-home';
+                
+                // Show all tasks initially
+                renderFilteredTasks('by-home');
+            }
+        }
+        
+        function filterTasksByHome(homeId) {
+            const container = document.getElementById('unlimitedTasksList');
+            if (!container) return;
+            
+            let filteredTasks = [];
+            
+            if (!homeId || homeId === '') {
+                // Show all tasks
+                filteredTasks = tasks;
+            } else {
+                // Filter tasks by selected home
+                filteredTasks = tasks.filter(task => {
+                    const taskHomeId = task.home || task.homeId;
+                    return taskHomeId === homeId;
+                });
+            }
+            
+            // Render the filtered tasks
+            renderTasksInUnlimitedSection(container, filteredTasks);
         }
         
         function renderFilteredTasks(filterType) {
