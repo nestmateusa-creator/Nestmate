@@ -7113,6 +7113,11 @@
                     // Initialize home selector
                     await initHomeSelector();
                     
+                    // Update sidebar with selected home info
+                    if (currentHomeId) {
+                        await updateSidebarHomeInfo(currentHomeId);
+                    }
+                    
                     // Load and render rooms data
                     await renderBedroomsList();
                     await renderBathroomsList();
