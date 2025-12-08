@@ -2411,57 +2411,8 @@
                 <div id="homes" class="dashboard-section" style="display: none;">
                     <div class="card">
                         <h3>Multi-Home Management (Up to 5 Homes)</h3>
-                        <div class="homes-grid">
-                            <div class="home-card">
-                                <div class="home-header">
-                                    <h4>123 Main Street</h4>
-                                    <span class="home-status active">Active</span>
-                                </div>
-                                <div class="home-details">
-                                    <p><i class="fas fa-home"></i> Single Family Home</p>
-                                    <p><i class="fas fa-bed"></i> 3 bed, 2 bath</p>
-                                    <p><i class="fas fa-ruler"></i> 2,400 sq ft</p>
-                                    <p><i class="fas fa-calendar"></i> Built 2018</p>
-                                </div>
-                                <div class="home-health">
-                                    <div class="health-score">92</div>
-                                    <span>Health Score</span>
-                                </div>
-                                <div class="home-actions">
-                                    <button class="btn-small" onclick="viewHomeDetails('123-main-street')">View Details</button>
-                                    <button class="btn-small" onclick="editHome('123-main-street')">Edit</button>
-                                </div>
-                            </div>
-                            
-                            <div class="home-card">
-                                <div class="home-header">
-                                    <h4>456 Oak Avenue</h4>
-                                    <span class="home-status active">Active</span>
-                                </div>
-                                <div class="home-details">
-                                    <p><i class="fas fa-home"></i> Townhouse</p>
-                                    <p><i class="fas fa-bed"></i> 2 bed, 2 bath</p>
-                                    <p><i class="fas fa-ruler"></i> 1,800 sq ft</p>
-                                    <p><i class="fas fa-calendar"></i> Built 2020</p>
-                                </div>
-                                <div class="home-health">
-                                    <div class="health-score">88</div>
-                                    <span>Health Score</span>
-                                </div>
-                                <div class="home-actions">
-                                    <button class="btn-small" onclick="viewHomeDetails('456-oak-avenue')">View Details</button>
-                                    <button class="btn-small" onclick="editHome('456-oak-avenue')">Edit</button>
-                                </div>
-                            </div>
-                            
-                            <div class="home-card add-home">
-                                <div class="add-home-content">
-                                    <i class="fas fa-plus"></i>
-                                    <h4>Add New Home</h4>
-                                    <p>Add up to 3 more homes</p>
-                                    <button class="btn-primary" onclick="addNewHome()">Add Home</button>
-                                </div>
-                            </div>
+                        <div class="homes-grid" id="homesGrid">
+                            <!-- Homes will be dynamically loaded here -->
                         </div>
                     </div>
                 </div>
@@ -7454,7 +7405,7 @@
         async function loadHomes() {
             try {
                 const homesList = await getHomesList();
-                const container = document.querySelector('.homes-grid');
+                const container = document.getElementById('homesGrid') || document.querySelector('.homes-grid');
                 if (!container) return;
                 
                 container.innerHTML = '';
@@ -7462,40 +7413,44 @@
                 // Update home selector
                 await initHomeSelector();
                 
-                // Add existing homes
-                homesList.forEach((home, index) => {
+                // Add existing homes with calculated health scores
+                for (const home of homesList) {
+                    // Calculate health score for this home
+                    const healthScore = await calculateHomeHealthScore(home.id);
+                    const score = healthScore.overall || 0;
+                    
                     const homeCard = document.createElement('div');
                     homeCard.className = 'home-card';
                     homeCard.innerHTML = `
                         <div class="home-header">
-                            <h3>${home.address}</h3>
-                            <span class="home-type">${home.type}</span>
+                            <h3>${home.address || 'Unknown Address'}</h3>
+                            <span class="home-type">${home.type || 'Unknown Type'}</span>
                         </div>
                         <div class="home-details">
                             <div class="detail-item">
                                 <i class="fas fa-bed"></i>
-                                <span>${home.bedrooms} bed</span>
+                                <span>${home.bedrooms || 'N/A'} bed</span>
                             </div>
                             <div class="detail-item">
                                 <i class="fas fa-bath"></i>
-                                <span>${home.bathrooms} bath</span>
+                                <span>${home.bathrooms || 'N/A'} bath</span>
                             </div>
                             <div class="detail-item">
                                 <i class="fas fa-ruler-combined"></i>
-                                <span>${home.squareFootage} sq ft</span>
+                                <span>${home.squareFootage || 'N/A'} sq ft</span>
                             </div>
                             <div class="detail-item">
                                 <i class="fas fa-calendar"></i>
-                                <span>Built ${home.yearBuilt}</span>
+                                <span>Built ${home.yearBuilt || 'N/A'}</span>
                             </div>
                         </div>
                         <div class="home-health">
                             <div class="health-score">
-                                <span class="score">${home.healthScore}</span>
+                                <span class="score">${score}</span>
                                 <span class="label">Health Score</span>
                             </div>
                             <div class="health-bar">
-                                <div class="health-fill" style="width: ${home.healthScore}%"></div>
+                                <div class="health-fill" style="width: ${score}%"></div>
                             </div>
                         </div>
                         <div class="home-actions">
@@ -7508,7 +7463,7 @@
                         </div>
                     `;
                     container.appendChild(homeCard);
-                });
+                }
                 
                 // Add "Add New Home" card if less than 5 homes
                 if (homesList.length < 5) {
