@@ -9650,15 +9650,19 @@
                 if (bedrooms && bedrooms.length > 0) {
                     addSectionHeader('BEDROOMS');
                     bedrooms.forEach((bedroom, index) => {
-                        checkNewPage(30);
+                        checkNewPage(50);
                         doc.setFont(undefined, 'bold');
                         doc.text(`Bedroom ${index + 1}:`, margin + 5, yPos);
                         yPos += lineHeight;
                         doc.setFont(undefined, 'normal');
                         if (bedroom.size) addDataRow('Size', bedroom.size, 10);
                         if (bedroom.flooring) addDataRow('Flooring', bedroom.flooring, 10);
+                        if (bedroom.wallColor) addDataRow('Wall Color', bedroom.wallColor, 10);
+                        if (bedroom.trimColor) addDataRow('Trim Color', bedroom.trimColor, 10);
                         if (bedroom.windows) addDataRow('Windows', bedroom.windows, 10);
+                        if (bedroom.windowType) addDataRow('Window Type', bedroom.windowType, 10);
                         if (bedroom.closet) addDataRow('Closet', bedroom.closet, 10);
+                        if (bedroom.lighting) addDataRow('Lighting', bedroom.lighting, 10);
                         if (bedroom.notes) {
                             const notes = doc.splitTextToSize(`Notes: ${bedroom.notes}`, pageWidth - margin - 50);
                             doc.text(notes, margin + 10, yPos);
@@ -9672,7 +9676,7 @@
                 if (bathrooms && bathrooms.length > 0) {
                     addSectionHeader('BATHROOMS');
                     bathrooms.forEach((bathroom, index) => {
-                        checkNewPage(30);
+                        checkNewPage(50);
                         doc.setFont(undefined, 'bold');
                         doc.text(`Bathroom ${index + 1}:`, margin + 5, yPos);
                         yPos += lineHeight;
@@ -9681,6 +9685,11 @@
                         if (bathroom.fixtures) addDataRow('Fixtures', bathroom.fixtures, 10);
                         if (bathroom.flooring) addDataRow('Flooring', bathroom.flooring, 10);
                         if (bathroom.countertops) addDataRow('Countertops', bathroom.countertops, 10);
+                        if (bathroom.wallColor) addDataRow('Wall Color', bathroom.wallColor, 10);
+                        if (bathroom.trimColor) addDataRow('Trim Color', bathroom.trimColor, 10);
+                        if (bathroom.tile) addDataRow('Tile', bathroom.tile, 10);
+                        if (bathroom.mirror) addDataRow('Mirror', bathroom.mirror, 10);
+                        if (bathroom.vanity) addDataRow('Vanity', bathroom.vanity, 10);
                         if (bathroom.notes) {
                             const notes = doc.splitTextToSize(`Notes: ${bathroom.notes}`, pageWidth - margin - 50);
                             doc.text(notes, margin + 10, yPos);
@@ -9694,17 +9703,22 @@
                 if (kitchens && kitchens.length > 0) {
                     addSectionHeader('KITCHEN');
                     kitchens.forEach((kitchen, index) => {
-                        checkNewPage(40);
+                        checkNewPage(60);
                         doc.setFont(undefined, 'bold');
                         doc.text(`Kitchen ${index + 1}:`, margin + 5, yPos);
                         yPos += lineHeight;
                         doc.setFont(undefined, 'normal');
                         if (kitchen.cabinets) addDataRow('Cabinets', kitchen.cabinets, 10);
+                        if (kitchen.cabinetColor) addDataRow('Cabinet Color', kitchen.cabinetColor, 10);
                         if (kitchen.countertops) addDataRow('Countertops', kitchen.countertops, 10);
                         if (kitchen.flooring) addDataRow('Flooring', kitchen.flooring, 10);
                         if (kitchen.backsplash) addDataRow('Backsplash', kitchen.backsplash, 10);
+                        if (kitchen.wallColor) addDataRow('Wall Color', kitchen.wallColor, 10);
+                        if (kitchen.trimColor) addDataRow('Trim Color', kitchen.trimColor, 10);
                         if (kitchen.sink) addDataRow('Sink', kitchen.sink, 10);
                         if (kitchen.faucet) addDataRow('Faucet', kitchen.faucet, 10);
+                        if (kitchen.island) addDataRow('Island', kitchen.island, 10);
+                        if (kitchen.pantry) addDataRow('Pantry', kitchen.pantry, 10);
                         if (kitchen.notes) {
                             const notes = doc.splitTextToSize(`Notes: ${kitchen.notes}`, pageWidth - margin - 50);
                             doc.text(notes, margin + 10, yPos);
@@ -9718,15 +9732,38 @@
                 if (livingAreas && livingAreas.length > 0) {
                     addSectionHeader('LIVING AREAS');
                     livingAreas.forEach((area, index) => {
-                        checkNewPage(30);
+                        checkNewPage(80);
                         doc.setFont(undefined, 'bold');
                         doc.text(`${area.name || `Living Area ${index + 1}`}:`, margin + 5, yPos);
                         yPos += lineHeight;
                         doc.setFont(undefined, 'normal');
                         if (area.type) addDataRow('Type', area.type, 10);
                         if (area.size) addDataRow('Size', area.size, 10);
-                        if (area.flooring) addDataRow('Flooring', area.flooring, 10);
+                        if (area.ceilingHeight) addDataRow('Ceiling Height', area.ceilingHeight, 10);
+                        if (area.floorType) addDataRow('Floor Type', area.floorType, 10);
+                        if (area.floorDetails) addDataRow('Floor Details', area.floorDetails, 10);
+                        if (area.wallColor) addDataRow('Wall Color', area.wallColor, 10);
+                        if (area.trimColor) addDataRow('Trim Color', area.trimColor, 10);
+                        if (area.trimStyle) addDataRow('Trim Style', area.trimStyle, 10);
+                        if (area.windowCount) addDataRow('Window Count', area.windowCount.toString(), 10);
+                        if (area.windowSizes) addDataRow('Window Sizes', area.windowSizes, 10);
+                        if (area.windowType) addDataRow('Window Type', area.windowType, 10);
+                        if (area.blindSizes) addDataRow('Blind Sizes', area.blindSizes, 10);
+                        if (area.blindType) addDataRow('Blind Type', area.blindType, 10);
+                        if (area.curtainSizes) addDataRow('Curtain Sizes', area.curtainSizes, 10);
+                        if (area.curtainStyle) addDataRow('Curtain Style', area.curtainStyle, 10);
+                        if (area.outlets) addDataRow('Electrical Outlets', area.outlets.toString(), 10);
+                        if (area.outletType) addDataRow('Outlet Type', area.outletType, 10);
+                        if (area.lights) addDataRow('Light Fixtures', area.lights.toString(), 10);
+                        if (area.lightingType) addDataRow('Lighting Type', area.lightingType, 10);
+                        if (area.ceilingFan) addDataRow('Ceiling Fan', area.ceilingFan ? 'Yes' : 'No', 10);
+                        if (area.fanDetails) addDataRow('Fan Details', area.fanDetails, 10);
+                        if (area.storageType) addDataRow('Storage Type', area.storageType, 10);
+                        if (area.storageSize) addDataRow('Storage Size', area.storageSize, 10);
                         if (area.fireplace) addDataRow('Fireplace', area.fireplace, 10);
+                        if (area.hvac) addDataRow('Heating/Cooling', area.hvac, 10);
+                        if (area.security) addDataRow('Security Features', area.security, 10);
+                        if (area.condition) addDataRow('Condition', area.condition, 10);
                         if (area.notes) {
                             const notes = doc.splitTextToSize(`Notes: ${area.notes}`, pageWidth - margin - 50);
                             doc.text(notes, margin + 10, yPos);
@@ -9742,8 +9779,11 @@
                     if (garage.type) addDataRow('Type', garage.type, 5);
                     if (garage.size) addDataRow('Size', garage.size, 5);
                     if (garage.doors) addDataRow('Doors', garage.doors, 5);
+                    if (garage.doorType) addDataRow('Door Type', garage.doorType, 5);
                     if (garage.flooring) addDataRow('Flooring', garage.flooring, 5);
                     if (garage.storage) addDataRow('Storage', garage.storage, 5);
+                    if (garage.electrical) addDataRow('Electrical', garage.electrical, 5);
+                    if (garage.insulation) addDataRow('Insulation', garage.insulation, 5);
                     if (garage.notes) {
                         const notes = doc.splitTextToSize(`Notes: ${garage.notes}`, pageWidth - margin - 50);
                         doc.text(notes, margin + 5, yPos);
