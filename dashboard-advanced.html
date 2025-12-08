@@ -9544,7 +9544,7 @@
                     window.awsDataService.getPhotosList(selectedHomeId)
                 ]);
                 
-                let yPos = 30;
+                let yPos = 40;
                 const pageWidth = doc.internal.pageSize.width;
                 const pageHeight = doc.internal.pageSize.height;
                 const margin = 20;
@@ -9555,11 +9555,63 @@
                 const checkNewPage = (requiredSpace = 20) => {
                     if (yPos > pageHeight - requiredSpace) {
                         doc.addPage();
-                        yPos = margin;
+                        yPos = margin + 20;
+                        // Add logo to new page
+                        addLogo();
                         return true;
                     }
                     return false;
                 };
+                
+                // Helper function to add logo
+                const addLogo = async () => {
+                    try {
+                        // Try to load logo image
+                        const logoImg = new Image();
+                        logoImg.crossOrigin = 'anonymous';
+                        logoImg.src = 'nestmate-logo.png';
+                        
+                        await new Promise((resolve, reject) => {
+                            logoImg.onload = () => {
+                                try {
+                                    doc.addImage(logoImg, 'PNG', pageWidth - margin - 35, 10, 30, 30);
+                                } catch (e) {
+                                    // If image fails, use text logo
+                                    doc.setFontSize(20);
+                                    doc.setFont(undefined, 'bold');
+                                    doc.setTextColor(0, 212, 170);
+                                    doc.text('NestMate', pageWidth - margin - 40, 25);
+                                }
+                                resolve();
+                            };
+                            logoImg.onerror = () => {
+                                // Fallback to text logo
+                                doc.setFontSize(20);
+                                doc.setFont(undefined, 'bold');
+                                doc.setTextColor(0, 212, 170);
+                                doc.text('NestMate', pageWidth - margin - 40, 25);
+                                resolve();
+                            };
+                            // Timeout after 1 second
+                            setTimeout(() => {
+                                doc.setFontSize(20);
+                                doc.setFont(undefined, 'bold');
+                                doc.setTextColor(0, 212, 170);
+                                doc.text('NestMate', pageWidth - margin - 40, 25);
+                                resolve();
+                            }, 1000);
+                        });
+                    } catch (error) {
+                        // Fallback to text logo
+                        doc.setFontSize(20);
+                        doc.setFont(undefined, 'bold');
+                        doc.setTextColor(0, 212, 170);
+                        doc.text('NestMate', pageWidth - margin - 40, 25);
+                    }
+                };
+                
+                // Add logo to first page
+                await addLogo();
                 
                 // Helper function to add section header
                 const addSectionHeader = (title) => {
@@ -9581,20 +9633,11 @@
                     doc.text(`${label}:`, margin + indent, yPos);
                     const textWidth = doc.getTextWidth(`${label}:`);
                     doc.setFont(undefined, 'normal');
-                    doc.text(value || 'N/A', margin + indent + textWidth + 3, yPos);
-                    yPos += lineHeight;
+                    const valueText = value || 'N/A';
+                    const valueLines = doc.splitTextToSize(valueText, pageWidth - margin - indent - textWidth - 10);
+                    doc.text(valueLines, margin + indent + textWidth + 3, yPos);
+                    yPos += (valueLines.length * lineHeight);
                 };
-                
-                // Add logo (text-based for now, can be replaced with image)
-                doc.setFontSize(24);
-                doc.setFont(undefined, 'bold');
-                doc.setTextColor(0, 212, 170);
-                doc.text('NestMate', pageWidth - margin - 40, 20);
-                doc.setFontSize(8);
-                doc.setFont(undefined, 'normal');
-                doc.setTextColor(100, 100, 100);
-                doc.text('Home Management System', pageWidth - margin - 40, 27);
-                doc.setTextColor(0, 0, 0);
                 
                 // Title
                 doc.setFontSize(20);
