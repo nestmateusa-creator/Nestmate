@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Floor Plan Designer - NestMate</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .floorplan-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #334155;
+            background: #1e293b;
+            height: 60px;
+        }
+
+        .floorplan-header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .floorplan-header h1 {
+            font-size: 1.25rem;
+            color: #f1f5f9;
+            margin: 0;
+        }
+
+        .floorplan-header-btn {
+            background: #334155;
+            color: #e2e8f0;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .floorplan-header-btn:hover {
+            background: #00d4aa;
+            color: white;
+        }
+
+        .floorplan-header-btn.back-btn {
+            background: #475569;
+        }
+
+        .floorplan-header-btn.back-btn:hover {
+            background: #64748b;
+        }
+
+        .floorplan-container {
+            display: flex;
+            height: calc(100vh - 60px);
+        }
+
+        .floorplan-sidebar {
+            width: 280px;
+            background: #1e293b;
+            border-right: 1px solid #334155;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .toolbar-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .toolbar-section h4 {
+            color: #f1f5f9;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .toolbar-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+        }
+
+        .tool-btn {
+            background: #0f172a;
+            color: #cbd5e1;
+            border: 1px solid #334155;
+            padding: 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.75rem;
+        }
+
+        .tool-btn i {
+            font-size: 1.25rem;
+        }
+
+        .tool-btn.active,
+        .tool-btn:hover {
+            background: #00d4aa;
+            color: white;
+            border-color: #00d4aa;
+        }
+
+        .furniture-library {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+        }
+
+        .furniture-item {
+            background: #0f172a;
+            border: 1px solid #334155;
+            padding: 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.75rem;
+            color: #cbd5e1;
+        }
+
+        .furniture-item:hover {
+            background: #334155;
+            border-color: #00d4aa;
+        }
+
+        .furniture-item i {
+            font-size: 1.25rem;
+        }
+
+        .properties-panel {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            padding: 1rem;
+            min-height: 100px;
+        }
+
+        .properties-panel input,
+        .properties-panel select {
+            width: 100%;
+            padding: 0.5rem;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 4px;
+            color: #e2e8f0;
+            margin-bottom: 0.5rem;
+        }
+
+        .properties-panel label {
+            display: block;
+            color: #94a3b8;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .floorplan-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #0f172a;
+        }
+
+        .floorplan-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #334155;
+            background: #1e293b;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .control-btn {
+            background: #0f172a;
+            color: #cbd5e1;
+            border: 1px solid #334155;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .control-btn:hover {
+            background: #334155;
+            color: #00d4aa;
+        }
+
+        .control-btn.active {
+            background: #00d4aa;
+            color: white;
+            border-color: #00d4aa;
+        }
+
+        .floorplan-canvas-wrapper {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background: #1e293b;
+        }
+
+        #floorplanCanvas {
+            display: block;
+            cursor: crosshair;
+            background: #1e293b;
+            width: 100%;
+            height: 100%;
+        }
+
+        .canvas-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .floorplan-status {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 1rem;
+            background: #1e293b;
+            border-top: 1px solid #334155;
+            color: #94a3b8;
+            font-size: 0.875rem;
+        }
+
+        select {
+            padding: 0.5rem;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            color: #e2e8f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="floorplan-header">
+        <div class="floorplan-header-left">
+            <button class="floorplan-header-btn back-btn" onclick="window.location.href='dashboard-advanced.html'">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </button>
+            <h1>Professional Floor Plan Designer</h1>
+            <select id="floorplanHomeSelector" onchange="handleHomeChange()">
+                <option value="">Select Home</option>
+            </select>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+            <button class="floorplan-header-btn" onclick="floorPlanSave()" title="Save">
+                <i class="fas fa-save"></i> Save
+            </button>
+            <button class="floorplan-header-btn" onclick="floorPlanLoad()" title="Load">
+                <i class="fas fa-folder-open"></i> Load
+            </button>
+            <button class="floorplan-header-btn" onclick="floorPlanExport()" title="Export">
+                <i class="fas fa-download"></i> Export
+            </button>
+            <button class="floorplan-header-btn" onclick="floorPlanClear()" title="Clear">
+                <i class="fas fa-trash"></i> Clear
+            </button>
+        </div>
+    </div>
+    
+    <div class="floorplan-container">
+        <!-- Left Toolbar -->
+        <div class="floorplan-sidebar">
+            <div class="toolbar-section">
+                <h4>Tools</h4>
+                <div class="toolbar-grid">
+                    <button class="tool-btn" id="tool-select" onclick="setFloorPlanTool('select')" title="Select (V)">
+                        <i class="fas fa-mouse-pointer"></i>
+                        <span>Select</span>
+                    </button>
+                    <button class="tool-btn" id="tool-wall" onclick="setFloorPlanTool('wall')" title="Wall (W)">
+                        <i class="fas fa-grip-lines"></i>
+                        <span>Wall</span>
+                    </button>
+                    <button class="tool-btn" id="tool-room" onclick="setFloorPlanTool('room')" title="Room (R)">
+                        <i class="fas fa-square"></i>
+                        <span>Room</span>
+                    </button>
+                    <button class="tool-btn" id="tool-door" onclick="setFloorPlanTool('door')" title="Door (D)">
+                        <i class="fas fa-door-open"></i>
+                        <span>Door</span>
+                    </button>
+                    <button class="tool-btn" id="tool-window" onclick="setFloorPlanTool('window')" title="Window (N)">
+                        <i class="fas fa-window-maximize"></i>
+                        <span>Window</span>
+                    </button>
+                    <button class="tool-btn" id="tool-furniture" onclick="setFloorPlanTool('furniture')" title="Furniture (F)">
+                        <i class="fas fa-couch"></i>
+                        <span>Furniture</span>
+                    </button>
+                    <button class="tool-btn" id="tool-text" onclick="setFloorPlanTool('text')" title="Text (T)">
+                        <i class="fas fa-font"></i>
+                        <span>Text</span>
+                    </button>
+                    <button class="tool-btn" id="tool-measure" onclick="setFloorPlanTool('measure')" title="Measure (M)">
+                        <i class="fas fa-ruler"></i>
+                        <span>Measure</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="toolbar-section">
+                <h4>Furniture Library</h4>
+                <div class="furniture-library" id="furnitureLibrary">
+                    <div class="furniture-item" onclick="selectFurnitureType('bed')">
+                        <i class="fas fa-bed"></i>
+                        <span>Bed</span>
+                    </div>
+                    <div class="furniture-item" onclick="selectFurnitureType('sofa')">
+                        <i class="fas fa-couch"></i>
+                        <span>Sofa</span>
+                    </div>
+                    <div class="furniture-item" onclick="selectFurnitureType('table')">
+                        <i class="fas fa-table"></i>
+                        <span>Table</span>
+                    </div>
+                    <div class="furniture-item" onclick="selectFurnitureType('chair')">
+                        <i class="fas fa-chair"></i>
+                        <span>Chair</span>
+                    </div>
+                    <div class="furniture-item" onclick="selectFurnitureType('tv')">
+                        <i class="fas fa-tv"></i>
+                        <span>TV</span>
+                    </div>
+                    <div class="furniture-item" onclick="selectFurnitureType('refrigerator')">
+                        <i class="fas fa-refrigerator"></i>
+                        <span>Fridge</span>
+                    </div>
+                    <div class="furniture-item" onclick="selectFurnitureType('stove')">
+                        <i class="fas fa-fire"></i>
+                        <span>Stove</span>
+                    </div>
+                    <div class="furniture-item" onclick="selectFurnitureType('sink')">
+                        <i class="fas fa-sink"></i>
+                        <span>Sink</span>
+                    </div>
+                    <div class="furniture-item" onclick="selectFurnitureType('toilet')">
+                        <i class="fas fa-toilet"></i>
+                        <span>Toilet</span>
+                    </div>
+                    <div class="furniture-item" onclick="selectFurnitureType('bathtub')">
+                        <i class="fas fa-bath"></i>
+                        <span>Bathtub</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="toolbar-section">
+                <h4>Properties</h4>
+                <div id="floorplanProperties" class="properties-panel">
+                    <p style="color: #94a3b8; font-size: 0.875rem;">Select an element to edit properties</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Canvas Area -->
+        <div class="floorplan-main">
+            <div class="floorplan-controls">
+                <div class="control-group">
+                    <button class="control-btn" onclick="floorPlanUndo()" title="Undo (Ctrl+Z)">
+                        <i class="fas fa-undo"></i>
+                    </button>
+                    <button class="control-btn" onclick="floorPlanRedo()" title="Redo (Ctrl+Y)">
+                        <i class="fas fa-redo"></i>
+                    </button>
+                </div>
+                <div class="control-group">
+                    <button class="control-btn" onclick="toggleGrid()" id="gridToggle" title="Toggle Grid (G)">
+                        <i class="fas fa-th"></i>
+                    </button>
+                    <button class="control-btn" onclick="toggleSnap()" id="snapToggle" title="Toggle Snap (S)">
+                        <i class="fas fa-magnet"></i>
+                    </button>
+                </div>
+                <div class="control-group">
+                    <button class="control-btn" onclick="floorPlanZoomOut()" title="Zoom Out">
+                        <i class="fas fa-search-minus"></i>
+                    </button>
+                    <span id="zoomLevel" style="color: #e2e8f0; padding: 0 0.5rem;">100%</span>
+                    <button class="control-btn" onclick="floorPlanZoomIn()" title="Zoom In">
+                        <i class="fas fa-search-plus"></i>
+                    </button>
+                    <button class="control-btn" onclick="floorPlanZoomFit()" title="Fit to Screen">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="floorplan-canvas-wrapper" id="floorplanCanvasWrapper">
+                <canvas id="floorplanCanvas"></canvas>
+                <div class="canvas-overlay" id="canvasOverlay"></div>
+            </div>
+            
+            <div class="floorplan-status">
+                <span id="floorplanStatus">Ready</span>
+                <span id="floorplanCoords">X: 0, Y: 0</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth-aws.js"></script>
+    <script src="aws-data-service.js"></script>
+    <script>
+        // ==================== FLOOR PLAN DESIGNER ====================
+        let floorPlanCanvas, floorPlanCtx;
+        let floorPlanCurrentTool = 'select';
+        let floorPlanIsDrawing = false;
+        let floorPlanStartX = 0, floorPlanStartY = 0;
+        let floorPlanZoom = 1;
+        let floorPlanPanX = 0, floorPlanPanY = 0;
+        let floorPlanShowGrid = true;
+        let floorPlanSnapToGrid = true;
+        let floorPlanGridSize = 20;
+        let floorPlanElements = [];
+        let floorPlanSelectedElement = null;
+        let floorPlanHistory = [];
+        let floorPlanHistoryIndex = -1;
+        let floorPlanIsDragging = false;
+        let floorPlanDragOffset = { x: 0, y: 0 };
+        let floorPlanCurrentFurnitureType = 'bed';
+        let floorPlanMeasurements = [];
+        let floorPlanCurrentMeasurement = null;
+
+        function initFloorPlanDesigner() {
+            floorPlanCanvas = document.getElementById('floorplanCanvas');
+            if (!floorPlanCanvas) return;
+            
+            // Set canvas size to fill container
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            floorPlanCtx = floorPlanCanvas.getContext('2d');
+            
+            // Set initial tool
+            setFloorPlanTool('select');
+            
+            // Populate home selector
+            populateFloorPlanHomeSelector();
+            
+            // Setup event listeners
+            setupFloorPlanEvents();
+            
+            // Initial draw
+            redrawFloorPlan();
+        }
+
+        function resizeCanvas() {
+            const wrapper = document.getElementById('floorplanCanvasWrapper');
+            if (wrapper && floorPlanCanvas) {
+                floorPlanCanvas.width = wrapper.clientWidth;
+                floorPlanCanvas.height = wrapper.clientHeight;
+                redrawFloorPlan();
+            }
+        }
+
+        function populateFloorPlanHomeSelector() {
+            const selector = document.getElementById('floorplanHomeSelector');
+            if (!selector || !window.awsDataService) return;
+            
+            window.awsDataService.getHomesList().then(homes => {
+                selector.innerHTML = '<option value="">Select Home</option>';
+                homes.forEach(home => {
+                    const option = document.createElement('option');
+                    option.value = home.id;
+                    option.textContent = home.address || home.id;
+                    selector.appendChild(option);
+                });
+            }).catch(err => {
+                console.error('Error loading homes:', err);
+            });
+        }
+
+        function handleHomeChange() {
+            if (floorPlanElements.length > 0) {
+                if (confirm('Switch homes? Current work will be saved automatically.')) {
+                    floorPlanSave();
+                    setTimeout(() => floorPlanLoad(), 100);
+                }
+            } else {
+                floorPlanLoad();
+            }
+        }
+
+        function setupFloorPlanEvents() {
+            if (!floorPlanCanvas) return;
+            
+            // Mouse events
+            floorPlanCanvas.addEventListener('mousedown', handleFloorPlanMouseDown);
+            floorPlanCanvas.addEventListener('mousemove', handleFloorPlanMouseMove);
+            floorPlanCanvas.addEventListener('mouseup', handleFloorPlanMouseUp);
+            floorPlanCanvas.addEventListener('wheel', handleFloorPlanWheel);
+            
+            // Keyboard shortcuts
+            document.addEventListener('keydown', handleFloorPlanKeyDown);
+            
+            // Prevent context menu
+            floorPlanCanvas.addEventListener('contextmenu', e => e.preventDefault());
+        }
+
+        function setFloorPlanTool(tool) {
+            floorPlanCurrentTool = tool;
+            
+            // Update UI
+            document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+            const toolBtn = document.getElementById(`tool-${tool}`);
+            if (toolBtn) toolBtn.classList.add('active');
+            
+            // Update cursor
+            if (floorPlanCanvas) {
+                floorPlanCanvas.style.cursor = tool === 'select' ? 'default' : 'crosshair';
+            }
+            
+            updateFloorPlanStatus(`Tool: ${tool.charAt(0).toUpperCase() + tool.slice(1)}`);
+        }
+
+        function handleFloorPlanMouseDown(e) {
+            if (!floorPlanCanvas || !floorPlanCtx) return;
+            
+            const rect = floorPlanCanvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left - floorPlanPanX) / floorPlanZoom;
+            const y = (e.clientY - rect.top - floorPlanPanY) / floorPlanZoom;
+            
+            const snappedX = floorPlanSnapToGrid ? Math.round(x / floorPlanGridSize) * floorPlanGridSize : x;
+            const snappedY = floorPlanSnapToGrid ? Math.round(y / floorPlanGridSize) * floorPlanGridSize : y;
+            
+            if (floorPlanCurrentTool === 'select') {
+                // Select element
+                floorPlanSelectedElement = getElementAt(snappedX, snappedY);
+                if (floorPlanSelectedElement) {
+                    floorPlanIsDragging = true;
+                    floorPlanDragOffset.x = snappedX - (floorPlanSelectedElement.x || floorPlanSelectedElement.startX || 0);
+                    floorPlanDragOffset.y = snappedY - (floorPlanSelectedElement.y || floorPlanSelectedElement.startY || 0);
+                    updatePropertiesPanel();
+                } else {
+                    floorPlanSelectedElement = null;
+                    updatePropertiesPanel();
+                }
+            } else {
+                // Start drawing
+                floorPlanIsDrawing = true;
+                floorPlanStartX = snappedX;
+                floorPlanStartY = snappedY;
+                
+                if (floorPlanCurrentTool === 'measure') {
+                    floorPlanCurrentMeasurement = { startX: snappedX, startY: snappedY, endX: snappedX, endY: snappedY };
+                }
+            }
+            
+            redrawFloorPlan();
+        }
+
+        function handleFloorPlanMouseMove(e) {
+            if (!floorPlanCanvas) return;
+            
+            const rect = floorPlanCanvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left - floorPlanPanX) / floorPlanZoom;
+            const y = (e.clientY - rect.top - floorPlanPanY) / floorPlanZoom;
+            
+            const snappedX = floorPlanSnapToGrid ? Math.round(x / floorPlanGridSize) * floorPlanGridSize : x;
+            const snappedY = floorPlanSnapToGrid ? Math.round(y / floorPlanGridSize) * floorPlanGridSize : y;
+            
+            updateFloorPlanCoords(snappedX, snappedY);
+            
+            if (floorPlanIsDragging && floorPlanSelectedElement) {
+                // Drag element
+                if (floorPlanSelectedElement.type === 'wall' || floorPlanSelectedElement.type === 'room') {
+                    const dx = snappedX - floorPlanDragOffset.x - (floorPlanSelectedElement.startX || 0);
+                    const dy = snappedY - floorPlanDragOffset.y - (floorPlanSelectedElement.startY || 0);
+                    floorPlanSelectedElement.startX += dx;
+                    floorPlanSelectedElement.startY += dy;
+                    floorPlanSelectedElement.endX += dx;
+                    floorPlanSelectedElement.endY += dy;
+                } else {
+                    floorPlanSelectedElement.x = snappedX - floorPlanDragOffset.x;
+                    floorPlanSelectedElement.y = snappedY - floorPlanDragOffset.y;
+                }
+                redrawFloorPlan();
+            } else if (floorPlanIsDrawing) {
+                // Draw preview
+                if (floorPlanCurrentTool === 'measure' && floorPlanCurrentMeasurement) {
+                    floorPlanCurrentMeasurement.endX = snappedX;
+                    floorPlanCurrentMeasurement.endY = snappedY;
+                }
+                redrawFloorPlan();
+            }
+        }
+
+        function handleFloorPlanMouseUp(e) {
+            if (!floorPlanIsDrawing && !floorPlanIsDragging) return;
+            
+            if (floorPlanIsDrawing) {
+                const rect = floorPlanCanvas.getBoundingClientRect();
+                const x = (e.clientX - rect.left - floorPlanPanX) / floorPlanZoom;
+                const y = (e.clientY - rect.top - floorPlanPanY) / floorPlanZoom;
+                
+                const snappedX = floorPlanSnapToGrid ? Math.round(x / floorPlanGridSize) * floorPlanGridSize : x;
+                const snappedY = floorPlanSnapToGrid ? Math.round(y / floorPlanGridSize) * floorPlanGridSize : y;
+                
+                // Create element
+                createFloorPlanElement(floorPlanStartX, floorPlanStartY, snappedX, snappedY);
+                
+                floorPlanIsDrawing = false;
+                saveFloorPlanState();
+            }
+            
+            floorPlanIsDragging = false;
+            redrawFloorPlan();
+        }
+
+        function handleFloorPlanWheel(e) {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? 0.9 : 1.1;
+            floorPlanZoom = Math.max(0.1, Math.min(5, floorPlanZoom * delta));
+            updateZoomDisplay();
+            redrawFloorPlan();
+        }
+
+        function handleFloorPlanKeyDown(e) {
+            // Keyboard shortcuts
+            if (e.ctrlKey || e.metaKey) {
+                if (e.key === 'z' && !e.shiftKey) {
+                    e.preventDefault();
+                    floorPlanUndo();
+                } else if (e.key === 'y' || (e.key === 'z' && e.shiftKey)) {
+                    e.preventDefault();
+                    floorPlanRedo();
+                }
+            } else {
+                switch(e.key.toLowerCase()) {
+                    case 'v': setFloorPlanTool('select'); break;
+                    case 'w': setFloorPlanTool('wall'); break;
+                    case 'r': setFloorPlanTool('room'); break;
+                    case 'd': setFloorPlanTool('door'); break;
+                    case 'n': setFloorPlanTool('window'); break;
+                    case 'f': setFloorPlanTool('furniture'); break;
+                    case 't': setFloorPlanTool('text'); break;
+                    case 'm': setFloorPlanTool('measure'); break;
+                    case 'g': toggleGrid(); break;
+                    case 's': toggleSnap(); break;
+                    case 'delete':
+                    case 'backspace':
+                        if (floorPlanSelectedElement) {
+                            deleteFloorPlanElement(floorPlanSelectedElement);
+                        }
+                        break;
+                }
+            }
+        }
+
+        function createFloorPlanElement(x1, y1, x2, y2) {
+            const element = {
+                id: Date.now(),
+                type: floorPlanCurrentTool,
+                startX: x1,
+                startY: y1,
+                endX: x2,
+                endY: y2,
+                x: x1,
+                y: y1,
+                width: Math.abs(x2 - x1),
+                height: Math.abs(y2 - y1)
+            };
+            
+            if (floorPlanCurrentTool === 'furniture') {
+                element.furnitureType = floorPlanCurrentFurnitureType;
+            } else if (floorPlanCurrentTool === 'text') {
+                element.text = prompt('Enter text:', 'Room Label') || 'Room Label';
+            } else if (floorPlanCurrentTool === 'measure') {
+                element.length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+                floorPlanMeasurements.push(element);
+                floorPlanCurrentMeasurement = null;
+                return;
+            }
+            
+            floorPlanElements.push(element);
+            floorPlanSelectedElement = element;
+            updatePropertiesPanel();
+        }
+
+        function getElementAt(x, y) {
+            // Check in reverse order (top elements first)
+            for (let i = floorPlanElements.length - 1; i >= 0; i--) {
+                const el = floorPlanElements[i];
+                if (isPointInElement(x, y, el)) {
+                    return el;
+                }
+            }
+            return null;
+        }
+
+        function isPointInElement(x, y, el) {
+            if (el.type === 'wall') {
+                const dist = distanceToLine(x, y, el.startX, el.startY, el.endX, el.endY);
+                return dist < 10;
+            } else if (el.type === 'room') {
+                return x >= Math.min(el.startX, el.endX) && x <= Math.max(el.startX, el.endX) &&
+                       y >= Math.min(el.startY, el.endY) && y <= Math.max(el.startY, el.endY);
+            } else {
+                const size = getFurnitureSize(el.furnitureType || 'bed');
+                return x >= el.x && x <= el.x + size.width &&
+                       y >= el.y && y <= el.y + size.height;
+            }
+        }
+
+        function distanceToLine(px, py, x1, y1, x2, y2) {
+            const A = px - x1;
+            const B = py - y1;
+            const C = x2 - x1;
+            const D = y2 - y1;
+            const dot = A * C + B * D;
+            const lenSq = C * C + D * D;
+            let param = -1;
+            if (lenSq !== 0) param = dot / lenSq;
+            let xx, yy;
+            if (param < 0) {
+                xx = x1;
+                yy = y1;
+            } else if (param > 1) {
+                xx = x2;
+                yy = y2;
+            } else {
+                xx = x1 + param * C;
+                yy = y1 + param * D;
+            }
+            const dx = px - xx;
+            const dy = py - yy;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+
+        function redrawFloorPlan() {
+            if (!floorPlanCanvas || !floorPlanCtx) return;
+            
+            const width = floorPlanCanvas.width;
+            const height = floorPlanCanvas.height;
+            
+            floorPlanCtx.clearRect(0, 0, width, height);
+            floorPlanCtx.save();
+            floorPlanCtx.translate(floorPlanPanX, floorPlanPanY);
+            floorPlanCtx.scale(floorPlanZoom, floorPlanZoom);
+            
+            // Draw grid
+            if (floorPlanShowGrid) {
+                drawFloorPlanGrid();
+            }
+            
+            // Draw elements
+            floorPlanElements.forEach(el => drawFloorPlanElement(el));
+            
+            // Draw measurements
+            floorPlanMeasurements.forEach(m => drawFloorPlanMeasurement(m));
+            
+            // Draw current measurement preview
+            if (floorPlanCurrentMeasurement) {
+                drawFloorPlanMeasurement(floorPlanCurrentMeasurement, true);
+            }
+            
+            // Highlight selected element
+            if (floorPlanSelectedElement) {
+                highlightFloorPlanElement(floorPlanSelectedElement);
+            }
+            
+            floorPlanCtx.restore();
+        }
+
+        function drawFloorPlanGrid() {
+            floorPlanCtx.strokeStyle = '#334155';
+            floorPlanCtx.lineWidth = 0.5;
+            
+            const startX = Math.floor(-floorPlanPanX / floorPlanZoom / floorPlanGridSize) * floorPlanGridSize;
+            const startY = Math.floor(-floorPlanPanY / floorPlanZoom / floorPlanGridSize) * floorPlanGridSize;
+            const endX = startX + (floorPlanCanvas.width / floorPlanZoom);
+            const endY = startY + (floorPlanCanvas.height / floorPlanZoom);
+            
+            for (let x = startX; x < endX; x += floorPlanGridSize) {
+                floorPlanCtx.beginPath();
+                floorPlanCtx.moveTo(x, startY);
+                floorPlanCtx.lineTo(x, endY);
+                floorPlanCtx.stroke();
+            }
+            
+            for (let y = startY; y < endY; y += floorPlanGridSize) {
+                floorPlanCtx.beginPath();
+                floorPlanCtx.moveTo(startX, y);
+                floorPlanCtx.lineTo(endX, y);
+                floorPlanCtx.stroke();
+            }
+        }
+
+        function drawFloorPlanElement(el) {
+            floorPlanCtx.strokeStyle = el === floorPlanSelectedElement ? '#00d4aa' : '#e2e8f0';
+            floorPlanCtx.lineWidth = el === floorPlanSelectedElement ? 3 : 2;
+            floorPlanCtx.fillStyle = 'transparent';
+            
+            switch(el.type) {
+                case 'wall':
+                    floorPlanCtx.beginPath();
+                    floorPlanCtx.moveTo(el.startX, el.startY);
+                    floorPlanCtx.lineTo(el.endX, el.endY);
+                    floorPlanCtx.stroke();
+                    break;
+                    
+                case 'room':
+                    floorPlanCtx.fillStyle = 'rgba(0, 212, 170, 0.1)';
+                    floorPlanCtx.fillRect(
+                        Math.min(el.startX, el.endX),
+                        Math.min(el.startY, el.endY),
+                        Math.abs(el.endX - el.startX),
+                        Math.abs(el.endY - el.startY)
+                    );
+                    floorPlanCtx.strokeRect(
+                        Math.min(el.startX, el.endX),
+                        Math.min(el.startY, el.endY),
+                        Math.abs(el.endX - el.startX),
+                        Math.abs(el.endY - el.startY)
+                    );
+                    if (el.text) {
+                        floorPlanCtx.fillStyle = '#e2e8f0';
+                        floorPlanCtx.font = '14px Arial';
+                        floorPlanCtx.textAlign = 'center';
+                        floorPlanCtx.fillText(
+                            el.text,
+                            (el.startX + el.endX) / 2,
+                            (el.startY + el.endY) / 2
+                        );
+                    }
+                    break;
+                    
+                case 'door':
+                    drawDoor(el.startX, el.startY, el.endX, el.endY);
+                    break;
+                    
+                case 'window':
+                    drawWindow(el.startX, el.startY, el.endX, el.endY);
+                    break;
+                    
+                case 'furniture':
+                    drawFurniture(el.x, el.y, el.furnitureType || 'bed');
+                    break;
+                    
+                case 'text':
+                    floorPlanCtx.fillStyle = '#e2e8f0';
+                    floorPlanCtx.font = `${el.fontSize || 16}px Arial`;
+                    floorPlanCtx.textAlign = 'left';
+                    floorPlanCtx.fillText(el.text || 'Text', el.x, el.y);
+                    break;
+            }
+        }
+
+        function drawDoor(x1, y1, x2, y2) {
+            const angle = Math.atan2(y2 - y1, x2 - x1);
+            const length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+            const doorWidth = 36; // 3 feet in inches at 1:1 scale
+            
+            floorPlanCtx.save();
+            floorPlanCtx.translate(x1, y1);
+            floorPlanCtx.rotate(angle);
+            
+            // Door frame
+            floorPlanCtx.strokeStyle = '#8b5cf6';
+            floorPlanCtx.lineWidth = 2;
+            floorPlanCtx.beginPath();
+            floorPlanCtx.moveTo(0, -doorWidth/2);
+            floorPlanCtx.lineTo(0, doorWidth/2);
+            floorPlanCtx.stroke();
+            
+            // Door arc
+            floorPlanCtx.beginPath();
+            floorPlanCtx.arc(0, 0, doorWidth/2, 0, Math.PI/2);
+            floorPlanCtx.stroke();
+            
+            floorPlanCtx.restore();
+        }
+
+        function drawWindow(x1, y1, x2, y2) {
+            floorPlanCtx.strokeStyle = '#60a5fa';
+            floorPlanCtx.lineWidth = 2;
+            floorPlanCtx.setLineDash([5, 5]);
+            floorPlanCtx.beginPath();
+            floorPlanCtx.moveTo(x1, y1);
+            floorPlanCtx.lineTo(x2, y2);
+            floorPlanCtx.stroke();
+            floorPlanCtx.setLineDash([]);
+        }
+
+        function drawFurniture(x, y, type) {
+            const size = getFurnitureSize(type);
+            floorPlanCtx.fillStyle = '#475569';
+            floorPlanCtx.fillRect(x, y, size.width, size.height);
+            floorPlanCtx.strokeStyle = '#64748b';
+            floorPlanCtx.strokeRect(x, y, size.width, size.height);
+            
+            // Icon
+            floorPlanCtx.fillStyle = '#cbd5e1';
+            floorPlanCtx.font = '20px FontAwesome';
+            const icon = getFurnitureIcon(type);
+            floorPlanCtx.textAlign = 'center';
+            floorPlanCtx.fillText(icon, x + size.width/2, y + size.height/2 + 7);
+        }
+
+        function getFurnitureSize(type) {
+            const sizes = {
+                bed: { width: 80, height: 60 },
+                sofa: { width: 100, height: 40 },
+                table: { width: 60, height: 60 },
+                chair: { width: 20, height: 20 },
+                tv: { width: 40, height: 25 },
+                refrigerator: { width: 30, height: 60 },
+                stove: { width: 30, height: 30 },
+                sink: { width: 30, height: 30 },
+                toilet: { width: 20, height: 25 },
+                bathtub: { width: 60, height: 30 }
+            };
+            return sizes[type] || { width: 40, height: 40 };
+        }
+
+        function getFurnitureIcon(type) {
+            const icons = {
+                bed: '\uf236',
+                sofa: '\uf4c8',
+                table: '\uf0ce',
+                chair: '\uf6c0',
+                tv: '\uf26c',
+                refrigerator: '\ue3a0',
+                stove: '\uf06d',
+                sink: '\ue06d',
+                toilet: '\uf7d8',
+                bathtub: '\uf2cd'
+            };
+            return icons[type] || '\uf236';
+        }
+
+        function drawFloorPlanMeasurement(m, isPreview = false) {
+            const x1 = m.startX;
+            const y1 = m.startY;
+            const x2 = m.endX || m.startX;
+            const y2 = m.endY || m.startY;
+            
+            floorPlanCtx.strokeStyle = isPreview ? '#fbbf24' : '#f59e0b';
+            floorPlanCtx.lineWidth = 2;
+            floorPlanCtx.setLineDash([5, 5]);
+            floorPlanCtx.beginPath();
+            floorPlanCtx.moveTo(x1, y1);
+            floorPlanCtx.lineTo(x2, y2);
+            floorPlanCtx.stroke();
+            floorPlanCtx.setLineDash([]);
+            
+            const length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+            const inches = Math.round(length);
+            const feet = Math.floor(inches / 12);
+            const remainingInches = inches % 12;
+            const text = remainingInches > 0 ? `${feet}' ${remainingInches}"` : `${feet}'`;
+            
+            floorPlanCtx.fillStyle = '#fbbf24';
+            floorPlanCtx.font = '12px Arial';
+            floorPlanCtx.textAlign = 'center';
+            floorPlanCtx.fillText(text, (x1 + x2) / 2, (y1 + y2) / 2 - 5);
+        }
+
+        function highlightFloorPlanElement(el) {
+            floorPlanCtx.strokeStyle = '#00d4aa';
+            floorPlanCtx.lineWidth = 2;
+            floorPlanCtx.setLineDash([5, 5]);
+            
+            if (el.type === 'wall') {
+                floorPlanCtx.beginPath();
+                floorPlanCtx.moveTo(el.startX, el.startY);
+                floorPlanCtx.lineTo(el.endX, el.endY);
+                floorPlanCtx.stroke();
+            } else if (el.type === 'room') {
+                floorPlanCtx.strokeRect(
+                    Math.min(el.startX, el.endX) - 5,
+                    Math.min(el.startY, el.endY) - 5,
+                    Math.abs(el.endX - el.startX) + 10,
+                    Math.abs(el.endY - el.startY) + 10
+                );
+            } else {
+                const size = getFurnitureSize(el.furnitureType || 'bed');
+                floorPlanCtx.strokeRect(el.x - 5, el.y - 5, size.width + 10, size.height + 10);
+            }
+            
+            floorPlanCtx.setLineDash([]);
+        }
+
+        function updatePropertiesPanel() {
+            const panel = document.getElementById('floorplanProperties');
+            if (!panel) return;
+            
+            if (!floorPlanSelectedElement) {
+                panel.innerHTML = '<p style="color: #94a3b8; font-size: 0.875rem;">Select an element to edit properties</p>';
+                return;
+            }
+            
+            const el = floorPlanSelectedElement;
+            let html = `<h5 style="color: #f1f5f9; margin-bottom: 0.75rem;">${el.type.charAt(0).toUpperCase() + el.type.slice(1)} Properties</h5>`;
+            
+            if (el.type === 'room') {
+                html += `
+                    <label>Room Name</label>
+                    <input type="text" id="prop-room-name" value="${el.text || ''}" onchange="updateElementProperty('text', this.value)">
+                    <label>Width</label>
+                    <input type="number" id="prop-room-width" value="${Math.abs(el.endX - el.startX)}" onchange="updateElementProperty('width', this.value)">
+                    <label>Height</label>
+                    <input type="number" id="prop-room-height" value="${Math.abs(el.endY - el.startY)}" onchange="updateElementProperty('height', this.value)">
+                `;
+            } else if (el.type === 'wall') {
+                html += `
+                    <label>Length</label>
+                    <input type="number" id="prop-wall-length" value="${Math.round(Math.sqrt(Math.pow(el.endX - el.startX, 2) + Math.pow(el.endY - el.startY, 2)))}" readonly>
+                `;
+            } else if (el.type === 'furniture') {
+                html += `
+                    <label>Type</label>
+                    <select id="prop-furniture-type" onchange="updateElementProperty('furnitureType', this.value)">
+                        <option value="bed" ${el.furnitureType === 'bed' ? 'selected' : ''}>Bed</option>
+                        <option value="sofa" ${el.furnitureType === 'sofa' ? 'selected' : ''}>Sofa</option>
+                        <option value="table" ${el.furnitureType === 'table' ? 'selected' : ''}>Table</option>
+                        <option value="chair" ${el.furnitureType === 'chair' ? 'selected' : ''}>Chair</option>
+                        <option value="tv" ${el.furnitureType === 'tv' ? 'selected' : ''}>TV</option>
+                        <option value="refrigerator" ${el.furnitureType === 'refrigerator' ? 'selected' : ''}>Refrigerator</option>
+                        <option value="stove" ${el.furnitureType === 'stove' ? 'selected' : ''}>Stove</option>
+                        <option value="sink" ${el.furnitureType === 'sink' ? 'selected' : ''}>Sink</option>
+                        <option value="toilet" ${el.furnitureType === 'toilet' ? 'selected' : ''}>Toilet</option>
+                        <option value="bathtub" ${el.furnitureType === 'bathtub' ? 'selected' : ''}>Bathtub</option>
+                    </select>
+                `;
+            }
+            
+            html += `<button class="control-btn" onclick="deleteFloorPlanElement(floorPlanSelectedElement)" style="margin-top: 0.5rem; width: 100%;">Delete</button>`;
+            
+            panel.innerHTML = html;
+        }
+
+        function updateElementProperty(prop, value) {
+            if (!floorPlanSelectedElement) return;
+            floorPlanSelectedElement[prop] = value;
+            if (prop === 'furnitureType') {
+                redrawFloorPlan();
+            }
+        }
+
+        function deleteFloorPlanElement(el) {
+            const index = floorPlanElements.indexOf(el);
+            if (index > -1) {
+                floorPlanElements.splice(index, 1);
+                floorPlanSelectedElement = null;
+                saveFloorPlanState();
+                updatePropertiesPanel();
+                redrawFloorPlan();
+            }
+        }
+
+        function selectFurnitureType(type) {
+            floorPlanCurrentFurnitureType = type;
+            setFloorPlanTool('furniture');
+        }
+
+        function toggleGrid() {
+            floorPlanShowGrid = !floorPlanShowGrid;
+            document.getElementById('gridToggle').classList.toggle('active', floorPlanShowGrid);
+            redrawFloorPlan();
+        }
+
+        function toggleSnap() {
+            floorPlanSnapToGrid = !floorPlanSnapToGrid;
+            document.getElementById('snapToggle').classList.toggle('active', floorPlanSnapToGrid);
+            updateFloorPlanStatus(floorPlanSnapToGrid ? 'Snap to grid: ON' : 'Snap to grid: OFF');
+        }
+
+        function floorPlanZoomIn() {
+            floorPlanZoom = Math.min(5, floorPlanZoom * 1.2);
+            updateZoomDisplay();
+            redrawFloorPlan();
+        }
+
+        function floorPlanZoomOut() {
+            floorPlanZoom = Math.max(0.1, floorPlanZoom / 1.2);
+            updateZoomDisplay();
+            redrawFloorPlan();
+        }
+
+        function floorPlanZoomFit() {
+            floorPlanZoom = 1;
+            floorPlanPanX = 0;
+            floorPlanPanY = 0;
+            updateZoomDisplay();
+            redrawFloorPlan();
+        }
+
+        function updateZoomDisplay() {
+            const zoomDisplay = document.getElementById('zoomLevel');
+            if (zoomDisplay) {
+                zoomDisplay.textContent = Math.round(floorPlanZoom * 100) + '%';
+            }
+        }
+
+        function updateFloorPlanStatus(text) {
+            const status = document.getElementById('floorplanStatus');
+            if (status) status.textContent = text;
+        }
+
+        function updateFloorPlanCoords(x, y) {
+            const coords = document.getElementById('floorplanCoords');
+            if (coords) {
+                const inches = Math.round(x);
+                const feet = Math.floor(inches / 12);
+                const remainingInches = inches % 12;
+                coords.textContent = `X: ${feet}'${remainingInches}", Y: ${Math.round(y)}"`;
+            }
+        }
+
+        function saveFloorPlanState() {
+            floorPlanHistory = floorPlanHistory.slice(0, floorPlanHistoryIndex + 1);
+            floorPlanHistory.push(JSON.stringify(floorPlanElements));
+            floorPlanHistoryIndex++;
+            if (floorPlanHistory.length > 50) {
+                floorPlanHistory.shift();
+                floorPlanHistoryIndex--;
+            }
+        }
+
+        function floorPlanUndo() {
+            if (floorPlanHistoryIndex > 0) {
+                floorPlanHistoryIndex--;
+                floorPlanElements = JSON.parse(floorPlanHistory[floorPlanHistoryIndex]);
+                redrawFloorPlan();
+            }
+        }
+
+        function floorPlanRedo() {
+            if (floorPlanHistoryIndex < floorPlanHistory.length - 1) {
+                floorPlanHistoryIndex++;
+                floorPlanElements = JSON.parse(floorPlanHistory[floorPlanHistoryIndex]);
+                redrawFloorPlan();
+            }
+        }
+
+        async function floorPlanSave() {
+            const selector = document.getElementById('floorplanHomeSelector');
+            const homeId = selector ? selector.value : null;
+            
+            if (!homeId) {
+                alert('Please select a home first');
+                return;
+            }
+            
+            if (!window.awsDataService) {
+                alert('Data service not available');
+                return;
+            }
+            
+            try {
+                const floorPlanData = {
+                    elements: floorPlanElements,
+                    measurements: floorPlanMeasurements,
+                    zoom: floorPlanZoom,
+                    panX: floorPlanPanX,
+                    panY: floorPlanPanY,
+                    timestamp: new Date().toISOString()
+                };
+                
+                // Save to user's floor plans
+                const userData = await window.awsDataService.getUserData();
+                if (!userData.floorPlans) userData.floorPlans = {};
+                userData.floorPlans[homeId] = floorPlanData;
+                await window.awsDataService.saveUserData(userData);
+                
+                alert('Floor plan saved successfully!');
+            } catch (error) {
+                console.error('Error saving floor plan:', error);
+                alert('Error saving floor plan');
+            }
+        }
+
+        async function floorPlanLoad() {
+            const selector = document.getElementById('floorplanHomeSelector');
+            const homeId = selector ? selector.value : null;
+            
+            if (!homeId || !window.awsDataService) return;
+            
+            try {
+                const userData = await window.awsDataService.getUserData();
+                if (userData.floorPlans && userData.floorPlans[homeId]) {
+                    const floorPlanData = userData.floorPlans[homeId];
+                    floorPlanElements = floorPlanData.elements || [];
+                    floorPlanMeasurements = floorPlanData.measurements || [];
+                    floorPlanZoom = floorPlanData.zoom || 1;
+                    floorPlanPanX = floorPlanData.panX || 0;
+                    floorPlanPanY = floorPlanData.panY || 0;
+                    updateZoomDisplay();
+                    redrawFloorPlan();
+                }
+            } catch (error) {
+                console.error('Error loading floor plan:', error);
+            }
+        }
+
+        function floorPlanClear() {
+            if (confirm('Are you sure you want to clear the floor plan? This cannot be undone.')) {
+                floorPlanElements = [];
+                floorPlanMeasurements = [];
+                floorPlanSelectedElement = null;
+                saveFloorPlanState();
+                updatePropertiesPanel();
+                redrawFloorPlan();
+            }
+        }
+
+        function floorPlanExport() {
+            if (!floorPlanCanvas) return;
+            
+            const link = document.createElement('a');
+            link.download = `floor-plan-${Date.now()}.png`;
+            link.href = floorPlanCanvas.toDataURL();
+            link.click();
+        }
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            // Wait for AWS services to load
+            setTimeout(() => {
+                initFloorPlanDesigner();
+            }, 500);
+        });
+    </script>
+</body>
+</html>
+

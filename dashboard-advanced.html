@@ -2779,166 +2779,52 @@
 
                 <!-- Floor Plan Designer -->
                 <div id="floorplan" class="dashboard-section" style="display: none;">
-                    <div class="card" style="padding: 0;">
-                        <div class="floorplan-header">
-                            <div style="display: flex; align-items: center; gap: 1rem;">
-                                <h3 style="margin: 0;">Professional Floor Plan Designer</h3>
-                                <select id="floorplanHomeSelector" style="padding: 0.5rem; background: #1e293b; border: 1px solid #334155; border-radius: 6px; color: #e2e8f0;">
-                                    <option value="">Select Home</option>
-                                </select>
-                            </div>
-                            <div style="display: flex; gap: 0.5rem;">
-                                <button class="floorplan-header-btn" onclick="floorPlanSave()" title="Save">
-                                    <i class="fas fa-save"></i> Save
-                                </button>
-                                <button class="floorplan-header-btn" onclick="floorPlanLoad()" title="Load">
-                                    <i class="fas fa-folder-open"></i> Load
-                                </button>
-                                <button class="floorplan-header-btn" onclick="floorPlanExport()" title="Export">
-                                    <i class="fas fa-download"></i> Export
-                                </button>
-                                <button class="floorplan-header-btn" onclick="floorPlanClear()" title="Clear">
-                                    <i class="fas fa-trash"></i> Clear
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="floorplan-container">
-                            <!-- Left Toolbar -->
-                            <div class="floorplan-sidebar">
-                                <div class="toolbar-section">
-                                    <h4>Tools</h4>
-                                    <div class="toolbar-grid">
-                                        <button class="tool-btn" id="tool-select" onclick="setFloorPlanTool('select')" title="Select (V)">
-                                            <i class="fas fa-mouse-pointer"></i>
-                                            <span>Select</span>
-                                        </button>
-                                        <button class="tool-btn" id="tool-wall" onclick="setFloorPlanTool('wall')" title="Wall (W)">
-                                            <i class="fas fa-grip-lines"></i>
-                                            <span>Wall</span>
-                                        </button>
-                                        <button class="tool-btn" id="tool-room" onclick="setFloorPlanTool('room')" title="Room (R)">
-                                            <i class="fas fa-square"></i>
-                                            <span>Room</span>
-                                        </button>
-                                        <button class="tool-btn" id="tool-door" onclick="setFloorPlanTool('door')" title="Door (D)">
-                                            <i class="fas fa-door-open"></i>
-                                            <span>Door</span>
-                                        </button>
-                                        <button class="tool-btn" id="tool-window" onclick="setFloorPlanTool('window')" title="Window (N)">
-                                            <i class="fas fa-window-maximize"></i>
-                                            <span>Window</span>
-                                        </button>
-                                        <button class="tool-btn" id="tool-furniture" onclick="setFloorPlanTool('furniture')" title="Furniture (F)">
-                                            <i class="fas fa-couch"></i>
-                                            <span>Furniture</span>
-                                        </button>
-                                        <button class="tool-btn" id="tool-text" onclick="setFloorPlanTool('text')" title="Text (T)">
-                                            <i class="fas fa-font"></i>
-                                            <span>Text</span>
-                                        </button>
-                                        <button class="tool-btn" id="tool-measure" onclick="setFloorPlanTool('measure')" title="Measure (M)">
-                                            <i class="fas fa-ruler"></i>
-                                            <span>Measure</span>
-                                        </button>
+                    <div class="card">
+                        <div style="text-align: center; padding: 3rem 2rem;">
+                            <i class="fas fa-drafting-compass" style="font-size: 4rem; color: #00d4aa; margin-bottom: 1.5rem;"></i>
+                            <h3 style="margin-bottom: 1rem;">Professional Floor Plan Designer</h3>
+                            <p style="color: #94a3b8; margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+                                Create detailed, professional floor plans with our advanced designer. 
+                                Access a full-screen workspace with all the tools you need to design your home layout.
+                            </p>
+                            <button class="btn" onclick="window.open('floor-plan-designer-standalone.html', '_blank')" style="font-size: 1.1rem; padding: 1rem 2rem;">
+                                <i class="fas fa-external-link-alt"></i> Open Floor Plan Designer
+                            </button>
+                            <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #334155;">
+                                <h4 style="margin-bottom: 1rem; color: #f1f5f9;">Features:</h4>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; text-align: left; max-width: 800px; margin: 0 auto;">
+                                    <div>
+                                        <i class="fas fa-check-circle" style="color: #00d4aa; margin-right: 0.5rem;"></i>
+                                        <span>Drawing Tools (Walls, Rooms, Doors, Windows)</span>
                                     </div>
-                                </div>
-                                
-                                <div class="toolbar-section">
-                                    <h4>Furniture Library</h4>
-                                    <div class="furniture-library" id="furnitureLibrary">
-                                        <div class="furniture-item" onclick="selectFurnitureType('bed')">
-                                            <i class="fas fa-bed"></i>
-                                            <span>Bed</span>
-                                        </div>
-                                        <div class="furniture-item" onclick="selectFurnitureType('sofa')">
-                                            <i class="fas fa-couch"></i>
-                                            <span>Sofa</span>
-                                        </div>
-                                        <div class="furniture-item" onclick="selectFurnitureType('table')">
-                                            <i class="fas fa-table"></i>
-                                            <span>Table</span>
-                                        </div>
-                                        <div class="furniture-item" onclick="selectFurnitureType('chair')">
-                                            <i class="fas fa-chair"></i>
-                                            <span>Chair</span>
-                                        </div>
-                                        <div class="furniture-item" onclick="selectFurnitureType('tv')">
-                                            <i class="fas fa-tv"></i>
-                                            <span>TV</span>
-                                        </div>
-                                        <div class="furniture-item" onclick="selectFurnitureType('refrigerator')">
-                                            <i class="fas fa-refrigerator"></i>
-                                            <span>Fridge</span>
-                                        </div>
-                                        <div class="furniture-item" onclick="selectFurnitureType('stove')">
-                                            <i class="fas fa-fire"></i>
-                                            <span>Stove</span>
-                                        </div>
-                                        <div class="furniture-item" onclick="selectFurnitureType('sink')">
-                                            <i class="fas fa-sink"></i>
-                                            <span>Sink</span>
-                                        </div>
-                                        <div class="furniture-item" onclick="selectFurnitureType('toilet')">
-                                            <i class="fas fa-toilet"></i>
-                                            <span>Toilet</span>
-                                        </div>
-                                        <div class="furniture-item" onclick="selectFurnitureType('bathtub')">
-                                            <i class="fas fa-bath"></i>
-                                            <span>Bathtub</span>
-                                        </div>
+                                    <div>
+                                        <i class="fas fa-check-circle" style="color: #00d4aa; margin-right: 0.5rem;"></i>
+                                        <span>Furniture Library</span>
                                     </div>
-                                </div>
-                                
-                                <div class="toolbar-section">
-                                    <h4>Properties</h4>
-                                    <div id="floorplanProperties" class="properties-panel">
-                                        <p style="color: #94a3b8; font-size: 0.875rem;">Select an element to edit properties</p>
+                                    <div>
+                                        <i class="fas fa-check-circle" style="color: #00d4aa; margin-right: 0.5rem;"></i>
+                                        <span>Measurement Tools</span>
                                     </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Canvas Area -->
-                            <div class="floorplan-main">
-                                <div class="floorplan-controls">
-                                    <div class="control-group">
-                                        <button class="control-btn" onclick="floorPlanUndo()" title="Undo (Ctrl+Z)">
-                                            <i class="fas fa-undo"></i>
-                                        </button>
-                                        <button class="control-btn" onclick="floorPlanRedo()" title="Redo (Ctrl+Y)">
-                                            <i class="fas fa-redo"></i>
-                                        </button>
+                                    <div>
+                                        <i class="fas fa-check-circle" style="color: #00d4aa; margin-right: 0.5rem;"></i>
+                                        <span>Grid & Snap-to-Grid</span>
                                     </div>
-                                    <div class="control-group">
-                                        <button class="control-btn" onclick="toggleGrid()" id="gridToggle" title="Toggle Grid (G)">
-                                            <i class="fas fa-th"></i>
-                                        </button>
-                                        <button class="control-btn" onclick="toggleSnap()" id="snapToggle" title="Toggle Snap (S)">
-                                            <i class="fas fa-magnet"></i>
-                                        </button>
+                                    <div>
+                                        <i class="fas fa-check-circle" style="color: #00d4aa; margin-right: 0.5rem;"></i>
+                                        <span>Zoom & Pan Controls</span>
                                     </div>
-                                    <div class="control-group">
-                                        <button class="control-btn" onclick="floorPlanZoomOut()" title="Zoom Out">
-                                            <i class="fas fa-search-minus"></i>
-                                        </button>
-                                        <span id="zoomLevel" style="color: #e2e8f0; padding: 0 0.5rem;">100%</span>
-                                        <button class="control-btn" onclick="floorPlanZoomIn()" title="Zoom In">
-                                            <i class="fas fa-search-plus"></i>
-                                        </button>
-                                        <button class="control-btn" onclick="floorPlanZoomFit()" title="Fit to Screen">
-                                            <i class="fas fa-expand"></i>
-                                        </button>
+                                    <div>
+                                        <i class="fas fa-check-circle" style="color: #00d4aa; margin-right: 0.5rem;"></i>
+                                        <span>Undo/Redo (50 steps)</span>
                                     </div>
-                                </div>
-                                
-                                <div class="floorplan-canvas-wrapper" id="floorplanCanvasWrapper">
-                                    <canvas id="floorplanCanvas" width="2000" height="1500"></canvas>
-                                    <div class="canvas-overlay" id="canvasOverlay"></div>
-                                </div>
-                                
-                                <div class="floorplan-status">
-                                    <span id="floorplanStatus">Ready</span>
-                                    <span id="floorplanCoords">X: 0, Y: 0</span>
+                                    <div>
+                                        <i class="fas fa-check-circle" style="color: #00d4aa; margin-right: 0.5rem;"></i>
+                                        <span>Save & Load Plans</span>
+                                    </div>
+                                    <div>
+                                        <i class="fas fa-check-circle" style="color: #00d4aa; margin-right: 0.5rem;"></i>
+                                        <span>Export as PNG</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -3981,8 +3867,6 @@
                         await loadHomes();
                     } else if (sectionId === 'analytics') {
                         await loadAnalytics();
-                    } else if (sectionId === 'floorplan') {
-                        initFloorPlanDesigner();
                     }
                 }, 100);
             } else {
@@ -8749,8 +8633,7 @@
             }
         }
 
-        // ==================== FLOOR PLAN DESIGNER ====================
-        let floorPlanCanvas, floorPlanCtx;
+        // Floor Plan Designer moved to standalone page: floor-plan-designer-standalone.html
         let floorPlanCurrentTool = 'select';
         let floorPlanIsDrawing = false;
         let floorPlanStartX = 0, floorPlanStartY = 0;
