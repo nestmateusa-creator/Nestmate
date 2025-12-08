@@ -9563,55 +9563,30 @@
                     return false;
                 };
                 
-                // Helper function to add logo
-                const addLogo = async () => {
+                // Helper function to add logo (synchronous version)
+                const addLogo = () => {
                     try {
-                        // Try to load logo image
-                        const logoImg = new Image();
-                        logoImg.crossOrigin = 'anonymous';
-                        logoImg.src = 'nestmate-logo.png';
-                        
-                        await new Promise((resolve, reject) => {
-                            logoImg.onload = () => {
-                                try {
-                                    doc.addImage(logoImg, 'PNG', pageWidth - margin - 35, 10, 30, 30);
-                                } catch (e) {
-                                    // If image fails, use text logo
-                                    doc.setFontSize(20);
-                                    doc.setFont(undefined, 'bold');
-                                    doc.setTextColor(0, 212, 170);
-                                    doc.text('NestMate', pageWidth - margin - 40, 25);
-                                }
-                                resolve();
-                            };
-                            logoImg.onerror = () => {
-                                // Fallback to text logo
-                                doc.setFontSize(20);
-                                doc.setFont(undefined, 'bold');
-                                doc.setTextColor(0, 212, 170);
-                                doc.text('NestMate', pageWidth - margin - 40, 25);
-                                resolve();
-                            };
-                            // Timeout after 1 second
-                            setTimeout(() => {
-                                doc.setFontSize(20);
-                                doc.setFont(undefined, 'bold');
-                                doc.setTextColor(0, 212, 170);
-                                doc.text('NestMate', pageWidth - margin - 40, 25);
-                                resolve();
-                            }, 1000);
-                        });
+                        // Try to add logo image if available
+                        // For now, use styled text logo
+                        doc.setFontSize(20);
+                        doc.setFont(undefined, 'bold');
+                        doc.setTextColor(0, 212, 170);
+                        doc.text('NestMate', pageWidth - margin - 40, 20);
+                        doc.setFontSize(8);
+                        doc.setFont(undefined, 'normal');
+                        doc.setTextColor(100, 100, 100);
+                        doc.text('Home Management', pageWidth - margin - 40, 26);
                     } catch (error) {
                         // Fallback to text logo
                         doc.setFontSize(20);
                         doc.setFont(undefined, 'bold');
                         doc.setTextColor(0, 212, 170);
-                        doc.text('NestMate', pageWidth - margin - 40, 25);
+                        doc.text('NestMate', pageWidth - margin - 40, 20);
                     }
                 };
                 
                 // Add logo to first page
-                await addLogo();
+                addLogo();
                 
                 // Helper function to add section header
                 const addSectionHeader = (title) => {
