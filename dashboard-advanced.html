@@ -2526,37 +2526,113 @@
                 <!-- Advanced Analytics -->
                 <div id="analytics" class="dashboard-section" style="display: none;">
                     <div class="card">
-                        <h3>Advanced Analytics & Insights</h3>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <h3>Advanced Analytics & Insights</h3>
+                            <select id="analyticsHomeFilter" onchange="loadAnalytics()" style="padding: 0.5rem; background: #1e293b; border: 1px solid #334155; border-radius: 6px; color: #e2e8f0;">
+                                <option value="">All Homes</option>
+                            </select>
+                        </div>
+                        
                         <div class="analytics-grid">
                             <div class="analytics-card">
-                                <h4>Maintenance Trends</h4>
-                                <div class="chart-placeholder">
-                                    <i class="fas fa-chart-line"></i>
-                                    <p>Maintenance cost trends over time</p>
+                                <h4><i class="fas fa-tasks"></i> Task Analytics</h4>
+                                <div id="taskAnalytics">
+                                    <div class="metric-display">
+                                        <div class="metric-number" id="taskCompletionRate">--</div>
+                                        <div class="metric-label">Completion Rate</div>
+                                    </div>
+                                    <div style="margin-top: 1rem; font-size: 0.875rem;">
+                                        <div>Total Tasks: <span id="totalTasksCount">--</span></div>
+                                        <div>Completed: <span id="completedTasksCount">--</span></div>
+                                        <div>Active: <span id="activeTasksCount">--</span></div>
+                                        <div>Overdue: <span id="overdueTasksCount">--</span></div>
+                                    </div>
                                 </div>
                             </div>
                             
                             <div class="analytics-card">
-                                <h4>Energy Efficiency</h4>
-                                <div class="chart-placeholder">
-                                    <i class="fas fa-bolt"></i>
-                                    <p>Energy usage and efficiency metrics</p>
+                                <h4><i class="fas fa-heartbeat"></i> Health Score Trends</h4>
+                                <div id="healthScoreAnalytics">
+                                    <div class="metric-display">
+                                        <div class="metric-number" id="currentHealthScore">--</div>
+                                        <div class="metric-label">Current Score</div>
+                                    </div>
+                                    <div style="margin-top: 1rem; font-size: 0.875rem;">
+                                        <div>Structure: <span id="analyticsStructureScore">--</span>%</div>
+                                        <div>Systems: <span id="analyticsSystemsScore">--</span>%</div>
+                                        <div>Maintenance: <span id="analyticsMaintenanceScore">--</span>%</div>
+                                    </div>
                                 </div>
                             </div>
                             
                             <div class="analytics-card">
-                                <h4>Property Value Tracking</h4>
-                                <div class="chart-placeholder">
-                                    <i class="fas fa-dollar-sign"></i>
-                                    <p>Property value appreciation over time</p>
+                                <h4><i class="fas fa-tools"></i> Maintenance Activity</h4>
+                                <div id="maintenanceAnalytics">
+                                    <div style="margin-top: 0.5rem;">
+                                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                            <span>Recent Renovations:</span>
+                                            <span id="renovationsCount">--</span>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                            <span>Last 5 Years:</span>
+                                            <span id="recentRenovationsCount">--</span>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between;">
+                                            <span>Tasks This Month:</span>
+                                            <span id="tasksThisMonth">--</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             
                             <div class="analytics-card">
-                                <h4>Task Completion Rate</h4>
-                                <div class="metric-display">
-                                    <div class="metric-number">94%</div>
-                                    <div class="metric-label">Completion Rate</div>
+                                <h4><i class="fas fa-chart-pie"></i> Task Priority Distribution</h4>
+                                <div id="priorityAnalytics" style="margin-top: 1rem;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                        <span>High Priority:</span>
+                                        <span id="highPriorityCount">--</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                        <span>Medium Priority:</span>
+                                        <span id="mediumPriorityCount">--</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <span>Low Priority:</span>
+                                        <span id="lowPriorityCount">--</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="analytics-card">
+                                <h4><i class="fas fa-calendar-alt"></i> Task Timeline</h4>
+                                <div id="taskTimelineAnalytics" style="margin-top: 1rem;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                        <span>Due This Week:</span>
+                                        <span id="dueThisWeekCount">--</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                        <span>Due This Month:</span>
+                                        <span id="dueThisMonthCount">--</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <span>Overdue:</span>
+                                        <span id="overdueCount">--</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="analytics-card">
+                                <h4><i class="fas fa-home"></i> Home Data Completeness</h4>
+                                <div id="dataCompletenessAnalytics" style="margin-top: 1rem;">
+                                    <div class="metric-display">
+                                        <div class="metric-number" id="dataCompletenessPercent">--</div>
+                                        <div class="metric-label">Data Complete</div>
+                                    </div>
+                                    <div style="margin-top: 1rem; font-size: 0.875rem;">
+                                        <div>Structure Info: <span id="structureDataComplete">--</span></div>
+                                        <div>Systems Info: <span id="systemsDataComplete">--</span></div>
+                                        <div>Tasks Added: <span id="tasksDataComplete">--</span></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -3642,6 +3718,8 @@
                         await updateHealthScoreDisplay();
                     } else if (sectionId === 'homes') {
                         await loadHomes();
+                    } else if (sectionId === 'analytics') {
+                        await loadAnalytics();
                     }
                 }, 100);
             } else {
