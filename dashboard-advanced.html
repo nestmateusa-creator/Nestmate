@@ -49,6 +49,7 @@
         loadNext();
     })();
 </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="auth-aws.js"></script>
     <script src="aws-data-service.js"></script>
     
@@ -9475,25 +9476,67 @@
             try {
                 showAlert('Generating PDF report...', 'info');
                 
+                // Check if jsPDF is available
+                if (typeof window.jspdf === 'undefined' && typeof window.jsPDF === 'undefined') {
+                    showAlert('PDF library not loaded. Please refresh the page.', 'error');
+                    return;
+                }
+                
+                const { jsPDF } = window.jspdf || window;
+                const doc = new jsPDF();
+                
                 // Get all user data
                 const userData = await window.awsDataService.getUserData();
                 const homesList = await window.awsDataService.getHomesList();
                 const tasks = await window.awsDataService.getTasksList();
                 
-                // Create PDF content
-                let pdfContent = `NestMate Home Management Report\n`;
-                pdfContent += `Generated: ${new Date().toLocaleString()}\n\n`;
-                pdfContent += `========================================\n`;
-                pdfContent += `HOMES SUMMARY\n`;
-                pdfContent += `========================================\n\n`;
+                let yPos = 20;
+                const pageHeight = doc.internal.pageSize.height;
+                const margin = 20;
+                const lineHeight = 7;
+                
+                // Title
+                doc.setFontSize(18);
+                doc.setFont(undefined, 'bold');
+                doc.text('NestMate Home Management Report', margin, yPos);
+                yPos += 10;
+                
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+                doc.text(`Generated: ${new Date().toLocaleString()}`, margin, yPos);
+                yPos += 15;
+                
+                // Homes Summary
+                doc.setFontSize(14);
+                doc.setFont(undefined, 'bold');
+                doc.text('HOMES SUMMARY', margin, yPos);
+                yPos += 10;
+                
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
                 
                 for (const home of homesList) {
-                    pdfContent += `Home: ${home.address || home.id}\n`;
-                    pdfContent += `Type: ${home.homeType || 'N/A'}\n`;
-                    pdfContent += `Year Built: ${home.yearBuilt || 'N/A'}\n`;
-                    pdfContent += `Square Footage: ${home.squareFootage || 'N/A'}\n`;
-                    pdfContent += `Bedrooms: ${home.bedrooms || 'N/A'}\n`;
-                    pdfContent += `Bathrooms: ${home.bathrooms || 'N/A'}\n\n`;
+                    // Check if we need a new page
+                    if (yPos > pageHeight - 40) {
+                        doc.addPage();
+                        yPos = margin;
+                    }
+                    
+                    doc.setFont(undefined, 'bold');
+                    doc.text(`Home: ${home.address || home.id}`, margin, yPos);
+                    yPos += lineHeight;
+                    
+                    doc.setFont(undefined, 'normal');
+                    doc.text(`Type: ${home.homeType || 'N/A'}`, margin + 5, yPos);
+                    yPos += lineHeight;
+                    doc.text(`Year Built: ${home.yearBuilt || 'N/A'}`, margin + 5, yPos);
+                    yPos += lineHeight;
+                    doc.text(`Square Footage: ${home.squareFootage || 'N/A'}`, margin + 5, yPos);
+                    yPos += lineHeight;
+                    doc.text(`Bedrooms: ${home.bedrooms || 'N/A'}`, margin + 5, yPos);
+                    yPos += lineHeight;
+                    doc.text(`Bathrooms: ${home.bathrooms || 'N/A'}`, margin + 5, yPos);
+                    yPos += lineHeight + 3;
                     
                     // Get home-specific data
                     try {
@@ -9501,40 +9544,68 @@
                         const systemsInfo = await window.awsDataService.getSystemsInfo(home.id);
                         
                         if (structureInfo && Object.keys(structureInfo).length > 0) {
-                            pdfContent += `Structure:\n`;
-                            pdfContent += `  Foundation: ${structureInfo.foundation || 'N/A'}\n`;
-                            pdfContent += `  Roof Type: ${structureInfo.roofType || 'N/A'}\n`;
-                            pdfContent += `  Exterior: ${structureInfo.exteriorMaterial || 'N/A'}\n`;
-                            pdfContent += `  Windows: ${structureInfo.windows || 'N/A'}\n\n`;
+                            if (yPos > pageHeight - 30) {
+                                doc.addPage();
+                                yPos = margin;
+                            }
+                            doc.setFont(undefined, 'bold');
+                            doc.text('Structure:', margin + 5, yPos);
+                            yPos += lineHeight;
+                            doc.setFont(undefined, 'normal');
+                            doc.text(`  Foundation: ${structureInfo.foundation || 'N/A'}`, margin + 10, yPos);
+                            yPos += lineHeight;
+                            doc.text(`  Roof Type: ${structureInfo.roofType || 'N/A'}`, margin + 10, yPos);
+                            yPos += lineHeight;
+                            doc.text(`  Exterior: ${structureInfo.exteriorMaterial || 'N/A'}`, margin + 10, yPos);
+                            yPos += lineHeight;
+                            doc.text(`  Windows: ${structureInfo.windows || 'N/A'}`, margin + 10, yPos);
+                            yPos += lineHeight + 3;
                         }
                         
                         if (systemsInfo && Object.keys(systemsInfo).length > 0) {
-                            pdfContent += `Systems:\n`;
-                            pdfContent += `  HVAC: ${systemsInfo.hvac || 'N/A'}\n`;
-                            pdfContent += `  Electrical: ${systemsInfo.electrical || 'N/A'}\n`;
-                            pdfContent += `  Plumbing: ${systemsInfo.plumbing || 'N/A'}\n`;
-                            pdfContent += `  Water Heater: ${systemsInfo.waterHeater || 'N/A'}\n\n`;
+                            if (yPos > pageHeight - 30) {
+                                doc.addPage();
+                                yPos = margin;
+                            }
+                            doc.setFont(undefined, 'bold');
+                            doc.text('Systems:', margin + 5, yPos);
+                            yPos += lineHeight;
+                            doc.setFont(undefined, 'normal');
+                            doc.text(`  HVAC: ${systemsInfo.hvac || 'N/A'}`, margin + 10, yPos);
+                            yPos += lineHeight;
+                            doc.text(`  Electrical: ${systemsInfo.electrical || 'N/A'}`, margin + 10, yPos);
+                            yPos += lineHeight;
+                            doc.text(`  Plumbing: ${systemsInfo.plumbing || 'N/A'}`, margin + 10, yPos);
+                            yPos += lineHeight;
+                            doc.text(`  Water Heater: ${systemsInfo.waterHeater || 'N/A'}`, margin + 10, yPos);
+                            yPos += lineHeight + 5;
                         }
                     } catch (error) {
                         console.error('Error getting home data:', error);
                     }
                 }
                 
-                pdfContent += `\n========================================\n`;
-                pdfContent += `TASKS SUMMARY\n`;
-                pdfContent += `========================================\n\n`;
-                pdfContent += `Total Tasks: ${tasks.length}\n`;
-                pdfContent += `Completed: ${tasks.filter(t => t.completed).length}\n`;
-                pdfContent += `Active: ${tasks.filter(t => !t.completed).length}\n\n`;
+                // Tasks Summary
+                if (yPos > pageHeight - 30) {
+                    doc.addPage();
+                    yPos = margin;
+                }
                 
-                // Create and download PDF
-                const blob = new Blob([pdfContent], { type: 'text/plain' });
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = `nestmate-report-${Date.now()}.txt`;
-                link.click();
-                URL.revokeObjectURL(url);
+                doc.setFontSize(14);
+                doc.setFont(undefined, 'bold');
+                doc.text('TASKS SUMMARY', margin, yPos);
+                yPos += 10;
+                
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+                doc.text(`Total Tasks: ${tasks.length}`, margin, yPos);
+                yPos += lineHeight;
+                doc.text(`Completed: ${tasks.filter(t => t.completed).length}`, margin, yPos);
+                yPos += lineHeight;
+                doc.text(`Active: ${tasks.filter(t => !t.completed).length}`, margin, yPos);
+                
+                // Save PDF
+                doc.save(`nestmate-report-${Date.now()}.pdf`);
                 
                 showAlert('PDF report exported successfully!', 'success');
             } catch (error) {
