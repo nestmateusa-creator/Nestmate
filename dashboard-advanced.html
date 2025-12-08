@@ -4011,6 +4011,347 @@
             showAlert('Opening service records...', 'info');
             window.open('service-records.html', '_blank');
         }
+        
+        // Home Health Score Algorithm
+        async function calculateHomeHealthScore(homeId = null) {
+            if (!homeId) {
+                homeId = currentHomeId;
+            }
+            if (!homeId) {
+                return { overall: 0, structure: 0, systems: 0, maintenance: 0 };
+            }
+            
+            try {
+                // Get all relevant data
+                const [structureInfo, systemsInfo, renovationsList, allTasks, homesList] = await Promise.all([
+                    window.awsDataService ? window.awsDataService.getStructureInfo(homeId) : Promise.resolve({}),
+                    window.awsDataService ? window.awsDataService.getSystemsInfo(homeId) : Promise.resolve({}),
+                    window.awsDataService ? window.awsDataService.getRenovationsList(homeId) : Promise.resolve([]),
+                    window.awsDataService ? window.awsDataService.getTasksList() : Promise.resolve([]),
+                    window.awsDataService ? window.awsDataService.getHomesList() : Promise.resolve([])
+                ]);
+                
+                // Get home info for age calculation
+                const home = homesList.find(h => h.id === homeId);
+                const currentYear = new Date().getFullYear();
+                const homeAge = home && home.yearBuilt ? currentYear - parseInt(home.yearBuilt) : 0;
+                
+                // Filter tasks for this home
+                const homeTasks = allTasks.filter(task => {
+                    const taskHomeId = task.home || task.homeId;
+                    return taskHomeId === homeId;
+                });
+                
+                // Calculate Structure Score (30% weight)
+                let structureScore = calculateStructureScore(structureInfo, homeAge);
+                
+                // Calculate Systems Score (30% weight)
+                let systemsScore = calculateSystemsScore(systemsInfo, homeAge);
+                
+                // Calculate Maintenance Score (25% weight)
+                let maintenanceScore = calculateMaintenanceScore(homeTasks, renovationsList);
+                
+                // Calculate Data Completeness (15% weight)
+                let dataCompleteness = calculateDataCompleteness(structureInfo, systemsInfo, homeTasks, renovationsList);
+                
+                // Weighted overall score
+                const overallScore = Math.round(
+                    (structureScore * 0.30) +
+                    (systemsScore * 0.30) +
+                    (maintenanceScore * 0.25) +
+                    (dataCompleteness * 0.15)
+                );
+                
+                return {
+                    overall: Math.min(100, Math.max(0, overallScore)),
+                    structure: Math.min(100, Math.max(0, structureScore)),
+                    systems: Math.min(100, Math.max(0, systemsScore)),
+                    maintenance: Math.min(100, Math.max(0, maintenanceScore)),
+                    dataCompleteness: Math.min(100, Math.max(0, dataCompleteness))
+                };
+            } catch (error) {
+                console.error('Error calculating health score:', error);
+                return { overall: 0, structure: 0, systems: 0, maintenance: 0 };
+            }
+        }
+        
+        function calculateStructureScore(structureInfo, homeAge) {
+            let score = 50; // Base score
+            
+            // Foundation (20 points)
+            if (structureInfo.foundation) {
+                const foundation = structureInfo.foundation.toLowerCase();
+                if (foundation.includes('concrete') || foundation.includes('slab')) {
+                    score += 15;
+                } else if (foundation.includes('crawl') || foundation.includes('basement')) {
+                    score += 10;
+                } else {
+                    score += 5;
+                }
+            } else {
+                score -= 10; // Penalty for missing data
+            }
+            
+            // Roof Type (20 points)
+            if (structureInfo.roofType) {
+                const roofType = structureInfo.roofType.toLowerCase();
+                if (roofType.includes('metal') || roofType.includes('tile')) {
+                    score += 15;
+                } else if (roofType.includes('asphalt') || roofType.includes('shingle')) {
+                    score += 10;
+                } else {
+                    score += 5;
+                }
+            } else {
+                score -= 10;
+            }
+            
+            // Exterior Material (15 points)
+            if (structureInfo.exteriorMaterial) {
+                const exterior = structureInfo.exteriorMaterial.toLowerCase();
+                if (exterior.includes('brick') || exterior.includes('stone')) {
+                    score += 12;
+                } else if (exterior.includes('siding') || exterior.includes('vinyl')) {
+                    score += 8;
+                } else {
+                    score += 5;
+                }
+            } else {
+                score -= 8;
+            }
+            
+            // Windows (15 points)
+            if (structureInfo.windows) {
+                const windows = structureInfo.windows.toLowerCase();
+                if (windows.includes('double') || windows.includes('energy')) {
+                    score += 12;
+                } else if (windows.includes('single')) {
+                    score += 6;
+                } else {
+                    score += 3;
+                }
+            } else {
+                score -= 8;
+            }
+            
+            // Age penalty (max -20 points for very old homes)
+            if (homeAge > 0) {
+                if (homeAge > 50) {
+                    score -= 20;
+                } else if (homeAge > 30) {
+                    score -= 15;
+                } else if (homeAge > 20) {
+                    score -= 10;
+                } else if (homeAge > 10) {
+                    score -= 5;
+                }
+            }
+            
+            return Math.min(100, Math.max(0, score));
+        }
+        
+        function calculateSystemsScore(systemsInfo, homeAge) {
+            let score = 50; // Base score
+            
+            // HVAC (25 points)
+            if (systemsInfo.hvac) {
+                const hvac = systemsInfo.hvac.toLowerCase();
+                if (hvac.includes('new') || hvac.includes('recent') || hvac.includes('2020') || hvac.includes('2021') || hvac.includes('2022') || hvac.includes('2023') || hvac.includes('2024') || hvac.includes('2025')) {
+                    score += 20;
+                } else if (hvac.includes('updated') || hvac.includes('maintained')) {
+                    score += 12;
+                } else {
+                    score += 5;
+                }
+            } else {
+                score -= 12;
+            }
+            
+            // Electrical (20 points)
+            if (systemsInfo.electrical) {
+                const electrical = systemsInfo.electrical.toLowerCase();
+                if (electrical.includes('updated') || electrical.includes('new') || electrical.includes('200') || electrical.includes('modern')) {
+                    score += 15;
+                } else if (electrical.includes('adequate') || electrical.includes('good')) {
+                    score += 10;
+                } else {
+                    score += 5;
+                }
+            } else {
+                score -= 10;
+            }
+            
+            // Plumbing (20 points)
+            if (systemsInfo.plumbing) {
+                const plumbing = systemsInfo.plumbing.toLowerCase();
+                if (plumbing.includes('new') || plumbing.includes('updated') || plumbing.includes('copper') || plumbing.includes('pex')) {
+                    score += 15;
+                } else if (plumbing.includes('adequate') || plumbing.includes('good')) {
+                    score += 10;
+                } else {
+                    score += 5;
+                }
+            } else {
+                score -= 10;
+            }
+            
+            // Water Heater (15 points)
+            if (systemsInfo.waterHeater) {
+                const waterHeater = systemsInfo.waterHeater.toLowerCase();
+                if (waterHeater.includes('tankless') || waterHeater.includes('new') || waterHeater.includes('energy')) {
+                    score += 12;
+                } else if (waterHeater.includes('updated') || waterHeater.includes('maintained')) {
+                    score += 8;
+                } else {
+                    score += 4;
+                }
+            } else {
+                score -= 8;
+            }
+            
+            // Age penalty for systems (max -15 points)
+            if (homeAge > 0) {
+                if (homeAge > 30) {
+                    score -= 15;
+                } else if (homeAge > 20) {
+                    score -= 10;
+                } else if (homeAge > 10) {
+                    score -= 5;
+                }
+            }
+            
+            return Math.min(100, Math.max(0, score));
+        }
+        
+        function calculateMaintenanceScore(homeTasks, renovationsList) {
+            let score = 50; // Base score
+            
+            // Task completion rate (30 points)
+            if (homeTasks.length > 0) {
+                const completedTasks = homeTasks.filter(t => t.completed).length;
+                const completionRate = completedTasks / homeTasks.length;
+                score += completionRate * 25;
+                
+                // Overdue tasks penalty (max -20 points)
+                const today = new Date();
+                const overdueTasks = homeTasks.filter(task => {
+                    if (task.completed || !task.dueDate) return false;
+                    return new Date(task.dueDate) < today;
+                });
+                const overdueRate = overdueTasks.length / homeTasks.length;
+                score -= overdueRate * 20;
+            } else {
+                score -= 15; // Penalty for no tasks (no maintenance tracking)
+            }
+            
+            // Recent renovations (20 points)
+            if (renovationsList && renovationsList.length > 0) {
+                const currentYear = new Date().getFullYear();
+                const recentRenovations = renovationsList.filter(reno => {
+                    if (!reno.date) return false;
+                    const renoYear = new Date(reno.date).getFullYear();
+                    return (currentYear - renoYear) <= 5; // Renovations in last 5 years
+                });
+                
+                if (recentRenovations.length > 0) {
+                    score += Math.min(20, recentRenovations.length * 5);
+                }
+            }
+            
+            return Math.min(100, Math.max(0, score));
+        }
+        
+        function calculateDataCompleteness(structureInfo, systemsInfo, homeTasks, renovationsList) {
+            let filledFields = 0;
+            let totalFields = 0;
+            
+            // Structure fields (4 fields)
+            totalFields += 4;
+            if (structureInfo.foundation) filledFields++;
+            if (structureInfo.roofType) filledFields++;
+            if (structureInfo.exteriorMaterial) filledFields++;
+            if (structureInfo.windows) filledFields++;
+            
+            // Systems fields (4 fields)
+            totalFields += 4;
+            if (systemsInfo.hvac) filledFields++;
+            if (systemsInfo.electrical) filledFields++;
+            if (systemsInfo.plumbing) filledFields++;
+            if (systemsInfo.waterHeater) filledFields++;
+            
+            // Tasks and renovations (bonus for having any)
+            if (homeTasks.length > 0) filledFields += 2;
+            if (renovationsList && renovationsList.length > 0) filledFields += 2;
+            totalFields += 4;
+            
+            return (filledFields / totalFields) * 100;
+        }
+        
+        async function updateHealthScoreDisplay() {
+            if (!currentHomeId) {
+                // Set default values if no home selected
+                const overviewScore = document.getElementById('overviewHealthScoreValue');
+                const overviewStructure = document.getElementById('overviewStructureScore');
+                const overviewSystems = document.getElementById('overviewSystemsScore');
+                const overviewMaintenance = document.getElementById('overviewMaintenanceScore');
+                
+                if (overviewScore) overviewScore.textContent = '--';
+                if (overviewStructure) overviewStructure.textContent = '--';
+                if (overviewSystems) overviewSystems.textContent = '--';
+                if (overviewMaintenance) overviewMaintenance.textContent = '--';
+                
+                const healthScoreValue = document.getElementById('healthScoreValue');
+                const structureValue = document.getElementById('structureValue');
+                const systemsValue = document.getElementById('systemsValue');
+                const maintenanceValue = document.getElementById('maintenanceValue');
+                
+                if (healthScoreValue) healthScoreValue.textContent = '--';
+                if (structureValue) structureValue.textContent = '--%';
+                if (systemsValue) systemsValue.textContent = '--%';
+                if (maintenanceValue) maintenanceValue.textContent = '--%';
+                return;
+            }
+            
+            try {
+                const scores = await calculateHomeHealthScore(currentHomeId);
+                
+                // Update overview card
+                const overviewScore = document.getElementById('overviewHealthScoreValue');
+                const overviewStructure = document.getElementById('overviewStructureScore');
+                const overviewSystems = document.getElementById('overviewSystemsScore');
+                const overviewMaintenance = document.getElementById('overviewMaintenanceScore');
+                
+                if (overviewScore) overviewScore.textContent = scores.overall;
+                if (overviewStructure) overviewStructure.textContent = scores.structure;
+                if (overviewSystems) overviewSystems.textContent = scores.systems;
+                if (overviewMaintenance) overviewMaintenance.textContent = scores.maintenance;
+                
+                // Update health section if visible
+                const healthScoreValue = document.getElementById('healthScoreValue');
+                const structureValue = document.getElementById('structureValue');
+                const systemsValue = document.getElementById('systemsValue');
+                const maintenanceValue = document.getElementById('maintenanceValue');
+                const structureBar = document.getElementById('structureBar');
+                const systemsBar = document.getElementById('systemsBar');
+                const maintenanceBar = document.getElementById('maintenanceBar');
+                
+                if (healthScoreValue) healthScoreValue.textContent = scores.overall;
+                if (structureValue) {
+                    structureValue.textContent = scores.structure + '%';
+                    if (structureBar) structureBar.style.width = scores.structure + '%';
+                }
+                if (systemsValue) {
+                    systemsValue.textContent = scores.systems + '%';
+                    if (systemsBar) systemsBar.style.width = scores.systems + '%';
+                }
+                if (maintenanceValue) {
+                    maintenanceValue.textContent = scores.maintenance + '%';
+                    if (maintenanceBar) maintenanceBar.style.width = scores.maintenance + '%';
+                }
+            } catch (error) {
+                console.error('Error updating health score display:', error);
+            }
+        }
 
         // Load Basic Info from AWS
         async function loadBasicInfo() {
