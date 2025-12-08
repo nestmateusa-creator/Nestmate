@@ -9466,7 +9466,7 @@
         });
 
         // ==================== EXPORT & BACKUP FUNCTIONS ====================
-        async function exportToPDF() {
+        window.exportToPDF = async function exportToPDF() {
             if (!window.awsDataService) {
                 showAlert('Data service not available', 'error');
                 return;
@@ -9543,7 +9543,7 @@
             }
         }
 
-        async function exportToExcel() {
+        window.exportToExcel = async function exportToExcel() {
             if (!window.awsDataService) {
                 showAlert('Data service not available', 'error');
                 return;
@@ -9590,7 +9590,7 @@
             }
         }
 
-        async function createFullBackup() {
+        window.createFullBackup = async function createFullBackup() {
             if (!window.awsDataService) {
                 showAlert('Data service not available', 'error');
                 return;
@@ -9660,7 +9660,7 @@
             }
         }
 
-        async function restoreFromBackup() {
+        window.restoreFromBackup = async function restoreFromBackup() {
             const input = document.createElement('input');
             input.type = 'file';
             input.accept = '.json';
@@ -9729,7 +9729,7 @@
             input.click();
         }
 
-        async function loadBackupSettings() {
+        window.loadBackupSettings = async function loadBackupSettings() {
             if (!window.awsDataService) return;
             
             try {
@@ -9745,7 +9745,7 @@
             }
         }
 
-        async function saveBackupSettings() {
+        window.saveBackupSettings = async function saveBackupSettings() {
             if (!window.awsDataService) return;
             
             try {
