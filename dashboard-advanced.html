@@ -2945,7 +2945,12 @@
                 <!-- Export & Backup -->
                 <div id="export" class="dashboard-section" style="display: none;">
                     <div class="card">
-                        <h3>Advanced Export & Backup</h3>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <h3>Advanced Export & Backup</h3>
+                            <select id="exportHomeSelector" style="padding: 0.5rem; background: #1e293b; border: 1px solid #334155; border-radius: 6px; color: #e2e8f0; min-width: 250px;">
+                                <option value="">Select Home for Report</option>
+                            </select>
+                        </div>
                         <div class="export-options">
                             <div class="export-option">
                                 <div class="export-icon">
@@ -3894,6 +3899,7 @@
                         await loadAnalytics();
                     } else if (sectionId === 'export') {
                         await loadBackupSettings();
+                        await populateExportHomeSelector();
                     }
                 }, 100);
             } else {
@@ -9467,14 +9473,41 @@
         });
 
         // ==================== EXPORT & BACKUP FUNCTIONS ====================
+        async function populateExportHomeSelector() {
+            const selector = document.getElementById('exportHomeSelector');
+            if (!selector || !window.awsDataService) return;
+            
+            try {
+                const homesList = await window.awsDataService.getHomesList();
+                selector.innerHTML = '<option value="">Select Home for Report</option>';
+                homesList.forEach(home => {
+                    const option = document.createElement('option');
+                    option.value = home.id;
+                    option.textContent = home.address || home.id;
+                    selector.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error populating export home selector:', error);
+            }
+        }
+
         window.exportToPDF = async function exportToPDF() {
             if (!window.awsDataService) {
                 showAlert('Data service not available', 'error');
                 return;
             }
 
+            // Get selected home
+            const selector = document.getElementById('exportHomeSelector');
+            const selectedHomeId = selector ? selector.value : null;
+            
+            if (!selectedHomeId) {
+                showAlert('Please select a home first', 'error');
+                return;
+            }
+
             try {
-                showAlert('Generating PDF report...', 'info');
+                showAlert('Generating detailed PDF report...', 'info');
                 
                 // Check if jsPDF is available
                 if (typeof window.jspdf === 'undefined' && typeof window.jsPDF === 'undefined') {
@@ -9485,129 +9518,350 @@
                 const { jsPDF } = window.jspdf || window;
                 const doc = new jsPDF();
                 
-                // Get all user data
-                const userData = await window.awsDataService.getUserData();
+                // Get selected home data
                 const homesList = await window.awsDataService.getHomesList();
-                const tasks = await window.awsDataService.getTasksList();
+                const home = homesList.find(h => h.id === selectedHomeId);
+                if (!home) {
+                    showAlert('Selected home not found', 'error');
+                    return;
+                }
                 
-                let yPos = 20;
+                // Get all home-specific data
+                const [basicInfo, structureInfo, systemsInfo, bedrooms, bathrooms, kitchens, livingAreas, garage, appliances, exterior, renovations, emergency, tasks, photos] = await Promise.all([
+                    window.awsDataService.getUserData().then(d => d.basicInfo || {}),
+                    window.awsDataService.getStructureInfo(selectedHomeId),
+                    window.awsDataService.getSystemsInfo(selectedHomeId),
+                    window.awsDataService.getBedroomsList(selectedHomeId),
+                    window.awsDataService.getBathroomsList(selectedHomeId),
+                    window.awsDataService.getKitchensList(selectedHomeId),
+                    window.awsDataService.getLivingAreasList(selectedHomeId),
+                    window.awsDataService.getGarageInfo(selectedHomeId),
+                    window.awsDataService.getAppliancesList(selectedHomeId),
+                    window.awsDataService.getExteriorInfo(selectedHomeId),
+                    window.awsDataService.getRenovationsList(selectedHomeId),
+                    window.awsDataService.getEmergencyContacts(selectedHomeId),
+                    window.awsDataService.getTasksList().then(t => t.filter(task => (task.home === selectedHomeId || task.homeId === selectedHomeId))),
+                    window.awsDataService.getPhotosList(selectedHomeId)
+                ]);
+                
+                let yPos = 30;
+                const pageWidth = doc.internal.pageSize.width;
                 const pageHeight = doc.internal.pageSize.height;
                 const margin = 20;
-                const lineHeight = 7;
+                const lineHeight = 6;
+                const sectionSpacing = 8;
                 
-                // Title
-                doc.setFontSize(18);
-                doc.setFont(undefined, 'bold');
-                doc.text('NestMate Home Management Report', margin, yPos);
-                yPos += 10;
-                
-                doc.setFontSize(10);
-                doc.setFont(undefined, 'normal');
-                doc.text(`Generated: ${new Date().toLocaleString()}`, margin, yPos);
-                yPos += 15;
-                
-                // Homes Summary
-                doc.setFontSize(14);
-                doc.setFont(undefined, 'bold');
-                doc.text('HOMES SUMMARY', margin, yPos);
-                yPos += 10;
-                
-                doc.setFontSize(10);
-                doc.setFont(undefined, 'normal');
-                
-                for (const home of homesList) {
-                    // Check if we need a new page
-                    if (yPos > pageHeight - 40) {
+                // Helper function to add new page if needed
+                const checkNewPage = (requiredSpace = 20) => {
+                    if (yPos > pageHeight - requiredSpace) {
                         doc.addPage();
                         yPos = margin;
+                        return true;
                     }
-                    
+                    return false;
+                };
+                
+                // Helper function to add section header
+                const addSectionHeader = (title) => {
+                    checkNewPage(25);
+                    yPos += sectionSpacing;
+                    doc.setFontSize(12);
                     doc.setFont(undefined, 'bold');
-                    doc.text(`Home: ${home.address || home.id}`, margin, yPos);
-                    yPos += lineHeight;
-                    
+                    doc.setTextColor(0, 212, 170); // Teal color
+                    doc.text(title, margin, yPos);
+                    yPos += 8;
+                    doc.setTextColor(0, 0, 0); // Black
+                    doc.setFontSize(10);
                     doc.setFont(undefined, 'normal');
-                    doc.text(`Type: ${home.homeType || 'N/A'}`, margin + 5, yPos);
-                    yPos += lineHeight;
-                    doc.text(`Year Built: ${home.yearBuilt || 'N/A'}`, margin + 5, yPos);
-                    yPos += lineHeight;
-                    doc.text(`Square Footage: ${home.squareFootage || 'N/A'}`, margin + 5, yPos);
-                    yPos += lineHeight;
-                    doc.text(`Bedrooms: ${home.bedrooms || 'N/A'}`, margin + 5, yPos);
-                    yPos += lineHeight;
-                    doc.text(`Bathrooms: ${home.bathrooms || 'N/A'}`, margin + 5, yPos);
-                    yPos += lineHeight + 3;
-                    
-                    // Get home-specific data
-                    try {
-                        const structureInfo = await window.awsDataService.getStructureInfo(home.id);
-                        const systemsInfo = await window.awsDataService.getSystemsInfo(home.id);
-                        
-                        if (structureInfo && Object.keys(structureInfo).length > 0) {
-                            if (yPos > pageHeight - 30) {
-                                doc.addPage();
-                                yPos = margin;
-                            }
-                            doc.setFont(undefined, 'bold');
-                            doc.text('Structure:', margin + 5, yPos);
-                            yPos += lineHeight;
-                            doc.setFont(undefined, 'normal');
-                            doc.text(`  Foundation: ${structureInfo.foundation || 'N/A'}`, margin + 10, yPos);
-                            yPos += lineHeight;
-                            doc.text(`  Roof Type: ${structureInfo.roofType || 'N/A'}`, margin + 10, yPos);
-                            yPos += lineHeight;
-                            doc.text(`  Exterior: ${structureInfo.exteriorMaterial || 'N/A'}`, margin + 10, yPos);
-                            yPos += lineHeight;
-                            doc.text(`  Windows: ${structureInfo.windows || 'N/A'}`, margin + 10, yPos);
-                            yPos += lineHeight + 3;
-                        }
-                        
-                        if (systemsInfo && Object.keys(systemsInfo).length > 0) {
-                            if (yPos > pageHeight - 30) {
-                                doc.addPage();
-                                yPos = margin;
-                            }
-                            doc.setFont(undefined, 'bold');
-                            doc.text('Systems:', margin + 5, yPos);
-                            yPos += lineHeight;
-                            doc.setFont(undefined, 'normal');
-                            doc.text(`  HVAC: ${systemsInfo.hvac || 'N/A'}`, margin + 10, yPos);
-                            yPos += lineHeight;
-                            doc.text(`  Electrical: ${systemsInfo.electrical || 'N/A'}`, margin + 10, yPos);
-                            yPos += lineHeight;
-                            doc.text(`  Plumbing: ${systemsInfo.plumbing || 'N/A'}`, margin + 10, yPos);
-                            yPos += lineHeight;
-                            doc.text(`  Water Heater: ${systemsInfo.waterHeater || 'N/A'}`, margin + 10, yPos);
-                            yPos += lineHeight + 5;
-                        }
-                    } catch (error) {
-                        console.error('Error getting home data:', error);
-                    }
-                }
+                };
                 
-                // Tasks Summary
-                if (yPos > pageHeight - 30) {
-                    doc.addPage();
-                    yPos = margin;
-                }
+                // Helper function to add data row
+                const addDataRow = (label, value, indent = 0) => {
+                    checkNewPage();
+                    doc.text(`${label}:`, margin + indent, yPos);
+                    const textWidth = doc.getTextWidth(`${label}:`);
+                    doc.setFont(undefined, 'normal');
+                    doc.text(value || 'N/A', margin + indent + textWidth + 3, yPos);
+                    yPos += lineHeight;
+                };
                 
-                doc.setFontSize(14);
+                // Add logo (text-based for now, can be replaced with image)
+                doc.setFontSize(24);
                 doc.setFont(undefined, 'bold');
-                doc.text('TASKS SUMMARY', margin, yPos);
-                yPos += 10;
+                doc.setTextColor(0, 212, 170);
+                doc.text('NestMate', pageWidth - margin - 40, 20);
+                doc.setFontSize(8);
+                doc.setFont(undefined, 'normal');
+                doc.setTextColor(100, 100, 100);
+                doc.text('Home Management System', pageWidth - margin - 40, 27);
+                doc.setTextColor(0, 0, 0);
+                
+                // Title
+                doc.setFontSize(20);
+                doc.setFont(undefined, 'bold');
+                doc.text('Home Management Report', margin, yPos);
+                yPos += 8;
                 
                 doc.setFontSize(10);
                 doc.setFont(undefined, 'normal');
-                doc.text(`Total Tasks: ${tasks.length}`, margin, yPos);
+                doc.text(`Property: ${home.address || home.id}`, margin, yPos);
                 yPos += lineHeight;
-                doc.text(`Completed: ${tasks.filter(t => t.completed).length}`, margin, yPos);
-                yPos += lineHeight;
-                doc.text(`Active: ${tasks.filter(t => !t.completed).length}`, margin, yPos);
+                doc.text(`Generated: ${new Date().toLocaleString()}`, margin, yPos);
+                yPos += sectionSpacing;
+                
+                // Basic Information
+                addSectionHeader('BASIC INFORMATION');
+                addDataRow('Address', home.address || home.id);
+                addDataRow('Home Type', home.homeType);
+                addDataRow('Year Built', home.yearBuilt);
+                addDataRow('Square Footage', home.squareFootage);
+                addDataRow('Bedrooms', home.bedrooms);
+                addDataRow('Bathrooms', home.bathrooms);
+                
+                // Structure Information
+                if (structureInfo && Object.keys(structureInfo).length > 0) {
+                    addSectionHeader('STRUCTURE INFORMATION');
+                    addDataRow('Foundation', structureInfo.foundation, 5);
+                    addDataRow('Roof Type', structureInfo.roofType, 5);
+                    addDataRow('Exterior Material', structureInfo.exteriorMaterial, 5);
+                    addDataRow('Windows', structureInfo.windows, 5);
+                }
+                
+                // Systems Information
+                if (systemsInfo && Object.keys(systemsInfo).length > 0) {
+                    addSectionHeader('SYSTEMS INFORMATION');
+                    addDataRow('HVAC System', systemsInfo.hvac, 5);
+                    addDataRow('Electrical System', systemsInfo.electrical, 5);
+                    addDataRow('Plumbing System', systemsInfo.plumbing, 5);
+                    addDataRow('Water Heater', systemsInfo.waterHeater, 5);
+                }
+                
+                // Exterior Information
+                if (exterior && Object.keys(exterior).length > 0) {
+                    addSectionHeader('EXTERIOR DETAILS');
+                    if (exterior.material) addDataRow('Exterior Material', exterior.material, 5);
+                    if (exterior.roofType) addDataRow('Roof Type', exterior.roofType, 5);
+                    if (exterior.landscaping) addDataRow('Landscaping', exterior.landscaping, 5);
+                    if (exterior.outdoorFeatures) addDataRow('Outdoor Features', exterior.outdoorFeatures, 5);
+                    if (exterior.lastInspection) addDataRow('Last Inspection', exterior.lastInspection, 5);
+                }
+                
+                // Bedrooms
+                if (bedrooms && bedrooms.length > 0) {
+                    addSectionHeader('BEDROOMS');
+                    bedrooms.forEach((bedroom, index) => {
+                        checkNewPage(30);
+                        doc.setFont(undefined, 'bold');
+                        doc.text(`Bedroom ${index + 1}:`, margin + 5, yPos);
+                        yPos += lineHeight;
+                        doc.setFont(undefined, 'normal');
+                        if (bedroom.size) addDataRow('Size', bedroom.size, 10);
+                        if (bedroom.flooring) addDataRow('Flooring', bedroom.flooring, 10);
+                        if (bedroom.windows) addDataRow('Windows', bedroom.windows, 10);
+                        if (bedroom.closet) addDataRow('Closet', bedroom.closet, 10);
+                        if (bedroom.notes) {
+                            const notes = doc.splitTextToSize(`Notes: ${bedroom.notes}`, pageWidth - margin - 50);
+                            doc.text(notes, margin + 10, yPos);
+                            yPos += (notes.length * lineHeight);
+                        }
+                        yPos += 3;
+                    });
+                }
+                
+                // Bathrooms
+                if (bathrooms && bathrooms.length > 0) {
+                    addSectionHeader('BATHROOMS');
+                    bathrooms.forEach((bathroom, index) => {
+                        checkNewPage(30);
+                        doc.setFont(undefined, 'bold');
+                        doc.text(`Bathroom ${index + 1}:`, margin + 5, yPos);
+                        yPos += lineHeight;
+                        doc.setFont(undefined, 'normal');
+                        if (bathroom.type) addDataRow('Type', bathroom.type, 10);
+                        if (bathroom.fixtures) addDataRow('Fixtures', bathroom.fixtures, 10);
+                        if (bathroom.flooring) addDataRow('Flooring', bathroom.flooring, 10);
+                        if (bathroom.countertops) addDataRow('Countertops', bathroom.countertops, 10);
+                        if (bathroom.notes) {
+                            const notes = doc.splitTextToSize(`Notes: ${bathroom.notes}`, pageWidth - margin - 50);
+                            doc.text(notes, margin + 10, yPos);
+                            yPos += (notes.length * lineHeight);
+                        }
+                        yPos += 3;
+                    });
+                }
+                
+                // Kitchen
+                if (kitchens && kitchens.length > 0) {
+                    addSectionHeader('KITCHEN');
+                    kitchens.forEach((kitchen, index) => {
+                        checkNewPage(40);
+                        doc.setFont(undefined, 'bold');
+                        doc.text(`Kitchen ${index + 1}:`, margin + 5, yPos);
+                        yPos += lineHeight;
+                        doc.setFont(undefined, 'normal');
+                        if (kitchen.cabinets) addDataRow('Cabinets', kitchen.cabinets, 10);
+                        if (kitchen.countertops) addDataRow('Countertops', kitchen.countertops, 10);
+                        if (kitchen.flooring) addDataRow('Flooring', kitchen.flooring, 10);
+                        if (kitchen.backsplash) addDataRow('Backsplash', kitchen.backsplash, 10);
+                        if (kitchen.sink) addDataRow('Sink', kitchen.sink, 10);
+                        if (kitchen.faucet) addDataRow('Faucet', kitchen.faucet, 10);
+                        if (kitchen.notes) {
+                            const notes = doc.splitTextToSize(`Notes: ${kitchen.notes}`, pageWidth - margin - 50);
+                            doc.text(notes, margin + 10, yPos);
+                            yPos += (notes.length * lineHeight);
+                        }
+                        yPos += 3;
+                    });
+                }
+                
+                // Living Areas
+                if (livingAreas && livingAreas.length > 0) {
+                    addSectionHeader('LIVING AREAS');
+                    livingAreas.forEach((area, index) => {
+                        checkNewPage(30);
+                        doc.setFont(undefined, 'bold');
+                        doc.text(`${area.name || `Living Area ${index + 1}`}:`, margin + 5, yPos);
+                        yPos += lineHeight;
+                        doc.setFont(undefined, 'normal');
+                        if (area.type) addDataRow('Type', area.type, 10);
+                        if (area.size) addDataRow('Size', area.size, 10);
+                        if (area.flooring) addDataRow('Flooring', area.flooring, 10);
+                        if (area.fireplace) addDataRow('Fireplace', area.fireplace, 10);
+                        if (area.notes) {
+                            const notes = doc.splitTextToSize(`Notes: ${area.notes}`, pageWidth - margin - 50);
+                            doc.text(notes, margin + 10, yPos);
+                            yPos += (notes.length * lineHeight);
+                        }
+                        yPos += 3;
+                    });
+                }
+                
+                // Garage
+                if (garage && Object.keys(garage).length > 0) {
+                    addSectionHeader('GARAGE');
+                    if (garage.type) addDataRow('Type', garage.type, 5);
+                    if (garage.size) addDataRow('Size', garage.size, 5);
+                    if (garage.doors) addDataRow('Doors', garage.doors, 5);
+                    if (garage.flooring) addDataRow('Flooring', garage.flooring, 5);
+                    if (garage.storage) addDataRow('Storage', garage.storage, 5);
+                    if (garage.notes) {
+                        const notes = doc.splitTextToSize(`Notes: ${garage.notes}`, pageWidth - margin - 50);
+                        doc.text(notes, margin + 5, yPos);
+                        yPos += (notes.length * lineHeight);
+                    }
+                }
+                
+                // Appliances
+                if (appliances && appliances.length > 0) {
+                    addSectionHeader('APPLIANCES');
+                    appliances.forEach((appliance, index) => {
+                        checkNewPage(20);
+                        doc.setFont(undefined, 'bold');
+                        doc.text(`${appliance.name || appliance.type || `Appliance ${index + 1}`}:`, margin + 5, yPos);
+                        yPos += lineHeight;
+                        doc.setFont(undefined, 'normal');
+                        if (appliance.brand) addDataRow('Brand', appliance.brand, 10);
+                        if (appliance.model) addDataRow('Model', appliance.model, 10);
+                        if (appliance.year) addDataRow('Year', appliance.year, 10);
+                        if (appliance.location) addDataRow('Location', appliance.location, 10);
+                        if (appliance.notes) {
+                            const notes = doc.splitTextToSize(`Notes: ${appliance.notes}`, pageWidth - margin - 50);
+                            doc.text(notes, margin + 10, yPos);
+                            yPos += (notes.length * lineHeight);
+                        }
+                        yPos += 3;
+                    });
+                }
+                
+                // Renovations
+                if (renovations && renovations.length > 0) {
+                    addSectionHeader('RENOVATIONS & IMPROVEMENTS');
+                    renovations.forEach((reno, index) => {
+                        checkNewPage(30);
+                        doc.setFont(undefined, 'bold');
+                        doc.text(`${reno.type || reno.name || `Renovation ${index + 1}`}:`, margin + 5, yPos);
+                        yPos += lineHeight;
+                        doc.setFont(undefined, 'normal');
+                        if (reno.date) addDataRow('Date', new Date(reno.date).toLocaleDateString(), 10);
+                        if (reno.cost) addDataRow('Cost', `$${reno.cost}`, 10);
+                        if (reno.contractor) addDataRow('Contractor', reno.contractor, 10);
+                        if (reno.description) {
+                            const desc = doc.splitTextToSize(`Description: ${reno.description}`, pageWidth - margin - 50);
+                            doc.text(desc, margin + 10, yPos);
+                            yPos += (desc.length * lineHeight);
+                        }
+                        yPos += 3;
+                    });
+                }
+                
+                // Tasks
+                if (tasks && tasks.length > 0) {
+                    addSectionHeader('TASKS & MAINTENANCE');
+                    const activeTasks = tasks.filter(t => !t.completed);
+                    const completedTasks = tasks.filter(t => t.completed);
+                    
+                    addDataRow('Total Tasks', tasks.length.toString(), 5);
+                    addDataRow('Active Tasks', activeTasks.length.toString(), 5);
+                    addDataRow('Completed Tasks', completedTasks.length.toString(), 5);
+                    yPos += 3;
+                    
+                    if (activeTasks.length > 0) {
+                        doc.setFont(undefined, 'bold');
+                        doc.text('Active Tasks:', margin + 5, yPos);
+                        yPos += lineHeight;
+                        doc.setFont(undefined, 'normal');
+                        activeTasks.forEach(task => {
+                            checkNewPage(15);
+                            const taskText = `• ${task.title || 'Untitled Task'}`;
+                            const taskLines = doc.splitTextToSize(taskText, pageWidth - margin - 30);
+                            doc.text(taskLines, margin + 10, yPos);
+                            yPos += (taskLines.length * lineHeight);
+                            if (task.dueDate) {
+                                doc.text(`  Due: ${new Date(task.dueDate).toLocaleDateString()}`, margin + 10, yPos);
+                                yPos += lineHeight;
+                            }
+                        });
+                    }
+                }
+                
+                // Emergency Contacts
+                if (emergency && emergency.length > 0) {
+                    addSectionHeader('EMERGENCY CONTACTS');
+                    emergency.forEach((contact, index) => {
+                        checkNewPage(25);
+                        doc.setFont(undefined, 'bold');
+                        doc.text(`${contact.name || `Contact ${index + 1}`}:`, margin + 5, yPos);
+                        yPos += lineHeight;
+                        doc.setFont(undefined, 'normal');
+                        if (contact.type) addDataRow('Type', contact.type, 10);
+                        if (contact.phone) addDataRow('Phone', contact.phone, 10);
+                        if (contact.email) addDataRow('Email', contact.email, 10);
+                        if (contact.company) addDataRow('Company', contact.company, 10);
+                        yPos += 3;
+                    });
+                }
+                
+                // Photos
+                if (photos && photos.length > 0) {
+                    addSectionHeader('PHOTOS');
+                    addDataRow('Total Photos', photos.length.toString(), 5);
+                }
+                
+                // Footer on last page
+                const pageCount = doc.internal.getNumberOfPages();
+                for (let i = 1; i <= pageCount; i++) {
+                    doc.setPage(i);
+                    doc.setFontSize(8);
+                    doc.setTextColor(150, 150, 150);
+                    doc.text(`Page ${i} of ${pageCount}`, pageWidth - margin - 20, pageHeight - 10);
+                    doc.text(`NestMate Home Management System`, margin, pageHeight - 10);
+                }
                 
                 // Save PDF
-                doc.save(`nestmate-report-${Date.now()}.pdf`);
+                const homeAddress = (home.address || home.id).replace(/[^a-z0-9]/gi, '_');
+                doc.save(`nestmate-report-${homeAddress}-${Date.now()}.pdf`);
                 
-                showAlert('PDF report exported successfully!', 'success');
+                showAlert('Detailed PDF report exported successfully!', 'success');
             } catch (error) {
                 console.error('Error exporting PDF:', error);
                 showAlert('Error exporting PDF: ' + (error.message || 'Unknown error'), 'error');
