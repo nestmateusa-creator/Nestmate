@@ -1820,6 +1820,17 @@
             border-radius: 12px;
         }
 
+        /* Export Section Positioning */
+        #export.dashboard-section {
+            margin-top: -8rem !important;
+            padding-top: 0 !important;
+        }
+
+        #export.dashboard-section .card {
+            margin-top: 0 !important;
+            padding-top: 1rem !important;
+        }
+
         .backup-settings h4 {
             color: #f1f5f9;
             margin-bottom: 1rem;
@@ -2941,7 +2952,9 @@
                                     <h4>PDF Report</h4>
                                     <p>Complete home management report in PDF format</p>
                                 </div>
-                                <button class="btn-primary">Export PDF</button>
+                                <button class="btn-primary" onclick="exportToPDF()">
+                                    <i class="fas fa-download"></i> Export PDF
+                                </button>
                             </div>
                             
                             <div class="export-option">
@@ -2952,7 +2965,9 @@
                                     <h4>Excel Spreadsheet</h4>
                                     <p>All data in Excel format for analysis</p>
                                 </div>
-                                <button class="btn-primary">Export Excel</button>
+                                <button class="btn-primary" onclick="exportToExcel()">
+                                    <i class="fas fa-download"></i> Export Excel
+                                </button>
                             </div>
                             
                             <div class="export-option">
@@ -2963,7 +2978,9 @@
                                     <h4>Full Backup</h4>
                                     <p>Complete data backup including photos and documents</p>
                                 </div>
-                                <button class="btn-primary">Create Backup</button>
+                                <button class="btn-primary" onclick="createFullBackup()">
+                                    <i class="fas fa-download"></i> Create Backup
+                                </button>
                             </div>
                         </div>
                         
@@ -2971,15 +2988,20 @@
                             <h4>Automatic Backup Settings</h4>
                             <div class="setting-item">
                                 <label>
-                                    <input type="checkbox" checked>
+                                    <input type="checkbox" id="weeklyBackup" checked onchange="saveBackupSettings()">
                                     Weekly automatic backup
                                 </label>
                             </div>
                             <div class="setting-item">
                                 <label>
-                                    <input type="checkbox">
+                                    <input type="checkbox" id="emailNotifications" onchange="saveBackupSettings()">
                                     Email backup notifications
                                 </label>
+                            </div>
+                            <div class="setting-item" style="margin-top: 1.5rem;">
+                                <button class="btn" onclick="restoreFromBackup()" style="width: 100%;">
+                                    <i class="fas fa-upload"></i> Restore from Backup
+                                </button>
                             </div>
                         </div>
                     </div>
