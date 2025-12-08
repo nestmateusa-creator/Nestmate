@@ -2324,13 +2324,13 @@
                 <div id="overview" class="dashboard-section">
                     <div class="dashboard-grid">
                         <!-- Home Health Score -->
-                        <div class="card health-score">
-                            <h2>92</h2>
+                        <div class="card health-score" id="overviewHealthScore">
+                            <h2 id="overviewHealthScoreValue">--</h2>
                             <p>Home Health Score</p>
                             <div style="margin-top: 1rem; font-size: 0.875rem;">
-                                <div>Structure: 95%</div>
-                                <div>Systems: 90%</div>
-                                <div>Maintenance: 88%</div>
+                                <div>Structure: <span id="overviewStructureScore">--</span>%</div>
+                                <div>Systems: <span id="overviewSystemsScore">--</span>%</div>
+                                <div>Maintenance: <span id="overviewMaintenanceScore">--</span>%</div>
                             </div>
                         </div>
 
@@ -2516,30 +2516,30 @@
                         <div class="health-overview">
                             <div class="health-main-score">
                                 <div class="score-circle">
-                                    <div class="score-number">92</div>
+                                    <div class="score-number" id="healthScoreValue">--</div>
                                     <div class="score-label">Overall Health</div>
                                 </div>
                                 <div class="score-breakdown">
                                     <div class="breakdown-item">
                                         <span class="breakdown-label">Structure</span>
                                         <div class="breakdown-bar">
-                                            <div class="breakdown-fill" style="width: 95%"></div>
+                                            <div class="breakdown-fill" id="structureBar" style="width: 0%"></div>
                                         </div>
-                                        <span class="breakdown-value">95%</span>
+                                        <span class="breakdown-value" id="structureValue">--%</span>
                                     </div>
                                     <div class="breakdown-item">
                                         <span class="breakdown-label">Systems</span>
                                         <div class="breakdown-bar">
-                                            <div class="breakdown-fill" style="width: 90%"></div>
+                                            <div class="breakdown-fill" id="systemsBar" style="width: 0%"></div>
                                         </div>
-                                        <span class="breakdown-value">90%</span>
+                                        <span class="breakdown-value" id="systemsValue">--%</span>
                                     </div>
                                     <div class="breakdown-item">
                                         <span class="breakdown-label">Maintenance</span>
                                         <div class="breakdown-bar">
-                                            <div class="breakdown-fill" style="width: 88%"></div>
+                                            <div class="breakdown-fill" id="maintenanceBar" style="width: 0%"></div>
                                         </div>
-                                        <span class="breakdown-value">88%</span>
+                                        <span class="breakdown-value" id="maintenanceValue">--%</span>
                                     </div>
                                 </div>
                             </div>
@@ -3687,6 +3687,8 @@
                     } else if (sectionId === 'emergency') {
                         initEmergencyContacts();
                         await renderAllContacts();
+                    } else if (sectionId === 'health') {
+                        await updateHealthScoreDisplay();
                     }
                 }, 100);
             } else {
