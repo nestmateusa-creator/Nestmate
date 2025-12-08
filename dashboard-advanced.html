@@ -4230,6 +4230,9 @@
 
             // Reload from AWS to verify save and update display
             await loadStructure();
+            
+            // Update health score after structure change
+            await updateHealthScoreDisplay();
 
             // Hide form and show display
             document.getElementById('structureForm').style.display = 'none';
@@ -4330,6 +4333,9 @@
 
             // Reload from AWS to verify save and update display
             await loadSystems();
+            
+            // Update health score after systems change
+            await updateHealthScoreDisplay();
 
             // Hide form and show display
             document.getElementById('systemsForm').style.display = 'none';
@@ -7062,6 +7068,9 @@
                 await renderRenovationsList();
                 await renderAllContacts();
                 
+                // Update health score after switching homes
+                await updateHealthScoreDisplay();
+                
                 // Reload current section to show updated data
                 const currentSection = document.querySelector('.dashboard-section[style*="display: block"]');
                 if (currentSection && currentSection.id) {
@@ -7560,6 +7569,9 @@
             closeTaskModal();
             await loadTasks();
             
+            // Update health score after task change
+            await updateHealthScoreDisplay();
+            
             // If calendar modal was open, refresh it
             const scheduleModal = document.getElementById('scheduleModal');
             if (scheduleModal && scheduleModal.style.display === 'flex') {
@@ -7877,6 +7889,9 @@
                     await loadBasicInfo();
                     await loadStructure();
                     await loadSystems();
+                    
+                    // Calculate and display initial health score
+                    await updateHealthScoreDisplay();
                 } catch (error) {
                     console.error('❌ Error initializing AWS Data Service:', error);
                     showAlert('Error initializing data service. Some features may not work.', 'error');
