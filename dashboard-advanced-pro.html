@@ -275,6 +275,144 @@
             box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.1);
         }
 
+        /* Calendar Styles */
+        .calendar-container {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+            background: #0f172a;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            font-weight: 600;
+            color: #94a3b8;
+            padding: 0.5rem;
+            font-size: 0.875rem;
+            background: #1e293b;
+            border-radius: 6px;
+        }
+
+        .calendar-day {
+            min-height: 120px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            padding: 0.5rem;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .calendar-day.empty {
+            background: transparent;
+            border: none;
+            cursor: default;
+        }
+
+        .calendar-day.today {
+            border: 2px solid #00d4aa;
+            background: rgba(0, 212, 170, 0.1);
+        }
+
+        .calendar-day-number {
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .calendar-tasks {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            flex: 1;
+        }
+
+        .calendar-task {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .calendar-task:hover {
+            opacity: 0.8;
+            transform: translateX(2px);
+        }
+
+        .calendar-task.high {
+            background: rgba(239, 68, 68, 0.2);
+            border-left: 3px solid #ef4444;
+        }
+
+        .calendar-task.medium {
+            background: rgba(245, 158, 11, 0.2);
+            border-left: 3px solid #f59e0b;
+        }
+
+        .calendar-task.low {
+            background: rgba(16, 185, 129, 0.2);
+            border-left: 3px solid #10b981;
+        }
+
+        .calendar-task.completed {
+            opacity: 0.5;
+            background: rgba(107, 114, 128, 0.2);
+            border-left: 3px solid #6b7280;
+        }
+
+        .task-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .calendar-task.high .task-dot {
+            background: #ef4444;
+        }
+
+        .calendar-task.medium .task-dot {
+            background: #f59e0b;
+        }
+
+        .calendar-task.low .task-dot {
+            background: #10b981;
+        }
+
+        .calendar-task.completed .task-dot {
+            background: #6b7280;
+        }
+
+        .task-title {
+            color: #e2e8f0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1;
+        }
+
+        .calendar-task-more {
+            color: #94a3b8;
+            font-size: 0.7rem;
+            padding: 0.25rem 0.5rem;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .calendar-task-more:hover {
+            color: #00d4aa;
+        }
+
         /* Family Dashboard */
         .family-dashboard {
             background: linear-gradient(135deg, #8b5cf6, #7c3aed);
@@ -2138,8 +2276,10 @@
         }
 
         // Data Storage
-        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-        let homes = JSON.parse(localStorage.getItem('homes')) || [
+        // Data Storage - Using AWS only
+        let tasks = [];
+        let currentCalendarDate = new Date();
+        let homes = [
             {
                 id: '123-main-street',
                 address: '123 Main Street',
@@ -2430,7 +2570,58 @@
             }
         }
 
-        function openTaskModal(task = null) {
+        async function openTaskModal(task = null, defaultDate = null) {
+            const modal = document.getElementById('taskModal');
+            const title = document.getElementById('taskModalTitle');
+            const form = document.getElementById('taskForm');
+            const taskHomeSelect = document.getElementById('taskHome');
+            
+            // Populate home dropdown
+            if (window.awsDataService && taskHomeSelect) {
+                try {
+                    const homesList = await window.awsDataService.getHomesList();
+                    taskHomeSelect.innerHTML = '<option value="">Select Home</option>';
+                    homesList.forEach(home => {
+                        const option = document.createElement('option');
+                        option.value = home.id;
+                        option.textContent = home.address || home.id;
+                        taskHomeSelect.appendChild(option);
+                    });
+                    
+                    if (currentHomeId && !task) {
+                        taskHomeSelect.value = currentHomeId;
+                    }
+                } catch (error) {
+                    console.error('Error loading homes for task modal:', error);
+                }
+            }
+            
+            if (task) {
+                title.textContent = 'Edit Task';
+                document.getElementById('taskTitle').value = task.title;
+                document.getElementById('taskDescription').value = task.description || '';
+                document.getElementById('taskHome').value = task.home || task.homeId || '';
+                document.getElementById('taskPriority').value = task.priority;
+                document.getElementById('taskDueDate').value = task.dueDate;
+                document.getElementById('taskCategory').value = task.category;
+                form.dataset.taskId = task.id;
+            } else {
+                title.textContent = 'Add New Task';
+                form.reset();
+                delete form.dataset.taskId;
+                if (currentHomeId && taskHomeSelect) {
+                    taskHomeSelect.value = currentHomeId;
+                }
+                if (defaultDate && document.getElementById('taskDueDate')) {
+                    document.getElementById('taskDueDate').value = defaultDate;
+                }
+            }
+            
+            if (modal) modal.style.display = 'flex';
+        }
+        
+        // Legacy function for compatibility
+        function openTaskModalOld(task = null) {
             const modal = document.getElementById('taskModal');
             const title = document.getElementById('taskModalTitle');
             const form = document.getElementById('taskForm');
