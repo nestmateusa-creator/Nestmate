@@ -3573,12 +3573,23 @@
             await new Promise(resolve => setTimeout(resolve, 500));
             
             // Check authentication
-            const isAuthenticated = await nestMateAuth.isAuthenticated();
-            if (!isAuthenticated) {
-                window.location.href = 'login-aws.html';
-                return;
+            try {
+                const isAuthenticated = await nestMateAuth.isAuthenticated();
+                if (!isAuthenticated) {
+                    window.location.href = 'login-aws.html';
+                    return;
+                }
+            } catch (error) {
+                console.error('Error checking authentication:', error);
+                // Continue anyway - might be in demo mode
             }
 
+            // Load user data first
+            await loadUserData();
+            
+            // Load tasks
+            await loadTasks();
+            
             // Load homes using AWS (Basic Dashboard pattern)
             await loadHomes();
             
