@@ -2656,7 +2656,16 @@
             const container = document.getElementById('bedroomsList');
             if (!container) return;
             container.innerHTML = '';
-            const list = ensureDashboardState().bedroomsList || [];
+            
+            if (!window.awsDataService || !currentHomeId) {
+                const empty = document.createElement('div');
+                empty.className = 'empty-state';
+                empty.textContent = 'No home selected. Please select a home first.';
+                container.appendChild(empty);
+                return;
+            }
+            
+            const list = await window.awsDataService.getBedroomsList(currentHomeId) || [];
             if (list.length === 0) {
                 const empty = document.createElement('div');
                 empty.className = 'empty-state';
@@ -2692,13 +2701,17 @@
             openBedroomModal();
         }
 
-        function openEditBedroomModal(index) {
-            const state = ensureDashboardState();
-            const data = state.bedroomsList[index];
+        async function openEditBedroomModal(index) {
+            if (!window.awsDataService || !currentHomeId) {
+                showAlert('Please select a home first', 'error');
+                return;
+            }
+            const list = await window.awsDataService.getBedroomsList(currentHomeId) || [];
+            const data = list[index];
             openBedroomModal(data, index);
         }
 
-        function openBedroomModal(existing = null, index = null) {
+        async function openBedroomModal(existing = null, index = null) {
             const overlay = document.createElement('div');
             overlay.className = 'modal-overlay';
             const modal = document.createElement('div');
@@ -2918,29 +2931,56 @@
         }
 
         async function upsertBedroom(index, data) {
-            const state = ensureDashboardState();
-            if (index === null || index === undefined) state.bedroomsList.push(data); else state.bedroomsList[index] = data;
-            await saveBedroomsList();
-            renderBedroomsList();
-            showAlert('Bedroom saved successfully!', 'success');
+            try {
+                if (!window.awsDataService || !currentHomeId) {
+                    throw new Error('AWS Data Service not initialized or no home selected');
+                }
+                
+                const list = await window.awsDataService.getBedroomsList(currentHomeId) || [];
+                if (index === null || index === undefined) {
+                    list.push(data);
+                } else {
+                    list[index] = data;
+                }
+                
+                await saveBedroomsList(list);
+                await renderBedroomsList();
+                showAlert('Bedroom saved successfully!', 'success');
+            } catch (error) {
+                console.error('Error saving bedroom:', error);
+                showAlert('Error saving bedroom. Please try again.', 'error');
+            }
         }
 
         async function deleteBedroom(index) {
             if (!confirm('Are you sure you want to delete this bedroom?')) return;
-            const state = ensureDashboardState();
-            state.bedroomsList.splice(index, 1);
-            await saveBedroomsList();
-            renderBedroomsList();
-            showAlert('Bedroom deleted successfully!', 'success');
-        }
-
-        async function saveBedroomsList() {
-            const state = ensureDashboardState();
-            localStorage.setItem('dashboardState', JSON.stringify(state));
+            try {
+                if (!window.awsDataService || !currentHomeId) {
+                    throw new Error('AWS Data Service not initialized or no home selected');
+                }
+                
+                const list = await window.awsDataService.getBedroomsList(currentHomeId) || [];
+                list.splice(index, 1);
+                await saveBedroomsList(list);
+                await renderBedroomsList();
+                showAlert('Bedroom deleted successfully!', 'success');
+            } catch (error) {
+                console.error('Error deleting bedroom:', error);
+                showAlert('Error deleting bedroom. Please try again.', 'error');
+            }
         }
 
         // ===== Dynamic Bathrooms Helpers =====
-        function renderBathroomsList() {
+        async function renderBathroomsList() {
+            if (!window.awsDataService || !currentHomeId) {
+                const container = document.getElementById('bathroomsList');
+                if (container) {
+                    container.innerHTML = '<div class="empty-state">No home selected. Please select a home first.</div>';
+                }
+                return;
+            }
+            
+            const list = await window.awsDataService.getBathroomsList(currentHomeId) || [];
             const container = document.getElementById('bathroomsList');
             if (!container) return;
             container.innerHTML = '';
@@ -2975,10 +3015,17 @@
             });
         }
 
-        function openAddBathroomModal() { openBathroomModal(null); }
+        function openAddBathroomModal() { 
+            openBathroomModal(null).catch(console.error);
+        }
 
-        function openBathroomModal(index) {
-            const existing = (index !== null && index !== undefined) ? ensureDashboardState().bathroomsList[index] : null;
+        async function openBathroomModal(index) {
+            if (!window.awsDataService || !currentHomeId) {
+                showAlert('Please select a home first', 'error');
+                return;
+            }
+            const list = await window.awsDataService.getBathroomsList(currentHomeId) || [];
+            const existing = (index !== null && index !== undefined) ? list[index] : null;
             const overlay = document.createElement('div');
             overlay.className = 'modal-overlay';
             const modal = document.createElement('div');
