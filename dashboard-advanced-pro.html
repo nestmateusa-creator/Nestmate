@@ -1996,17 +1996,37 @@
             }
             // Hide all sections (both dashboard-section and content-section)
             const sections = document.querySelectorAll('.dashboard-section, .content-section');
-            sections.forEach(section => section.style.display = 'none');
+            sections.forEach(section => {
+                section.style.display = 'none';
+                section.style.setProperty('display', 'none', 'important');
+            });
             
             // Remove active class from all nav items
             const navItems = document.querySelectorAll('.nav-item');
-            navItems.forEach(item => item.classList.remove('active'));
+            if (navItems && navItems.length > 0) {
+                navItems.forEach(item => {
+                    if (item && item.classList) {
+                        item.classList.remove('active');
+                    }
+                });
+            }
             
             // Show selected section
-            document.getElementById(sectionId).style.display = 'block';
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.style.setProperty('display', 'block', 'important');
+                targetSection.style.setProperty('visibility', 'visible', 'important');
+                targetSection.style.setProperty('opacity', '1', 'important');
+            }
             
-            // Add active class to clicked nav item
-            event.target.classList.add('active');
+            // Find the nav item by sectionId and add active class
+            navItems.forEach(item => {
+                if (!item || !item.classList) return;
+                const onclickAttr = item.getAttribute('onclick');
+                if (onclickAttr && (onclickAttr.includes(`'${sectionId}'`) || onclickAttr.includes(`"${sectionId}"`))) {
+                    item.classList.add('active');
+                }
+            });
         }
 
         // User authentication and data loading
