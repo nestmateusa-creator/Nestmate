@@ -229,6 +229,52 @@
             color: #f1f5f9;
         }
 
+        /* Home Selector */
+        .home-selector-container {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: #1e293b;
+            border-radius: 8px;
+            border: 1px solid #334155;
+        }
+
+        .home-selector-card {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .home-selector-card label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #f1f5f9;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .home-selector {
+            width: 100%;
+            padding: 0.75rem;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            color: #e2e8f0;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .home-selector:hover {
+            border-color: #00d4aa;
+        }
+
+        .home-selector:focus {
+            outline: none;
+            border-color: #00d4aa;
+            box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.1);
+        }
+
         /* Family Dashboard */
         .family-dashboard {
             background: linear-gradient(135deg, #8b5cf6, #7c3aed);
@@ -1467,6 +1513,16 @@
 
                 <!-- Family Dashboard Overview -->
                 <div id="overview" class="dashboard-section">
+                    <div id="homeSelectorContainer" class="home-selector-container" style="display: none; margin-bottom: 1.5rem;">
+                        <div class="home-selector-card">
+                            <label for="homeSelector" style="display: flex; align-items: center; gap: 0.5rem; color: #f1f5f9; font-weight: 600; margin-bottom: 0.5rem;">
+                                <i class="fas fa-home"></i> Select Home:
+                            </label>
+                            <select id="homeSelector" class="home-selector" onchange="switchHome(this.value)">
+                                <option value="">Loading homes...</option>
+                            </select>
+                        </div>
+                    </div>
                     <div class="dashboard-grid">
                         <!-- Family Dashboard -->
                         <div class="card family-dashboard">
@@ -1791,6 +1847,15 @@
     <script>
         // Navigation functionality
         function showSection(sectionId) {
+            // Show/hide home selector based on section
+            const homeSelectorContainer = document.getElementById('homeSelectorContainer');
+            if (homeSelectorContainer) {
+                if (sectionId === 'overview') {
+                    homeSelectorContainer.style.display = 'block';
+                } else {
+                    homeSelectorContainer.style.display = 'none';
+                }
+            }
             // Hide all sections (both dashboard-section and content-section)
             const sections = document.querySelectorAll('.dashboard-section, .content-section');
             sections.forEach(section => section.style.display = 'none');
@@ -2460,8 +2525,134 @@
             }, 3000);
         }
 
+        // ===== Multi-Home Management =====
+        let currentHomeId = null;
+
+        // Initialize home selector
+        async function initHomeSelector() {
+            try {
+                if (!window.awsDataService) {
+                    console.warn('AWS Data Service not available');
+                    return;
+                }
+                
+                const homesList = await window.awsDataService.getHomesList();
+                const selector = document.getElementById('homeSelector');
+                const container = document.getElementById('homeSelectorContainer');
+                
+                if (!selector || !container) return;
+                
+                // Clear existing options
+                selector.innerHTML = '';
+                
+                if (homesList.length === 0) {
+                    container.style.display = 'none';
+                    return;
+                }
+                
+                // Show selector if homes exist
+                container.style.display = 'block';
+                
+                // Add default option
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = 'Select a home...';
+                selector.appendChild(defaultOption);
+                
+                // Add homes to selector
+                homesList.forEach((home) => {
+                    const option = document.createElement('option');
+                    option.value = home.id;
+                    option.textContent = `${home.address || home.id} (${home.homeType || home.type || 'Home'})`;
+                    selector.appendChild(option);
+                });
+                
+                // If no home is selected and homes exist, select the first one
+                if (!currentHomeId && homesList.length > 0) {
+                    currentHomeId = homesList[0].id;
+                    selector.value = currentHomeId;
+                    // Update sidebar immediately
+                    await updateSidebarHomeInfo(currentHomeId);
+                    await switchHome(currentHomeId);
+                } else if (currentHomeId) {
+                    selector.value = currentHomeId;
+                    // Update sidebar for already selected home
+                    await updateSidebarHomeInfo(currentHomeId);
+                }
+                
+            } catch (error) {
+                console.error('Error initializing home selector:', error);
+            }
+        }
+
+        // Update sidebar with selected home's information
+        async function updateSidebarHomeInfo(homeId) {
+            try {
+                if (!homeId || !window.awsDataService) return;
+                
+                const homesList = await window.awsDataService.getHomesList();
+                const home = homesList.find(h => h.id === homeId);
+                
+                if (!home) {
+                    console.warn('Home not found:', homeId);
+                    return;
+                }
+                
+                // Update sidebar display elements
+                const displayAddress = document.getElementById('displayAddress');
+                const displayYearBuilt = document.getElementById('displayYearBuilt');
+                const displaySquareFootage = document.getElementById('displaySquareFootage');
+                const displayBedrooms = document.getElementById('displayBedrooms');
+                const displayBathrooms = document.getElementById('displayBathrooms');
+                const displayHomeType = document.getElementById('displayHomeType');
+                
+                if (displayAddress) displayAddress.textContent = home.address || 'Not set';
+                if (displayYearBuilt) displayYearBuilt.textContent = home.yearBuilt || 'Not set';
+                if (displaySquareFootage) displaySquareFootage.textContent = home.squareFootage || 'Not set';
+                if (displayBedrooms) displayBedrooms.textContent = home.bedrooms || 'Not set';
+                if (displayBathrooms) displayBathrooms.textContent = home.bathrooms || 'Not set';
+                if (displayHomeType) displayHomeType.textContent = home.homeType || home.type || 'Not set';
+                
+                console.log('✅ Sidebar updated with home info:', home);
+            } catch (error) {
+                console.error('Error updating sidebar home info:', error);
+            }
+        }
+
+        // Switch between homes
+        async function switchHome(homeId) {
+            if (!homeId) {
+                currentHomeId = null;
+                return;
+            }
+            
+            currentHomeId = homeId;
+            console.log('Switching to home:', homeId);
+            
+            // Reload all data for the selected home
+            try {
+                // Update sidebar with home information first
+                await updateSidebarHomeInfo(homeId);
+                
+                // Force reload all sections with new homeId
+                console.log('Reloading all sections for home:', homeId);
+                // Note: These functions will need to be updated to use currentHomeId
+                // For now, we'll call them and they'll use the global currentHomeId
+                
+                // Reload current section to show updated data
+                const currentSection = document.querySelector('.dashboard-section[style*="display: block"]');
+                if (currentSection && currentSection.id) {
+                    // Trigger showSection to reload data
+                    showSection(currentSection.id);
+                }
+                
+            } catch (error) {
+                console.error('Error switching home:', error);
+            }
+        }
+
         // ===== Dynamic Bedrooms Helpers =====
-        function renderBedroomsList() {
+        async function renderBedroomsList() {
             const container = document.getElementById('bedroomsList');
             if (!container) return;
             container.innerHTML = '';
@@ -3078,6 +3269,9 @@
 
             // Load homes using AWS (Basic Dashboard pattern)
             await loadHomes();
+            
+            // Initialize home selector
+            await initHomeSelector();
             
             console.log('Advanced Pro Dashboard initialized');
         });
