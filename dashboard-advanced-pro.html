@@ -2636,8 +2636,9 @@
                 
                 // Force reload all sections with new homeId
                 console.log('Reloading all sections for home:', homeId);
-                // Note: These functions will need to be updated to use currentHomeId
-                // For now, we'll call them and they'll use the global currentHomeId
+                await renderBedroomsList();
+                await renderBathroomsList();
+                // Add other section reloads as they're updated
                 
                 // Reload current section to show updated data
                 const currentSection = document.querySelector('.dashboard-section[style*="display: block"]');
@@ -3143,10 +3144,17 @@
             });
         }
 
-        function openAddKitchenModal() { openKitchenModal(null); }
+        function openAddKitchenModal() { 
+            openKitchenModal(null).catch(console.error);
+        }
 
-        function openKitchenModal(index) {
-            const existing = (index !== null && index !== undefined) ? ensureDashboardState().kitchensList[index] : null;
+        async function openKitchenModal(index) {
+            if (!window.awsDataService || !currentHomeId) {
+                showAlert('Please select a home first', 'error');
+                return;
+            }
+            const list = await window.awsDataService.getKitchensList(currentHomeId) || [];
+            const existing = (index !== null && index !== undefined) ? list[index] : null;
             const overlay = document.createElement('div');
             overlay.className = 'modal-overlay';
             const modal = document.createElement('div');
