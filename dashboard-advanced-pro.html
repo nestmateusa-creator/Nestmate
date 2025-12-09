@@ -2012,27 +2012,73 @@
         // User authentication and data loading
         async function loadUserData() {
             try {
-                // Load user data from AWS Cognito
-                const user = await getCurrentUser();
-                if (user) {
-                    document.getElementById('userName').textContent = user.username || 'User';
-                    document.getElementById('userAvatar').textContent = (user.username || 'U').charAt(0).toUpperCase();
+                let userName = 'User';
+                let userAvatar = 'U';
+                
+                // First, try to get from nestMateAuth.currentUser
+                if (nestMateAuth && nestMateAuth.currentUser) {
+                    const user = nestMateAuth.currentUser;
+                    userName = user.name || user.email || user.username || 'User';
+                    userAvatar = (userName.charAt(0) || 'U').toUpperCase();
+                    
+                    // Store in sessionStorage for future use
+                    const userData = {
+                        userId: user.userId,
+                        email: user.email || user.username,
+                        name: userName
+                    };
+                    sessionStorage.setItem('currentUser', JSON.stringify(userData));
+                    sessionStorage.setItem('currentUserEmail', userData.email);
+                } else {
+                    // Fallback to sessionStorage
+                    const currentUser = sessionStorage.getItem('currentUser');
+                    const currentUserEmail = sessionStorage.getItem('currentUserEmail');
+                    
+                    if (currentUser) {
+                        const userData = JSON.parse(currentUser);
+                        userName = userData.name || userData.email || 'User';
+                        userAvatar = (userName.charAt(0) || 'U').toUpperCase();
+                    } else if (currentUserEmail) {
+                        userName = currentUserEmail;
+                        userAvatar = currentUserEmail.charAt(0).toUpperCase();
+                    }
                 }
+                
+                // Update UI
+                const userNameEl = document.getElementById('userName');
+                const userAvatarEl = document.getElementById('userAvatar');
+                if (userNameEl) userNameEl.textContent = userName;
+                if (userAvatarEl) userAvatarEl.textContent = userAvatar;
+                
+                console.log('User data loaded:', { userName, userAvatar });
             } catch (error) {
                 console.error('Error loading user data:', error);
-                // Don't redirect - just show default user info
-                document.getElementById('userName').textContent = 'Demo User';
-                document.getElementById('userAvatar').textContent = 'D';
+                // Show default user info
+                const userNameEl = document.getElementById('userName');
+                const userAvatarEl = document.getElementById('userAvatar');
+                if (userNameEl) userNameEl.textContent = 'User';
+                if (userAvatarEl) userAvatarEl.textContent = 'U';
             }
         }
 
         // Sign out functionality
         async function signOut() {
             try {
-                await signOutUser();
-                window.location.href = 'index.html';
+                // Clear sessionStorage
+                sessionStorage.removeItem('currentUser');
+                sessionStorage.removeItem('currentUserEmail');
+                
+                // Sign out from AWS Cognito
+                if (nestMateAuth && nestMateAuth.signOut) {
+                    await nestMateAuth.signOut();
+                }
+                
+                // Redirect to login page
+                window.location.href = 'login-aws.html';
             } catch (error) {
                 console.error('Error signing out:', error);
+                // Even if sign out fails, redirect to login
+                window.location.href = 'login-aws.html';
             }
         }
 
