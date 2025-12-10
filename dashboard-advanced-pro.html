@@ -2763,9 +2763,24 @@
                 showAlert('Task added successfully!', 'success');
             }
 
-            localStorage.setItem('tasks', JSON.stringify(tasks));
+            // Save to AWS
+            try {
+                if (window.awsDataService) {
+                    await window.awsDataService.saveTasksList(tasks);
+                    console.log('Task saved to AWS successfully');
+                } else {
+                    console.error('AWS Data Service not initialized');
+                    showAlert('Error: AWS Data Service not available', 'error');
+                    return;
+                }
+            } catch (error) {
+                console.error('Error saving task to AWS:', error);
+                showAlert('Error saving task. Please try again.', 'error');
+                return;
+            }
+
             closeTaskModal();
-            loadTasks();
+            await loadTasks();
         }
 
         // Load Functions
