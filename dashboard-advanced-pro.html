@@ -49,6 +49,7 @@
         loadNext();
     })();
 </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="auth-aws.js"></script>
     <script src="aws-data-service.js"></script>
     <script src="localStorage-replacement.js"></script>
@@ -1942,6 +1943,79 @@
                     </div>
                 </div>
 
+                <!-- Export & Backup -->
+                <div id="export" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <h3>Advanced Export & Backup</h3>
+                            <select id="exportHomeSelector" style="padding: 0.5rem; background: #1e293b; border: 1px solid #334155; border-radius: 6px; color: #e2e8f0; min-width: 250px;">
+                                <option value="">Select Home for Report</option>
+                            </select>
+                        </div>
+                        <div class="export-options">
+                            <div class="export-option">
+                                <div class="export-icon">
+                                    <i class="fas fa-file-pdf"></i>
+                                </div>
+                                <div class="export-content">
+                                    <h4>PDF Report</h4>
+                                    <p>Complete home management report in PDF format</p>
+                                </div>
+                                <button class="btn-primary" onclick="exportToPDF()">
+                                    <i class="fas fa-download"></i> Export PDF
+                                </button>
+                            </div>
+                            
+                            <div class="export-option">
+                                <div class="export-icon">
+                                    <i class="fas fa-file-excel"></i>
+                                </div>
+                                <div class="export-content">
+                                    <h4>Excel Spreadsheet</h4>
+                                    <p>All data in Excel format for analysis</p>
+                                </div>
+                                <button class="btn-primary" onclick="exportToExcel()">
+                                    <i class="fas fa-download"></i> Export Excel
+                                </button>
+                            </div>
+                            
+                            <div class="export-option">
+                                <div class="export-icon">
+                                    <i class="fas fa-database"></i>
+                                </div>
+                                <div class="export-content">
+                                    <h4>Full Backup</h4>
+                                    <p>Complete data backup including photos and documents</p>
+                                </div>
+                                <button class="btn-primary" onclick="createFullBackup()">
+                                    <i class="fas fa-download"></i> Create Backup
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="backup-settings">
+                            <h4>Automatic Backup Settings</h4>
+                            <div class="setting-item">
+                                <label>
+                                    <input type="checkbox" id="weeklyBackup" checked onchange="saveBackupSettings()">
+                                    Weekly automatic backup
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <label>
+                                    <input type="checkbox" id="emailNotifications" onchange="saveBackupSettings()">
+                                    Email backup notifications
+                                </label>
+                            </div>
+                            <div class="setting-item" style="margin-top: 1.5rem;">
+                                <button class="btn" onclick="restoreFromBackup()" style="width: 100%;">
+                                    <i class="fas fa-upload"></i> Restore from Backup
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div id="floorplan" class="dashboard-section" style="display: none;">
                     <div class="card">
                         <h3>Professional Floor Plan Designer</h3>
@@ -2451,19 +2525,18 @@
             window.location.href = 'nestmate-store.html';
         }
 
-        function openEmergency() {
-            console.log('✅ Opening Emergency Contacts');
-            showSection('emergency');
+        window.openServices = function openServices() {
+            showAlert('Opening service providers...', 'info');
+            window.open('expert-services.html', '_blank');
         }
 
-        function addService() {
-            console.log('✅ Adding Service');
-            showAlert('Service management feature coming soon!', 'info');
+        window.openRecords = function openRecords() {
+            showAlert('Opening service records...', 'info');
+            window.open('service-records.html', '_blank');
         }
 
-        function viewRecords() {
-            console.log('✅ Viewing Records');
-            showAlert('Service records feature coming soon!', 'info');
+        window.contactSupport = function contactSupport() {
+            window.open('mailto:support@nestmateusa.com?subject=VIP Support Request', '_blank');
         }
 
         function openHomeDetails() {
@@ -3913,6 +3986,952 @@
             if (!state.kitchensList) state.kitchensList = [];
             return state;
         }
+
+        // Home Health Score Algorithm
+        async function calculateHomeHealthScore(homeId = null) {
+            if (!homeId) {
+                homeId = currentHomeId;
+            }
+            if (!homeId) {
+                return { overall: 0, structure: 0, systems: 0, maintenance: 0 };
+            }
+            
+            try {
+                // Get all relevant data
+                const [structureInfo, systemsInfo, renovationsList, allTasks, homesList] = await Promise.all([
+                    window.awsDataService ? window.awsDataService.getStructureInfo(homeId) : Promise.resolve({}),
+                    window.awsDataService ? window.awsDataService.getSystemsInfo(homeId) : Promise.resolve({}),
+                    window.awsDataService ? window.awsDataService.getRenovationsList(homeId) : Promise.resolve([]),
+                    window.awsDataService ? window.awsDataService.getTasksList() : Promise.resolve([]),
+                    window.awsDataService ? window.awsDataService.getHomesList() : Promise.resolve([])
+                ]);
+                
+                // Get home info for age calculation
+                const home = homesList.find(h => h.id === homeId);
+                const currentYear = new Date().getFullYear();
+                const homeAge = home && home.yearBuilt ? currentYear - parseInt(home.yearBuilt) : 0;
+                
+                // Filter tasks for this home
+                const homeTasks = allTasks.filter(task => {
+                    const taskHomeId = task.home || task.homeId;
+                    return taskHomeId === homeId;
+                });
+                
+                // Calculate Structure Score (30% weight)
+                let structureScore = calculateStructureScore(structureInfo, homeAge);
+                
+                // Calculate Systems Score (30% weight)
+                let systemsScore = calculateSystemsScore(systemsInfo, homeAge);
+                
+                // Calculate Maintenance Score (25% weight)
+                let maintenanceScore = calculateMaintenanceScore(homeTasks, renovationsList);
+                
+                // Calculate Data Completeness (15% weight)
+                let dataCompleteness = calculateDataCompleteness(structureInfo, systemsInfo, homeTasks, renovationsList);
+                
+                // Weighted overall score
+                const overallScore = Math.round(
+                    (structureScore * 0.30) +
+                    (systemsScore * 0.30) +
+                    (maintenanceScore * 0.25) +
+                    (dataCompleteness * 0.15)
+                );
+                
+                return {
+                    overall: Math.min(100, Math.max(0, overallScore)),
+                    structure: Math.min(100, Math.max(0, structureScore)),
+                    systems: Math.min(100, Math.max(0, systemsScore)),
+                    maintenance: Math.min(100, Math.max(0, maintenanceScore)),
+                    dataCompleteness: Math.min(100, Math.max(0, dataCompleteness))
+                };
+            } catch (error) {
+                console.error('Error calculating health score:', error);
+                return { overall: 0, structure: 0, systems: 0, maintenance: 0 };
+            }
+        }
+        
+        function calculateStructureScore(structureInfo, homeAge) {
+            let score = 50; // Base score
+            
+            // Foundation (20 points)
+            if (structureInfo.foundation) {
+                const foundation = structureInfo.foundation.toLowerCase();
+                if (foundation.includes('concrete') || foundation.includes('slab')) {
+                    score += 15;
+                } else if (foundation.includes('crawl') || foundation.includes('basement')) {
+                    score += 10;
+                } else {
+                    score += 5;
+                }
+            } else {
+                score -= 10; // Penalty for missing data
+            }
+            
+            // Roof Type (20 points)
+            if (structureInfo.roofType) {
+                const roofType = structureInfo.roofType.toLowerCase();
+                if (roofType.includes('metal') || roofType.includes('tile')) {
+                    score += 15;
+                } else if (roofType.includes('asphalt') || roofType.includes('shingle')) {
+                    score += 10;
+                } else {
+                    score += 5;
+                }
+            } else {
+                score -= 10;
+            }
+            
+            // Exterior Material (15 points)
+            if (structureInfo.exteriorMaterial) {
+                const exterior = structureInfo.exteriorMaterial.toLowerCase();
+                if (exterior.includes('brick') || exterior.includes('stone')) {
+                    score += 12;
+                } else if (exterior.includes('siding') || exterior.includes('vinyl')) {
+                    score += 8;
+                } else {
+                    score += 5;
+                }
+            } else {
+                score -= 8;
+            }
+            
+            // Windows (15 points)
+            if (structureInfo.windows) {
+                const windows = structureInfo.windows.toLowerCase();
+                if (windows.includes('double') || windows.includes('energy')) {
+                    score += 12;
+                } else if (windows.includes('single')) {
+                    score += 6;
+                } else {
+                    score += 3;
+                }
+            } else {
+                score -= 8;
+            }
+            
+            // Age penalty (max -20 points for very old homes)
+            if (homeAge > 0) {
+                if (homeAge > 50) {
+                    score -= 20;
+                } else if (homeAge > 30) {
+                    score -= 15;
+                } else if (homeAge > 20) {
+                    score -= 10;
+                } else if (homeAge > 10) {
+                    score -= 5;
+                }
+            }
+            
+            return Math.min(100, Math.max(0, score));
+        }
+        
+        function calculateSystemsScore(systemsInfo, homeAge) {
+            let score = 50; // Base score
+            
+            // HVAC (25 points)
+            if (systemsInfo.hvac) {
+                const hvac = systemsInfo.hvac.toLowerCase();
+                if (hvac.includes('new') || hvac.includes('recent') || hvac.includes('2020') || hvac.includes('2021') || hvac.includes('2022') || hvac.includes('2023') || hvac.includes('2024') || hvac.includes('2025')) {
+                    score += 20;
+                } else if (hvac.includes('updated') || hvac.includes('maintained')) {
+                    score += 12;
+                } else {
+                    score += 5;
+                }
+            } else {
+                score -= 12;
+            }
+            
+            // Electrical (20 points)
+            if (systemsInfo.electrical) {
+                const electrical = systemsInfo.electrical.toLowerCase();
+                if (electrical.includes('updated') || electrical.includes('new') || electrical.includes('200') || electrical.includes('modern')) {
+                    score += 15;
+                } else if (electrical.includes('adequate') || electrical.includes('good')) {
+                    score += 10;
+                } else {
+                    score += 5;
+                }
+            } else {
+                score -= 10;
+            }
+            
+            // Plumbing (20 points)
+            if (systemsInfo.plumbing) {
+                const plumbing = systemsInfo.plumbing.toLowerCase();
+                if (plumbing.includes('new') || plumbing.includes('updated') || plumbing.includes('copper') || plumbing.includes('pex')) {
+                    score += 15;
+                } else if (plumbing.includes('adequate') || plumbing.includes('good')) {
+                    score += 10;
+                } else {
+                    score += 5;
+                }
+            } else {
+                score -= 10;
+            }
+            
+            // Water Heater (15 points)
+            if (systemsInfo.waterHeater) {
+                const waterHeater = systemsInfo.waterHeater.toLowerCase();
+                if (waterHeater.includes('tankless') || waterHeater.includes('new') || waterHeater.includes('energy')) {
+                    score += 12;
+                } else if (waterHeater.includes('updated') || waterHeater.includes('maintained')) {
+                    score += 8;
+                } else {
+                    score += 4;
+                }
+            } else {
+                score -= 8;
+            }
+            
+            // Age penalty for systems (max -15 points)
+            if (homeAge > 0) {
+                if (homeAge > 30) {
+                    score -= 15;
+                } else if (homeAge > 20) {
+                    score -= 10;
+                } else if (homeAge > 10) {
+                    score -= 5;
+                }
+            }
+            
+            return Math.min(100, Math.max(0, score));
+        }
+        
+        function calculateMaintenanceScore(homeTasks, renovationsList) {
+            let score = 50; // Base score
+            
+            // Task completion rate (30 points)
+            if (homeTasks.length > 0) {
+                const completedTasks = homeTasks.filter(t => t.completed).length;
+                const completionRate = completedTasks / homeTasks.length;
+                score += completionRate * 25;
+                
+                // Overdue tasks penalty (max -20 points)
+                const today = new Date();
+                const overdueTasks = homeTasks.filter(task => {
+                    if (task.completed || !task.dueDate) return false;
+                    return new Date(task.dueDate) < today;
+                });
+                const overdueRate = overdueTasks.length / homeTasks.length;
+                score -= overdueRate * 20;
+            } else {
+                score -= 15; // Penalty for no tasks (no maintenance tracking)
+            }
+            
+            // Recent renovations (20 points)
+            if (renovationsList && renovationsList.length > 0) {
+                const currentYear = new Date().getFullYear();
+                const recentRenovations = renovationsList.filter(reno => {
+                    if (!reno.date) return false;
+                    const renoYear = new Date(reno.date).getFullYear();
+                    return (currentYear - renoYear) <= 5; // Renovations in last 5 years
+                });
+                
+                if (recentRenovations.length > 0) {
+                    score += Math.min(20, recentRenovations.length * 5);
+                }
+            }
+            
+            return Math.min(100, Math.max(0, score));
+        }
+        
+        function calculateDataCompleteness(structureInfo, systemsInfo, homeTasks, renovationsList) {
+            let filledFields = 0;
+            let totalFields = 0;
+            
+            // Structure fields (4 fields)
+            totalFields += 4;
+            if (structureInfo.foundation) filledFields++;
+            if (structureInfo.roofType) filledFields++;
+            if (structureInfo.exteriorMaterial) filledFields++;
+            if (structureInfo.windows) filledFields++;
+            
+            // Systems fields (4 fields)
+            totalFields += 4;
+            if (systemsInfo.hvac) filledFields++;
+            if (systemsInfo.electrical) filledFields++;
+            if (systemsInfo.plumbing) filledFields++;
+            if (systemsInfo.waterHeater) filledFields++;
+            
+            // Tasks and renovations (bonus for having any)
+            if (homeTasks.length > 0) filledFields += 2;
+            if (renovationsList && renovationsList.length > 0) filledFields += 2;
+            totalFields += 4;
+            
+            return (filledFields / totalFields) * 100;
+        }
+        
+        async function updateHealthScoreDisplay() {
+            if (!currentHomeId) {
+                // Set default values if no home selected
+                const overviewScore = document.getElementById('overviewHealthScoreValue');
+                const overviewStructure = document.getElementById('overviewStructureScore');
+                const overviewSystems = document.getElementById('overviewSystemsScore');
+                const overviewMaintenance = document.getElementById('overviewMaintenanceScore');
+                
+                if (overviewScore) overviewScore.textContent = '--';
+                if (overviewStructure) overviewStructure.textContent = '--';
+                if (overviewSystems) overviewSystems.textContent = '--';
+                if (overviewMaintenance) overviewMaintenance.textContent = '--';
+                
+                const healthScoreValue = document.getElementById('healthScoreValue');
+                const structureValue = document.getElementById('structureValue');
+                const systemsValue = document.getElementById('systemsValue');
+                const maintenanceValue = document.getElementById('maintenanceValue');
+                
+                if (healthScoreValue) healthScoreValue.textContent = '--';
+                if (structureValue) structureValue.textContent = '--%';
+                if (systemsValue) systemsValue.textContent = '--%';
+                if (maintenanceValue) maintenanceValue.textContent = '--%';
+                return;
+            }
+            
+            try {
+                const scores = await calculateHomeHealthScore(currentHomeId);
+                
+                // Update overview card
+                const overviewScore = document.getElementById('overviewHealthScoreValue');
+                const overviewStructure = document.getElementById('overviewStructureScore');
+                const overviewSystems = document.getElementById('overviewSystemsScore');
+                const overviewMaintenance = document.getElementById('overviewMaintenanceScore');
+                
+                if (overviewScore) overviewScore.textContent = scores.overall;
+                if (overviewStructure) overviewStructure.textContent = scores.structure;
+                if (overviewSystems) overviewSystems.textContent = scores.systems;
+                if (overviewMaintenance) overviewMaintenance.textContent = scores.maintenance;
+                
+                // Update health section if visible
+                const healthScoreValue = document.getElementById('healthScoreValue');
+                const structureValue = document.getElementById('structureValue');
+                const systemsValue = document.getElementById('systemsValue');
+                const maintenanceValue = document.getElementById('maintenanceValue');
+                const structureBar = document.getElementById('structureBar');
+                const systemsBar = document.getElementById('systemsBar');
+                const maintenanceBar = document.getElementById('maintenanceBar');
+                
+                if (healthScoreValue) healthScoreValue.textContent = scores.overall;
+                if (structureValue) {
+                    structureValue.textContent = scores.structure + '%';
+                    if (structureBar) structureBar.style.width = scores.structure + '%';
+                }
+                if (systemsValue) {
+                    systemsValue.textContent = scores.systems + '%';
+                    if (systemsBar) systemsBar.style.width = scores.systems + '%';
+                }
+                if (maintenanceValue) {
+                    maintenanceValue.textContent = scores.maintenance + '%';
+                    if (maintenanceBar) maintenanceBar.style.width = scores.maintenance + '%';
+                }
+            } catch (error) {
+                console.error('Error updating health score display:', error);
+            }
+        }
+
+        // Advanced Analytics Functions
+        async function loadAnalytics() {
+            if (!window.awsDataService) {
+                console.warn('AWS Data Service not available for analytics');
+                return;
+            }
+            
+            try {
+                // Get selected home filter
+                const homeFilter = document.getElementById('analyticsHomeFilter');
+                const selectedHomeId = homeFilter ? homeFilter.value : '';
+                
+                // Populate home filter dropdown if not already populated
+                if (homeFilter && homeFilter.options.length <= 1) {
+                    const homesList = await window.awsDataService.getHomesList();
+                    homeFilter.innerHTML = '<option value="">All Homes</option>';
+                    homesList.forEach(home => {
+                        const option = document.createElement('option');
+                        option.value = home.id;
+                        option.textContent = home.address || home.id;
+                        homeFilter.appendChild(option);
+                    });
+                }
+                
+                // Get all data
+                const [allTasks, homesList] = await Promise.all([
+                    window.awsDataService.getTasksList(),
+                    window.awsDataService.getHomesList()
+                ]);
+                
+                // Filter tasks by selected home if applicable
+                let homeTasks = allTasks;
+                let renovationsList = [];
+                if (selectedHomeId) {
+                    homeTasks = allTasks.filter(task => {
+                        const taskHomeId = task.home || task.homeId;
+                        return taskHomeId === selectedHomeId;
+                    });
+                    renovationsList = await window.awsDataService.getRenovationsList(selectedHomeId) || [];
+                } else {
+                    // Get renovations for all homes
+                    for (const home of homesList) {
+                        try {
+                            const homeRenos = await window.awsDataService.getRenovationsList(home.id);
+                            renovationsList = renovationsList.concat(homeRenos || []);
+                        } catch (error) {
+                            console.error('Error loading renovations for home:', home.id, error);
+                        }
+                    }
+                }
+                
+                // Calculate task analytics
+                const totalTasks = homeTasks.length;
+                const completedTasks = homeTasks.filter(t => t.completed).length;
+                const activeTasks = totalTasks - completedTasks;
+                const today = new Date();
+                const overdueTasks = homeTasks.filter(task => {
+                    if (task.completed || !task.dueDate) return false;
+                    return new Date(task.dueDate) < today;
+                });
+                const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+                
+                // Priority distribution
+                const highPriority = homeTasks.filter(t => t.priority === 'high').length;
+                const mediumPriority = homeTasks.filter(t => t.priority === 'medium').length;
+                const lowPriority = homeTasks.filter(t => t.priority === 'low').length;
+                
+                // Timeline analytics
+                const weekFromNow = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+                const monthFromNow = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000);
+                const dueThisWeek = homeTasks.filter(task => {
+                    if (task.completed || !task.dueDate) return false;
+                    const dueDate = new Date(task.dueDate);
+                    return dueDate >= today && dueDate <= weekFromNow;
+                }).length;
+                const dueThisMonth = homeTasks.filter(task => {
+                    if (task.completed || !task.dueDate) return false;
+                    const dueDate = new Date(task.dueDate);
+                    return dueDate >= today && dueDate <= monthFromNow;
+                }).length;
+                
+                // Renovations analytics
+                const currentYear = new Date().getFullYear();
+                const recentRenovations = renovationsList.filter(reno => {
+                    if (!reno.date) return false;
+                    const renoYear = new Date(reno.date).getFullYear();
+                    return (currentYear - renoYear) <= 5;
+                });
+                
+                // Tasks this month
+                const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+                const tasksThisMonth = homeTasks.filter(task => {
+                    if (!task.created) return false;
+                    const taskDate = new Date(task.created);
+                    return taskDate >= monthStart;
+                }).length;
+                
+                // Health score analytics
+                let healthScores = { overall: 0, structure: 0, systems: 0, maintenance: 0 };
+                if (selectedHomeId) {
+                    healthScores = await calculateHomeHealthScore(selectedHomeId);
+                } else if (currentHomeId) {
+                    healthScores = await calculateHomeHealthScore(currentHomeId);
+                }
+                
+                // Data completeness
+                let dataCompleteness = 0;
+                let structureInfo = {};
+                let systemsInfo = {};
+                if (selectedHomeId || currentHomeId) {
+                    const homeId = selectedHomeId || currentHomeId;
+                    [structureInfo, systemsInfo] = await Promise.all([
+                        window.awsDataService.getStructureInfo(homeId),
+                        window.awsDataService.getSystemsInfo(homeId)
+                    ]);
+                    dataCompleteness = calculateDataCompleteness(structureInfo, systemsInfo, homeTasks, renovationsList);
+                }
+                
+                // Update UI
+                const taskCompletionRateEl = document.getElementById('taskCompletionRate');
+                const totalTasksCountEl = document.getElementById('totalTasksCount');
+                const completedTasksCountEl = document.getElementById('completedTasksCount');
+                const activeTasksCountEl = document.getElementById('activeTasksCount');
+                const overdueTasksCountEl = document.getElementById('overdueTasksCount');
+                
+                if (taskCompletionRateEl) taskCompletionRateEl.textContent = completionRate + '%';
+                if (totalTasksCountEl) totalTasksCountEl.textContent = totalTasks;
+                if (completedTasksCountEl) completedTasksCountEl.textContent = completedTasks;
+                if (activeTasksCountEl) activeTasksCountEl.textContent = activeTasks;
+                if (overdueTasksCountEl) overdueTasksCountEl.textContent = overdueTasks.length;
+                
+                const currentHealthScoreEl = document.getElementById('currentHealthScore');
+                const analyticsStructureScoreEl = document.getElementById('analyticsStructureScore');
+                const analyticsSystemsScoreEl = document.getElementById('analyticsSystemsScore');
+                const analyticsMaintenanceScoreEl = document.getElementById('analyticsMaintenanceScore');
+                
+                if (currentHealthScoreEl) currentHealthScoreEl.textContent = healthScores.overall;
+                if (analyticsStructureScoreEl) analyticsStructureScoreEl.textContent = healthScores.structure;
+                if (analyticsSystemsScoreEl) analyticsSystemsScoreEl.textContent = healthScores.systems;
+                if (analyticsMaintenanceScoreEl) analyticsMaintenanceScoreEl.textContent = healthScores.maintenance;
+                
+                const renovationsCountEl = document.getElementById('renovationsCount');
+                const recentRenovationsCountEl = document.getElementById('recentRenovationsCount');
+                const tasksThisMonthEl = document.getElementById('tasksThisMonth');
+                
+                if (renovationsCountEl) renovationsCountEl.textContent = renovationsList.length;
+                if (recentRenovationsCountEl) recentRenovationsCountEl.textContent = recentRenovations.length;
+                if (tasksThisMonthEl) tasksThisMonthEl.textContent = tasksThisMonth;
+                
+                const highPriorityCountEl = document.getElementById('highPriorityCount');
+                const mediumPriorityCountEl = document.getElementById('mediumPriorityCount');
+                const lowPriorityCountEl = document.getElementById('lowPriorityCount');
+                
+                if (highPriorityCountEl) highPriorityCountEl.textContent = highPriority;
+                if (mediumPriorityCountEl) mediumPriorityCountEl.textContent = mediumPriority;
+                if (lowPriorityCountEl) lowPriorityCountEl.textContent = lowPriority;
+                
+                const dueThisWeekCountEl = document.getElementById('dueThisWeekCount');
+                const dueThisMonthCountEl = document.getElementById('dueThisMonthCount');
+                const overdueCountEl = document.getElementById('overdueCount');
+                
+                if (dueThisWeekCountEl) dueThisWeekCountEl.textContent = dueThisWeek;
+                if (dueThisMonthCountEl) dueThisMonthCountEl.textContent = dueThisMonth;
+                if (overdueCountEl) overdueCountEl.textContent = overdueTasks.length;
+                
+                const dataCompletenessPercentEl = document.getElementById('dataCompletenessPercent');
+                if (dataCompletenessPercentEl) dataCompletenessPercentEl.textContent = Math.round(dataCompleteness) + '%';
+                
+            } catch (error) {
+                console.error('Error loading analytics:', error);
+            }
+        }
+
+        // Export & Backup Functions
+        window.exportToPDF = async function exportToPDF() {
+            if (!window.awsDataService) {
+                showAlert('Data service not available', 'error');
+                return;
+            }
+
+            // Get selected home
+            const selector = document.getElementById('exportHomeSelector');
+            const selectedHomeId = selector ? selector.value : null;
+            
+            if (!selectedHomeId) {
+                showAlert('Please select a home first', 'error');
+                return;
+            }
+
+            try {
+                showAlert('Generating detailed PDF report...', 'info');
+                
+                // Check if jsPDF is available
+                if (typeof window.jspdf === 'undefined' && typeof window.jsPDF === 'undefined') {
+                    showAlert('PDF library not loaded. Please refresh the page.', 'error');
+                    return;
+                }
+                
+                const { jsPDF } = window.jspdf || window;
+                const doc = new jsPDF();
+                
+                // Get selected home data
+                const homesList = await window.awsDataService.getHomesList();
+                const home = homesList.find(h => h.id === selectedHomeId);
+                if (!home) {
+                    showAlert('Selected home not found', 'error');
+                    return;
+                }
+                
+                // Get all home-specific data
+                const [basicInfo, structureInfo, systemsInfo, bedrooms, bathrooms, kitchens, livingAreas, garage, appliances, exterior, renovations, emergency, tasks, photos] = await Promise.all([
+                    window.awsDataService.getUserData().then(d => d.basicInfo || {}),
+                    window.awsDataService.getStructureInfo(selectedHomeId),
+                    window.awsDataService.getSystemsInfo(selectedHomeId),
+                    window.awsDataService.getBedroomsList(selectedHomeId),
+                    window.awsDataService.getBathroomsList(selectedHomeId),
+                    window.awsDataService.getKitchensList(selectedHomeId),
+                    window.awsDataService.getLivingAreasList(selectedHomeId),
+                    window.awsDataService.getGarageInfo(selectedHomeId),
+                    window.awsDataService.getAppliancesList(selectedHomeId),
+                    window.awsDataService.getExteriorInfo(selectedHomeId),
+                    window.awsDataService.getRenovationsList(selectedHomeId),
+                    window.awsDataService.getEmergencyContacts(selectedHomeId),
+                    window.awsDataService.getTasksList().then(t => t.filter(task => (task.home === selectedHomeId || task.homeId === selectedHomeId))),
+                    window.awsDataService.getPhotosList(selectedHomeId)
+                ]);
+                
+                let yPos = 40;
+                const pageWidth = doc.internal.pageSize.width;
+                const pageHeight = doc.internal.pageSize.height;
+                const margin = 20;
+                const lineHeight = 6;
+                const sectionSpacing = 8;
+                
+                // Helper function to add new page if needed
+                const checkNewPage = (requiredSpace = 20) => {
+                    if (yPos > pageHeight - requiredSpace) {
+                        doc.addPage();
+                        yPos = margin + 20;
+                        // Add logo to new page
+                        addLogo();
+                        return true;
+                    }
+                    return false;
+                };
+                
+                // Helper function to add logo
+                const addLogo = () => {
+                    try {
+                        doc.setFontSize(20);
+                        doc.setFont(undefined, 'bold');
+                        doc.setTextColor(0, 212, 170);
+                        doc.text('NestMate', pageWidth - margin - 40, 20);
+                        doc.setFontSize(8);
+                        doc.setFont(undefined, 'normal');
+                        doc.setTextColor(100, 100, 100);
+                        doc.text('Home Management', pageWidth - margin - 40, 26);
+                    } catch (error) {
+                        doc.setFontSize(20);
+                        doc.setFont(undefined, 'bold');
+                        doc.setTextColor(0, 212, 170);
+                        doc.text('NestMate', pageWidth - margin - 40, 20);
+                    }
+                };
+                
+                // Add logo to first page
+                addLogo();
+                
+                // Helper function to add section header
+                const addSectionHeader = (title) => {
+                    checkNewPage(25);
+                    yPos += sectionSpacing;
+                    doc.setFontSize(14);
+                    doc.setFont(undefined, 'bold');
+                    doc.setTextColor(0, 0, 0);
+                    doc.text(title, margin, yPos);
+                    yPos += lineHeight + 2;
+                };
+                
+                // Helper function to add data row
+                const addDataRow = (label, value, indent = 0) => {
+                    checkNewPage(10);
+                    const xPos = margin + indent;
+                    doc.setFontSize(9);
+                    doc.setFont(undefined, 'normal');
+                    doc.setTextColor(100, 100, 100);
+                    doc.text(label + ':', xPos, yPos);
+                    doc.setTextColor(0, 0, 0);
+                    const valueStr = value ? String(value) : 'Not set';
+                    // Wrap long text
+                    const maxWidth = pageWidth - margin - xPos - 10;
+                    const lines = doc.splitTextToSize(valueStr, maxWidth);
+                    doc.text(lines, xPos + 50, yPos);
+                    yPos += (lines.length * lineHeight) + 2;
+                };
+                
+                // Title
+                doc.setFontSize(18);
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(0, 0, 0);
+                doc.text('Home Management Report', margin, yPos);
+                yPos += lineHeight * 2;
+                
+                // Basic Information
+                addSectionHeader('BASIC INFORMATION');
+                addDataRow('Address', home.address || home.id);
+                addDataRow('Home Type', home.homeType);
+                addDataRow('Year Built', home.yearBuilt);
+                addDataRow('Square Footage', home.squareFootage);
+                addDataRow('Bedrooms', home.bedrooms);
+                addDataRow('Bathrooms', home.bathrooms);
+                
+                // Structure Information
+                if (structureInfo && Object.keys(structureInfo).length > 0) {
+                    addSectionHeader('STRUCTURE INFORMATION');
+                    addDataRow('Foundation', structureInfo.foundation, 5);
+                    addDataRow('Roof Type', structureInfo.roofType, 5);
+                    addDataRow('Exterior Material', structureInfo.exteriorMaterial, 5);
+                    addDataRow('Windows', structureInfo.windows, 5);
+                }
+                
+                // Systems Information
+                if (systemsInfo && Object.keys(systemsInfo).length > 0) {
+                    addSectionHeader('SYSTEMS INFORMATION');
+                    addDataRow('HVAC System', systemsInfo.hvac, 5);
+                    addDataRow('Electrical System', systemsInfo.electrical, 5);
+                    addDataRow('Plumbing System', systemsInfo.plumbing, 5);
+                    addDataRow('Water Heater', systemsInfo.waterHeater, 5);
+                }
+                
+                // Bedrooms
+                if (bedrooms && bedrooms.length > 0) {
+                    addSectionHeader('BEDROOMS');
+                    bedrooms.forEach((bedroom, idx) => {
+                        addDataRow(`Bedroom ${idx + 1}`, bedroom.name || `Bedroom ${idx + 1}`, 5);
+                        if (bedroom.size) addDataRow('  Size', bedroom.size, 10);
+                        if (bedroom.floorType) addDataRow('  Floor Type', bedroom.floorType, 10);
+                        if (bedroom.wallColor) addDataRow('  Wall Color', bedroom.wallColor, 10);
+                        if (bedroom.trimColor) addDataRow('  Trim Color', bedroom.trimColor, 10);
+                        yPos += 2;
+                    });
+                }
+                
+                // Bathrooms
+                if (bathrooms && bathrooms.length > 0) {
+                    addSectionHeader('BATHROOMS');
+                    bathrooms.forEach((bathroom, idx) => {
+                        addDataRow(`Bathroom ${idx + 1}`, bathroom.name || `Bathroom ${idx + 1}`, 5);
+                        if (bathroom.type) addDataRow('  Type', bathroom.type, 10);
+                        if (bathroom.fixtures) addDataRow('  Fixtures', bathroom.fixtures, 10);
+                        yPos += 2;
+                    });
+                }
+                
+                // Tasks Summary
+                if (tasks && tasks.length > 0) {
+                    addSectionHeader('TASKS & MAINTENANCE');
+                    const completed = tasks.filter(t => t.completed).length;
+                    const active = tasks.length - completed;
+                    addDataRow('Total Tasks', tasks.length, 5);
+                    addDataRow('Active Tasks', active, 5);
+                    addDataRow('Completed Tasks', completed, 5);
+                }
+                
+                // Page numbers
+                const totalPages = doc.internal.pages.length - 1;
+                for (let i = 1; i <= totalPages; i++) {
+                    doc.setPage(i);
+                    doc.setFontSize(8);
+                    doc.setTextColor(150, 150, 150);
+                    doc.text(`Page ${i} of ${totalPages}`, pageWidth - margin, pageHeight - 10);
+                }
+                
+                // Save PDF
+                const fileName = `NestMate_Report_${home.address || home.id}_${new Date().toISOString().split('T')[0]}.pdf`;
+                doc.save(fileName);
+                showAlert('PDF report generated successfully!', 'success');
+            } catch (error) {
+                console.error('Error generating PDF:', error);
+                showAlert('Error generating PDF report: ' + (error.message || 'Unknown error'), 'error');
+            }
+        };
+
+        window.exportToExcel = async function exportToExcel() {
+            if (!window.awsDataService) {
+                showAlert('Data service not available', 'error');
+                return;
+            }
+
+            try {
+                const homesList = await window.awsDataService.getHomesList();
+                const tasksList = await window.awsDataService.getTasksList();
+                
+                // Create CSV content
+                let csv = 'Home Address,Home Type,Year Built,Square Footage,Bedrooms,Bathrooms\n';
+                homesList.forEach(home => {
+                    csv += `"${home.address || home.id}","${home.homeType || ''}","${home.yearBuilt || ''}","${home.squareFootage || ''}","${home.bedrooms || ''}","${home.bathrooms || ''}"\n`;
+                });
+                
+                csv += '\n\nTasks\n';
+                csv += 'Title,Description,Priority,Due Date,Completed,Home\n';
+                tasksList.forEach(task => {
+                    csv += `"${task.title || ''}","${task.description || ''}","${task.priority || ''}","${task.dueDate || ''}","${task.completed ? 'Yes' : 'No'}","${task.home || task.homeId || ''}"\n`;
+                });
+                
+                // Download CSV
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', `NestMate_Export_${new Date().toISOString().split('T')[0]}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showAlert('Excel export completed successfully!', 'success');
+            } catch (error) {
+                console.error('Error exporting to Excel:', error);
+                showAlert('Error exporting to Excel: ' + (error.message || 'Unknown error'), 'error');
+            }
+        };
+
+        window.createFullBackup = async function createFullBackup() {
+            if (!window.awsDataService) {
+                showAlert('Data service not available', 'error');
+                return;
+            }
+
+            try {
+                showAlert('Creating full backup...', 'info');
+                
+                // Get all data
+                const [userData, homesList, tasksList] = await Promise.all([
+                    window.awsDataService.getUserData(),
+                    window.awsDataService.getHomesList(),
+                    window.awsDataService.getTasksList()
+                ]);
+                
+                // Get home-specific data for each home
+                const homesData = {};
+                for (const home of homesList) {
+                    const [bedrooms, bathrooms, kitchens, livingAreas, garage, appliances, exterior, renovations, emergency, photos, structure, systems] = await Promise.all([
+                        window.awsDataService.getBedroomsList(home.id).catch(() => []),
+                        window.awsDataService.getBathroomsList(home.id).catch(() => []),
+                        window.awsDataService.getKitchensList(home.id).catch(() => []),
+                        window.awsDataService.getLivingAreasList(home.id).catch(() => []),
+                        window.awsDataService.getGarageInfo(home.id).catch(() => ({})),
+                        window.awsDataService.getAppliancesList(home.id).catch(() => []),
+                        window.awsDataService.getExteriorInfo(home.id).catch(() => ({})),
+                        window.awsDataService.getRenovationsList(home.id).catch(() => []),
+                        window.awsDataService.getEmergencyContacts(home.id).catch(() => []),
+                        window.awsDataService.getPhotosList(home.id).catch(() => []),
+                        window.awsDataService.getStructureInfo(home.id).catch(() => ({})),
+                        window.awsDataService.getSystemsInfo(home.id).catch(() => ({}))
+                    ]);
+                    
+                    homesData[home.id] = {
+                        bedrooms,
+                        bathrooms,
+                        kitchens,
+                        livingAreas,
+                        garage,
+                        appliances,
+                        exterior,
+                        renovations,
+                        emergency,
+                        photos,
+                        structure,
+                        systems
+                    };
+                }
+                
+                const backup = {
+                    version: '1.0',
+                    timestamp: new Date().toISOString(),
+                    userData,
+                    homes: homesList,
+                    tasks: tasksList,
+                    homesData
+                };
+                
+                // Download JSON
+                const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', `NestMate_Backup_${new Date().toISOString().split('T')[0]}.json`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showAlert('Full backup created successfully!', 'success');
+            } catch (error) {
+                console.error('Error creating backup:', error);
+                showAlert('Error creating backup: ' + (error.message || 'Unknown error'), 'error');
+            }
+        };
+
+        window.restoreFromBackup = async function restoreFromBackup() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                try {
+                    const text = await file.text();
+                    const backup = JSON.parse(text);
+                    
+                    if (!confirm('This will replace all your current data. Are you sure you want to continue?')) {
+                        return;
+                    }
+                    
+                    showAlert('Restoring backup...', 'info');
+                    
+                    // Restore user data
+                    if (backup.userData) {
+                        await window.awsDataService.saveUserData(backup.userData);
+                    }
+                    
+                    // Restore homes
+                    if (backup.homes) {
+                        for (const home of backup.homes) {
+                            await window.awsDataService.saveHome(home);
+                        }
+                    }
+                    
+                    // Restore tasks
+                    if (backup.tasks) {
+                        await window.awsDataService.saveTasksList(backup.tasks);
+                    }
+                    
+                    // Restore home-specific data
+                    if (backup.homesData) {
+                        for (const [homeId, data] of Object.entries(backup.homesData)) {
+                            if (data.bedrooms) await window.awsDataService.saveBedroomsList(data.bedrooms, homeId);
+                            if (data.bathrooms) await window.awsDataService.saveBathroomsList(data.bathrooms, homeId);
+                            if (data.kitchens) await window.awsDataService.saveKitchensList(data.kitchens, homeId);
+                            if (data.livingAreas) await window.awsDataService.saveLivingAreasList(data.livingAreas, homeId);
+                            if (data.garage) await window.awsDataService.saveGarageInfo(data.garage, homeId);
+                            if (data.appliances) await window.awsDataService.saveAppliancesList(data.appliances, homeId);
+                            if (data.exterior) await window.awsDataService.saveExteriorInfo(data.exterior, homeId);
+                            if (data.renovations) await window.awsDataService.saveRenovationsList(data.renovations, homeId);
+                            if (data.emergency) await window.awsDataService.saveEmergencyContacts(data.emergency, homeId);
+                            if (data.photos) await window.awsDataService.savePhotosList(data.photos, homeId);
+                            if (data.structure) await window.awsDataService.saveStructureInfo(data.structure, homeId);
+                            if (data.systems) await window.awsDataService.saveSystemsInfo(data.systems, homeId);
+                        }
+                    }
+                    
+                    showAlert('Backup restored successfully! Please refresh the page.', 'success');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                } catch (error) {
+                    console.error('Error restoring backup:', error);
+                    showAlert('Error restoring backup: ' + (error.message || 'Unknown error'), 'error');
+                }
+            };
+            input.click();
+        };
+
+        window.loadBackupSettings = async function loadBackupSettings() {
+            try {
+                if (window.awsDataService) {
+                    const userData = await window.awsDataService.getUserData();
+                    const backupSettings = userData.backupSettings || {};
+                    
+                    const weeklyBackup = document.getElementById('weeklyBackup');
+                    const emailNotifications = document.getElementById('emailNotifications');
+                    
+                    if (weeklyBackup) weeklyBackup.checked = backupSettings.weeklyBackup !== false;
+                    if (emailNotifications) emailNotifications.checked = backupSettings.emailNotifications === true;
+                }
+            } catch (error) {
+                console.error('Error loading backup settings:', error);
+            }
+        };
+
+        window.saveBackupSettings = async function saveBackupSettings() {
+            try {
+                if (window.awsDataService) {
+                    const weeklyBackup = document.getElementById('weeklyBackup');
+                    const emailNotifications = document.getElementById('emailNotifications');
+                    
+                    const backupSettings = {
+                        weeklyBackup: weeklyBackup ? weeklyBackup.checked : false,
+                        emailNotifications: emailNotifications ? emailNotifications.checked : false
+                    };
+                    
+                    const userData = await window.awsDataService.getUserData();
+                    userData.backupSettings = backupSettings;
+                    await window.awsDataService.saveUserData(userData);
+                    
+                    showAlert('Backup settings saved!', 'success');
+                }
+            } catch (error) {
+                console.error('Error saving backup settings:', error);
+                showAlert('Error saving backup settings', 'error');
+            }
+        };
 
         function showAlert(message, type = 'info') {
             const alert = document.createElement('div');
