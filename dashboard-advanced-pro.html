@@ -2768,8 +2768,215 @@
             loadTasks();
         }
 
-        function loadTasks() {
-            console.log('Loading tasks:', tasks);
+        // Load Functions
+        async function loadTasks() {
+            try {
+                if (window.awsDataService) {
+                    tasks = await window.awsDataService.getTasksList();
+                }
+                console.log('Tasks loaded:', tasks);
+            } catch (error) {
+                console.error('Error loading tasks:', error);
+            }
+        }
+
+        // Calendar Functions - explicitly attach to window
+        window.openSchedule = function openSchedule() {
+            console.log('openSchedule called');
+            openScheduleModal().catch(err => {
+                console.error('Error opening schedule modal:', err);
+                showAlert('Error opening schedule. Please try again.', 'error');
+            });
+        }
+        
+        async function openScheduleModal() {
+            const modal = document.getElementById('scheduleModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                currentCalendarDate = new Date();
+                
+                // Populate home filter dropdown
+                const homeFilter = document.getElementById('calendarHomeFilter');
+                if (homeFilter && window.awsDataService) {
+                    try {
+                        const homesList = await window.awsDataService.getHomesList();
+                        homeFilter.innerHTML = '<option value="">All Homes</option>';
+                        homesList.forEach(home => {
+                            const option = document.createElement('option');
+                            option.value = home.id;
+                            option.textContent = home.address || home.id;
+                            homeFilter.appendChild(option);
+                        });
+                    } catch (error) {
+                        console.error('Error loading homes for calendar filter:', error);
+                    }
+                }
+                
+                await renderCalendar();
+            }
+        }
+        
+        window.closeScheduleModal = function closeScheduleModal() {
+            const modal = document.getElementById('scheduleModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+        
+        window.changeCalendarMonth = function changeCalendarMonth(direction) {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + direction);
+            renderCalendar();
+        }
+        
+        async function renderCalendar() {
+            const container = document.getElementById('calendarContainer');
+            const monthYearEl = document.getElementById('calendarMonthYear');
+            if (!container || !monthYearEl) return;
+            
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                               'July', 'August', 'September', 'October', 'November', 'December'];
+            monthYearEl.textContent = `${monthNames[currentCalendarDate.getMonth()]} ${currentCalendarDate.getFullYear()}`;
+            
+            const year = currentCalendarDate.getFullYear();
+            const month = currentCalendarDate.getMonth();
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            const startingDayOfWeek = firstDay.getDay();
+            
+            // Get homes map
+            let homesMap = {};
+            if (window.awsDataService) {
+                try {
+                    const homesList = await window.awsDataService.getHomesList();
+                    homesList.forEach(home => {
+                        homesMap[home.id] = home.address || home.id;
+                    });
+                } catch (error) {
+                    console.error('Error loading homes for calendar:', error);
+                }
+            }
+            
+            // Get selected home filter
+            const homeFilter = document.getElementById('calendarHomeFilter');
+            const selectedHomeId = homeFilter ? homeFilter.value : '';
+            
+            // Group tasks by date
+            const tasksByDate = {};
+            tasks.forEach(task => {
+                if (task.dueDate) {
+                    if (selectedHomeId) {
+                        const taskHomeId = task.home || task.homeId || '';
+                        if (taskHomeId !== selectedHomeId) return;
+                    }
+                    
+                    const taskDate = new Date(task.dueDate);
+                    if (taskDate.getFullYear() === year && taskDate.getMonth() === month) {
+                        const dateKey = taskDate.getDate();
+                        if (!tasksByDate[dateKey]) {
+                            tasksByDate[dateKey] = [];
+                        }
+                        tasksByDate[dateKey].push(task);
+                    }
+                }
+            });
+            
+            // Build calendar HTML
+            let calendarHTML = '';
+            
+            // Day headers
+            const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayHeaders.forEach(day => {
+                calendarHTML += `<div class="calendar-day-header">${day}</div>`;
+            });
+            
+            // Empty cells
+            for (let i = 0; i < startingDayOfWeek; i++) {
+                calendarHTML += '<div class="calendar-day empty"></div>';
+            }
+            
+            // Days of month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const date = new Date(year, month, day);
+                const isToday = date.toDateString() === new Date().toDateString();
+                const dayTasks = tasksByDate[day] || [];
+                
+                calendarHTML += `<div class="calendar-day ${isToday ? 'today' : ''}">`;
+                calendarHTML += `<div class="calendar-day-number">${day}</div>`;
+                
+                if (dayTasks.length > 0) {
+                    calendarHTML += '<div class="calendar-tasks">';
+                    const tasksToShow = dayTasks.slice(0, 3);
+                    tasksToShow.forEach(task => {
+                        const priority = task.priority || 'medium';
+                        const priorityClass = priority === 'high' ? 'high' : priority === 'low' ? 'low' : 'medium';
+                        const completedClass = task.completed ? 'completed' : '';
+                        const homeAddress = homesMap[task.home || task.homeId] || task.home || 'Unknown';
+                        calendarHTML += `<div class="calendar-task ${priorityClass} ${completedClass}" onclick="editTaskFromCalendar('${task.id}')" title="${task.title} - ${homeAddress}">
+                            <input type="checkbox" ${task.completed ? 'checked' : ''} onclick="event.stopPropagation(); toggleTaskCompleteFromCalendar('${task.id}')" style="margin-right: 0.25rem; cursor: pointer;">
+                            <span class="task-dot"></span>
+                            <span class="task-title">${task.title.length > 15 ? task.title.substring(0, 15) + '...' : task.title}</span>
+                        </div>`;
+                    });
+                    if (dayTasks.length > 3) {
+                        calendarHTML += `<div class="calendar-task-more">+${dayTasks.length - 3} more</div>`;
+                    }
+                    calendarHTML += '</div>';
+                } else {
+                    calendarHTML += `<div class="calendar-add-task" onclick="addTaskForDate(${year}, ${month}, ${day})" title="Click to add task">
+                        <i class="fas fa-plus" style="color: #94a3b8; font-size: 0.75rem;"></i>
+                    </div>`;
+                }
+                
+                calendarHTML += '</div>';
+            }
+            
+            container.innerHTML = calendarHTML;
+        }
+        
+        window.editTaskFromCalendar = function editTaskFromCalendar(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                closeScheduleModal();
+                openTaskModal(task).then(() => {
+                    setTimeout(() => {
+                        openScheduleModal();
+                    }, 100);
+                });
+            }
+        }
+        
+        window.toggleTaskCompleteFromCalendar = async function toggleTaskCompleteFromCalendar(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                task.completed = !task.completed;
+                if (task.completed) {
+                    task.completedDate = new Date().toISOString();
+                } else {
+                    delete task.completedDate;
+                }
+                
+                try {
+                    if (window.awsDataService) {
+                        await window.awsDataService.saveTasksList(tasks);
+                    }
+                } catch (error) {
+                    console.error('Error saving task to AWS:', error);
+                }
+                
+                await renderCalendar();
+            }
+        }
+        
+        window.addTaskFromCalendar = async function addTaskFromCalendar() {
+            closeScheduleModal();
+            await openTaskModal();
+        }
+        
+        window.addTaskForDate = async function addTaskForDate(year, month, day) {
+            closeScheduleModal();
+            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            await openTaskModal(null, dateStr);
         }
 
         // Old loadHomes function removed - using AWS-based loadHomes now
