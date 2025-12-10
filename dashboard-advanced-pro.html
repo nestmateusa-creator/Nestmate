@@ -53,6 +53,78 @@
     <script src="aws-data-service.js"></script>
     <script src="localStorage-replacement.js"></script>
     
+    <!-- Critical functions must be defined immediately for onclick handlers -->
+    <script>
+        // Define critical functions immediately so they're available for onclick handlers
+        window.showSection = function(sectionId) {
+            console.log('showSection called with:', sectionId);
+            // Show/hide home selector based on section
+            const homeSelectorContainer = document.getElementById('homeSelectorContainer');
+            if (homeSelectorContainer) {
+                if (sectionId === 'overview') {
+                    homeSelectorContainer.style.display = 'block';
+                } else {
+                    homeSelectorContainer.style.display = 'none';
+                }
+            }
+            // Hide all sections
+            const sections = document.querySelectorAll('.dashboard-section, .content-section');
+            sections.forEach(section => {
+                section.style.display = 'none';
+                section.style.setProperty('display', 'none', 'important');
+            });
+            // Remove active class from all nav items
+            const navItems = document.querySelectorAll('.nav-item');
+            if (navItems && navItems.length > 0) {
+                navItems.forEach(item => {
+                    if (item && item.classList) {
+                        item.classList.remove('active');
+                    }
+                });
+            }
+            // Show selected section
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.style.setProperty('display', 'block', 'important');
+                targetSection.style.setProperty('visibility', 'visible', 'important');
+                targetSection.style.setProperty('opacity', '1', 'important');
+            }
+            // Find the nav item by sectionId and add active class
+            navItems.forEach(item => {
+                if (!item || !item.classList) return;
+                const onclickAttr = item.getAttribute('onclick');
+                if (onclickAttr && (onclickAttr.includes(`'${sectionId}'`) || onclickAttr.includes(`"${sectionId}"`))) {
+                    item.classList.add('active');
+                }
+            });
+        };
+        
+        window.signOut = async function() {
+            console.log('signOut called');
+            try {
+                sessionStorage.removeItem('currentUser');
+                sessionStorage.removeItem('currentUserEmail');
+                if (nestMateAuth && nestMateAuth.signOut) {
+                    await nestMateAuth.signOut();
+                }
+                window.location.href = 'login-aws.html';
+            } catch (error) {
+                console.error('Error signing out:', error);
+                window.location.href = 'login-aws.html';
+            }
+        };
+        
+        // Placeholder functions that will be overridden later
+        window.addNewTask = function() { console.log('addNewTask called - function loading...'); };
+        window.openSchedule = function() { console.log('openSchedule called - function loading...'); };
+        window.openFamilyCalendar = function() { console.log('openFamilyCalendar called - function loading...'); };
+        window.inviteFamily = function() { console.log('inviteFamily called - function loading...'); };
+        window.shareUpdate = function() { console.log('shareUpdate called - function loading...'); };
+        window.openEmergencyServices = function() { console.log('openEmergencyServices called - function loading...'); };
+        window.openFamilyAnalytics = function() { console.log('openFamilyAnalytics called - function loading...'); };
+        window.switchHome = function() { console.log('switchHome called - function loading...'); };
+    </script>
+    
     <style>
         * {
             margin: 0;
