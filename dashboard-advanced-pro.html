@@ -1473,70 +1473,19 @@
                     </div>
                 </div>
 
-                <!-- Appliances -->
+                <!-- Appliances Section -->
                 <div id="appliances" class="dashboard-section" style="display: none;">
                     <div class="card">
-                        <h3>Home Appliances</h3>
-                        <div class="appliances-grid">
-                            <div class="appliance-category">
-                                <h4>Kitchen Appliances</h4>
-                                <div class="appliance-list">
-                                    <div class="appliance-item">
-                                        <i class="fas fa-refrigerator"></i>
-                                        <span>Refrigerator</span>
-                                        <span class="appliance-status working">Working</span>
-                                        <button class="btn-small">Service</button>
-                                    </div>
-                                    <div class="appliance-item">
-                                        <i class="fas fa-fire"></i>
-                                        <span>Stove/Oven</span>
-                                        <span class="appliance-status working">Working</span>
-                                        <button class="btn-small">Service</button>
-                                    </div>
-                                    <div class="appliance-item">
-                                        <i class="fas fa-dishwasher"></i>
-                                        <span>Dishwasher</span>
-                                        <span class="appliance-status working">Working</span>
-                                        <button class="btn-small">Service</button>
-                                    </div>
-                                </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3>Home Appliances</h3>
+                            <div>
+                                <button class="btn" onclick="addAppliance()">
+                                    <i class="fas fa-plus"></i> Add Appliance
+                                </button>
                             </div>
-                            
-                            <div class="appliance-category">
-                                <h4>HVAC Systems</h4>
-                                <div class="appliance-list">
-                                    <div class="appliance-item">
-                                        <i class="fas fa-thermometer-half"></i>
-                                        <span>Furnace</span>
-                                        <span class="appliance-status working">Working</span>
-                                        <button class="btn-small">Service</button>
-                                    </div>
-                                    <div class="appliance-item">
-                                        <i class="fas fa-snowflake"></i>
-                                        <span>Air Conditioner</span>
-                                        <span class="appliance-status working">Working</span>
-                                        <button class="btn-small">Service</button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="appliance-category">
-                                <h4>Laundry</h4>
-                                <div class="appliance-list">
-                                    <div class="appliance-item">
-                                        <i class="fas fa-tshirt"></i>
-                                        <span>Washer</span>
-                                        <span class="appliance-status working">Working</span>
-                                        <button class="btn-small">Service</button>
-                                    </div>
-                                    <div class="appliance-item">
-                                        <i class="fas fa-tshirt"></i>
-                                        <span>Dryer</span>
-                                        <span class="appliance-status working">Working</span>
-                                        <button class="btn-small">Service</button>
-                                    </div>
-                                </div>
-                            </div>
+                        </div>
+                        <div id="appliancesList" class="list-container">
+                            <!-- dynamically rendered -->
                         </div>
                     </div>
                 </div>
@@ -1581,92 +1530,67 @@
                     </div>
                 </div>
 
-                <!-- Renovations -->
+                <!-- Renovations Section -->
                 <div id="renovations" class="dashboard-section" style="display: none;">
                     <div class="card">
-                        <h3>Renovation Projects</h3>
-                        <div class="renovation-timeline">
-                            <div class="renovation-item completed">
-                                <div class="renovation-date">2024</div>
-                                <div class="renovation-content">
-                                    <h4>Kitchen Remodel</h4>
-                                    <p>Complete kitchen renovation with new cabinets and countertops</p>
-                                    <span class="renovation-cost">$15,000</span>
-                                </div>
-                            </div>
-                            
-                            <div class="renovation-item completed">
-                                <div class="renovation-date">2023</div>
-                                <div class="renovation-content">
-                                    <h4>Bathroom Update</h4>
-                                    <p>Master bathroom renovation with new fixtures</p>
-                                    <span class="renovation-cost">$8,500</span>
-                                </div>
-                            </div>
-                            
-                            <div class="renovation-item planned">
-                                <div class="renovation-date">2025</div>
-                                <div class="renovation-content">
-                                    <h4>Deck Addition</h4>
-                                    <p>Planning to add a new deck to the backyard</p>
-                                    <span class="renovation-cost">$12,000</span>
-                                </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3>Renovation History</h3>
+                            <div>
+                                <button class="btn" onclick="addRenovation()">
+                                    <i class="fas fa-plus"></i> Add Renovation
+                                </button>
                             </div>
                         </div>
-                        
-                        <div class="add-renovation">
-                            <button class="btn-primary">
-                                <i class="fas fa-plus"></i> Add New Project
-                            </button>
+                        <div id="renovationsList" class="list-container">
+                            <!-- dynamically rendered -->
                         </div>
                     </div>
                 </div>
 
-                <!-- Emergency -->
+                <!-- Emergency Section -->
                 <div id="emergency" class="dashboard-section" style="display: none;">
                     <div class="card">
-                        <h3>Emergency Contacts</h3>
-                        <div class="emergency-contacts">
-                            <div class="emergency-item critical">
-                                <i class="fas fa-phone"></i>
-                                <div class="emergency-info">
-                                    <h4>Police</h4>
-                                    <p>911</p>
-                                </div>
-                                <button class="btn-emergency">Call</button>
-                            </div>
-                            
-                            <div class="emergency-item critical">
-                                <i class="fas fa-fire"></i>
-                                <div class="emergency-info">
-                                    <h4>Fire Department</h4>
-                                    <p>911</p>
-                                </div>
-                                <button class="btn-emergency">Call</button>
-                            </div>
-                            
-                            <div class="emergency-item">
-                                <i class="fas fa-bolt"></i>
-                                <div class="emergency-info">
-                                    <h4>Electrician</h4>
-                                    <p>(555) 123-4567</p>
-                                </div>
-                                <button class="btn-emergency">Call</button>
-                            </div>
-                            
-                            <div class="emergency-item">
-                                <i class="fas fa-wrench"></i>
-                                <div class="emergency-info">
-                                    <h4>Plumber</h4>
-                                    <p>(555) 987-6543</p>
-                                </div>
-                                <button class="btn-emergency">Call</button>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3>Emergency Contacts</h3>
+                            <div>
+                                <button class="btn" onclick="openAddContactModal()">
+                                    <i class="fas fa-plus"></i> Add Contact
+                                </button>
                             </div>
                         </div>
                         
-                        <div class="emergency-notes">
-                            <h4>Emergency Notes</h4>
-                            <textarea placeholder="Add any important emergency information..."></textarea>
+                        <!-- Contact Type Tabs -->
+                        <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; border-bottom: 2px solid #374151;">
+                            <button class="btn btn-secondary" id="tabFamily" onclick="showContactTab('family')" style="border-radius: 0.5rem 0.5rem 0 0; border-bottom: none;">
+                                <i class="fas fa-users"></i> Family
+                            </button>
+                            <button class="btn btn-secondary" id="tabEmergency" onclick="showContactTab('emergency')" style="border-radius: 0.5rem 0.5rem 0 0; border-bottom: none;">
+                                <i class="fas fa-phone-alt"></i> Emergency
+                            </button>
+                            <button class="btn btn-secondary" id="tabServices" onclick="showContactTab('services')" style="border-radius: 0.5rem 0.5rem 0 0; border-bottom: none;">
+                                <i class="fas fa-tools"></i> Services
+                            </button>
+                        </div>
+                        
+                        <!-- Family Contacts -->
+                        <div id="familyContacts" class="contact-list-container">
+                            <div id="familyContactsList" class="list-container">
+                                <!-- dynamically rendered -->
+                            </div>
+                        </div>
+                        
+                        <!-- Emergency Contacts -->
+                        <div id="emergencyContacts" class="contact-list-container" style="display: none;">
+                            <div id="emergencyContactsList" class="list-container">
+                                <!-- dynamically rendered -->
+                            </div>
+                        </div>
+                        
+                        <!-- Services Contacts -->
+                        <div id="servicesContacts" class="contact-list-container" style="display: none;">
+                            <div id="servicesContactsList" class="list-container">
+                                <!-- dynamically rendered -->
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1785,11 +1709,109 @@
                     </div>
                 </div>
 
+                <!-- Unlimited Tasks -->
                 <div id="tasks" class="dashboard-section" style="display: none;">
                     <div class="card">
-                        <h3>Shared Tasks & Reminders</h3>
-                        <p>Create and manage tasks that can be shared and assigned to family members.</p>
-                        <!-- Task management content will be added here -->
+                        <h3>Unlimited Tasks & Reminders</h3>
+                        <div class="task-stats">
+                            <div class="stat-item clickable-stat" onclick="filterTasksByStat('active')" title="Click to view active tasks">
+                                <div class="stat-number" id="stat-active-count">0</div>
+                                <div class="stat-label">Active Tasks</div>
+                            </div>
+                            <div class="stat-item clickable-stat" onclick="filterTasksByStat('due-this-week')" title="Click to view tasks due this week">
+                                <div class="stat-number" id="stat-due-week-count">0</div>
+                                <div class="stat-label">Due This Week</div>
+                            </div>
+                            <div class="stat-item clickable-stat" onclick="filterTasksByStat('completed')" title="Click to view completed tasks">
+                                <div class="stat-number" id="stat-completed-count">0</div>
+                                <div class="stat-label">Completed</div>
+                            </div>
+                        </div>
+                        
+                        <div class="task-filters">
+                            <button class="filter-btn active" onclick="filterTasks('all')">All Tasks</button>
+                            <button class="filter-btn" onclick="filterTasks('due-soon')">Due Soon</button>
+                            <button class="filter-btn" onclick="showHomeFilter()">By Home</button>
+                            <button class="filter-btn" onclick="filterTasks('by-category')">By Category</button>
+                        </div>
+                        <div id="homeFilterDropdown" class="home-filter-dropdown" style="display: none;">
+                            <select id="homeFilterSelect" onchange="filterTasksByHome(this.value)">
+                                <option value="">All Homes</option>
+                            </select>
+                        </div>
+                        
+                        <div class="task-list" id="unlimitedTasksList">
+                            <!-- Tasks will be dynamically rendered here -->
+                        </div>
+                        
+                        <div class="add-task-section">
+                            <button class="btn-primary" onclick="addNewTask()">
+                                <i class="fas fa-plus"></i> Add New Task
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Home Health Score -->
+                <div id="health" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Home Health Score Analytics</h3>
+                        <div class="health-overview">
+                            <div class="health-main-score">
+                                <div class="score-circle">
+                                    <div class="score-number" id="healthScoreValue">--</div>
+                                    <div class="score-label">Overall Health</div>
+                                </div>
+                                <div class="score-breakdown">
+                                    <div class="breakdown-item">
+                                        <span class="breakdown-label">Structure</span>
+                                        <div class="breakdown-bar">
+                                            <div class="breakdown-fill" id="structureBar" style="width: 0%"></div>
+                                        </div>
+                                        <span class="breakdown-value" id="structureValue">--%</span>
+                                    </div>
+                                    <div class="breakdown-item">
+                                        <span class="breakdown-label">Systems</span>
+                                        <div class="breakdown-bar">
+                                            <div class="breakdown-fill" id="systemsBar" style="width: 0%"></div>
+                                        </div>
+                                        <span class="breakdown-value" id="systemsValue">--%</span>
+                                    </div>
+                                    <div class="breakdown-item">
+                                        <span class="breakdown-label">Maintenance</span>
+                                        <div class="breakdown-bar">
+                                            <div class="breakdown-fill" id="maintenanceBar" style="width: 0%"></div>
+                                        </div>
+                                        <span class="breakdown-value" id="maintenanceValue">--%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="health-recommendations">
+                            <h4>Health Recommendations</h4>
+                            <div class="recommendation-item">
+                                <div class="rec-icon high">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                                <div class="rec-content">
+                                    <h5>HVAC System Maintenance</h5>
+                                    <p>Your HVAC system needs annual maintenance. Schedule service within 30 days.</p>
+                                </div>
+                                <button class="btn-small">Schedule</button>
+                            </div>
+                            
+                            <div class="recommendation-item">
+                                <div class="rec-icon medium">
+                                    <i class="fas fa-info-circle"></i>
+                                </div>
+                                <div class="rec-content">
+                                    <h5>Roof Inspection</h5>
+                                    <p>Consider scheduling a roof inspection to maintain optimal health score.</p>
+                                </div>
+                                <button class="btn-small">Learn More</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -1801,11 +1823,114 @@
                     </div>
                 </div>
 
+                <!-- Advanced Analytics -->
                 <div id="analytics" class="dashboard-section" style="display: none;">
                     <div class="card">
-                        <h3>Family Analytics & Insights</h3>
-                        <p>Comprehensive analytics for family home management and collaboration.</p>
-                        <!-- Analytics content will be added here -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <h3>Advanced Analytics & Insights</h3>
+                            <select id="analyticsHomeFilter" onchange="loadAnalytics()" style="padding: 0.5rem; background: #1e293b; border: 1px solid #334155; border-radius: 6px; color: #e2e8f0;">
+                                <option value="">All Homes</option>
+                            </select>
+                        </div>
+                        
+                        <div class="analytics-grid">
+                            <div class="analytics-card">
+                                <h4><i class="fas fa-tasks"></i> Task Analytics</h4>
+                                <div id="taskAnalytics">
+                                    <div class="metric-display">
+                                        <div class="metric-number" id="taskCompletionRate">--</div>
+                                        <div class="metric-label">Completion Rate</div>
+                                    </div>
+                                    <div style="margin-top: 1rem; font-size: 0.875rem;">
+                                        <div>Total Tasks: <span id="totalTasksCount">--</span></div>
+                                        <div>Completed: <span id="completedTasksCount">--</span></div>
+                                        <div>Active: <span id="activeTasksCount">--</span></div>
+                                        <div>Overdue: <span id="overdueTasksCount">--</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="analytics-card">
+                                <h4><i class="fas fa-heartbeat"></i> Health Score Trends</h4>
+                                <div id="healthScoreAnalytics">
+                                    <div class="metric-display">
+                                        <div class="metric-number" id="currentHealthScore">--</div>
+                                        <div class="metric-label">Current Score</div>
+                                    </div>
+                                    <div style="margin-top: 1rem; font-size: 0.875rem;">
+                                        <div>Structure: <span id="analyticsStructureScore">--</span>%</div>
+                                        <div>Systems: <span id="analyticsSystemsScore">--</span>%</div>
+                                        <div>Maintenance: <span id="analyticsMaintenanceScore">--</span>%</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="analytics-card">
+                                <h4><i class="fas fa-tools"></i> Maintenance Activity</h4>
+                                <div id="maintenanceAnalytics">
+                                    <div style="margin-top: 0.5rem;">
+                                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                            <span>Recent Renovations:</span>
+                                            <span id="renovationsCount">--</span>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                            <span>Last 5 Years:</span>
+                                            <span id="recentRenovationsCount">--</span>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between;">
+                                            <span>Tasks This Month:</span>
+                                            <span id="tasksThisMonth">--</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="analytics-card">
+                                <h4><i class="fas fa-chart-pie"></i> Task Priority Distribution</h4>
+                                <div id="priorityAnalytics" style="margin-top: 1rem;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                        <span>High Priority:</span>
+                                        <span id="highPriorityCount">--</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                        <span>Medium Priority:</span>
+                                        <span id="mediumPriorityCount">--</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <span>Low Priority:</span>
+                                        <span id="lowPriorityCount">--</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="analytics-card">
+                                <h4><i class="fas fa-calendar-alt"></i> Task Timeline</h4>
+                                <div id="taskTimelineAnalytics" style="margin-top: 1rem;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                        <span>Due This Week:</span>
+                                        <span id="dueThisWeekCount">--</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                        <span>Due This Month:</span>
+                                        <span id="dueThisMonthCount">--</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <span>Overdue:</span>
+                                        <span id="overdueCount">--</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="analytics-card">
+                                <h4><i class="fas fa-home"></i> Home Data Completeness</h4>
+                                <div id="dataCompletenessAnalytics" style="margin-top: 1rem;">
+                                    <div class="metric-display">
+                                        <div class="metric-number" id="dataCompletenessPercent">--</div>
+                                        <div class="metric-label">Complete</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -1827,9 +1952,52 @@
 
                 <div id="photos" class="dashboard-section" style="display: none;">
                     <div class="card">
-                        <h3>Advanced Photo Management</h3>
-                        <p>Organize and manage photos with family sharing and smart categorization.</p>
-                        <!-- Photo management content will be added here -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3>Advanced Photo Management</h3>
+                            <div>
+                                <button class="btn" onclick="openPhotoUpload()">
+                                    <i class="fas fa-upload"></i> Upload Photos
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="photo-filters" style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                            <button class="filter-btn active" onclick="filterPhotos('all')">All Photos</button>
+                            <button class="filter-btn" onclick="filterPhotos('room')">By Room</button>
+                            <button class="filter-btn" onclick="filterPhotos('date')">By Date</button>
+                            <button class="filter-btn" onclick="filterPhotos('home')">By Home</button>
+                        </div>
+                        
+                        <div id="photosUploadForm" style="display: none; margin-bottom: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                            <div class="form-group">
+                                <label for="photoFileInput">Select Photos</label>
+                                <input type="file" id="photoFileInput" accept="image/*" multiple>
+                                <small style="color: #94a3b8; margin-top: 0.5rem; display: block;">You can select multiple images at once</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="photoUrlInput">Or paste image URL</label>
+                                <input type="url" id="photoUrlInput" placeholder="https://example.com/image.jpg">
+                            </div>
+                            <div style="display: flex; gap: 0.75rem; margin-top: 1rem;">
+                                <button class="btn" onclick="uploadPhotos()">
+                                    <i class="fas fa-upload"></i> Upload Files
+                                </button>
+                                <button class="btn" onclick="addPhotoFromUrl()">
+                                    <i class="fas fa-plus"></i> Add URL
+                                </button>
+                                <button class="btn btn-secondary" onclick="cancelPhotoUpload()">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="photosGallery" class="photo-gallery" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;">
+                            <!-- dynamically rendered -->
+                        </div>
+                        <div id="photosEmpty" class="empty-state" style="display: none; text-align: center; padding: 2rem; color: #94a3b8;">
+                            <i class="fas fa-images" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                            <p>No photos uploaded yet. Click "Upload Photos" to get started.</p>
+                        </div>
                     </div>
                 </div>
 
