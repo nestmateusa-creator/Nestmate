@@ -2104,34 +2104,9 @@
             }
         }
 
-        // Family management functions
-        function inviteFamily() {
-            // Open family invitation modal or redirect to invitation page
-            alert('Family invitation feature coming soon!');
-        }
-
-        function createFamilyTask() {
-            // Open task creation modal with family assignment options
-            alert('Family task creation feature coming soon!');
-        }
-
-        function viewFamilyCalendar() {
-            // Open family calendar view
-            alert('Family calendar feature coming soon!');
-        }
-
-        function contactEmergency() {
-            // Open emergency services contact
-            window.open('tel:911', '_self');
-        }
-
-        function contactFamilySupport() {
-            // Open family support contact
-            window.open('mailto:support@nestmateusa.com?subject=Family Support Request', '_blank');
-        }
-
-        // Family Quick Actions Functions
-        function inviteFamily() {
+        // Family management functions - explicitly attach to window
+        window.inviteFamily = function inviteFamily() {
+            console.log('inviteFamily called');
             showAlert('Opening family invitation...', 'info');
             const email = prompt('Enter family member email address:');
             if (email) {
@@ -2139,12 +2114,54 @@
             }
         }
 
-        function openFamilyCalendar() {
-            showAlert('Opening family calendar...', 'info');
-            window.open('tasks-calendar-modal.html', '_blank');
+        window.createFamilyTask = function createFamilyTask() {
+            console.log('createFamilyTask called');
+            if (typeof openTaskModal === 'function') {
+                openTaskModal().catch(err => {
+                    console.error('Error opening task modal:', err);
+                    showAlert('Error opening task modal. Please try again.', 'error');
+                });
+            } else {
+                showAlert('Task feature is loading. Please try again in a moment.', 'info');
+            }
         }
 
-        function shareUpdate() {
+        window.viewFamilyCalendar = function viewFamilyCalendar() {
+            console.log('viewFamilyCalendar called');
+            if (typeof openScheduleModal === 'function') {
+                openScheduleModal().catch(err => {
+                    console.error('Error opening calendar:', err);
+                    showAlert('Error opening calendar. Please try again.', 'error');
+                });
+            } else {
+                showAlert('Calendar feature is loading. Please try again in a moment.', 'info');
+            }
+        }
+
+        window.contactEmergency = function contactEmergency() {
+            console.log('contactEmergency called');
+            window.open('tel:911', '_self');
+        }
+
+        window.contactFamilySupport = function contactFamilySupport() {
+            console.log('contactFamilySupport called');
+            window.open('mailto:support@nestmateusa.com?subject=Family Support Request', '_blank');
+        }
+
+        window.openFamilyCalendar = function openFamilyCalendar() {
+            console.log('openFamilyCalendar called');
+            if (typeof openScheduleModal === 'function') {
+                openScheduleModal().catch(err => {
+                    console.error('Error opening calendar:', err);
+                    showAlert('Error opening calendar. Please try again.', 'error');
+                });
+            } else {
+                showAlert('Calendar feature is loading. Please try again in a moment.', 'info');
+            }
+        }
+
+        window.shareUpdate = function shareUpdate() {
+            console.log('shareUpdate called');
             showAlert('Opening share update...', 'info');
             const update = prompt('Enter your update message:');
             if (update) {
@@ -2152,13 +2169,13 @@
             }
         }
 
-        function openEmergencyServices() {
-            showAlert('Opening emergency services...', 'info');
-            window.open('emergency-services.html', '_blank');
+        window.openEmergencyServices = function openEmergencyServices() {
+            console.log('openEmergencyServices called');
+            showSection('emergency');
         }
 
-        function openFamilyAnalytics() {
-            showAlert('Opening family analytics...', 'info');
+        window.openFamilyAnalytics = function openFamilyAnalytics() {
+            console.log('openFamilyAnalytics called');
             showSection('analytics');
         }
 
@@ -2882,8 +2899,8 @@
             }
         }
 
-        // Switch between homes
-        async function switchHome(homeId) {
+        // Switch between homes - explicitly attach to window
+        window.switchHome = async function switchHome(homeId) {
             if (!homeId) {
                 currentHomeId = null;
                 return;
@@ -3663,3 +3680,4 @@
     </div>
 </body>
 </html>
+
