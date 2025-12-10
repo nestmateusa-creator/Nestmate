@@ -2948,13 +2948,15 @@
             document.getElementById('taskModal').style.display = 'none';
         }
 
-        function saveTask() {
+        async function saveTask() {
             const form = document.getElementById('taskForm');
+            const formData = new FormData(form);
             
             const taskData = {
                 title: document.getElementById('taskTitle').value,
                 description: document.getElementById('taskDescription').value,
                 home: document.getElementById('taskHome').value,
+                homeId: document.getElementById('taskHome').value, // Store both for compatibility
                 priority: document.getElementById('taskPriority').value,
                 dueDate: document.getElementById('taskDueDate').value,
                 category: document.getElementById('taskCategory').value,
@@ -2963,12 +2965,14 @@
             };
 
             if (form.dataset.taskId) {
+                // Edit existing task
                 const index = tasks.findIndex(t => t.id === form.dataset.taskId);
                 if (index !== -1) {
                     tasks[index] = { ...tasks[index], ...taskData };
                 }
                 showAlert('Task updated successfully!', 'success');
             } else {
+                // Add new task
                 taskData.id = 'task' + Date.now();
                 tasks.push(taskData);
                 showAlert('Task added successfully!', 'success');
@@ -2981,18 +2985,27 @@
                     console.log('Task saved to AWS successfully');
                 } else {
                     console.error('AWS Data Service not initialized');
-                    showAlert('Error: AWS Data Service not available', 'error');
-                    return;
                 }
             } catch (error) {
                 console.error('Error saving task to AWS:', error);
                 showAlert('Error saving task. Please try again.', 'error');
-                return;
             }
 
             closeTaskModal();
             await loadTasks();
+            
+            // Update health score after task change
+            await updateHealthScoreDisplay();
+            
+            // If calendar modal was open, refresh it
+            const scheduleModal = document.getElementById('scheduleModal');
+            if (scheduleModal && scheduleModal.style.display === 'flex') {
+                await renderCalendar();
+            }
         }
+
+        // Task Management Variables
+        let currentTaskFilter = 'all';
 
         // Load Functions
         async function loadTasks() {
@@ -3000,10 +3013,357 @@
                 if (window.awsDataService) {
                     tasks = await window.awsDataService.getTasksList();
                 }
+                
+                // Render in unlimitedTasksList container
+                const unlimitedContainer = document.getElementById('unlimitedTasksList');
+                if (unlimitedContainer) {
+                    // If filtering by home, check the dropdown value and filter accordingly
+                    if (currentTaskFilter === 'by-home') {
+                        const homeFilterSelect = document.getElementById('homeFilterSelect');
+                        if (homeFilterSelect && homeFilterSelect.value) {
+                            filterTasksByHome(homeFilterSelect.value);
+                        } else {
+                            renderFilteredTasks(currentTaskFilter);
+                        }
+                    } else {
+                        renderFilteredTasks(currentTaskFilter);
+                    }
+                }
+                
+                // Update task stats
+                updateTaskStats();
+                
                 console.log('Tasks loaded:', tasks);
             } catch (error) {
                 console.error('Error loading tasks:', error);
             }
+        }
+
+        function filterTasksByStat(statType) {
+            // Remove active class from all stat items
+            document.querySelectorAll('.stat-item.clickable-stat').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Add active class to clicked stat
+            const clickedStat = event ? event.target.closest('.stat-item') : null;
+            if (clickedStat) {
+                clickedStat.classList.add('active');
+            }
+            
+            // Set the filter and render
+            currentTaskFilter = statType;
+            renderFilteredTasks(statType);
+        }
+        
+        function filterTasks(filter) {
+            currentTaskFilter = filter;
+            
+            // Hide home filter dropdown if not filtering by home
+            const homeFilterDropdown = document.getElementById('homeFilterDropdown');
+            if (homeFilterDropdown) {
+                homeFilterDropdown.style.display = 'none';
+            }
+            
+            // Remove active class from all stat items
+            document.querySelectorAll('.stat-item.clickable-stat').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Update filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Add active class to clicked filter button
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+            
+            renderFilteredTasks(filter);
+        }
+        
+        async function showHomeFilter() {
+            // Update filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Add active class to "By Home" button
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+            
+            // Show home filter dropdown
+            const homeFilterDropdown = document.getElementById('homeFilterDropdown');
+            const homeFilterSelect = document.getElementById('homeFilterSelect');
+            
+            if (homeFilterDropdown && homeFilterSelect) {
+                // Populate dropdown with homes
+                if (window.awsDataService) {
+                    try {
+                        const homesList = await window.awsDataService.getHomesList();
+                        homeFilterSelect.innerHTML = '<option value="">All Homes</option>';
+                        
+                        homesList.forEach(home => {
+                            const option = document.createElement('option');
+                            option.value = home.id;
+                            option.textContent = home.address || home.id;
+                            homeFilterSelect.appendChild(option);
+                        });
+                    } catch (error) {
+                        console.error('Error loading homes for filter:', error);
+                    }
+                }
+                
+                homeFilterDropdown.style.display = 'block';
+                currentTaskFilter = 'by-home';
+                
+                // Show all tasks initially
+                renderFilteredTasks('by-home');
+            }
+        }
+        
+        function filterTasksByHome(homeId) {
+            const container = document.getElementById('unlimitedTasksList');
+            if (!container) return;
+            
+            let filteredTasks = [];
+            
+            if (!homeId || homeId === '') {
+                // Show all tasks
+                filteredTasks = tasks;
+            } else {
+                // Filter tasks by selected home - check both home and homeId fields
+                filteredTasks = tasks.filter(task => {
+                    const taskHomeId = task.home || task.homeId || '';
+                    const matches = taskHomeId === homeId || taskHomeId.toString() === homeId.toString();
+                    return matches;
+                });
+            }
+            
+            // Render the filtered tasks
+            renderTasksInUnlimitedSection(container, filteredTasks);
+        }
+        
+        function renderFilteredTasks(filterType) {
+            const container = document.getElementById('unlimitedTasksList');
+            if (!container) return;
+            
+            let filteredTasks = [];
+            const today = new Date();
+            const weekFromNow = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+            
+            switch(filterType) {
+                case 'active':
+                    filteredTasks = tasks.filter(t => !t.completed);
+                    break;
+                case 'due-this-week':
+                    filteredTasks = tasks.filter(t => {
+                        if (t.completed || !t.dueDate) return false;
+                        const dueDate = new Date(t.dueDate);
+                        return dueDate >= today && dueDate <= weekFromNow;
+                    });
+                    break;
+                case 'completed':
+                    filteredTasks = tasks.filter(t => t.completed);
+                    break;
+                case 'due-soon':
+                    const twoWeeksFromNow = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000);
+                    filteredTasks = tasks.filter(t => {
+                        if (t.completed || !t.dueDate) return false;
+                        const dueDate = new Date(t.dueDate);
+                        return dueDate >= today && dueDate <= twoWeeksFromNow;
+                    });
+                    break;
+                case 'by-home':
+                    // When filtering by home, check if a specific home is selected
+                    const homeFilterSelect = document.getElementById('homeFilterSelect');
+                    if (homeFilterSelect && homeFilterSelect.value) {
+                        // Filter by the selected home
+                        filteredTasks = tasks.filter(task => {
+                            const taskHomeId = task.home || task.homeId || '';
+                            return taskHomeId === homeFilterSelect.value || taskHomeId.toString() === homeFilterSelect.value.toString();
+                        });
+                    } else {
+                        // Show all tasks if no specific home is selected
+                        filteredTasks = tasks;
+                    }
+                    break;
+                case 'by-category':
+                    // Group by category - show all tasks but organized
+                    filteredTasks = tasks;
+                    break;
+                case 'all':
+                default:
+                    filteredTasks = tasks;
+                    break;
+            }
+            
+            // Render the filtered tasks
+            renderTasksInUnlimitedSection(container, filteredTasks);
+        }
+
+        async function editTask(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                await openTaskModal(task);
+            }
+        }
+
+        async function completeTask(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                task.completed = true;
+                task.completedDate = new Date().toISOString();
+                
+                // Save to AWS
+                try {
+                    if (window.awsDataService) {
+                        await window.awsDataService.saveTasksList(tasks);
+                        console.log('Task completed and saved to AWS');
+                    }
+                } catch (error) {
+                    console.error('Error saving task to AWS:', error);
+                }
+                
+                showAlert('Task completed!', 'success');
+                await loadTasks();
+            }
+        }
+
+        async function undoTask(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                task.completed = false;
+                delete task.completedDate;
+                
+                // Save to AWS
+                try {
+                    if (window.awsDataService) {
+                        await window.awsDataService.saveTasksList(tasks);
+                        console.log('Task undone and saved to AWS');
+                    }
+                } catch (error) {
+                    console.error('Error saving task to AWS:', error);
+                }
+                
+                showAlert('Task undone!', 'info');
+                await loadTasks();
+            }
+        }
+
+        async function toggleTaskComplete(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                task.completed = !task.completed;
+                if (task.completed) {
+                    task.completedDate = new Date().toISOString();
+                } else {
+                    delete task.completedDate;
+                }
+                
+                if (window.awsDataService) {
+                    await window.awsDataService.saveTasksList(tasks);
+                }
+                await loadTasks();
+            }
+        }
+
+        async function renderTasksInUnlimitedSection(container, tasksToRender = null) {
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            // Use provided tasks or all tasks
+            const tasksToShow = tasksToRender !== null ? tasksToRender : tasks;
+            
+            if (tasksToShow.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'empty-state';
+                empty.textContent = 'No tasks added yet. Click "Add New Task" to create one.';
+                container.appendChild(empty);
+                return;
+            }
+            
+            // Get homes list for displaying home addresses
+            let homesMap = {};
+            if (window.awsDataService) {
+                try {
+                    const homesList = await window.awsDataService.getHomesList();
+                    homesList.forEach(home => {
+                        homesMap[home.id] = home.address || home.id;
+                    });
+                } catch (error) {
+                    console.error('Error loading homes for task display:', error);
+                }
+            }
+            
+            tasksToShow.forEach(task => {
+                const taskItem = document.createElement('div');
+                const homeAddress = homesMap[task.home || task.homeId] || task.home || 'Unknown Home';
+                const dueDate = task.dueDate ? new Date(task.dueDate) : null;
+                const daysUntilDue = dueDate ? Math.ceil((dueDate - new Date()) / (1000 * 60 * 60 * 24)) : null;
+                let dueText = '';
+                if (task.completed) {
+                    dueText = `Completed ${dueDate ? dueDate.toLocaleDateString() : ''}`;
+                } else if (dueDate) {
+                    if (daysUntilDue < 0) {
+                        dueText = `Overdue by ${Math.abs(daysUntilDue)} day${Math.abs(daysUntilDue) !== 1 ? 's' : ''}`;
+                    } else if (daysUntilDue === 0) {
+                        dueText = 'Due today';
+                    } else if (daysUntilDue === 1) {
+                        dueText = 'Due tomorrow';
+                    } else if (daysUntilDue <= 7) {
+                        dueText = `Due in ${daysUntilDue} days`;
+                    } else {
+                        dueText = `Due ${dueDate.toLocaleDateString()}`;
+                    }
+                } else {
+                    dueText = 'No due date';
+                }
+                
+                taskItem.className = `task-item ${task.priority || 'medium'}-priority ${task.completed ? 'completed' : ''}`;
+                taskItem.innerHTML = `
+                    <div class="task-checkbox">
+                        <input type="checkbox" id="task-${task.id}" ${task.completed ? 'checked' : ''} onchange="toggleTaskComplete('${task.id}')">
+                        <label for="task-${task.id}"></label>
+                    </div>
+                    <div class="task-content ${task.completed ? 'completed' : ''}">
+                        <h4>${task.title}</h4>
+                        <p>${homeAddress} • ${dueText}</p>
+                    </div>
+                    <div class="task-actions">
+                        ${task.completed 
+                            ? `<button class="btn-small" onclick="undoTask('${task.id}')">Undo</button>`
+                            : `<button class="btn-small" onclick="editTask('${task.id}')">Edit</button>
+                               <button class="btn-small" onclick="completeTask('${task.id}')">Complete</button>`
+                        }
+                    </div>
+                `;
+                container.appendChild(taskItem);
+            });
+        }
+        
+        function updateTaskStats() {
+            const activeTasks = tasks.filter(t => !t.completed).length;
+            const today = new Date();
+            const weekFromNow = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+            const dueThisWeek = tasks.filter(t => {
+                if (t.completed || !t.dueDate) return false;
+                const dueDate = new Date(t.dueDate);
+                return dueDate >= today && dueDate <= weekFromNow;
+            }).length;
+            const completed = tasks.filter(t => t.completed).length;
+            
+            // Update stats in unlimited tasks section
+            const statActiveCount = document.getElementById('stat-active-count');
+            const statDueWeekCount = document.getElementById('stat-due-week-count');
+            const statCompletedCount = document.getElementById('stat-completed-count');
+            
+            if (statActiveCount) statActiveCount.textContent = activeTasks;
+            if (statDueWeekCount) statDueWeekCount.textContent = dueThisWeek;
+            if (statCompletedCount) statCompletedCount.textContent = completed;
         }
 
         // Calendar Functions - explicitly attach to window
