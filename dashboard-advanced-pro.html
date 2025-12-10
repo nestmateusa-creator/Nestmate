@@ -1983,8 +1983,9 @@
     </div>
 
     <script>
-        // Navigation functionality
-        function showSection(sectionId) {
+        // Navigation functionality - explicitly attach to window for global access
+        window.showSection = function showSection(sectionId) {
+            console.log('showSection called with:', sectionId);
             // Show/hide home selector based on section
             const homeSelectorContainer = document.getElementById('homeSelectorContainer');
             if (homeSelectorContainer) {
@@ -2081,8 +2082,9 @@
             }
         }
 
-        // Sign out functionality
-        async function signOut() {
+        // Sign out functionality - explicitly attach to window
+        window.signOut = async function signOut() {
+            console.log('signOut called');
             try {
                 // Clear sessionStorage
                 sessionStorage.removeItem('currentUser');
@@ -2337,8 +2339,12 @@
         // Multi-Home Functions
         // These functions are now implemented above with real functionality
 
-        function addNewTask() {
-            openTaskModal();
+        window.addNewTask = function addNewTask() {
+            console.log('addNewTask called');
+            openTaskModal().catch(err => {
+                console.error('Error opening task modal:', err);
+                showAlert('Error opening task modal. Please try again.', 'error');
+            });
         }
 
         // Data Storage
