@@ -481,13 +481,26 @@
 
                         let dest = 'dashboard-basic-clean.html';
                         // Redirect to appropriate dashboard based on subscription
-                        if (sub === 'pro') dest = 'dashboard-advanced.html';
-                        if (sub === 'advanced-pro') dest = 'dashboard-advanced-pro.html';
-                        if (sub === 'enterprise') dest = 'dashboard-enterprise.html';
-
-                        // If no active subscription, send to pricing
-                        const status = userRec?.user?.subscriptionStatus || 'inactive';
-                        if (status !== 'active') dest = 'pricing.html?from=login';
+                        if (sub === 'pro') {
+                            dest = 'dashboard-advanced.html';
+                        } else if (sub === 'advanced-pro') {
+                            dest = 'dashboard-advanced-pro.html';
+                        } else if (sub === 'enterprise') {
+                            dest = 'dashboard-enterprise.html';
+                        } else if (sub === 'basic') {
+                            // Basic users go to basic dashboard
+                            dest = 'dashboard-basic-clean.html';
+                        } else {
+                            // Unknown subscription type or missing - check status
+                            const status = userRec?.user?.subscriptionStatus;
+                            // Only redirect to pricing if status is explicitly 'inactive' or 'cancelled'
+                            // If status is undefined/null/active, allow access to basic dashboard
+                            if (status === 'inactive' || status === 'cancelled') {
+                                dest = 'pricing.html?from=login';
+                            } else {
+                                dest = 'dashboard-basic-clean.html';
+                            }
+                        }
 
                         showMessage('Signed in successfully! Redirecting...', 'success');
                         setTimeout(() => { window.location.href = dest; }, 800);
