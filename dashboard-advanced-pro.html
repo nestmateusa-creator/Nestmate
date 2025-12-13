@@ -2458,20 +2458,87 @@
         }
 
         async function saveBasicInfo() {
-            const address = document.getElementById('address').value;
-            const yearBuilt = document.getElementById('yearBuilt').value;
-            const squareFootage = document.getElementById('squareFootage').value;
-            const bedrooms = document.getElementById('bedrooms').value;
-            const bathrooms = document.getElementById('bathrooms').value;
-            const homeType = document.getElementById('homeType').value;
+            // Get form values - use correct field IDs
+            const addressEl = document.getElementById('address');
+            const yearBuiltEl = document.getElementById('yearBuilt');
+            const squareFootageEl = document.getElementById('squareFootage');
+            const bedroomsEl = document.getElementById('bedroomsInput');
+            const bathroomsEl = document.getElementById('bathroomsInput');
+            const homeTypeEl = document.getElementById('homeType');
+
+            if (!addressEl || !yearBuiltEl || !squareFootageEl || !bedroomsEl || !bathroomsEl || !homeTypeEl) {
+                console.error('❌ Form fields not found');
+                showAlert('Error: Form fields not found. Please refresh the page.', 'error');
+                return;
+            }
+
+            const address = addressEl.value;
+            const yearBuilt = yearBuiltEl.value;
+            const squareFootage = squareFootageEl.value;
+            const bedrooms = bedroomsEl.value;
+            const bathrooms = bathroomsEl.value;
+            const homeType = homeTypeEl.value;
+
+            const basicInfoData = {
+                address: address,
+                yearBuilt: yearBuilt,
+                squareFootage: squareFootage,
+                bedrooms: bedrooms,
+                bathrooms: bathrooms,
+                homeType: homeType
+            };
+
+            // Save to AWS
+            try {
+                if (!window.awsDataService) {
+                    console.error('❌ AWS Data Service not initialized');
+                    showAlert('Data service not available. Please refresh the page.', 'error');
+                    return;
+                }
+
+                // Ensure we have a home selected
+                if (!currentHomeId) {
+                    showAlert('Please select a home first or create a new home.', 'error');
+                    return;
+                }
+
+                console.log('💾 Saving basic info to AWS for homeId:', currentHomeId);
+                console.log('💾 Basic info data:', basicInfoData);
+
+                // Save basic info per home (using saveBasicInfo if available, otherwise save to homesData)
+                const result = await window.awsDataService.saveBasicInfo(basicInfoData, currentHomeId);
+                console.log('💾 Save result:', result);
+
+                if (result && result.success) {
+                    console.log('✅ Basic info saved to AWS successfully');
+                } else {
+                    console.error('❌ Save failed:', result);
+                    showAlert('Error saving basic info. Please try again.', 'error');
+                    return;
+                }
+            } catch (error) {
+                console.error('❌ Error saving basic info to AWS:', error);
+                showAlert('Error saving basic info: ' + (error.message || 'Unknown error'), 'error');
+                return;
+            }
+
+            // Reload from AWS to verify save and update display
+            await loadBasicInfo();
 
             // Update display
-            document.getElementById('displayAddress').textContent = address || 'Not set';
-            document.getElementById('displayYearBuilt').textContent = yearBuilt || 'Not set';
-            document.getElementById('displaySquareFootage').textContent = squareFootage || 'Not set';
-            document.getElementById('displayBedrooms').textContent = bedrooms || 'Not set';
-            document.getElementById('displayBathrooms').textContent = bathrooms || 'Not set';
-            document.getElementById('displayHomeType').textContent = homeType || 'Not set';
+            const displayAddress = document.getElementById('displayAddress');
+            const displayYearBuilt = document.getElementById('displayYearBuilt');
+            const displaySquareFootage = document.getElementById('displaySquareFootage');
+            const displayBedrooms = document.getElementById('displayBedrooms');
+            const displayBathrooms = document.getElementById('displayBathrooms');
+            const displayHomeType = document.getElementById('displayHomeType');
+
+            if (displayAddress) displayAddress.textContent = address || 'Not set';
+            if (displayYearBuilt) displayYearBuilt.textContent = yearBuilt || 'Not set';
+            if (displaySquareFootage) displaySquareFootage.textContent = squareFootage || 'Not set';
+            if (displayBedrooms) displayBedrooms.textContent = bedrooms || 'Not set';
+            if (displayBathrooms) displayBathrooms.textContent = bathrooms || 'Not set';
+            if (displayHomeType) displayHomeType.textContent = homeType || 'Not set';
 
             // Hide form and show display
             document.getElementById('basicInfoForm').style.display = 'none';

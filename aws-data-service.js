@@ -1331,6 +1331,109 @@ class AWSDataService {
         }
     }
 
+    // ==================== BASIC INFO DATA ====================
+
+    async saveBasicInfo(basicInfo, homeId = null) {
+        try {
+            if (!this.currentUserId) {
+                throw new Error('User not authenticated');
+            }
+
+            if (!homeId) {
+                const homes = await this.getHomesList();
+                if (homes.length > 0) {
+                    homeId = homes[0].id;
+                } else {
+                    throw new Error('No home selected and no homes available');
+                }
+            }
+
+            console.log('💾 saveBasicInfo: Saving for userId:', this.currentUserId, 'homeId:', homeId);
+            console.log('💾 saveBasicInfo: Data to save:', basicInfo);
+
+            const getParams = {
+                TableName: 'nestmate-users',
+                Key: { userId: this.currentUserId }
+            };
+            const userData = await this.dynamodb.get(getParams).promise();
+            
+            let homesData = userData.Item?.homesData || {};
+            if (!homesData[homeId]) {
+                homesData[homeId] = {
+                    bedroomsList: [],
+                    bathroomsList: [],
+                    kitchensList: [],
+                    livingAreasList: [],
+                    appliancesList: [],
+                    photosList: [],
+                    renovationsList: [],
+                    emergencyContacts: { family: [], emergency: [], services: [] },
+                    garageInfo: {},
+                    exteriorInfo: {},
+                    structureInfo: {},
+                    systemsInfo: {},
+                    basicInfo: {}
+                };
+            }
+            
+            homesData[homeId].basicInfo = basicInfo;
+            
+            const params = {
+                TableName: 'nestmate-users',
+                Key: { userId: this.currentUserId },
+                UpdateExpression: 'SET homesData = :homesData, updatedAt = :updated',
+                ExpressionAttributeValues: {
+                    ':homesData': homesData,
+                    ':updated': new Date().toISOString()
+                }
+            };
+
+            console.log('💾 saveBasicInfo: DynamoDB params:', params);
+            const result = await this.dynamodb.update(params).promise();
+            console.log('💾 saveBasicInfo: DynamoDB result:', result);
+            console.log('✅ Basic info saved to AWS for home:', homeId);
+            return { success: true };
+
+        } catch (error) {
+            console.error('❌ Error saving basic info:', error);
+            return { success: false, error: error.message };
+        }
+    }
+
+    async getBasicInfo(homeId = null) {
+        try {
+            if (!this.currentUserId) {
+                throw new Error('User not authenticated');
+            }
+
+            if (!homeId) {
+                const homes = await this.getHomesList();
+                if (homes.length > 0) {
+                    homeId = homes[0].id;
+                } else {
+                    return {};
+                }
+            }
+
+            console.log('🔍 getBasicInfo: Getting data for userId:', this.currentUserId, 'homeId:', homeId);
+            const params = {
+                TableName: 'nestmate-users',
+                Key: { userId: this.currentUserId }
+            };
+
+            const result = await this.dynamodb.get(params).promise();
+            const homesData = result.Item?.homesData || {};
+            const basicInfo = homesData[homeId]?.basicInfo || {};
+            
+            console.log('🔍 getBasicInfo: Returning basicInfo for home', homeId, ':', basicInfo);
+            return basicInfo;
+
+        } catch (error) {
+            console.error('❌ Error getting basic info:', error);
+            return {};
+        }
+    }
+
     // ==================== STRUCTURE DATA ====================
 
     async saveStructureInfo(structureInfo, homeId = null) {
