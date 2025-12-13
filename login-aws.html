@@ -434,13 +434,13 @@
                 }
             }, 500);
 
-            // Add event listeners
+            // Add event listeners (moved here so they're always set up)
             loginForm.addEventListener('submit', handleLogin);
 
             // Check for URL parameters (e.g., from email confirmation)
-            const urlParams = new URLSearchParams(window.location.search);
-            const message = urlParams.get('message');
-            const type = urlParams.get('type');
+            const urlParamsForMessage = new URLSearchParams(window.location.search);
+            const message = urlParamsForMessage.get('message');
+            const type = urlParamsForMessage.get('type');
             
             if (message) {
                 showMessage(decodeURIComponent(message), type || 'info');
