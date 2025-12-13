@@ -275,8 +275,13 @@ class NestMateAuth {
     async signOut() {
         try {
             if (this.accessToken) {
-                await this._ensureAWSAvailable(cognito, 'globalSignOut', 'AWS Cognito');
-                await cognito.globalSignOut({ AccessToken: this.accessToken }).promise();
+                try {
+                    await this._ensureAWSAvailable(cognito, 'globalSignOut', 'AWS Cognito');
+                    await cognito.globalSignOut({ AccessToken: this.accessToken }).promise();
+                } catch (cognitoError) {
+                    console.warn('Cognito sign out error (continuing with local cleanup):', cognitoError);
+                    // Continue with local cleanup even if Cognito sign out fails
+                }
             }
             
             // Clear stored data
@@ -284,13 +289,18 @@ class NestMateAuth {
             this.accessToken = null;
             this.refreshToken = null;
             
+            // Clear all auth-related storage
+            sessionStorage.clear();
+            
             // Handle both sync and async localStorage.removeItem
             const removeAccessToken = localStorage.removeItem('awsAccessToken');
             const removeRefreshToken = localStorage.removeItem('awsRefreshToken');
             const removeCurrentUser = localStorage.removeItem('currentUser');
+            const removeCurrentUserEmail = localStorage.removeItem('currentUserEmail');
             if (removeAccessToken instanceof Promise) await removeAccessToken;
             if (removeRefreshToken instanceof Promise) await removeRefreshToken;
             if (removeCurrentUser instanceof Promise) await removeCurrentUser;
+            if (removeCurrentUserEmail instanceof Promise) await removeCurrentUserEmail;
             
             return { success: true, message: 'Signed out successfully!' };
         } catch (error) {
@@ -300,13 +310,18 @@ class NestMateAuth {
             this.accessToken = null;
             this.refreshToken = null;
             
+            // Clear all auth-related storage
+            sessionStorage.clear();
+            
             // Handle both sync and async localStorage.removeItem
             const removeAccessToken = localStorage.removeItem('awsAccessToken');
             const removeRefreshToken = localStorage.removeItem('awsRefreshToken');
             const removeCurrentUser = localStorage.removeItem('currentUser');
+            const removeCurrentUserEmail = localStorage.removeItem('currentUserEmail');
             if (removeAccessToken instanceof Promise) await removeAccessToken;
             if (removeRefreshToken instanceof Promise) await removeRefreshToken;
             if (removeCurrentUser instanceof Promise) await removeCurrentUser;
+            if (removeCurrentUserEmail instanceof Promise) await removeCurrentUserEmail;
             
             return { success: true, message: 'Signed out successfully!' };
         }

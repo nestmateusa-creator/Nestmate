@@ -2432,21 +2432,43 @@
         window.signOut = async function signOut() {
             console.log('signOut called');
             try {
-                // Clear sessionStorage
-                sessionStorage.removeItem('currentUser');
-                sessionStorage.removeItem('currentUserEmail');
+                // Clear all sessionStorage
+                sessionStorage.clear();
+                
+                // Clear all localStorage items related to auth
+                localStorage.removeItem('currentUser');
+                localStorage.removeItem('currentUserEmail');
+                localStorage.removeItem('awsAccessToken');
+                localStorage.removeItem('awsRefreshToken');
                 
                 // Sign out from AWS Cognito
                 if (nestMateAuth && nestMateAuth.signOut) {
                     await nestMateAuth.signOut();
                 }
                 
-                // Redirect to login page
-                window.location.href = 'login-aws.html';
+                // Clear the auth object's current user
+                if (nestMateAuth) {
+                    nestMateAuth.currentUser = null;
+                    nestMateAuth.accessToken = null;
+                    nestMateAuth.refreshToken = null;
+                }
+                
+                // Redirect to login page with signout parameter to prevent auto-login
+                window.location.href = 'login-aws.html?signout=true';
             } catch (error) {
                 console.error('Error signing out:', error);
-                // Even if sign out fails, redirect to login
-                window.location.href = 'login-aws.html';
+                // Even if sign out fails, clear everything and redirect
+                sessionStorage.clear();
+                localStorage.removeItem('currentUser');
+                localStorage.removeItem('currentUserEmail');
+                localStorage.removeItem('awsAccessToken');
+                localStorage.removeItem('awsRefreshToken');
+                if (nestMateAuth) {
+                    nestMateAuth.currentUser = null;
+                    nestMateAuth.accessToken = null;
+                    nestMateAuth.refreshToken = null;
+                }
+                window.location.href = 'login-aws.html?signout=true';
             }
         }
 

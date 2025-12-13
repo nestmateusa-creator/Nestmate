@@ -347,6 +347,26 @@
                 localStorage.removeItem('demoPassword');
             }
             
+            // Check if this is a signout redirect - if so, skip auto-login check
+            const urlParams = new URLSearchParams(window.location.search);
+            const isSignOut = urlParams.get('signout') === 'true';
+            
+            if (isSignOut) {
+                console.log('Sign out detected, skipping auto-login check');
+                // Clear any remaining auth data
+                sessionStorage.clear();
+                localStorage.removeItem('currentUser');
+                localStorage.removeItem('currentUserEmail');
+                localStorage.removeItem('awsAccessToken');
+                localStorage.removeItem('awsRefreshToken');
+                if (nestMateAuth) {
+                    nestMateAuth.currentUser = null;
+                    nestMateAuth.accessToken = null;
+                    nestMateAuth.refreshToken = null;
+                }
+                return; // Don't check for existing authentication
+            }
+            
             // Wait a bit for auth to initialize
             setTimeout(async () => {
                 console.log('Checking authentication after delay...');
