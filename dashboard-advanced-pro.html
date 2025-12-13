@@ -2744,11 +2744,49 @@
             const exteriorMaterial = document.getElementById('exteriorMaterial').value;
             const windows = document.getElementById('windows').value;
 
-            // Update display
-            document.getElementById('displayFoundation').textContent = foundation || 'Not set';
-            document.getElementById('displayRoofType').textContent = roofType || 'Not set';
-            document.getElementById('displayExteriorMaterial').textContent = exteriorMaterial || 'Not set';
-            document.getElementById('displayWindows').textContent = windows || 'Not set';
+            const structureData = {
+                foundation: foundation,
+                roofType: roofType,
+                exteriorMaterial: exteriorMaterial,
+                windows: windows
+            };
+
+            // Save to AWS
+            try {
+                if (!window.awsDataService) {
+                    console.error('AWS Data Service not initialized');
+                    showAlert('Data service not available. Please refresh the page.', 'error');
+                    return;
+                }
+
+                // Ensure we have a home selected
+                if (!currentHomeId) {
+                    showAlert('Please select a home first or create a new home.', 'error');
+                    return;
+                }
+
+                console.log('💾 Saving structure info to AWS for homeId:', currentHomeId);
+                console.log('💾 Structure data:', structureData);
+
+                const result = await window.awsDataService.saveStructureInfo(structureData, currentHomeId);
+                if (result && result.success) {
+                    console.log('✅ Structure info saved to AWS successfully');
+                } else {
+                    console.error('❌ Save failed:', result);
+                    showAlert('Error saving structure info. Please try again.', 'error');
+                    return;
+                }
+            } catch (error) {
+                console.error('Error saving structure info to AWS:', error);
+                showAlert('Error saving structure info: ' + (error.message || 'Unknown error'), 'error');
+                return;
+            }
+
+            // Reload from AWS to verify save and update display
+            await loadStructure();
+            
+            // Update health score after structure change
+            await updateHealthScoreDisplay();
 
             // Hide form and show display
             document.getElementById('structureForm').style.display = 'none';
@@ -2818,11 +2856,49 @@
             const plumbing = document.getElementById('plumbing').value;
             const waterHeater = document.getElementById('waterHeater').value;
 
-            // Update display
-            document.getElementById('displayHVAC').textContent = hvac || 'Not set';
-            document.getElementById('displayElectrical').textContent = electrical || 'Not set';
-            document.getElementById('displayPlumbing').textContent = plumbing || 'Not set';
-            document.getElementById('displayWaterHeater').textContent = waterHeater || 'Not set';
+            const systemsData = {
+                hvac: hvac,
+                electrical: electrical,
+                plumbing: plumbing,
+                waterHeater: waterHeater
+            };
+
+            // Save to AWS
+            try {
+                if (!window.awsDataService) {
+                    console.error('AWS Data Service not initialized');
+                    showAlert('Data service not available. Please refresh the page.', 'error');
+                    return;
+                }
+
+                // Ensure we have a home selected
+                if (!currentHomeId) {
+                    showAlert('Please select a home first or create a new home.', 'error');
+                    return;
+                }
+
+                console.log('💾 Saving systems info to AWS for homeId:', currentHomeId);
+                console.log('💾 Systems data:', systemsData);
+
+                const result = await window.awsDataService.saveSystemsInfo(systemsData, currentHomeId);
+                if (result && result.success) {
+                    console.log('✅ Systems info saved to AWS successfully');
+                } else {
+                    console.error('❌ Save failed:', result);
+                    showAlert('Error saving systems info. Please try again.', 'error');
+                    return;
+                }
+            } catch (error) {
+                console.error('Error saving systems info to AWS:', error);
+                showAlert('Error saving systems info: ' + (error.message || 'Unknown error'), 'error');
+                return;
+            }
+
+            // Reload from AWS to verify save and update display
+            await loadSystems();
+            
+            // Update health score after systems change
+            await updateHealthScoreDisplay();
 
             // Hide form and show display
             document.getElementById('systemsForm').style.display = 'none';
@@ -2887,6 +2963,16 @@
 
         async function saveGarage() {
             try {
+                if (!window.awsDataService) {
+                    throw new Error('AWS Data Service not initialized');
+                }
+
+                // Ensure we have a home selected
+                if (!currentHomeId) {
+                    showAlert('Please select a home first or create a new home.', 'error');
+                    return;
+                }
+
                 const garageData = {
                     type: document.getElementById('garageType').value,
                     capacity: document.getElementById('garageCapacity').value,
@@ -2894,13 +2980,12 @@
                     lastMaintenance: document.getElementById('garageMaintenance').value
                 };
                 
-                if (!window.awsDataService) {
-                    throw new Error('AWS Data Service not initialized');
-                }
+                console.log('💾 Saving garage info to AWS for homeId:', currentHomeId);
+                console.log('💾 Garage data:', garageData);
                 
                 const result = await window.awsDataService.saveGarageInfo(garageData, currentHomeId);
                 if (result && result.success) {
-                    console.log('✅ Garage info saved successfully');
+                    console.log('✅ Garage info saved to AWS successfully');
                     await loadGarage(); // Reload to verify persistence
                     cancelEditGarage();
                     showAlert('Garage info saved successfully!', 'success');
@@ -2909,7 +2994,7 @@
                 }
             } catch (error) {
                 console.error('❌ Error saving garage info:', error);
-                showAlert('Error saving garage info. Please try again.', 'error');
+                showAlert('Error saving garage info: ' + (error.message || 'Unknown error'), 'error');
             }
         }
 
