@@ -283,9 +283,13 @@ class NestMateAuth {
             this.accessToken = null;
             this.refreshToken = null;
             
-            localStorage.removeItem('awsAccessToken');
-            localStorage.removeItem('awsRefreshToken');
-            localStorage.removeItem('currentUser');
+            // Handle both sync and async localStorage.removeItem
+            const removeAccessToken = localStorage.removeItem('awsAccessToken');
+            const removeRefreshToken = localStorage.removeItem('awsRefreshToken');
+            const removeCurrentUser = localStorage.removeItem('currentUser');
+            if (removeAccessToken instanceof Promise) await removeAccessToken;
+            if (removeRefreshToken instanceof Promise) await removeRefreshToken;
+            if (removeCurrentUser instanceof Promise) await removeCurrentUser;
             
             return { success: true, message: 'Signed out successfully!' };
         } catch (error) {
@@ -295,9 +299,13 @@ class NestMateAuth {
             this.accessToken = null;
             this.refreshToken = null;
             
-            localStorage.removeItem('awsAccessToken');
-            localStorage.removeItem('awsRefreshToken');
-            localStorage.removeItem('currentUser');
+            // Handle both sync and async localStorage.removeItem
+            const removeAccessToken = localStorage.removeItem('awsAccessToken');
+            const removeRefreshToken = localStorage.removeItem('awsRefreshToken');
+            const removeCurrentUser = localStorage.removeItem('currentUser');
+            if (removeAccessToken instanceof Promise) await removeAccessToken;
+            if (removeRefreshToken instanceof Promise) await removeRefreshToken;
+            if (removeCurrentUser instanceof Promise) await removeCurrentUser;
             
             return { success: true, message: 'Signed out successfully!' };
         }
@@ -408,8 +416,14 @@ class NestMateAuth {
     async refreshAccessToken() {
         try {
             if (!this.refreshToken) {
-                this.refreshToken = localStorage.getItem('awsRefreshToken');
-                if (!this.refreshToken) {
+                // Handle both sync and async localStorage.getItem
+                const tokenValue = localStorage.getItem('awsRefreshToken');
+                if (tokenValue instanceof Promise) {
+                    this.refreshToken = await tokenValue;
+                } else {
+                    this.refreshToken = tokenValue;
+                }
+                if (!this.refreshToken || this.refreshToken === 'null' || this.refreshToken === 'undefined') {
                     throw new Error('No refresh token available');
                 }
             }
