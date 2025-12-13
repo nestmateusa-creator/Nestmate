@@ -5335,28 +5335,93 @@
             await new Promise(resolve => setTimeout(resolve, 500));
             
             // Check authentication
-            try {
-                const isAuthenticated = await nestMateAuth.isAuthenticated();
-                if (!isAuthenticated) {
-                    window.location.href = 'login-aws.html';
-                    return;
-                }
-            } catch (error) {
-                console.error('Error checking authentication:', error);
-                // Continue anyway - might be in demo mode
+            const isAuthenticated = await nestMateAuth.isAuthenticated();
+            if (!isAuthenticated) {
+                window.location.href = 'login-aws.html';
+                return;
             }
 
-            // Load user data first
+            // Get user info and display it
             await loadUserData();
             
-            // Load tasks
-            await loadTasks();
-            
-            // Load homes using AWS (Basic Dashboard pattern)
-            await loadHomes();
-            
-            // Initialize home selector
-            await initHomeSelector();
+            // Store user data in sessionStorage for easy access
+            if (nestMateAuth.currentUser) {
+                const userData = {
+                    userId: nestMateAuth.currentUser.userId,
+                    email: nestMateAuth.currentUser.email || nestMateAuth.currentUser.username,
+                    name: nestMateAuth.currentUser.name || nestMateAuth.currentUser.email || 'User'
+                };
+                sessionStorage.setItem('currentUser', JSON.stringify(userData));
+                sessionStorage.setItem('currentUserEmail', userData.email);
+            }
+
+            // Initialize AWS Data Service
+            if (nestMateAuth.currentUser && nestMateAuth.currentUser.userId) {
+                const userId = nestMateAuth.currentUser.userId;
+                console.log('Initializing AWS Data Service with userId:', userId);
+                console.log('Current user:', nestMateAuth.currentUser);
+                
+                try {
+                    const awsDataService = new AWSDataService();
+                    await awsDataService.initialize(userId);
+                    window.awsDataService = awsDataService; // Make it globally available
+                    console.log('✅ AWS Data Service initialized successfully');
+
+                    // Load homes using AWS (Basic Dashboard pattern)
+                    await loadHomes();
+                    
+                    // Initialize home selector
+                    await initHomeSelector();
+                    
+                    // Update sidebar with selected home info
+                    if (currentHomeId) {
+                        await updateSidebarHomeInfo(currentHomeId);
+                    }
+                    
+                    // Load and render rooms data
+                    await renderBedroomsList();
+                    await renderBathroomsList();
+                    await renderKitchensList();
+                    
+                    // Load living areas, appliances
+                    await renderLivingAreasList();
+                    await renderAppliancesList();
+                    
+                    // Load garage and exterior
+                    await loadGarage();
+                    await loadExterior();
+                    
+                    // Load photos
+                    await initPhotos();
+                    await displayPhotos();
+                    
+                    // Load renovations
+                    await renderRenovationsList();
+                    
+                    // Load emergency contacts
+                    initEmergencyContacts();
+                    await renderAllContacts();
+                    
+                    // Load tasks
+                    tasks = await window.awsDataService.getTasksList();
+                    await loadTasks();
+                    
+                    // Load and display saved user data (basicInfo, structure, systems)
+                    await loadBasicInfo();
+                    await loadStructure();
+                    await loadSystems();
+                    
+                    // Calculate and display initial health score
+                    await updateHealthScoreDisplay();
+                } catch (error) {
+                    console.error('❌ Error initializing AWS Data Service:', error);
+                    showAlert('Error initializing data service. Some features may not work.', 'error');
+                }
+            } else {
+                console.error('❌ No user ID available for AWS Data Service initialization');
+                console.error('nestMateAuth.currentUser:', nestMateAuth.currentUser);
+                showAlert('Error: User authentication data not available', 'error');
+            }
             
             console.log('Advanced Pro Dashboard initialized');
         });
