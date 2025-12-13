@@ -4227,7 +4227,6 @@
             const container = document.getElementById('bathroomsList');
             if (!container) return;
             container.innerHTML = '';
-            const list = ensureDashboardState().bathroomsList || [];
             if (list.length === 0) {
                 const empty = document.createElement('div');
                 empty.className = 'empty-state';
@@ -4351,11 +4350,19 @@
         }
 
         // ===== Dynamic Kitchens Helpers =====
-        function renderKitchensList() {
+        async function renderKitchensList() {
+            if (!window.awsDataService || !currentHomeId) {
+                const container = document.getElementById('kitchensList');
+                if (container) {
+                    container.innerHTML = '<div class="empty-state">No home selected. Please select a home first.</div>';
+                }
+                return;
+            }
+            
+            const list = await window.awsDataService.getKitchensList(currentHomeId) || [];
             const container = document.getElementById('kitchensList');
             if (!container) return;
             container.innerHTML = '';
-            const list = ensureDashboardState().kitchensList || [];
             if (list.length === 0) {
                 const empty = document.createElement('div');
                 empty.className = 'empty-state';
