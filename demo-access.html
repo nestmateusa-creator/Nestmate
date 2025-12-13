@@ -193,6 +193,47 @@
             box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
         }
 
+        .demo-dashboard-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+
+        .demo-dashboard-btn:hover {
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+        }
+
+        .demo-dashboard-btn.basic,
+        .demo-dashboard-btn.advanced {
+            background: linear-gradient(135deg, #00d4aa, #00a085);
+        }
+
+        .demo-dashboard-btn.basic:hover,
+        .demo-dashboard-btn.advanced:hover {
+            background: linear-gradient(135deg, #00a085, #008066);
+        }
+
+        .demo-dashboard-btn.enterprise {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .demo-dashboard-btn.enterprise:hover {
+            background: linear-gradient(135deg, #d97706, #b45309);
+        }
+
         .instructions {
             background: rgba(59, 130, 246, 0.1);
             border: 1px solid rgba(59, 130, 246, 0.3);
@@ -230,6 +271,154 @@
             background: rgba(255, 255, 255, 0.2);
         }
 
+        /* Demo Video Section */
+        .demo-video-section {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-left: 4px solid #8b5cf6;
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin: 3rem 0;
+        }
+
+        .demo-video-section h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #8b5cf6;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .demo-video-section .subtitle {
+            color: #94a3b8;
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .video-container video,
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .video-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(124, 58, 237, 0.2));
+            color: #cbd5e1;
+        }
+
+        .video-placeholder i {
+            font-size: 4rem;
+            color: #8b5cf6;
+            margin-bottom: 1rem;
+        }
+
+        .video-placeholder p {
+            font-size: 1.125rem;
+            text-align: center;
+            padding: 0 2rem;
+        }
+
+        .chapters-section {
+            margin-top: 2rem;
+        }
+
+        .chapters-section h3 {
+            color: #f1f5f9;
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chapters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+
+        .chapter-item {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .chapter-item:hover {
+            background: rgba(139, 92, 246, 0.2);
+            border-color: #8b5cf6;
+            transform: translateX(5px);
+        }
+
+        .chapter-item .chapter-icon {
+            font-size: 1.25rem;
+            color: #8b5cf6;
+            min-width: 24px;
+        }
+
+        .chapter-item .chapter-info {
+            flex: 1;
+        }
+
+        .chapter-item .chapter-title {
+            color: #f1f5f9;
+            font-weight: 500;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .chapter-item .chapter-time {
+            color: #94a3b8;
+            font-size: 0.75rem;
+        }
+
+        .video-info {
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .video-info p {
+            color: #cbd5e1;
+            font-size: 0.875rem;
+            margin: 0;
+            line-height: 1.6;
+        }
+
         @media (max-width: 768px) {
             .demo-grid {
                 grid-template-columns: 1fr;
@@ -238,6 +427,18 @@
             .header h1 {
                 font-size: 2rem;
             }
+
+            .demo-video-section {
+                padding: 1.5rem;
+            }
+
+            .demo-video-section h2 {
+                font-size: 1.5rem;
+            }
+
+            .chapters-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -245,7 +446,7 @@
     <div class="container">
         <div class="header">
             <h1><i class="fas fa-home"></i> NestMate Demo Access</h1>
-            <p>Test all subscription tiers with pre-configured demo accounts</p>
+            <p>Explore all subscription tiers with interactive demo dashboards</p>
         </div>
 
         <div class="demo-grid">
@@ -261,19 +462,8 @@
                     <li>Cloud backup</li>
                     <li>Product recommendations</li>
                 </ul>
-                <div class="credentials">
-                    <h4>Demo Credentials</h4>
-                    <div class="cred-item">
-                        <span class="label">Email:</span>
-                        <span class="value">demo.basic@nestmate.com <button class="copy-btn" onclick="copyToClipboard('demo.basic@nestmate.com')">Copy</button></span>
-                    </div>
-                    <div class="cred-item">
-                        <span class="label">Password:</span>
-                        <span class="value">DemoBasic123! <button class="copy-btn" onclick="copyToClipboard('DemoBasic123!')">Copy</button></span>
-                    </div>
-                </div>
-                <a href="login-aws.html" class="login-btn" onclick="setDemoCredentials('demo.basic@nestmate.com', 'DemoBasic123!')">
-                    <i class="fas fa-sign-in-alt"></i> Login to Basic Demo
+                <a href="demo-dashboard-basic-clean.html" class="demo-dashboard-btn basic">
+                    <i class="fas fa-eye"></i> View Demo Dashboard
                 </a>
             </div>
 
@@ -290,19 +480,8 @@
                     <li>Advanced analytics</li>
                     <li>Professional floor plan designer</li>
                 </ul>
-                <div class="credentials">
-                    <h4>Demo Credentials</h4>
-                    <div class="cred-item">
-                        <span class="label">Email:</span>
-                        <span class="value">demo.advanced@nestmate.com <button class="copy-btn" onclick="copyToClipboard('demo.advanced@nestmate.com')">Copy</button></span>
-                    </div>
-                    <div class="cred-item">
-                        <span class="label">Password:</span>
-                        <span class="value">DemoAdvanced123! <button class="copy-btn" onclick="copyToClipboard('DemoAdvanced123!')">Copy</button></span>
-                    </div>
-                </div>
-                <a href="login-aws.html" class="login-btn" onclick="setDemoCredentials('demo.advanced@nestmate.com', 'DemoAdvanced123!')">
-                    <i class="fas fa-sign-in-alt"></i> Login to Advanced Demo
+                <a href="demo-dashboard-advanced.html" class="demo-dashboard-btn advanced">
+                    <i class="fas fa-eye"></i> View Demo Dashboard
                 </a>
             </div>
 
@@ -320,19 +499,8 @@
                     <li>Emergency contact management</li>
                     <li>Hand-picked contractor services</li>
                 </ul>
-                <div class="credentials">
-                    <h4>Demo Credentials</h4>
-                    <div class="cred-item">
-                        <span class="label">Email:</span>
-                        <span class="value">demo.advancedpro@nestmate.com <button class="copy-btn" onclick="copyToClipboard('demo.advancedpro@nestmate.com')">Copy</button></span>
-                    </div>
-                    <div class="cred-item">
-                        <span class="label">Password:</span>
-                        <span class="value">DemoAdvancedPro123! <button class="copy-btn" onclick="copyToClipboard('DemoAdvancedPro123!')">Copy</button></span>
-                    </div>
-                </div>
-                <a href="login-aws.html" class="login-btn" onclick="setDemoCredentials('demo.advancedpro@nestmate.com', 'DemoAdvancedPro123!')">
-                    <i class="fas fa-sign-in-alt"></i> Login to Advanced Pro Demo
+                <a href="demo-dashboard-advanced-pro.html" class="demo-dashboard-btn">
+                    <i class="fas fa-eye"></i> View Demo Dashboard
                 </a>
             </div>
 
@@ -351,71 +519,174 @@
                     <li>White-label reporting</li>
                     <li>Priority enterprise support</li>
                 </ul>
-                <div class="credentials">
-                    <h4>Demo Credentials</h4>
-                    <div class="cred-item">
-                        <span class="label">Email:</span>
-                        <span class="value">demo.enterprise@nestmate.com <button class="copy-btn" onclick="copyToClipboard('demo.enterprise@nestmate.com')">Copy</button></span>
-                    </div>
-                    <div class="cred-item">
-                        <span class="label">Password:</span>
-                        <span class="value">DemoEnterprise123! <button class="copy-btn" onclick="copyToClipboard('DemoEnterprise123!')">Copy</button></span>
-                    </div>
-                </div>
-                <a href="login-aws.html" class="login-btn" onclick="setDemoCredentials('demo.enterprise@nestmate.com', 'DemoEnterprise123!')">
-                    <i class="fas fa-sign-in-alt"></i> Login to Enterprise Demo
+                <a href="demo-dashboard-enterprise.html" class="demo-dashboard-btn enterprise">
+                    <i class="fas fa-eye"></i> View Demo Dashboard
                 </a>
             </div>
         </div>
 
+        <!-- Demo Video Section -->
+        <div class="demo-video-section">
+            <h2>
+                <i class="fas fa-play-circle"></i>
+                Advanced Pro Dashboard - Complete Overview
+            </h2>
+            <p class="subtitle">Watch a comprehensive walkthrough of all features and tabs in the Advanced Pro Dashboard</p>
+            
+            <div class="video-container">
+                <!-- Video placeholder - Replace with actual video when ready -->
+                <div class="video-placeholder" id="videoPlaceholder">
+                    <i class="fas fa-video"></i>
+                    <p>Demo video will be embedded here</p>
+                    <p style="font-size: 0.875rem; margin-top: 0.5rem; color: #94a3b8;">
+                        Upload your demo video and update the video source below
+                    </p>
+                </div>
+                <!-- Uncomment and add your video URL when ready -->
+                <!--
+                <video id="demoVideo" controls>
+                    <source src="path/to/your/demo-video.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                -->
+                <!-- Or use iframe for YouTube/Vimeo -->
+                <!--
+                <iframe 
+                    id="demoVideo"
+                    src="https://www.youtube.com/embed/YOUR_VIDEO_ID?enablejsapi=1" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+                </iframe>
+                -->
+            </div>
+
+            <div class="chapters-section">
+                <h3>
+                    <i class="fas fa-list"></i>
+                    Video Chapters - Dashboard Tabs Overview
+                </h3>
+                <div class="chapters-grid" id="chaptersGrid">
+                    <!-- Chapters will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <div class="video-info">
+                <p>
+                    <i class="fas fa-info-circle"></i>
+                    <strong>About this demo:</strong> This comprehensive walkthrough covers all 22 tabs and features in the Advanced Pro Dashboard, 
+                    including family management, home organization, task collaboration, analytics, and more. 
+                    Click on any chapter above to jump to that section in the video (when video is embedded).
+                </p>
+            </div>
+        </div>
+
         <div class="instructions">
-            <h3><i class="fas fa-info-circle"></i> How to Use Demo Accounts</h3>
+            <h3><i class="fas fa-info-circle"></i> How to Use Demo Dashboards</h3>
             <ol>
-                <li>Click any "Login to [Plan] Demo" button above</li>
-                <li>You'll be redirected to the login page with credentials pre-filled</li>
-                <li>Click "Sign In" to access the dashboard</li>
-                <li><strong>Demo accounts bypass the pricing page</strong> and go directly to their dashboards</li>
+                <li>Click any "View Demo Dashboard" button above to explore that subscription tier</li>
+                <li>No login required - you'll be taken directly to the interactive demo dashboard</li>
                 <li>Each dashboard showcases different features based on the subscription tier</li>
-                <li>You can switch between different demo accounts to compare features</li>
-                <li>All demo accounts have active subscriptions and full access to their respective features</li>
+                <li>You can switch between different demo dashboards to compare features</li>
+                <li>All features are fully functional in demo mode</li>
+                <li><strong>Note:</strong> Data is stored in sessionStorage and will be cleared when you close the browser tab</li>
             </ol>
             
-            <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 1rem; margin-top: 1rem;">
-                <h4 style="color: #6ee7b7; margin-bottom: 0.5rem;"><i class="fas fa-shield-alt"></i> Demo Account Security</h4>
+            <div style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 8px; padding: 1rem; margin-top: 1rem;">
+                <h4 style="color: #a78bfa; margin-bottom: 0.5rem;"><i class="fas fa-info-circle"></i> Demo Mode Information</h4>
                 <p style="color: #cbd5e1; font-size: 0.875rem; margin: 0;">
-                    Demo accounts are automatically detected by email pattern and bypass normal subscription checks. 
-                    Regular users will still be directed to the pricing page if they don't have active subscriptions.
+                    These demo dashboards are fully functional but operate in demo mode. All data is stored temporarily in your browser's sessionStorage 
+                    and will be cleared when you close the tab. No data is saved to our servers.
                 </p>
             </div>
         </div>
     </div>
 
     <script>
-        function setDemoCredentials(email, password) {
-            // Store credentials in localStorage for the login page to use
-            localStorage.setItem('demoEmail', email);
-            localStorage.setItem('demoPassword', password);
-        }
 
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(function() {
-                // Show a brief success message
-                const button = event.target;
-                const originalText = button.textContent;
-                button.textContent = 'Copied!';
-                button.style.background = 'rgba(16, 185, 129, 0.2)';
-                button.style.color = '#6ee7b7';
+        // Dashboard chapters/tabs for the demo video
+        const dashboardChapters = [
+            { id: 'overview', title: 'Family Dashboard', icon: 'fa-home', time: '0:00', description: 'Overview of the main dashboard' },
+            { id: 'basic-info', title: 'Basic Info', icon: 'fa-info-circle', time: '1:30', description: 'Home information and details' },
+            { id: 'structure', title: 'Structure', icon: 'fa-building', time: '3:00', description: 'Home structure and foundation' },
+            { id: 'systems', title: 'Systems', icon: 'fa-cogs', time: '4:30', description: 'HVAC, electrical, and plumbing systems' },
+            { id: 'bedrooms', title: 'Bedrooms', icon: 'fa-bed', time: '6:00', description: 'Bedroom details and organization' },
+            { id: 'bathrooms', title: 'Bathrooms', icon: 'fa-bath', time: '7:30', description: 'Bathroom fixtures and maintenance' },
+            { id: 'kitchen', title: 'Kitchen', icon: 'fa-utensils', time: '9:00', description: 'Kitchen appliances and features' },
+            { id: 'living-areas', title: 'Living Areas', icon: 'fa-couch', time: '10:30', description: 'Living room and common spaces' },
+            { id: 'garage', title: 'Garage', icon: 'fa-car', time: '12:00', description: 'Garage organization and storage' },
+            { id: 'exterior', title: 'Exterior', icon: 'fa-home', time: '13:30', description: 'Exterior features and maintenance' },
+            { id: 'appliances', title: 'Appliances', icon: 'fa-tv', time: '15:00', description: 'Home appliances tracking' },
+            { id: 'favorites', title: 'Favorites', icon: 'fa-heart', time: '16:30', description: 'Favorite items and features' },
+            { id: 'photos', title: 'Photos', icon: 'fa-camera', time: '18:00', description: 'Photo management and organization' },
+            { id: 'floorplan', title: 'Floor Plan', icon: 'fa-drafting-compass', time: '19:30', description: 'Professional floor plan designer' },
+            { id: 'renovations', title: 'Renovations', icon: 'fa-tools', time: '21:00', description: 'Renovation planning and tracking' },
+            { id: 'emergency', title: 'Emergency', icon: 'fa-phone', time: '22:30', description: 'Emergency contacts and services' },
+            { id: 'homes', title: 'Manage Homes', icon: 'fa-home', time: '24:00', description: 'Multi-home management (up to 5)' },
+            { id: 'family', title: 'Family Members', icon: 'fa-users', time: '25:30', description: 'Family member management (up to 5)' },
+            { id: 'tasks', title: 'Shared Tasks', icon: 'fa-tasks', time: '27:00', description: 'Collaborative task management' },
+            { id: 'collaboration', title: 'Family Collaboration', icon: 'fa-handshake', time: '28:30', description: 'Family collaboration features' },
+            { id: 'analytics', title: 'Family Analytics', icon: 'fa-chart-line', time: '30:00', description: 'Analytics and insights' },
+            { id: 'support', title: 'Family-First Support', icon: 'fa-headset', time: '31:30', description: 'Support and help resources' }
+        ];
+
+        // Populate chapters grid
+        function populateChapters() {
+            const chaptersGrid = document.getElementById('chaptersGrid');
+            if (!chaptersGrid) return;
+
+            dashboardChapters.forEach(chapter => {
+                const chapterItem = document.createElement('div');
+                chapterItem.className = 'chapter-item';
+                chapterItem.onclick = () => jumpToChapter(chapter.time, chapter.id);
                 
-                setTimeout(() => {
-                    button.textContent = originalText;
-                    button.style.background = 'rgba(255, 255, 255, 0.1)';
-                    button.style.color = '#e2e8f0';
-                }, 2000);
-            }).catch(function(err) {
-                console.error('Could not copy text: ', err);
-                alert('Could not copy to clipboard. Please copy manually.');
+                chapterItem.innerHTML = `
+                    <i class="fas ${chapter.icon} chapter-icon"></i>
+                    <div class="chapter-info">
+                        <div class="chapter-title">${chapter.title}</div>
+                        <div class="chapter-time">${chapter.time} - ${chapter.description}</div>
+                    </div>
+                `;
+                
+                chaptersGrid.appendChild(chapterItem);
             });
         }
+
+        // Jump to specific chapter in video
+        function jumpToChapter(timeString, chapterId) {
+            const video = document.getElementById('demoVideo');
+            if (!video) {
+                // If video not loaded, show message
+                alert(`This will jump to ${chapterId} section at ${timeString} when the video is embedded.`);
+                return;
+            }
+
+            // Convert time string (e.g., "1:30") to seconds
+            const timeParts = timeString.split(':');
+            const minutes = parseInt(timeParts[0]) || 0;
+            const seconds = parseInt(timeParts[1]) || 0;
+            const totalSeconds = minutes * 60 + seconds;
+
+            // For HTML5 video
+            if (video.tagName === 'VIDEO') {
+                video.currentTime = totalSeconds;
+                video.play();
+            }
+            // For YouTube iframe
+            else if (video.tagName === 'IFRAME' && video.src.includes('youtube.com')) {
+                video.contentWindow.postMessage('{"event":"command","func":"seekTo","args":[' + totalSeconds + ',true]}', '*');
+            }
+            // For Vimeo iframe
+            else if (video.tagName === 'IFRAME' && video.src.includes('vimeo.com')) {
+                // Vimeo API would need to be initialized separately
+                console.log('Vimeo chapter jump to:', totalSeconds);
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            populateChapters();
+        });
     </script>
 </body>
 </html>

@@ -1,0 +1,3219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo - Enterprise Dashboard - NestMate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- AWS SDK and Authentication -->
+    <script>
+    // AWS SDK with fallback CDNs
+    (function() {
+        const cdnUrls = [
+            'https://sdk.amazonaws.com/js/aws-sdk-2.1491.0.min.js',
+            'https://cdn.jsdelivr.net/npm/aws-sdk@2.1491.0/dist/aws-sdk.min.js',
+            'https://unpkg.com/aws-sdk@2.1491.0/dist/aws-sdk.min.js'
+        ];
+        
+        let loaded = false;
+        let currentIndex = 0;
+        
+        function loadNext() {
+            if (currentIndex >= cdnUrls.length) {
+                console.error('Failed to load AWS SDK from all CDNs');
+                // Create a minimal AWS stub to prevent errors
+                window.AWS = window.AWS || {
+                    config: { update: function() {} },
+                    CognitoIdentityServiceProvider: function() {},
+                    DynamoDB: { DocumentClient: function() {} },
+                    S3: function() {}
+                };
+                return;
+            }
+            
+            const script = document.createElement('script');
+            script.src = cdnUrls[currentIndex];
+            script.onload = function() {
+                loaded = true;
+                console.log('AWS SDK loaded from:', cdnUrls[currentIndex]);
+            };
+            script.onerror = function() {
+                console.warn('Failed to load AWS SDK from:', cdnUrls[currentIndex]);
+                currentIndex++;
+                loadNext();
+            };
+            document.head.appendChild(script);
+        }
+        
+        loadNext();
+    })();
+</script>
+    <script src="demo-auth.js"></script>
+    <script src="demo-data-service.js"></script>
+    <script src="demo-localStorage-replacement.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #1a1d29;
+            color: #ffffff;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Demo Banner */
+        .demo-banner {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 0.75rem 1rem;
+            text-align: center;
+            font-size: 0.875rem;
+            font-weight: 500;
+            position: sticky;
+            top: 0;
+            z-index: 10000;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .demo-banner a {
+            color: white;
+            text-decoration: underline;
+            margin-left: 0.5rem;
+        }
+
+        .demo-banner a:hover {
+            opacity: 0.8;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: #1e293b;
+            color: white;
+            padding: 2rem 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 0 2rem 2rem;
+            border-bottom: 1px solid #334155;
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .sidebar-header p {
+            color: #94a3b8;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .plan-badge {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+            display: inline-block;
+        }
+
+        .nav-menu {
+            padding: 1rem 0;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 0.75rem 2rem;
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-size: 0.875rem;
+        }
+
+        .nav-item:hover {
+            background: #334155;
+            color: white;
+        }
+
+        .nav-item.active {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .nav-item i {
+            width: 20px;
+            margin-right: 0.75rem;
+        }
+
+        /* Main Content */
+        .main-content-wrapper {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+            max-width: calc(100vw - 280px);
+        }
+
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #334155;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f59e0b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .sign-out-btn {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: background 0.2s;
+        }
+
+        .sign-out-btn:hover {
+            background: #b91c1c;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid #334155;
+        }
+
+        .card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #f1f5f9;
+        }
+
+        /* Enterprise Overview */
+        .enterprise-overview {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .enterprise-overview h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .enterprise-overview p {
+            font-size: 1.125rem;
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+
+        .enterprise-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .action-btn {
+            background: #334155;
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+        }
+
+        .action-btn:hover {
+            background: #475569;
+            transform: translateY(-2px);
+        }
+
+        .action-btn i {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        /* Enterprise Features */
+        .enterprise-features {
+            grid-column: 1 / -1;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .feature-item {
+            background: #0f172a;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .feature-item h4 {
+            color: #f59e0b;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-item p {
+            color: #94a3b8;
+            font-size: 0.875rem;
+        }
+
+        /* Client Management */
+        .client-management {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-top: 1rem;
+        }
+
+        .client-management h3 {
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .client-management p {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 1rem;
+        }
+
+        .client-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .client-btn {
+            background: white;
+            color: #2563eb;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .client-btn:hover {
+            background: #f3f4f6;
+            transform: translateY(-1px);
+        }
+
+        /* Team Collaboration */
+        .team-collaboration {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-top: 1rem;
+        }
+
+        .team-collaboration h3 {
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .team-collaboration p {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 1rem;
+        }
+
+        .team-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .team-btn {
+            background: white;
+            color: #059669;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .team-btn:hover {
+            background: #f3f4f6;
+            transform: translateY(-1px);
+        }
+
+        /* Property Portfolio */
+        .property-portfolio {
+            background: #0f172a;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-top: 1rem;
+        }
+
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .property-card {
+            background: #1e293b;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #334155;
+        }
+
+        .property-card h4 {
+            color: #f1f5f9;
+            margin-bottom: 0.5rem;
+        }
+
+        .property-card p {
+            color: #94a3b8;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .property-value {
+            color: #10b981;
+            font-weight: 600;
+            font-size: 1.125rem;
+        }
+
+        /* Enterprise Support */
+        .enterprise-support {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-top: 1rem;
+        }
+
+        .enterprise-support h3 {
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .enterprise-support p {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 1rem;
+        }
+
+        .support-btn {
+            background: white;
+            color: #7c3aed;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .support-btn:hover {
+            background: #f3f4f6;
+            transform: translateY(-1px);
+        }
+
+        /* Modal Styles */
+
+        .modal-content {
+            background: #1f2937;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #374151;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #f9fafb;
+        }
+
+        .close-btn {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #9ca3af;
+            line-height: 1;
+        }
+
+        .close-btn:hover {
+            color: #f9fafb;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid #374151;
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #f9fafb;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #374151;
+            border-radius: 6px;
+            background: #374151;
+            color: #f9fafb;
+            font-size: 0.875rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content-wrapper {
+                margin-left: 0;
+                max-width: 100vw;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .enterprise-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .client-actions,
+            .team-actions {
+                flex-direction: column;
+            }
+        }
+
+        /* Loading states */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid #f59e0b;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* List Container Styling */
+        .list-container {
+            display: block;
+            width: 100%;
+        }
+
+        /* Content Section Styling */
+        .content-section {
+            display: none;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #f9fafb;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-title i {
+            color: #00d4aa;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal {
+            background: #1f2937;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .modal h3 {
+            color: #f9fafb;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            color: #f9fafb;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 0.75rem;
+            border: 1px solid #374151;
+            border-radius: 6px;
+            background: #374151;
+            color: #f9fafb;
+            font-size: 0.875rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* List Item Styles */
+        .list-item {
+            background: #374151;
+            border: 1px solid #4b5563;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .list-item-main {
+            flex: 1;
+        }
+
+        .list-item-title {
+            color: #f9fafb;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .list-item-sub {
+            color: #9ca3af;
+            font-size: 0.875rem;
+        }
+
+        .list-item-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #9ca3af;
+            padding: 2rem;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-banner">
+        🎭 <strong>DEMO MODE</strong> - This is a demonstration dashboard. No data is saved. <a href="demo-access.html">Return to Demo Access</a>
+    </div>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h1>NestMate</h1>
+                <p>Enterprise Dashboard</p>
+                <div class="plan-badge">ENTERPRISE</div>
+            </div>
+            
+            <div class="nav-menu">
+                <button class="nav-item active" onclick="showSection('overview')">
+                    <i class="fas fa-building"></i> Enterprise Overview
+                </button>
+                <button class="nav-item" onclick="showSection('basic-info')">
+                    <i class="fas fa-info-circle"></i> Basic Info
+                </button>
+                <button class="nav-item" onclick="showSection('structure')">
+                    <i class="fas fa-building"></i> Structure
+                </button>
+                <button class="nav-item" onclick="showSection('systems')">
+                    <i class="fas fa-cogs"></i> Systems
+                </button>
+                <button class="nav-item" onclick="showSection('bedroomsSection')">
+                    <i class="fas fa-bed"></i> Bedrooms
+                </button>
+                <button class="nav-item" onclick="showSection('bathroomsSection')">
+                    <i class="fas fa-bath"></i> Bathrooms
+                </button>
+                <button class="nav-item" onclick="showSection('kitchenSection')">
+                    <i class="fas fa-utensils"></i> Kitchen
+                </button>
+                <button class="nav-item" onclick="showSection('living-areas')">
+                    <i class="fas fa-couch"></i> Living Areas
+                </button>
+                <button class="nav-item" onclick="showSection('garage')">
+                    <i class="fas fa-car"></i> Garage
+                </button>
+                <button class="nav-item" onclick="showSection('exterior')">
+                    <i class="fas fa-home"></i> Exterior
+                </button>
+                <button class="nav-item" onclick="showSection('appliances')">
+                    <i class="fas fa-tv"></i> Appliances
+                </button>
+                <button class="nav-item" onclick="showSection('favorites')">
+                    <i class="fas fa-heart"></i> Favorites
+                </button>
+                <button class="nav-item" onclick="showSection('photos')">
+                    <i class="fas fa-camera"></i> Photos
+                </button>
+                <button class="nav-item" onclick="showSection('floorplan')">
+                    <i class="fas fa-drafting-compass"></i> Floor Plan
+                </button>
+                <button class="nav-item" onclick="showSection('renovations')">
+                    <i class="fas fa-tools"></i> Renovations
+                </button>
+                <button class="nav-item" onclick="showSection('emergency')">
+                    <i class="fas fa-phone"></i> Emergency
+                </button>
+                <button class="nav-item" onclick="showSection('properties')">
+                    <i class="fas fa-home"></i> Unlimited Properties
+                </button>
+                <button class="nav-item" onclick="showSection('clients')">
+                    <i class="fas fa-users"></i> Client Management
+                </button>
+                <button class="nav-item" onclick="showSection('team')">
+                    <i class="fas fa-user-friends"></i> Team Collaboration
+                </button>
+                <button class="nav-item" onclick="showSection('analytics')">
+                    <i class="fas fa-chart-line"></i> Market Analytics
+                </button>
+                <button class="nav-item" onclick="showSection('maintenance')">
+                    <i class="fas fa-tools"></i> Maintenance Scheduling
+                </button>
+                <button class="nav-item" onclick="showSection('tenants')">
+                    <i class="fas fa-key"></i> Tenant Management
+                </button>
+                <button class="nav-item" onclick="showSection('reporting')">
+                    <i class="fas fa-file-alt"></i> White-label Reports
+                </button>
+                <button class="nav-item" onclick="showSection('support')">
+                    <i class="fas fa-headset"></i> Enterprise Support
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="main-content-wrapper">
+            <div class="main-content">
+                <!-- Header -->
+                <div class="header">
+                    <h1>Your Enterprise Property Command Center</h1>
+                    <div class="user-info">
+                        <div class="user-avatar" id="userAvatar">U</div>
+                        <span id="userName">Loading...</span>
+                        <button class="sign-out-btn" onclick="signOut()">Sign Out</button>
+                    </div>
+                </div>
+
+                <!-- Basic Info -->
+                <div id="basic-info" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Home Information</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label>Address</label>
+                                <input type="text" value="123 Main Street" placeholder="Enter address">
+                            </div>
+                            <div class="info-item">
+                                <label>Year Built</label>
+                                <input type="number" value="2018" placeholder="Year built">
+                            </div>
+                            <div class="info-item">
+                                <label>Square Footage</label>
+                                <input type="number" value="2400" placeholder="Square feet">
+                            </div>
+                            <div class="info-item">
+                                <label>Bedrooms</label>
+                                <input type="number" value="3" placeholder="Number of bedrooms">
+                            </div>
+                            <div class="info-item">
+                                <label>Bathrooms</label>
+                                <input type="number" value="2" placeholder="Number of bathrooms">
+                            </div>
+                            <div class="info-item">
+                                <label>Home Type</label>
+                                <select>
+                                    <option>Single Family</option>
+                                    <option>Condo</option>
+                                    <option>Townhouse</option>
+                                    <option>Apartment</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="info-actions">
+                            <button class="btn-primary">Save Changes</button>
+                            <button class="btn-secondary">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Structure -->
+                <div id="structure" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Structural Information</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label>Foundation Type</label>
+                                <select>
+                                    <option>Concrete Slab</option>
+                                    <option>Crawl Space</option>
+                                    <option>Basement</option>
+                                    <option>Pier & Beam</option>
+                                </select>
+                            </div>
+                            <div class="info-item">
+                                <label>Roof Type</label>
+                                <select>
+                                    <option>Asphalt Shingles</option>
+                                    <option>Metal</option>
+                                    <option>Tile</option>
+                                    <option>Slate</option>
+                                    <option>Flat</option>
+                                </select>
+                            </div>
+                            <div class="info-item">
+                                <label>Exterior Material</label>
+                                <select>
+                                    <option>Vinyl Siding</option>
+                                    <option>Brick</option>
+                                    <option>Wood Siding</option>
+                                    <option>Stucco</option>
+                                    <option>Stone</option>
+                                </select>
+                            </div>
+                            <div class="info-item">
+                                <label>Window Type</label>
+                                <select>
+                                    <option>Single Pane</option>
+                                    <option>Double Pane</option>
+                                    <option>Triple Pane</option>
+                                    <option>Energy Efficient</option>
+                                </select>
+                            </div>
+                            <div class="info-item">
+                                <label>Insulation Type</label>
+                                <select>
+                                    <option>Fiberglass</option>
+                                    <option>Cellulose</option>
+                                    <option>Spray Foam</option>
+                                    <option>Rigid Board</option>
+                                </select>
+                            </div>
+                            <div class="info-item">
+                                <label>Last Inspection</label>
+                                <input type="date" value="2024-01-15">
+                            </div>
+                        </div>
+                        <div class="info-actions">
+                            <button class="btn-primary">Save Changes</button>
+                            <button class="btn-secondary">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Systems -->
+                <div id="systems" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Home Systems</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label>HVAC System</label>
+                                <select>
+                                    <option>Central Air & Heat</option>
+                                    <option>Heat Pump</option>
+                                    <option>Gas Furnace</option>
+                                    <option>Electric Heat</option>
+                                    <option>Window Units</option>
+                                </select>
+                            </div>
+                            <div class="info-item">
+                                <label>Electrical Service</label>
+                                <select>
+                                    <option>100 Amp</option>
+                                    <option>200 Amp</option>
+                                    <option>400 Amp</option>
+                                    <option>Other</option>
+                                </select>
+                            </div>
+                            <div class="info-item">
+                                <label>Plumbing Material</label>
+                                <select>
+                                    <option>Copper</option>
+                                    <option>PVC</option>
+                                    <option>PEX</option>
+                                    <option>Galvanized Steel</option>
+                                    <option>Mixed</option>
+                                </select>
+                            </div>
+                            <div class="info-item">
+                                <label>Water Heater</label>
+                                <select>
+                                    <option>Gas, 40 gallon</option>
+                                    <option>Gas, 50 gallon</option>
+                                    <option>Electric, 40 gallon</option>
+                                    <option>Electric, 50 gallon</option>
+                                    <option>Tankless Gas</option>
+                                    <option>Tankless Electric</option>
+                                </select>
+                            </div>
+                            <div class="info-item">
+                                <label>Security System</label>
+                                <select>
+                                    <option>None</option>
+                                    <option>Basic Alarm</option>
+                                    <option>Monitored System</option>
+                                    <option>Smart Home System</option>
+                                </select>
+                            </div>
+                            <div class="info-item">
+                                <label>Last Service</label>
+                                <input type="date" value="2024-02-01">
+                            </div>
+                        </div>
+                        <div class="info-actions">
+                            <button class="btn-primary">Save Changes</button>
+                            <button class="btn-secondary">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bedrooms -->
+            <!-- Bedrooms Section -->
+            <div id="bedroomsSection" class="content-section">
+                <h2 class="section-title">
+                    <i class="fas fa-bed"></i> Bedrooms
+                </h2>
+                
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3>Bedroom Information</h3>
+                        <div>
+                            <button class="btn" onclick="openAddBedroomModal()">
+                                <i class="fas fa-plus"></i> Add Bedroom
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- List of bedrooms -->
+                    <div id="bedroomsList" class="list-container">
+                        <!-- dynamically rendered -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bathrooms Section -->
+            <div id="bathroomsSection" class="content-section">
+                <h2 class="section-title">
+                    <i class="fas fa-bath"></i> Bathrooms
+                </h2>
+                
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3>Bathroom Information</h3>
+                        <div>
+                            <button class="btn" onclick="openAddBathroomModal()">
+                                <i class="fas fa-plus"></i> Add Bathroom
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- List of bathrooms -->
+                    <div id="bathroomsList" class="list-container"></div>
+                </div>
+            </div>
+
+            <!-- Kitchen Section -->
+            <div id="kitchenSection" class="content-section">
+                <h2 class="section-title">
+                    <i class="fas fa-utensils"></i> Kitchen
+                </h2>
+                
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3>Kitchen Information</h3>
+                        <div>
+                            <button class="btn" onclick="openAddKitchenModal()">
+                                <i class="fas fa-plus"></i> Add Kitchen
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- List of kitchens -->
+                    <div id="kitchensList" class="list-container"></div>
+                    
+                    <div id="kitchenForm" style="display: none;">
+                        <div class="form-group">
+                            <label for="kitchenSize">Kitchen Size</label>
+                            <input type="text" id="kitchenSize" placeholder="e.g., 12' x 10'">
+                        </div>
+                        <div class="form-group">
+                            <label for="kitchenAppliances">Appliance Finish</label>
+                            <select id="kitchenAppliances">
+                                <option value="">Select appliance finish</option>
+                                <option value="stainless-steel">Stainless Steel</option>
+                                <option value="black-stainless">Black Stainless</option>
+                                <option value="white">White</option>
+                                <option value="black">Black</option>
+                                <option value="custom">Custom Color</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="kitchenCountertops">Countertop Material</label>
+                            <select id="kitchenCountertops">
+                                <option value="">Select countertop material</option>
+                                <option value="granite">Granite</option>
+                                <option value="quartz">Quartz</option>
+                                <option value="marble">Marble</option>
+                                <option value="butcher-block">Butcher Block</option>
+                                <option value="laminate">Laminate</option>
+                                <option value="concrete">Concrete</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="kitchenCabinets">Cabinet Material</label>
+                            <select id="kitchenCabinets">
+                                <option value="">Select cabinet material</option>
+                                <option value="oak">Oak</option>
+                                <option value="maple">Maple</option>
+                                <option value="cherry">Cherry</option>
+                                <option value="pine">Pine</option>
+                                <option value="mdf">MDF</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="kitchenFlooring">Flooring Type</label>
+                            <select id="kitchenFlooring">
+                                <option value="">Select flooring type</option>
+                                <option value="hardwood">Hardwood</option>
+                                <option value="tile">Tile</option>
+                                <option value="vinyl">Vinyl</option>
+                                <option value="laminate">Laminate</option>
+                                <option value="concrete">Concrete</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="kitchenRenovation">Last Renovation Date</label>
+                            <input type="date" id="kitchenRenovation">
+                        </div>
+                        <div style="display: flex; gap: 1rem;">
+                            <button class="btn" onclick="saveKitchen()">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                            <button class="btn btn-secondary" onclick="cancelEditKitchen()">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+                <!-- Living Areas -->
+                <div id="living-areas" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Living Areas</h3>
+                        <div class="room-grid">
+                            <div class="room-card">
+                                <h4>Living Room</h4>
+                                <div class="room-details">
+                                    <p><i class="fas fa-ruler"></i> 20' x 16'</p>
+                                    <p><i class="fas fa-window"></i> 3 Windows</p>
+                                    <p><i class="fas fa-fireplace"></i> Fireplace</p>
+                                    <p><i class="fas fa-tv"></i> TV Mount</p>
+                                </div>
+                                <div class="room-actions">
+                                    <button class="btn-small">Edit</button>
+                                    <button class="btn-small">Photos</button>
+                                </div>
+                            </div>
+                            
+                            <div class="room-card">
+                                <h4>Dining Room</h4>
+                                <div class="room-details">
+                                    <p><i class="fas fa-ruler"></i> 14' x 12'</p>
+                                    <p><i class="fas fa-window"></i> 2 Windows</p>
+                                    <p><i class="fas fa-chair"></i> Seats 6</p>
+                                    <p><i class="fas fa-lightbulb"></i> Chandelier</p>
+                                </div>
+                                <div class="room-actions">
+                                    <button class="btn-small">Edit</button>
+                                    <button class="btn-small">Photos</button>
+                                </div>
+                            </div>
+                            
+                            <div class="room-card add-room">
+                                <div class="add-room-content">
+                                    <i class="fas fa-plus"></i>
+                                    <h4>Add Living Area</h4>
+                                    <button class="btn-primary">Add Room</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Garage -->
+                <div id="garage" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Garage Information</h3>
+                        <div class="garage-details">
+                            <div class="info-item">
+                                <label>Garage Type</label>
+                                <select>
+                                    <option>Attached</option>
+                                    <option>Detached</option>
+                                    <option>Carport</option>
+                                    <option>None</option>
+                                </select>
+                            </div>
+                            <div class="info-item">
+                                <label>Number of Cars</label>
+                                <select>
+                                    <option>1 Car</option>
+                                    <option>2 Car</option>
+                                    <option>3+ Car</option>
+                                </select>
+                            </div>
+                            <div class="info-item">
+                                <label>Garage Door Type</label>
+                                <select>
+                                    <option>Manual</option>
+                                    <option>Automatic</option>
+                                    <option>Smart</option>
+                                </select>
+                            </div>
+                            <div class="info-item">
+                                <label>Storage</label>
+                                <select>
+                                    <option>None</option>
+                                    <option>Basic Shelving</option>
+                                    <option>Built-in Storage</option>
+                                    <option>Workshop</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="info-actions">
+                            <button class="btn-primary">Save Changes</button>
+                            <button class="btn-secondary">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exterior -->
+                <div id="exterior" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Exterior Information</h3>
+                        <div class="exterior-details">
+                            <div class="info-item">
+                                <label>Exterior Material</label>
+                                <select>
+                                    <option>Vinyl Siding</option>
+                                    <option>Brick</option>
+                                    <option>Wood Siding</option>
+                                    <option>Stucco</option>
+                                    <option>Stone</option>
+                                </select>
+                            </div>
+                            <div class="info-item">
+                                <label>Roof Type</label>
+                                <select>
+                                    <option>Asphalt Shingles</option>
+                                    <option>Metal</option>
+                                    <option>Tile</option>
+                                    <option>Slate</option>
+                                </select>
+                            </div>
+                            <div class="info-item">
+                                <label>Landscaping</label>
+                                <select>
+                                    <option>Minimal</option>
+                                    <option>Basic</option>
+                                    <option>Well Landscaped</option>
+                                    <option>Professional</option>
+                                </select>
+                            </div>
+                            <div class="info-item">
+                                <label>Outdoor Features</label>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox"> Deck</label>
+                                    <label><input type="checkbox"> Patio</label>
+                                    <label><input type="checkbox"> Pool</label>
+                                    <label><input type="checkbox"> Garden</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="info-actions">
+                            <button class="btn-primary">Save Changes</button>
+                            <button class="btn-secondary">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Appliances -->
+                <div id="appliances" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Home Appliances</h3>
+                        <div class="appliances-grid">
+                            <div class="appliance-category">
+                                <h4>Kitchen Appliances</h4>
+                                <div class="appliance-list">
+                                    <div class="appliance-item">
+                                        <i class="fas fa-refrigerator"></i>
+                                        <span>Refrigerator</span>
+                                        <span class="appliance-status working">Working</span>
+                                        <button class="btn-small">Service</button>
+                                    </div>
+                                    <div class="appliance-item">
+                                        <i class="fas fa-fire"></i>
+                                        <span>Stove/Oven</span>
+                                        <span class="appliance-status working">Working</span>
+                                        <button class="btn-small">Service</button>
+                                    </div>
+                                    <div class="appliance-item">
+                                        <i class="fas fa-dishwasher"></i>
+                                        <span>Dishwasher</span>
+                                        <span class="appliance-status working">Working</span>
+                                        <button class="btn-small">Service</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="appliance-category">
+                                <h4>HVAC Systems</h4>
+                                <div class="appliance-list">
+                                    <div class="appliance-item">
+                                        <i class="fas fa-thermometer-half"></i>
+                                        <span>Furnace</span>
+                                        <span class="appliance-status working">Working</span>
+                                        <button class="btn-small">Service</button>
+                                    </div>
+                                    <div class="appliance-item">
+                                        <i class="fas fa-snowflake"></i>
+                                        <span>Air Conditioner</span>
+                                        <span class="appliance-status working">Working</span>
+                                        <button class="btn-small">Service</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="appliance-category">
+                                <h4>Laundry</h4>
+                                <div class="appliance-list">
+                                    <div class="appliance-item">
+                                        <i class="fas fa-tshirt"></i>
+                                        <span>Washer</span>
+                                        <span class="appliance-status working">Working</span>
+                                        <button class="btn-small">Service</button>
+                                    </div>
+                                    <div class="appliance-item">
+                                        <i class="fas fa-tshirt"></i>
+                                        <span>Dryer</span>
+                                        <span class="appliance-status working">Working</span>
+                                        <button class="btn-small">Service</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Favorites -->
+                <div id="favorites" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Favorites</h3>
+                        <div class="favorites-grid">
+                            <div class="favorite-item">
+                                <i class="fas fa-wrench"></i>
+                                <h4>Trusted Plumber</h4>
+                                <p>John's Plumbing Service</p>
+                                <p>(555) 123-4567</p>
+                                <button class="btn-small">Contact</button>
+                            </div>
+                            
+                            <div class="favorite-item">
+                                <i class="fas fa-bolt"></i>
+                                <h4>Electrician</h4>
+                                <p>Sparky's Electrical</p>
+                                <p>(555) 987-6543</p>
+                                <button class="btn-small">Contact</button>
+                            </div>
+                            
+                            <div class="favorite-item">
+                                <i class="fas fa-paint-brush"></i>
+                                <h4>Painter</h4>
+                                <p>Perfect Paint Co.</p>
+                                <p>(555) 456-7890</p>
+                                <button class="btn-small">Contact</button>
+                            </div>
+                            
+                            <div class="favorite-item add-favorite">
+                                <div class="add-favorite-content">
+                                    <i class="fas fa-plus"></i>
+                                    <h4>Add Favorite</h4>
+                                    <button class="btn-primary">Add Contact</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Renovations -->
+                <div id="renovations" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Renovation Projects</h3>
+                        <div class="renovation-timeline">
+                            <div class="renovation-item completed">
+                                <div class="renovation-date">2024</div>
+                                <div class="renovation-content">
+                                    <h4>Kitchen Remodel</h4>
+                                    <p>Complete kitchen renovation with new cabinets and countertops</p>
+                                    <span class="renovation-cost">$15,000</span>
+                                </div>
+                            </div>
+                            
+                            <div class="renovation-item completed">
+                                <div class="renovation-date">2023</div>
+                                <div class="renovation-content">
+                                    <h4>Bathroom Update</h4>
+                                    <p>Master bathroom renovation with new fixtures</p>
+                                    <span class="renovation-cost">$8,500</span>
+                                </div>
+                            </div>
+                            
+                            <div class="renovation-item planned">
+                                <div class="renovation-date">2025</div>
+                                <div class="renovation-content">
+                                    <h4>Deck Addition</h4>
+                                    <p>Planning to add a new deck to the backyard</p>
+                                    <span class="renovation-cost">$12,000</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="add-renovation">
+                            <button class="btn-primary">
+                                <i class="fas fa-plus"></i> Add New Project
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Emergency -->
+                <div id="emergency" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Emergency Contacts</h3>
+                        <div class="emergency-contacts">
+                            <div class="emergency-item critical">
+                                <i class="fas fa-phone"></i>
+                                <div class="emergency-info">
+                                    <h4>Police</h4>
+                                    <p>911</p>
+                                </div>
+                                <button class="btn-emergency">Call</button>
+                            </div>
+                            
+                            <div class="emergency-item critical">
+                                <i class="fas fa-fire"></i>
+                                <div class="emergency-info">
+                                    <h4>Fire Department</h4>
+                                    <p>911</p>
+                                </div>
+                                <button class="btn-emergency">Call</button>
+                            </div>
+                            
+                            <div class="emergency-item">
+                                <i class="fas fa-bolt"></i>
+                                <div class="emergency-info">
+                                    <h4>Electrician</h4>
+                                    <p>(555) 123-4567</p>
+                                </div>
+                                <button class="btn-emergency">Call</button>
+                            </div>
+                            
+                            <div class="emergency-item">
+                                <i class="fas fa-wrench"></i>
+                                <div class="emergency-info">
+                                    <h4>Plumber</h4>
+                                    <p>(555) 987-6543</p>
+                                </div>
+                                <button class="btn-emergency">Call</button>
+                            </div>
+                        </div>
+                        
+                        <div class="emergency-notes">
+                            <h4>Emergency Notes</h4>
+                            <textarea placeholder="Add any important emergency information..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enterprise Overview -->
+                <div id="overview" class="dashboard-section">
+                    <div class="dashboard-grid">
+                        <!-- Enterprise Overview -->
+                        <div class="card enterprise-overview">
+                            <h2>Enterprise Power</h2>
+                            <p>Professional Property Management Suite</p>
+                            <div class="enterprise-stats">
+                                <div class="stat-item">
+                                    <div class="stat-number">47</div>
+                                    <div class="stat-label">Properties</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number">156</div>
+                                    <div class="stat-label">Clients</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number">12</div>
+                                    <div class="stat-label">Team Members</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Actions -->
+                        <div class="card">
+                            <h3>Enterprise Quick Actions</h3>
+                            <div class="quick-actions">
+                                <a href="javascript:void(0)" class="action-btn" onclick="addNewProperty()">
+                                    <i class="fas fa-plus"></i>
+                                    Add Property
+                                </a>
+                                <a href="javascript:void(0)" class="action-btn" onclick="addNewClient()">
+                                    <i class="fas fa-user-plus"></i>
+                                    Add Client
+                                </a>
+                                <a href="javascript:void(0)" class="action-btn" onclick="manageTeam()">
+                                    <i class="fas fa-users"></i>
+                                    Manage Team
+                                </a>
+                                <a href="javascript:void(0)" class="action-btn" onclick="openAnalytics()">
+                                    <i class="fas fa-chart-line"></i>
+                                    Analytics
+                                </a>
+                                <a href="javascript:void(0)" class="action-btn" onclick="generateReport()">
+                                    <i class="fas fa-file-alt"></i>
+                                    Generate Report
+                                </a>
+                                <a href="javascript:void(0)" class="action-btn" onclick="scheduleService()">
+                                    <i class="fas fa-tools"></i>
+                                    Schedule Service
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Enterprise Features -->
+                    <div class="card enterprise-features">
+                        <h3>Enterprise Professional Features</h3>
+                        <div class="feature-grid">
+                            <div class="feature-item">
+                                <h4><i class="fas fa-infinity"></i> Unlimited Properties</h4>
+                                <p>Manage unlimited home profiles for realtors, builders & landlords with professional tools.</p>
+                            </div>
+                            <div class="feature-item">
+                                <h4><i class="fas fa-users"></i> Client Management System</h4>
+                                <p>Complete client management system with property portfolios and relationship tracking.</p>
+                            </div>
+                            <div class="feature-item">
+                                <h4><i class="fas fa-user-friends"></i> Team Collaboration Tools</h4>
+                                <p>Advanced team collaboration tools for real estate teams and property management groups.</p>
+                            </div>
+                            <div class="feature-item">
+                                <h4><i class="fas fa-chart-line"></i> Property Valuation Tracking</h4>
+                                <p>Comprehensive property valuation tracking and market analytics for informed decisions.</p>
+                            </div>
+                            <div class="feature-item">
+                                <h4><i class="fas fa-tools"></i> Maintenance Scheduling</h4>
+                                <p>Advanced maintenance scheduling across multiple properties with automated workflows.</p>
+                            </div>
+                            <div class="feature-item">
+                                <h4><i class="fas fa-key"></i> Tenant Management</h4>
+                                <p>Comprehensive tenant management features for landlords with lease tracking and communication.</p>
+                            </div>
+                            <div class="feature-item">
+                                <h4><i class="fas fa-drafting-compass"></i> Professional Floor Plan Designer</h4>
+                                <p>Advanced floor plan designer with professional tools for client presentations.</p>
+                            </div>
+                            <div class="feature-item">
+                                <h4><i class="fas fa-file-alt"></i> White-label Reporting</h4>
+                                <p>Professional white-label reporting for client presentations and portfolio management.</p>
+                            </div>
+                        </div>
+
+                        <!-- Client Management -->
+                        <div class="client-management">
+                            <h3><i class="fas fa-users"></i> Client Management System</h3>
+                            <p>Complete client management with property portfolios, relationship tracking, and professional communication tools.</p>
+                            <div class="client-actions">
+                                <button class="client-btn" onclick="addClient()">
+                                    <i class="fas fa-user-plus"></i> Add New Client
+                                </button>
+                                <button class="client-btn" onclick="viewClientPortfolio()">
+                                    <i class="fas fa-briefcase"></i> View Portfolios
+                                </button>
+                                <button class="client-btn" onclick="generateClientReport()">
+                                    <i class="fas fa-file-alt"></i> Generate Report
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Team Collaboration -->
+                        <div class="team-collaboration">
+                            <h3><i class="fas fa-user-friends"></i> Team Collaboration Tools</h3>
+                            <p>Advanced team collaboration tools for real estate teams with shared workspaces and communication.</p>
+                            <div class="team-actions">
+                                <button class="team-btn" onclick="inviteTeamMember()">
+                                    <i class="fas fa-user-plus"></i> Invite Team Member
+                                </button>
+                                <button class="team-btn" onclick="viewTeamWorkspace()">
+                                    <i class="fas fa-users"></i> Team Workspace
+                                </button>
+                                <button class="team-btn" onclick="scheduleTeamMeeting()">
+                                    <i class="fas fa-calendar"></i> Schedule Meeting
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Property Portfolio -->
+                        <div class="property-portfolio">
+                            <h3>Property Portfolio Overview</h3>
+                            <div class="portfolio-grid">
+                                <div class="property-card">
+                                    <h4>123 Main Street</h4>
+                                    <p>Single Family Home</p>
+                                    <p>3 bed, 2 bath</p>
+                                    <div class="property-value">$450,000</div>
+                                </div>
+                                <div class="property-card">
+                                    <h4>456 Oak Avenue</h4>
+                                    <p>Commercial Building</p>
+                                    <p>5 units</p>
+                                    <div class="property-value">$1,200,000</div>
+                                </div>
+                                <div class="property-card">
+                                    <h4>789 Pine Road</h4>
+                                    <p>Apartment Complex</p>
+                                    <p>12 units</p>
+                                    <div class="property-value">$2,100,000</div>
+                                </div>
+                                <div class="property-card">
+                                    <h4>321 Elm Street</h4>
+                                    <p>Townhouse</p>
+                                    <p>2 bed, 2 bath</p>
+                                    <div class="property-value">$325,000</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Enterprise Support -->
+                        <div class="enterprise-support">
+                            <h3><i class="fas fa-crown"></i> Priority Enterprise Support</h3>
+                            <p>Priority enterprise support with dedicated account manager and priority response times.</p>
+                            <button class="support-btn" onclick="contactEnterpriseSupport()">
+                                <i class="fas fa-headset"></i> Contact Account Manager
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Other sections will be added dynamically -->
+                <div id="properties" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Unlimited Properties</h3>
+                        <p>Manage unlimited properties with professional tools for realtors, builders, and landlords.</p>
+                        <!-- Property management content will be added here -->
+                    </div>
+                </div>
+
+                <div id="clients" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Client Management System</h3>
+                        <p>Complete client management with property portfolios and relationship tracking.</p>
+                        <!-- Client management content will be added here -->
+                    </div>
+                </div>
+
+                <div id="team" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Team Collaboration Tools</h3>
+                        <p>Advanced team collaboration tools for real estate teams and property management groups.</p>
+                        <!-- Team collaboration content will be added here -->
+                    </div>
+                </div>
+
+                <div id="analytics" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Market Analytics & Valuation</h3>
+                        <p>Comprehensive property valuation tracking and market analytics for informed decisions.</p>
+                        <!-- Analytics content will be added here -->
+                    </div>
+                </div>
+
+                <div id="maintenance" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Maintenance Scheduling</h3>
+                        <p>Advanced maintenance scheduling across multiple properties with automated workflows.</p>
+                        <!-- Maintenance content will be added here -->
+                    </div>
+                </div>
+
+                <div id="tenants" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Tenant Management</h3>
+                        <p>Comprehensive tenant management features for landlords with lease tracking and communication.</p>
+                        <!-- Tenant management content will be added here -->
+                    </div>
+                </div>
+
+                <div id="floorplan" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Professional Floor Plan Designer</h3>
+                        <p>Advanced floor plan designer with professional tools for client presentations.</p>
+                        <!-- Floor plan designer content will be added here -->
+                    </div>
+                </div>
+
+                <div id="reporting" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>White-label Reporting</h3>
+                        <p>Professional white-label reporting for client presentations and portfolio management.</p>
+                        <!-- Reporting content will be added here -->
+                    </div>
+                </div>
+
+                <div id="support" class="dashboard-section" style="display: none;">
+                    <div class="card">
+                        <h3>Priority Enterprise Support</h3>
+                        <p>Priority enterprise support with dedicated account manager and priority response times.</p>
+                        <button class="support-btn" onclick="contactEnterpriseSupport()">
+                            <i class="fas fa-headset"></i> Contact Account Manager
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Task Management Modal -->
+    <div id="taskModal" class="modal-overlay" style="display: none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="taskModalTitle">Add New Task</h3>
+                <span class="close-btn" onclick="closeTaskModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="taskForm">
+                    <div class="form-group">
+                        <label for="taskTitle">Task Title</label>
+                        <input type="text" id="taskTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskDescription">Description</label>
+                        <textarea id="taskDescription" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskHome">Home</label>
+                        <select id="taskHome" required>
+                            <option value="">Select Home</option>
+                            <option value="123-main-street">123 Main Street</option>
+                            <option value="456-oak-avenue">456 Oak Avenue</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskPriority">Priority</label>
+                        <select id="taskPriority" required>
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskDueDate">Due Date</label>
+                        <input type="date" id="taskDueDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskCategory">Category</label>
+                        <select id="taskCategory">
+                            <option value="maintenance">Maintenance</option>
+                            <option value="cleaning">Cleaning</option>
+                            <option value="inspection">Inspection</option>
+                            <option value="repair">Repair</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeTaskModal()">Cancel</button>
+                <button class="btn" onclick="saveTask()">Save Task</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Home Management Modal -->
+    <div id="homeModal" class="modal-overlay" style="display: none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="homeModalTitle">Add New Home</h3>
+                <span class="close-btn" onclick="closeHomeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="homeForm">
+                    <div class="form-group">
+                        <label for="homeAddress">Address</label>
+                        <input type="text" id="homeAddress" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="homeType">Home Type</label>
+                        <select id="homeType" required>
+                            <option value="">Select Type</option>
+                            <option value="single-family">Single Family</option>
+                            <option value="townhouse">Townhouse</option>
+                            <option value="condo">Condo</option>
+                            <option value="apartment">Apartment</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="homeBedrooms">Bedrooms</label>
+                            <input type="number" id="homeBedrooms" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="homeBathrooms">Bathrooms</label>
+                            <input type="number" id="homeBathrooms" min="0" step="0.5" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="homeSquareFootage">Square Footage</label>
+                        <input type="number" id="homeSquareFootage" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="homeYearBuilt">Year Built</label>
+                        <input type="number" id="homeYearBuilt" min="1800" max="2025" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeHomeModal()">Cancel</button>
+                <button class="btn" onclick="saveHome()">Save Home</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation functionality
+        function showSection(sectionId) {
+            // Hide all sections (both dashboard-section and content-section)
+            const sections = document.querySelectorAll('.dashboard-section, .content-section');
+            sections.forEach(section => section.style.display = 'none');
+            
+            // Remove active class from all nav items
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+            
+            // Show selected section
+            document.getElementById(sectionId).style.display = 'block';
+            
+            // Add active class to clicked nav item
+            event.target.classList.add('active');
+        }
+
+        // User authentication and data loading
+        async function loadUserData() {
+            try {
+                // Load user data from AWS Cognito
+                const user = await getCurrentUser();
+                if (user) {
+                    document.getElementById('userName').textContent = user.username || 'User';
+                    document.getElementById('userAvatar').textContent = (user.username || 'U').charAt(0).toUpperCase();
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                // Don't redirect - just show default user info
+                document.getElementById('userName').textContent = 'Demo User';
+                document.getElementById('userAvatar').textContent = 'D';
+            }
+        }
+
+        // Sign out functionality
+        async function signOut() {
+            try {
+                await signOutUser();
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('Error signing out:', error);
+            }
+        }
+
+        // Enterprise management functions
+        function addClient() {
+            // Open client creation modal
+            alert('Client management feature coming soon!');
+        }
+
+        function viewClientPortfolio() {
+            // Open client portfolio view
+            alert('Client portfolio feature coming soon!');
+        }
+
+        function generateClientReport() {
+            // Open report generation
+            alert('Report generation feature coming soon!');
+        }
+
+        function inviteTeamMember() {
+            // Open team invitation modal
+            alert('Team management feature coming soon!');
+        }
+
+        function viewTeamWorkspace() {
+            // Open team workspace
+            alert('Team workspace feature coming soon!');
+        }
+
+        function scheduleTeamMeeting() {
+            // Open meeting scheduler
+            alert('Meeting scheduler feature coming soon!');
+        }
+
+        function contactEnterpriseSupport() {
+            // Open enterprise support contact
+            window.open('mailto:enterprise@nestmateusa.com?subject=Enterprise Support Request', '_blank');
+        }
+
+        // Enterprise Quick Actions Functions
+        function addNewProperty() {
+            showAlert('Opening add property...', 'info');
+            addNewHome();
+        }
+
+        function addNewClient() {
+            showAlert('Opening add client...', 'info');
+            const clientName = prompt('Enter client name:');
+            if (clientName) {
+                showAlert(`Client ${clientName} added successfully!`, 'success');
+            }
+        }
+
+        function manageTeam() {
+            showAlert('Opening team management...', 'info');
+            showSection('team');
+        }
+
+        function openAnalytics() {
+            showAlert('Opening analytics dashboard...', 'info');
+            showSection('analytics');
+        }
+
+        function generateReport() {
+            showAlert('Generating comprehensive report...', 'info');
+            setTimeout(() => {
+                showAlert('Report generated successfully!', 'success');
+            }, 1500);
+        }
+
+        function scheduleService() {
+            showAlert('Opening service scheduler...', 'info');
+            window.open('expert-services.html', '_blank');
+        }
+
+        // Basic Info Functions
+        function editBasicInfo() {
+            document.getElementById('basicInfoDisplay').style.display = 'none';
+            document.getElementById('basicInfoForm').style.display = 'block';
+        }
+
+        function cancelEditBasicInfo() {
+            document.getElementById('basicInfoDisplay').style.display = 'block';
+            document.getElementById('basicInfoForm').style.display = 'none';
+        }
+
+        async function saveBasicInfo() {
+            const address = document.getElementById('address').value;
+            const yearBuilt = document.getElementById('yearBuilt').value;
+            const squareFootage = document.getElementById('squareFootage').value;
+            const bedrooms = document.getElementById('bedrooms').value;
+            const bathrooms = document.getElementById('bathrooms').value;
+            const homeType = document.getElementById('homeType').value;
+
+            // Update display
+            document.getElementById('displayAddress').textContent = address || 'Not set';
+            document.getElementById('displayYearBuilt').textContent = yearBuilt || 'Not set';
+            document.getElementById('displaySquareFootage').textContent = squareFootage || 'Not set';
+            document.getElementById('displayBedrooms').textContent = bedrooms || 'Not set';
+            document.getElementById('displayBathrooms').textContent = bathrooms || 'Not set';
+            document.getElementById('displayHomeType').textContent = homeType || 'Not set';
+
+            // Hide form and show display
+            document.getElementById('basicInfoForm').style.display = 'none';
+            document.getElementById('basicInfoDisplay').style.display = 'block';
+
+            showAlert('Basic info saved successfully!', 'success');
+        }
+
+        // Structure Functions
+        function editStructure() {
+            document.getElementById('structureDisplay').style.display = 'none';
+            document.getElementById('structureForm').style.display = 'block';
+        }
+
+        function cancelEditStructure() {
+            document.getElementById('structureDisplay').style.display = 'block';
+            document.getElementById('structureForm').style.display = 'none';
+        }
+
+        async function saveStructure() {
+            const foundation = document.getElementById('foundation').value;
+            const roofType = document.getElementById('roofType').value;
+            const exteriorMaterial = document.getElementById('exteriorMaterial').value;
+            const windows = document.getElementById('windows').value;
+
+            // Update display
+            document.getElementById('displayFoundation').textContent = foundation || 'Not set';
+            document.getElementById('displayRoofType').textContent = roofType || 'Not set';
+            document.getElementById('displayExteriorMaterial').textContent = exteriorMaterial || 'Not set';
+            document.getElementById('displayWindows').textContent = windows || 'Not set';
+
+            // Hide form and show display
+            document.getElementById('structureForm').style.display = 'none';
+            document.getElementById('structureDisplay').style.display = 'block';
+
+            showAlert('Structure info saved successfully!', 'success');
+        }
+
+        // Systems Functions
+        function editSystems() {
+            document.getElementById('systemsDisplay').style.display = 'none';
+            document.getElementById('systemsForm').style.display = 'block';
+        }
+
+        function cancelEditSystems() {
+            document.getElementById('systemsDisplay').style.display = 'block';
+            document.getElementById('systemsForm').style.display = 'none';
+        }
+
+        async function saveSystems() {
+            const hvac = document.getElementById('hvac').value;
+            const electrical = document.getElementById('electrical').value;
+            const plumbing = document.getElementById('plumbing').value;
+            const waterHeater = document.getElementById('waterHeater').value;
+
+            // Update display
+            document.getElementById('displayHVAC').textContent = hvac || 'Not set';
+            document.getElementById('displayElectrical').textContent = electrical || 'Not set';
+            document.getElementById('displayPlumbing').textContent = plumbing || 'Not set';
+            document.getElementById('displayWaterHeater').textContent = waterHeater || 'Not set';
+
+            // Hide form and show display
+            document.getElementById('systemsForm').style.display = 'none';
+            document.getElementById('systemsDisplay').style.display = 'block';
+
+            showAlert('Systems info saved successfully!', 'success');
+        }
+
+        // Basic Add Functions
+        function addBedroom() {
+            showAlert('Add bedroom functionality coming soon!', 'info');
+        }
+
+        function addBathroom() {
+            showAlert('Add bathroom functionality coming soon!', 'info');
+        }
+
+        function addLivingArea() {
+            showAlert('Add living area functionality coming soon!', 'info');
+        }
+
+        function addAppliance() {
+            showAlert('Add appliance functionality coming soon!', 'info');
+        }
+
+        function uploadPhoto() {
+            showAlert('Photo upload functionality coming soon!', 'info');
+        }
+
+        function addRenovation() {
+            showAlert('Add renovation functionality coming soon!', 'info');
+        }
+
+        function addEmergencyContact() {
+            showAlert('Add emergency contact functionality coming soon!', 'info');
+        }
+
+        // Quick Action Functions
+        function openTasksCalendar() {
+            console.log('✅ Opening Tasks & Calendar');
+            showSection('tasks');
+        }
+
+        function openProducts() {
+            console.log('✅ Opening Products - redirecting to store');
+            window.location.href = 'nestmate-store.html';
+        }
+
+        function openEmergency() {
+            console.log('✅ Opening Emergency Contacts');
+            showSection('emergency');
+        }
+
+        function addService() {
+            console.log('✅ Adding Service');
+            showAlert('Service management feature coming soon!', 'info');
+        }
+
+        function viewRecords() {
+            console.log('✅ Viewing Records');
+            showAlert('Service records feature coming soon!', 'info');
+        }
+
+        function openHomeDetails() {
+            console.log('✅ Opening Home Details');
+            showSection('basic-info');
+        }
+
+        function openChatbot() {
+            console.log('✅ Opening Chatbot');
+            showAlert('AI Chatbot feature coming soon!', 'info');
+        }
+
+        // Modal Functions
+
+        function openAddRenovationModal() {
+            showAlert('Add renovation modal coming soon!', 'info');
+        }
+
+        // Additional Functions
+        function addTask() {
+            showAlert('Add task functionality coming soon!', 'info');
+        }
+
+        function scheduleService() {
+            showAlert('Schedule service functionality coming soon!', 'info');
+        }
+
+        // Multi-Home Functions
+        // These functions are now implemented above with real functionality
+
+        function addNewTask() {
+            openTaskModal();
+        }
+
+        // Data Storage
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+        let homes = JSON.parse(localStorage.getItem('homes')) || [
+            {
+                id: '123-main-street',
+                address: '123 Main Street',
+                type: 'Single Family Home',
+                bedrooms: 3,
+                bathrooms: 2,
+                squareFootage: 2400,
+                yearBuilt: 2018,
+                healthScore: 92
+            },
+            {
+                id: '456-oak-avenue',
+                address: '456 Oak Avenue',
+                type: 'Townhouse',
+                bedrooms: 2,
+                bathrooms: 2,
+                squareFootage: 1800,
+                yearBuilt: 2020,
+                healthScore: 88
+            }
+        ];
+
+        // Multi-Home Functions
+        function viewHomeDetails(homeId) {
+            const home = homes.find(h => h.id === homeId);
+            if (home) {
+                showAlert(`Viewing details for ${home.address}`, 'info');
+            }
+        }
+
+        function editHome(homeId) {
+            const home = homes.find(h => h.id === homeId);
+            if (home) {
+                openHomeModal(home);
+            }
+        }
+
+        function addNewHome() {
+            openHomeModal();
+        }
+
+        function openHomeModal(home = null) {
+            const modal = document.getElementById('homeModal');
+            const title = document.getElementById('homeModalTitle');
+            const form = document.getElementById('homeForm');
+            
+            if (home) {
+                title.textContent = 'Edit Home';
+                document.getElementById('homeAddress').value = home.address;
+                document.getElementById('homeType').value = home.type.toLowerCase().replace(' ', '-');
+                document.getElementById('homeBedrooms').value = home.bedrooms;
+                document.getElementById('homeBathrooms').value = home.bathrooms;
+                document.getElementById('homeSquareFootage').value = home.squareFootage;
+                document.getElementById('homeYearBuilt').value = home.yearBuilt;
+                form.dataset.homeId = home.id;
+            } else {
+                title.textContent = 'Add New Home';
+                form.reset();
+                delete form.dataset.homeId;
+            }
+            
+            modal.style.display = 'flex';
+        }
+
+        function closeHomeModal() {
+            document.getElementById('homeModal').style.display = 'none';
+        }
+
+        // Multi-Home Functions - Using Basic Dashboard AWS Pattern
+        async function saveHome() {
+            const form = document.getElementById('homeForm');
+            
+            const homeData = {
+                address: document.getElementById('homeAddress').value,
+                type: document.getElementById('homeType').value,
+                bedrooms: parseInt(document.getElementById('homeBedrooms').value) || 0,
+                bathrooms: parseFloat(document.getElementById('homeBathrooms').value) || 0,
+                squareFootage: parseInt(document.getElementById('homeSquareFootage').value) || 0,
+                yearBuilt: parseInt(document.getElementById('homeYearBuilt').value) || new Date().getFullYear(),
+                healthScore: Math.floor(Math.random() * 20) + 80
+            };
+
+            // Validate required fields
+            if (!homeData.address || !homeData.type) {
+                showAlert('Please fill in all required fields (Address and Type are required)', 'error');
+                return;
+            }
+
+            try {
+                const userId = nestMateAuth.currentUser.userId;
+                console.log('Saving home data for userId:', userId);
+                console.log('Home data:', homeData);
+                
+                // Get existing homes list
+                const existingHomes = await getHomesList();
+                
+                // Add new home or update existing
+                const homeId = homeData.address.toLowerCase().replace(/\s+/g, '-');
+                homeData.id = homeId;
+                
+                let updatedHomes;
+                if (form.dataset.homeId) {
+                    // Edit existing home
+                    const index = parseInt(form.dataset.homeId);
+                    updatedHomes = [...existingHomes];
+                    updatedHomes[index] = homeData;
+                } else {
+                    // Add new home
+                    updatedHomes = [...existingHomes, homeData];
+                }
+                
+                const params = {
+                    TableName: 'nestmate-users',
+                    Key: { userId: userId },
+                    UpdateExpression: 'SET homesList = :homes, lastUpdated = :timestamp',
+                    ExpressionAttributeValues: {
+                        ':homes': updatedHomes,
+                        ':timestamp': new Date().toISOString()
+                    },
+                    ReturnValues: 'UPDATED_NEW'
+                };
+                
+                const result = await dynamodb.update(params).promise();
+                console.log('Home saved successfully:', result);
+                
+                showAlert('Home saved successfully!', 'success');
+                closeHomeModal();
+                loadHomes();
+                
+            } catch (error) {
+                console.error('Save home error:', error);
+                showAlert('Failed to save home. Try again.', 'error');
+            }
+        }
+
+        async function getHomesList() {
+            try {
+                const userId = nestMateAuth.currentUser.userId;
+                const params = {
+                    TableName: 'nestmate-users',
+                    Key: { userId: userId }
+                };
+                
+                const result = await dynamodb.get(params).promise();
+                return result.Item?.homesList || [];
+            } catch (error) {
+                console.error('Get homes list error:', error);
+                return [];
+            }
+        }
+
+        async function loadHomes() {
+            try {
+                const homesList = await getHomesList();
+                const container = document.querySelector('.homes-grid');
+                if (!container) return;
+                
+                container.innerHTML = '';
+                
+                // Add existing homes
+                homesList.forEach((home, index) => {
+                    const homeCard = document.createElement('div');
+                    homeCard.className = 'home-card';
+                    homeCard.innerHTML = `
+                        <div class="home-header">
+                            <h3>${home.address}</h3>
+                            <span class="home-type">${home.type}</span>
+                        </div>
+                        <div class="home-details">
+                            <div class="detail-item">
+                                <i class="fas fa-bed"></i>
+                                <span>${home.bedrooms} bed</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-bath"></i>
+                                <span>${home.bathrooms} bath</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-ruler-combined"></i>
+                                <span>${home.squareFootage} sq ft</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-calendar"></i>
+                                <span>Built ${home.yearBuilt}</span>
+                            </div>
+                        </div>
+                        <div class="home-health">
+                            <div class="health-score">
+                                <span class="score">${home.healthScore}</span>
+                                <span class="label">Health Score</span>
+                            </div>
+                            <div class="health-bar">
+                                <div class="health-fill" style="width: ${home.healthScore}%"></div>
+                            </div>
+                        </div>
+                        <div class="home-actions">
+                            <button class="btn btn-secondary" onclick="viewHomeDetails('${home.id}')">
+                                <i class="fas fa-eye"></i> View Details
+                            </button>
+                            <button class="btn btn-primary" onclick="editHome('${home.id}')">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                        </div>
+                    `;
+                    container.appendChild(homeCard);
+                });
+                
+                // Add "Add New Home" card if less than 5 homes
+                if (homesList.length < 5) {
+                    const addHomeCard = document.createElement('div');
+                    addHomeCard.className = 'home-card add-home';
+                    addHomeCard.innerHTML = `
+                        <div class="add-home-content">
+                            <i class="fas fa-plus"></i>
+                            <h4>Add New Home</h4>
+                            <p>Add up to ${5 - homesList.length} more homes</p>
+                            <button class="btn-primary" onclick="addNewHome()">Add Home</button>
+                        </div>
+                    `;
+                    container.appendChild(addHomeCard);
+                }
+                
+                console.log('Homes loaded:', homesList);
+            } catch (error) {
+                console.error('Load homes error:', error);
+            }
+        }
+
+        async function editHome(homeId) {
+            try {
+                const homesList = await getHomesList();
+                const home = homesList.find(h => h.id === homeId);
+                if (home) {
+                    openHomeModal(home);
+                } else {
+                    showAlert('Home not found', 'error');
+                }
+            } catch (error) {
+                console.error('Edit home error:', error);
+                showAlert('Failed to load home for editing', 'error');
+            }
+        }
+
+        // Task Functions
+        function filterTasks(filter) {
+            const taskItems = document.querySelectorAll('.task-item');
+            taskItems.forEach(item => {
+                item.style.display = 'block';
+                
+                if (filter === 'due-soon') {
+                    const dueText = item.querySelector('.task-content p').textContent;
+                    if (!dueText.includes('Due in') || dueText.includes('week')) {
+                        item.style.display = 'none';
+                    }
+                }
+            });
+            
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function editTask(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                openTaskModal(task);
+            }
+        }
+
+        function completeTask(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                task.completed = true;
+                task.completedDate = new Date().toISOString();
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+                showAlert('Task completed!', 'success');
+                loadTasks();
+            }
+        }
+
+        function undoTask(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                task.completed = false;
+                delete task.completedDate;
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+                showAlert('Task undone!', 'info');
+                loadTasks();
+            }
+        }
+
+        function openTaskModal(task = null) {
+            const modal = document.getElementById('taskModal');
+            const title = document.getElementById('taskModalTitle');
+            const form = document.getElementById('taskForm');
+            
+            if (task) {
+                title.textContent = 'Edit Task';
+                document.getElementById('taskTitle').value = task.title;
+                document.getElementById('taskDescription').value = task.description || '';
+                document.getElementById('taskHome').value = task.home;
+                document.getElementById('taskPriority').value = task.priority;
+                document.getElementById('taskDueDate').value = task.dueDate;
+                document.getElementById('taskCategory').value = task.category;
+                form.dataset.taskId = task.id;
+            } else {
+                title.textContent = 'Add New Task';
+                form.reset();
+                delete form.dataset.taskId;
+            }
+            
+            modal.style.display = 'flex';
+        }
+
+        function closeTaskModal() {
+            document.getElementById('taskModal').style.display = 'none';
+        }
+
+        function saveTask() {
+            const form = document.getElementById('taskForm');
+            
+            const taskData = {
+                title: document.getElementById('taskTitle').value,
+                description: document.getElementById('taskDescription').value,
+                home: document.getElementById('taskHome').value,
+                priority: document.getElementById('taskPriority').value,
+                dueDate: document.getElementById('taskDueDate').value,
+                category: document.getElementById('taskCategory').value,
+                created: new Date().toISOString(),
+                completed: false
+            };
+
+            if (form.dataset.taskId) {
+                const index = tasks.findIndex(t => t.id === form.dataset.taskId);
+                if (index !== -1) {
+                    tasks[index] = { ...tasks[index], ...taskData };
+                }
+                showAlert('Task updated successfully!', 'success');
+            } else {
+                taskData.id = 'task' + Date.now();
+                tasks.push(taskData);
+                showAlert('Task added successfully!', 'success');
+            }
+
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            closeTaskModal();
+            loadTasks();
+        }
+
+        function loadTasks() {
+            console.log('Loading tasks:', tasks);
+        }
+
+        // Old loadHomes function removed - using AWS-based loadHomes now
+
+        // Utility Functions
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            alertDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 1rem;
+                border-radius: 8px;
+                color: white;
+                z-index: 1000;
+                max-width: 300px;
+            `;
+            
+            if (type === 'success') {
+                alertDiv.style.backgroundColor = '#10b981';
+            } else if (type === 'error') {
+                alertDiv.style.backgroundColor = '#ef4444';
+            } else if (type === 'info') {
+                alertDiv.style.backgroundColor = '#3b82f6';
+            }
+            
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 3000);
+        }
+
+        // ===== Dynamic Bedrooms Helpers =====
+        function renderBedroomsList() {
+            const container = document.getElementById('bedroomsList');
+            if (!container) return;
+            container.innerHTML = '';
+            const list = ensureDashboardState().bedroomsList || [];
+            if (list.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'empty-state';
+                empty.textContent = 'No bedrooms added yet. Click "Add Bedroom" to create one.';
+                container.appendChild(empty);
+                return;
+            }
+            list.forEach((b, idx) => {
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                const details = [
+                    b.size && `Size: ${b.size}`,
+                    b.floorType && `Floor: ${b.floorType}`,
+                    b.windowCount && `Windows: ${b.windowCount}`,
+                    b.outlets && `Outlets: ${b.outlets}`,
+                    b.condition && `Condition: ${b.condition}`
+                ].filter(Boolean).join(' · ');
+                item.innerHTML = `
+                    <div class="list-item-main">
+                        <div class="list-item-title">${b.name || `Bedroom ${idx + 1}`}</div>
+                        <div class="list-item-sub">${details || 'No details added'}</div>
+                    </div>
+                    <div class="list-item-actions">
+                        <button class="btn btn-secondary" onclick="openEditBedroomModal(${idx})"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-secondary" onclick="deleteBedroom(${idx})"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function openAddBedroomModal() {
+            openBedroomModal();
+        }
+
+        function openEditBedroomModal(index) {
+            const state = ensureDashboardState();
+            const data = state.bedroomsList[index];
+            openBedroomModal(data, index);
+        }
+
+        function openBedroomModal(existing = null, index = null) {
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <h3>${existing ? 'Edit Bedroom' : 'Add Bedroom'}</h3>
+                <div class="form-grid">
+                    <div class="form-group"><label>Name</label><input id="bName" type="text" placeholder="e.g., Primary Bedroom" value="${existing?.name || ''}"></div>
+                    <div class="form-group"><label>Size</label><input id="bSize" type="text" placeholder="e.g., 15' x 12'" value="${existing?.size || ''}"></div>
+                    <div class="form-group"><label>Ceiling Height</label><input id="bCeilingHeight" type="text" placeholder="e.g., 9 feet" value="${existing?.ceilingHeight || ''}"></div>
+                    <div class="form-group"><label>Floor Type</label>
+                        <select id="bFloor">
+                            <option value="">Select</option>
+                            <option value="carpet" ${existing?.floorType === 'carpet' ? 'selected' : ''}>Carpet</option>
+                            <option value="hardwood" ${existing?.floorType === 'hardwood' ? 'selected' : ''}>Hardwood</option>
+                            <option value="laminate" ${existing?.floorType === 'laminate' ? 'selected' : ''}>Laminate</option>
+                            <option value="tile" ${existing?.floorType === 'tile' ? 'selected' : ''}>Tile</option>
+                            <option value="vinyl" ${existing?.floorType === 'vinyl' ? 'selected' : ''}>Vinyl</option>
+                            <option value="bamboo" ${existing?.floorType === 'bamboo' ? 'selected' : ''}>Bamboo</option>
+                            <option value="cork" ${existing?.floorType === 'cork' ? 'selected' : ''}>Cork</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Floor Color/Material</label><input id="bFloorDetails" type="text" placeholder="e.g., Oak, Gray Berber" value="${existing?.floorDetails || ''}"></div>
+                    <div class="form-group"><label>Wall Color</label><input id="bWallColor" type="text" placeholder="e.g., Light Blue, White" value="${existing?.wallColor || ''}"></div>
+                    <div class="form-group"><label>Trim Style</label>
+                        <select id="bTrimStyle">
+                            <option value="">Select</option>
+                            <option value="colonial" ${existing?.trimStyle === 'colonial' ? 'selected' : ''}>Colonial</option>
+                            <option value="craftsman" ${existing?.trimStyle === 'craftsman' ? 'selected' : ''}>Craftsman</option>
+                            <option value="modern" ${existing?.trimStyle === 'modern' ? 'selected' : ''}>Modern</option>
+                            <option value="traditional" ${existing?.trimStyle === 'traditional' ? 'selected' : ''}>Traditional</option>
+                            <option value="minimal" ${existing?.trimStyle === 'minimal' ? 'selected' : ''}>Minimal</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Trim Color</label><input id="bTrimColor" type="text" placeholder="e.g., White, Cream" value="${existing?.trimColor || ''}"></div>
+                    <div class="form-group"><label>Window Count</label><input id="bWindowCount" type="number" min="0" placeholder="e.g., 2" value="${existing?.windowCount ?? ''}"></div>
+                    <div class="form-group"><label>Window Sizes</label><input id="bWindows" type="text" placeholder="e.g., 36x48, 24x36" value="${existing?.windowSizes || ''}"></div>
+                    <div class="form-group"><label>Window Type</label>
+                        <select id="bWindowType">
+                            <option value="">Select</option>
+                            <option value="single-hung" ${existing?.windowType === 'single-hung' ? 'selected' : ''}>Single Hung</option>
+                            <option value="double-hung" ${existing?.windowType === 'double-hung' ? 'selected' : ''}>Double Hung</option>
+                            <option value="casement" ${existing?.windowType === 'casement' ? 'selected' : ''}>Casement</option>
+                            <option value="sliding" ${existing?.windowType === 'sliding' ? 'selected' : ''}>Sliding</option>
+                            <option value="bay" ${existing?.windowType === 'bay' ? 'selected' : ''}>Bay</option>
+                            <option value="picture" ${existing?.windowType === 'picture' ? 'selected' : ''}>Picture</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Blind Sizes</label><input id="bBlinds" type="text" placeholder="e.g., 36x48, 24x36" value="${existing?.blindSizes || ''}"></div>
+                    <div class="form-group"><label>Blind Type</label>
+                        <select id="bBlindType">
+                            <option value="">Select</option>
+                            <option value="venetian" ${existing?.blindType === 'venetian' ? 'selected' : ''}>Venetian</option>
+                            <option value="vertical" ${existing?.blindType === 'vertical' ? 'selected' : ''}>Vertical</option>
+                            <option value="roller" ${existing?.blindType === 'roller' ? 'selected' : ''}>Roller</option>
+                            <option value="cellular" ${existing?.blindType === 'cellular' ? 'selected' : ''}>Cellular</option>
+                            <option value="roman" ${existing?.blindType === 'roman' ? 'selected' : ''}>Roman</option>
+                            <option value="none" ${existing?.blindType === 'none' ? 'selected' : ''}>None</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Curtain Sizes</label><input id="bCurtains" type="text" placeholder="e.g., 84\" panels" value="${existing?.curtainSizes || ''}"></div>
+                    <div class="form-group"><label>Curtain Style</label>
+                        <select id="bCurtainStyle">
+                            <option value="">Select</option>
+                            <option value="grommet" ${existing?.curtainStyle === 'grommet' ? 'selected' : ''}>Grommet</option>
+                            <option value="rod-pocket" ${existing?.curtainStyle === 'rod-pocket' ? 'selected' : ''}>Rod Pocket</option>
+                            <option value="tab-top" ${existing?.curtainStyle === 'tab-top' ? 'selected' : ''}>Tab Top</option>
+                            <option value="pinch-pleat" ${existing?.curtainStyle === 'pinch-pleat' ? 'selected' : ''}>Pinch Pleat</option>
+                            <option value="none" ${existing?.curtainStyle === 'none' ? 'selected' : ''}>None</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Electrical Outlets</label><input id="bOutlets" type="number" min="0" placeholder="e.g., 6" value="${existing?.outlets ?? ''}"></div>
+                    <div class="form-group"><label>Outlet Type</label>
+                        <select id="bOutletType">
+                            <option value="">Select</option>
+                            <option value="standard" ${existing?.outletType === 'standard' ? 'selected' : ''}>Standard</option>
+                            <option value="gfci" ${existing?.outletType === 'gfci' ? 'selected' : ''}>GFCI</option>
+                            <option value="usb" ${existing?.outletType === 'usb' ? 'selected' : ''}>USB Outlets</option>
+                            <option value="smart" ${existing?.outletType === 'smart' ? 'selected' : ''}>Smart Outlets</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Light Fixtures</label><input id="bLights" type="number" min="0" placeholder="e.g., 2" value="${existing?.lights ?? ''}"></div>
+                    <div class="form-group"><label>Lighting Type</label>
+                        <select id="bLightingType">
+                            <option value="">Select</option>
+                            <option value="ceiling-fan" ${existing?.lightingType === 'ceiling-fan' ? 'selected' : ''}>Ceiling Fan</option>
+                            <option value="recessed" ${existing?.lightingType === 'recessed' ? 'selected' : ''}>Recessed</option>
+                            <option value="chandelier" ${existing?.lightingType === 'chandelier' ? 'selected' : ''}>Chandelier</option>
+                            <option value="pendant" ${existing?.lightingType === 'pendant' ? 'selected' : ''}>Pendant</option>
+                            <option value="table-lamp" ${existing?.lightingType === 'table-lamp' ? 'selected' : ''}>Table Lamp</option>
+                            <option value="floor-lamp" ${existing?.lightingType === 'floor-lamp' ? 'selected' : ''}>Floor Lamp</option>
+                            <option value="wall-sconce" ${existing?.lightingType === 'wall-sconce' ? 'selected' : ''}>Wall Sconce</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Ceiling Fan</label>
+                        <select id="bCeilingFan">
+                            <option value="no" ${existing?.ceilingFan ? '' : 'selected'}>No</option>
+                            <option value="yes" ${existing?.ceilingFan ? 'selected' : ''}>Yes</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Fan Brand/Model</label><input id="bFanDetails" type="text" placeholder="e.g., Hunter, 52\"" value="${existing?.fanDetails || ''}"></div>
+                    <div class="form-group"><label>Closet Type</label>
+                        <select id="bClosetType">
+                            <option value="">Select</option>
+                            <option value="walk-in" ${existing?.closetType === 'walk-in' ? 'selected' : ''}>Walk-in</option>
+                            <option value="reach-in" ${existing?.closetType === 'reach-in' ? 'selected' : ''}>Reach-in</option>
+                            <option value="built-in" ${existing?.closetType === 'built-in' ? 'selected' : ''}>Built-in</option>
+                            <option value="wardrobe" ${existing?.closetType === 'wardrobe' ? 'selected' : ''}>Wardrobe</option>
+                            <option value="none" ${existing?.closetType === 'none' ? 'selected' : ''}>None</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Closet Size</label><input id="bClosetSize" type="text" placeholder="e.g., 6' x 4'" value="${existing?.closetSize || ''}"></div>
+                    <div class="form-group"><label>Closet Organization</label>
+                        <select id="bClosetOrg">
+                            <option value="">Select</option>
+                            <option value="hanging-rods" ${existing?.closetOrg === 'hanging-rods' ? 'selected' : ''}>Hanging Rods</option>
+                            <option value="shelving" ${existing?.closetOrg === 'shelving' ? 'selected' : ''}>Shelving</option>
+                            <option value="drawers" ${existing?.closetOrg === 'drawers' ? 'selected' : ''}>Drawers</option>
+                            <option value="custom-system" ${existing?.closetOrg === 'custom-system' ? 'selected' : ''}>Custom System</option>
+                            <option value="basic" ${existing?.closetOrg === 'basic' ? 'selected' : ''}>Basic</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Attached Bathroom</label>
+                        <select id="bBath">
+                            <option value="no" ${existing?.attachedBath ? '' : 'selected'}>No</option>
+                            <option value="yes" ${existing?.attachedBath ? 'selected' : ''}>Yes</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Bathroom Access</label>
+                        <select id="bBathAccess">
+                            <option value="">Select</option>
+                            <option value="private" ${existing?.bathAccess === 'private' ? 'selected' : ''}>Private</option>
+                            <option value="shared" ${existing?.bathAccess === 'shared' ? 'selected' : ''}>Shared</option>
+                            <option value="jack-jill" ${existing?.bathAccess === 'jack-jill' ? 'selected' : ''}>Jack & Jill</option>
+                            <option value="none" ${existing?.bathAccess === 'none' ? 'selected' : ''}>None</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Heating/Cooling</label>
+                        <select id="bHVAC">
+                            <option value="">Select</option>
+                            <option value="central" ${existing?.hvac === 'central' ? 'selected' : ''}>Central</option>
+                            <option value="window-unit" ${existing?.hvac === 'window-unit' ? 'selected' : ''}>Window Unit</option>
+                            <option value="baseboard" ${existing?.hvac === 'baseboard' ? 'selected' : ''}>Baseboard</option>
+                            <option value="radiator" ${existing?.hvac === 'radiator' ? 'selected' : ''}>Radiator</option>
+                            <option value="none" ${existing?.hvac === 'none' ? 'selected' : ''}>None</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Security Features</label>
+                        <select id="bSecurity">
+                            <option value="">Select</option>
+                            <option value="motion-sensor" ${existing?.security === 'motion-sensor' ? 'selected' : ''}>Motion Sensor</option>
+                            <option value="window-sensor" ${existing?.security === 'window-sensor' ? 'selected' : ''}>Window Sensor</option>
+                            <option value="door-sensor" ${existing?.security === 'door-sensor' ? 'selected' : ''}>Door Sensor</option>
+                            <option value="camera" ${existing?.security === 'camera' ? 'selected' : ''}>Camera</option>
+                            <option value="none" ${existing?.security === 'none' ? 'selected' : ''}>None</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Last Renovation</label><input id="bLastRenovation" type="text" placeholder="e.g., 2020" value="${existing?.lastRenovation || ''}"></div>
+                    <div class="form-group"><label>Condition</label>
+                        <select id="bCondition">
+                            <option value="">Select</option>
+                            <option value="excellent" ${existing?.condition === 'excellent' ? 'selected' : ''}>Excellent</option>
+                            <option value="good" ${existing?.condition === 'good' ? 'selected' : ''}>Good</option>
+                            <option value="fair" ${existing?.condition === 'fair' ? 'selected' : ''}>Fair</option>
+                            <option value="poor" ${existing?.condition === 'poor' ? 'selected' : ''}>Poor</option>
+                            <option value="needs-renovation" ${existing?.condition === 'needs-renovation' ? 'selected' : ''}>Needs Renovation</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / -1"><label>Notes</label><textarea id="bNotes" rows="3" placeholder="Any additional notes...">${existing?.notes || ''}</textarea></div>
+                </div>
+                <div style="display:flex; gap: .75rem; justify-content:flex-end; margin-top: 1rem;">
+                    <button class="btn" id="bSaveBtn"><i class="fas fa-save"></i> Save</button>
+                    <button class="btn btn-secondary" id="bCancelBtn"><i class="fas fa-times"></i> Cancel</button>
+                </div>
+            `;
+            overlay.appendChild(modal);
+            document.body.appendChild(overlay);
+
+            modal.querySelector('#bCancelBtn').onclick = () => overlay.remove();
+            modal.querySelector('#bSaveBtn').onclick = async () => {
+                const payload = {
+                    name: document.getElementById('bName').value.trim(),
+                    size: document.getElementById('bSize').value.trim(),
+                    ceilingHeight: document.getElementById('bCeilingHeight').value.trim(),
+                    floorType: document.getElementById('bFloor').value,
+                    floorDetails: document.getElementById('bFloorDetails').value.trim(),
+                    wallColor: document.getElementById('bWallColor').value.trim(),
+                    trimStyle: document.getElementById('bTrimStyle').value,
+                    trimColor: document.getElementById('bTrimColor').value.trim(),
+                    windowCount: parseInt(document.getElementById('bWindowCount').value) || 0,
+                    windowSizes: document.getElementById('bWindows').value.trim(),
+                    windowType: document.getElementById('bWindowType').value,
+                    blindSizes: document.getElementById('bBlinds').value.trim(),
+                    blindType: document.getElementById('bBlindType').value,
+                    curtainSizes: document.getElementById('bCurtains').value.trim(),
+                    curtainStyle: document.getElementById('bCurtainStyle').value,
+                    outlets: parseInt(document.getElementById('bOutlets').value) || 0,
+                    outletType: document.getElementById('bOutletType').value,
+                    lights: parseInt(document.getElementById('bLights').value) || 0,
+                    lightingType: document.getElementById('bLightingType').value,
+                    ceilingFan: document.getElementById('bCeilingFan').value === 'yes',
+                    fanDetails: document.getElementById('bFanDetails').value.trim(),
+                    closetType: document.getElementById('bClosetType').value,
+                    closetSize: document.getElementById('bClosetSize').value.trim(),
+                    closetOrg: document.getElementById('bClosetOrg').value,
+                    attachedBath: document.getElementById('bBath').value === 'yes',
+                    bathAccess: document.getElementById('bBathAccess').value,
+                    hvac: document.getElementById('bHVAC').value,
+                    security: document.getElementById('bSecurity').value,
+                    lastRenovation: document.getElementById('bLastRenovation').value.trim(),
+                    condition: document.getElementById('bCondition').value,
+                    notes: document.getElementById('bNotes').value.trim()
+                };
+                await upsertBedroom(index, payload);
+                overlay.remove();
+            };
+        }
+
+        async function upsertBedroom(index, data) {
+            const state = ensureDashboardState();
+            if (index === null || index === undefined) state.bedroomsList.push(data); else state.bedroomsList[index] = data;
+            await saveBedroomsList();
+            renderBedroomsList();
+            showAlert('Bedroom saved successfully!', 'success');
+        }
+
+        async function deleteBedroom(index) {
+            if (!confirm('Are you sure you want to delete this bedroom?')) return;
+            const state = ensureDashboardState();
+            state.bedroomsList.splice(index, 1);
+            await saveBedroomsList();
+            renderBedroomsList();
+            showAlert('Bedroom deleted successfully!', 'success');
+        }
+
+        async function saveBedroomsList() {
+            const state = ensureDashboardState();
+            localStorage.setItem('dashboardState', JSON.stringify(state));
+        }
+
+        // ===== Dynamic Bathrooms Helpers =====
+        function renderBathroomsList() {
+            const container = document.getElementById('bathroomsList');
+            if (!container) return;
+            container.innerHTML = '';
+            const list = ensureDashboardState().bathroomsList || [];
+            if (list.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'empty-state';
+                empty.textContent = 'No bathrooms added yet. Click "Add Bathroom" to create one.';
+                container.appendChild(empty);
+                return;
+            }
+            list.forEach((b, idx) => {
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                const details = [
+                    b.type && `Type: ${b.type}`,
+                    b.fixtures && `Fixtures: ${b.fixtures}`,
+                    b.flooring && `Floor: ${b.flooring}`,
+                    b.condition && `Condition: ${b.condition}`
+                ].filter(Boolean).join(' · ');
+                item.innerHTML = `
+                    <div class="list-item-main">
+                        <div class="list-item-title">${b.name || `Bathroom ${idx + 1}`}</div>
+                        <div class="list-item-sub">${details || 'No details added'}</div>
+                    </div>
+                    <div class="list-item-actions">
+                        <button class="btn btn-secondary" onclick="openBathroomModal(${idx})"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-secondary" onclick="deleteBathroom(${idx})"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function openAddBathroomModal() { openBathroomModal(null); }
+
+        function openBathroomModal(index) {
+            const existing = (index !== null && index !== undefined) ? ensureDashboardState().bathroomsList[index] : null;
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <h3>${existing ? 'Edit Bathroom' : 'Add Bathroom'}</h3>
+                <div class="form-grid">
+                    <div class="form-group"><label>Name</label><input id="baName" type="text" placeholder="e.g., Master Bath" value="${existing?.name || ''}"></div>
+                    <div class="form-group"><label>Type</label>
+                        <select id="baType">
+                            <option value="">Select</option>
+                            <option value="full" ${existing?.type==='full'?'selected':''}>Full</option>
+                            <option value="three-quarter" ${existing?.type==='three-quarter'?'selected':''}>3/4 Bath</option>
+                            <option value="half" ${existing?.type==='half'?'selected':''}>Half</option>
+                            <option value="powder" ${existing?.type==='powder'?'selected':''}>Powder</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Fixtures</label><input id="baFixtures" type="text" placeholder="e.g., Double vanity, Walk-in shower" value="${existing?.fixtures || ''}"></div>
+                    <div class="form-group"><label>Flooring</label><input id="baFlooring" type="text" placeholder="e.g., Porcelain tile" value="${existing?.flooring || ''}"></div>
+                    <div class="form-group"><label>Wall Color</label><input id="baWallColor" type="text" value="${existing?.wallColor || ''}"></div>
+                    <div class="form-group"><label>Ventilation</label><input id="baVentilation" type="text" placeholder="e.g., Exhaust fan, Window" value="${existing?.ventilation || ''}"></div>
+                    <div class="form-group"><label>Last Renovation</label><input id="baLastRenovation" type="date" value="${existing?.lastRenovation || ''}"></div>
+                    <div class="form-group"><label>Condition</label>
+                        <select id="baCondition">
+                            <option value="">Select</option>
+                            <option value="excellent" ${existing?.condition==='excellent'?'selected':''}>Excellent</option>
+                            <option value="good" ${existing?.condition==='good'?'selected':''}>Good</option>
+                            <option value="fair" ${existing?.condition==='fair'?'selected':''}>Fair</option>
+                            <option value="poor" ${existing?.condition==='poor'?'selected':''}>Poor</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / -1;"><label>Notes</label><textarea id="baNotes" rows="3" placeholder="Any details or future plans...">${existing?.notes || ''}</textarea></div>
+                </div>
+                <div style="display:flex; gap: .75rem; justify-content:flex-end; margin-top: 1rem;">
+                    <button class="btn" id="baSaveBtn"><i class="fas fa-save"></i> Save</button>
+                    <button class="btn btn-secondary" id="baCancelBtn"><i class="fas fa-times"></i> Cancel</button>
+                </div>
+            `;
+            overlay.appendChild(modal);
+            document.body.appendChild(overlay);
+
+            modal.querySelector('#baCancelBtn').onclick = () => overlay.remove();
+            modal.querySelector('#baSaveBtn').onclick = async () => {
+                const payload = {
+                    name: document.getElementById('baName').value.trim(),
+                    type: document.getElementById('baType').value,
+                    fixtures: document.getElementById('baFixtures').value.trim(),
+                    flooring: document.getElementById('baFlooring').value.trim(),
+                    wallColor: document.getElementById('baWallColor').value.trim(),
+                    ventilation: document.getElementById('baVentilation').value.trim(),
+                    lastRenovation: document.getElementById('baLastRenovation').value,
+                    condition: document.getElementById('baCondition').value,
+                    notes: document.getElementById('baNotes').value.trim()
+                };
+                await upsertBathroom(index, payload);
+                overlay.remove();
+            };
+        }
+
+        async function upsertBathroom(index, data) {
+            const state = ensureDashboardState();
+            if (index === null || index === undefined) state.bathroomsList.push(data); else state.bathroomsList[index] = data;
+            await saveBathroomsList();
+            renderBathroomsList();
+            showAlert('Bathroom saved successfully!', 'success');
+        }
+
+        async function deleteBathroom(index) {
+            if (!confirm('Are you sure you want to delete this bathroom?')) return;
+            const state = ensureDashboardState();
+            state.bathroomsList.splice(index, 1);
+            await saveBathroomsList();
+            renderBathroomsList();
+            showAlert('Bathroom deleted successfully!', 'success');
+        }
+
+        async function saveBathroomsList() {
+            const state = ensureDashboardState();
+            localStorage.setItem('dashboardState', JSON.stringify(state));
+        }
+
+        // ===== Dynamic Kitchens Helpers =====
+        function renderKitchensList() {
+            const container = document.getElementById('kitchensList');
+            if (!container) return;
+            container.innerHTML = '';
+            const list = ensureDashboardState().kitchensList || [];
+            if (list.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'empty-state';
+                empty.textContent = 'No kitchens added yet. Click "Add Kitchen" to create one.';
+                container.appendChild(empty);
+                return;
+            }
+            list.forEach((k, idx) => {
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                const details = [
+                    k.size && `Size: ${k.size}`,
+                    k.appliances && `Appliances: ${k.appliances}`,
+                    k.countertops && `Countertops: ${k.countertops}`,
+                    k.condition && `Condition: ${k.condition}`
+                ].filter(Boolean).join(' · ');
+                item.innerHTML = `
+                    <div class="list-item-main">
+                        <div class="list-item-title">${k.name || `Kitchen ${idx + 1}`}</div>
+                        <div class="list-item-sub">${details || 'No details added'}</div>
+                    </div>
+                    <div class="list-item-actions">
+                        <button class="btn btn-secondary" onclick="openKitchenModal(${idx})"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-secondary" onclick="deleteKitchen(${idx})"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function openAddKitchenModal() { openKitchenModal(null); }
+
+        function openKitchenModal(index) {
+            const existing = (index !== null && index !== undefined) ? ensureDashboardState().kitchensList[index] : null;
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <h3>${existing ? 'Edit Kitchen' : 'Add Kitchen'}</h3>
+                <div class="form-grid">
+                    <div class="form-group"><label>Name</label><input id="kName" type="text" placeholder="e.g., Main Kitchen" value="${existing?.name || ''}"></div>
+                    <div class="form-group"><label>Size</label><input id="kSize" type="text" placeholder="e.g., 12' x 10'" value="${existing?.size || ''}"></div>
+                    <div class="form-group"><label>Appliance Finish</label>
+                        <select id="kAppliances">
+                            <option value="">Select</option>
+                            <option value="stainless-steel" ${existing?.appliances==='stainless-steel'?'selected':''}>Stainless Steel</option>
+                            <option value="black-stainless" ${existing?.appliances==='black-stainless'?'selected':''}>Black Stainless</option>
+                            <option value="white" ${existing?.appliances==='white'?'selected':''}>White</option>
+                            <option value="black" ${existing?.appliances==='black'?'selected':''}>Black</option>
+                            <option value="custom" ${existing?.appliances==='custom'?'selected':''}>Custom Color</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Countertop Material</label>
+                        <select id="kCountertops">
+                            <option value="">Select</option>
+                            <option value="granite" ${existing?.countertops==='granite'?'selected':''}>Granite</option>
+                            <option value="quartz" ${existing?.countertops==='quartz'?'selected':''}>Quartz</option>
+                            <option value="marble" ${existing?.countertops==='marble'?'selected':''}>Marble</option>
+                            <option value="butcher-block" ${existing?.countertops==='butcher-block'?'selected':''}>Butcher Block</option>
+                            <option value="laminate" ${existing?.countertops==='laminate'?'selected':''}>Laminate</option>
+                            <option value="concrete" ${existing?.countertops==='concrete'?'selected':''}>Concrete</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Cabinet Material</label>
+                        <select id="kCabinets">
+                            <option value="">Select</option>
+                            <option value="oak" ${existing?.cabinets==='oak'?'selected':''}>Oak</option>
+                            <option value="maple" ${existing?.cabinets==='maple'?'selected':''}>Maple</option>
+                            <option value="cherry" ${existing?.cabinets==='cherry'?'selected':''}>Cherry</option>
+                            <option value="pine" ${existing?.cabinets==='pine'?'selected':''}>Pine</option>
+                            <option value="mdf" ${existing?.cabinets==='mdf'?'selected':''}>MDF</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Flooring Type</label>
+                        <select id="kFlooring">
+                            <option value="">Select</option>
+                            <option value="hardwood" ${existing?.flooring==='hardwood'?'selected':''}>Hardwood</option>
+                            <option value="tile" ${existing?.flooring==='tile'?'selected':''}>Tile</option>
+                            <option value="vinyl" ${existing?.flooring==='vinyl'?'selected':''}>Vinyl</option>
+                            <option value="laminate" ${existing?.flooring==='laminate'?'selected':''}>Laminate</option>
+                            <option value="concrete" ${existing?.flooring==='concrete'?'selected':''}>Concrete</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Last Renovation</label><input id="kLastRenovation" type="date" value="${existing?.lastRenovation || ''}"></div>
+                    <div class="form-group"><label>Condition</label>
+                        <select id="kCondition">
+                            <option value="">Select</option>
+                            <option value="excellent" ${existing?.condition==='excellent'?'selected':''}>Excellent</option>
+                            <option value="good" ${existing?.condition==='good'?'selected':''}>Good</option>
+                            <option value="fair" ${existing?.condition==='fair'?'selected':''}>Fair</option>
+                            <option value="poor" ${existing?.condition==='poor'?'selected':''}>Poor</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / -1;"><label>Notes</label><textarea id="kNotes" rows="3" placeholder="Any details or future plans...">${existing?.notes || ''}</textarea></div>
+                </div>
+                <div style="display:flex; gap: .75rem; justify-content:flex-end; margin-top: 1rem;">
+                    <button class="btn" id="kSaveBtn"><i class="fas fa-save"></i> Save</button>
+                    <button class="btn btn-secondary" id="kCancelBtn"><i class="fas fa-times"></i> Cancel</button>
+                </div>
+            `;
+            overlay.appendChild(modal);
+            document.body.appendChild(overlay);
+
+            modal.querySelector('#kCancelBtn').onclick = () => overlay.remove();
+            modal.querySelector('#kSaveBtn').onclick = async () => {
+                const payload = {
+                    name: document.getElementById('kName').value.trim(),
+                    size: document.getElementById('kSize').value.trim(),
+                    appliances: document.getElementById('kAppliances').value,
+                    countertops: document.getElementById('kCountertops').value,
+                    cabinets: document.getElementById('kCabinets').value,
+                    flooring: document.getElementById('kFlooring').value,
+                    lastRenovation: document.getElementById('kLastRenovation').value,
+                    condition: document.getElementById('kCondition').value,
+                    notes: document.getElementById('kNotes').value.trim()
+                };
+                await upsertKitchen(index, payload);
+                overlay.remove();
+            };
+        }
+
+        async function upsertKitchen(index, data) {
+            const state = ensureDashboardState();
+            if (index === null || index === undefined) state.kitchensList.push(data); else state.kitchensList[index] = data;
+            await saveKitchensList();
+            renderKitchensList();
+            showAlert('Kitchen saved successfully!', 'success');
+        }
+
+        async function deleteKitchen(index) {
+            if (!confirm('Are you sure you want to delete this kitchen?')) return;
+            const state = ensureDashboardState();
+            state.kitchensList.splice(index, 1);
+            await saveKitchensList();
+            renderKitchensList();
+            showAlert('Kitchen deleted successfully!', 'success');
+        }
+
+        async function saveKitchensList() {
+            const state = ensureDashboardState();
+            localStorage.setItem('dashboardState', JSON.stringify(state));
+        }
+
+        // ===== Dashboard State Management =====
+        function ensureDashboardState() {
+            let state = JSON.parse(localStorage.getItem('dashboardState') || '{}');
+            if (!state.bedroomsList) state.bedroomsList = [];
+            if (!state.bathroomsList) state.bathroomsList = [];
+            if (!state.kitchensList) state.kitchensList = [];
+            return state;
+        }
+
+        function showAlert(message, type = 'info') {
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            alert.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                color: white;
+                font-weight: 500;
+                z-index: 10000;
+                max-width: 400px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            `;
+            
+            if (type === 'success') {
+                alert.style.background = '#10b981';
+            } else if (type === 'error') {
+                alert.style.background = '#ef4444';
+            } else {
+                alert.style.background = '#3b82f6';
+            }
+            
+            document.body.appendChild(alert);
+            
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.parentNode.removeChild(alert);
+                }
+            }, 3000);
+        }
+
+        // Clear all demo data on page load (before DOMContentLoaded)
+        (function() {
+            try {
+                const keysToRemove = [];
+                for (let i = 0; i < sessionStorage.length; i++) {
+                    const key = sessionStorage.key(i);
+                    if (key && (key.includes('nestmate') || key.includes('demo') || key.includes('currentUser') || key.includes('home'))) {
+                        keysToRemove.push(key);
+                    }
+                }
+                keysToRemove.forEach(key => sessionStorage.removeItem(key));
+                console.log('🧹 Cleared demo data on page load');
+            } catch (e) {
+                console.error('Error clearing demo data:', e);
+            }
+        })();
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 Enterprise Dashboard Starting...');
+            
+            // Wait for auth to initialize
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            // Demo mode - skip authentication check
+            // const isAuthenticated = await nestMateAuth.isAuthenticated();
+            // if (!isAuthenticated) {
+            //     window.location.href = 'login-aws.html';
+            //     return;
+            // }
+
+            // Load homes using AWS (Basic Dashboard pattern)
+            await loadHomes();
+            
+            console.log('Enterprise Dashboard initialized');
+        });
+    </script>
+</body>
+</html>
