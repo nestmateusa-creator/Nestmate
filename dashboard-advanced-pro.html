@@ -2410,12 +2410,14 @@
                     return;
                 }
                 
-                console.log('🔍 Loading basic info from AWS...');
-                const userData = await window.awsDataService.getUserData();
-                console.log('🔍 Retrieved userData:', userData);
+                if (!currentHomeId) {
+                    console.warn('⚠️ No home selected for loading basic info');
+                    return;
+                }
                 
-                const basicInfo = userData.basicInfo || {};
-                console.log('🔍 Extracted basicInfo:', basicInfo);
+                console.log('🔍 Loading basic info from AWS for homeId:', currentHomeId);
+                const basicInfo = await window.awsDataService.getBasicInfo(currentHomeId);
+                console.log('🔍 Retrieved basicInfo:', basicInfo);
                 
                 if (Object.keys(basicInfo).length > 0) {
                     // Check if display elements exist
@@ -2437,8 +2439,8 @@
                     const addressInput = document.getElementById('address');
                     const yearBuiltInput = document.getElementById('yearBuilt');
                     const squareFootageInput = document.getElementById('squareFootage');
-                    const bedroomsInput = document.getElementById('bedrooms');
-                    const bathroomsInput = document.getElementById('bathrooms');
+                    const bedroomsInput = document.getElementById('bedroomsInput');
+                    const bathroomsInput = document.getElementById('bathroomsInput');
                     const homeTypeInput = document.getElementById('homeType');
                     
                     if (addressInput) addressInput.value = basicInfo.address || '';
@@ -2450,7 +2452,7 @@
                     
                     console.log('✅ Basic info loaded and displayed from AWS');
                 } else {
-                    console.log('ℹ️ No basic info found in userData');
+                    console.log('ℹ️ No basic info found for this home');
                 }
             } catch (error) {
                 console.error('❌ Error loading basic info:', error);
