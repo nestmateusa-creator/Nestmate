@@ -237,9 +237,12 @@ class NestMateAuth {
             this.accessToken = result.AuthenticationResult.AccessToken;
             this.refreshToken = result.AuthenticationResult.RefreshToken;
             
-            // Store in localStorage
-            localStorage.setItem('awsAccessToken', this.accessToken);
-            localStorage.setItem('awsRefreshToken', this.refreshToken);
+            // Store in localStorage (handle both sync and async)
+            const setAccessToken = localStorage.setItem('awsAccessToken', this.accessToken);
+            const setRefreshToken = localStorage.setItem('awsRefreshToken', this.refreshToken);
+            // If they return promises, wait for them
+            if (setAccessToken instanceof Promise) await setAccessToken;
+            if (setRefreshToken instanceof Promise) await setRefreshToken;
             
             // Get user info
             await this.getCurrentUser();
@@ -353,10 +356,22 @@ class NestMateAuth {
     async getCurrentUser() {
         try {
             if (!this.accessToken) {
-                this.accessToken = localStorage.getItem('awsAccessToken');
-                if (!this.accessToken) {
+                // Handle both sync and async localStorage.getItem
+                const tokenValue = localStorage.getItem('awsAccessToken');
+                if (tokenValue instanceof Promise) {
+                    this.accessToken = await tokenValue;
+                } else {
+                    this.accessToken = tokenValue;
+                }
+                if (!this.accessToken || this.accessToken === 'null' || this.accessToken === 'undefined') {
                     return null;
                 }
+            }
+
+            // Ensure accessToken is a string
+            if (typeof this.accessToken !== 'string') {
+                console.error('AccessToken is not a string:', typeof this.accessToken, this.accessToken);
+                return null;
             }
 
             const params = {
