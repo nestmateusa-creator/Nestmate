@@ -244,7 +244,8 @@ class NestMateAuth {
             if (setAccessToken instanceof Promise) await setAccessToken;
             if (setRefreshToken instanceof Promise) await setRefreshToken;
             
-            // Get user info
+            // Get user info (wait a bit for localStorage to save)
+            await new Promise(resolve => setTimeout(resolve, 100));
             await this.getCurrentUser();
             
             // Update last login
@@ -444,7 +445,9 @@ class NestMateAuth {
             const result = await cognito.initiateAuth(params).promise();
             
             this.accessToken = result.AuthenticationResult.AccessToken;
-            localStorage.setItem('awsAccessToken', this.accessToken);
+            // Handle both sync and async localStorage.setItem
+            const setAccessToken = localStorage.setItem('awsAccessToken', this.accessToken);
+            if (setAccessToken instanceof Promise) await setAccessToken;
             
             return { success: true };
         } catch (error) {
