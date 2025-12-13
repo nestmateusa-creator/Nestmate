@@ -3058,6 +3058,16 @@
 
         async function saveExterior() {
             try {
+                if (!window.awsDataService) {
+                    throw new Error('AWS Data Service not initialized');
+                }
+
+                // Ensure we have a home selected
+                if (!currentHomeId) {
+                    showAlert('Please select a home first or create a new home.', 'error');
+                    return;
+                }
+
                 const exteriorData = {
                     material: document.getElementById('exteriorMaterialInfo').value,
                     roofType: document.getElementById('exteriorRoofType').value,
@@ -3066,9 +3076,8 @@
                     lastInspection: document.getElementById('exteriorInspection').value
                 };
                 
-                if (!window.awsDataService) {
-                    throw new Error('AWS Data Service not initialized');
-                }
+                console.log('💾 Saving exterior info to AWS for homeId:', currentHomeId);
+                console.log('💾 Exterior data:', exteriorData);
                 
                 const result = await window.awsDataService.saveExteriorInfo(exteriorData, currentHomeId);
                 if (result && result.success) {
