@@ -2402,6 +2402,61 @@
             document.getElementById('basicInfoForm').style.display = 'none';
         }
 
+        // Load Basic Info from AWS
+        async function loadBasicInfo() {
+            try {
+                if (!window.awsDataService) {
+                    console.warn('⚠️ AWS Data Service not available for loading basic info');
+                    return;
+                }
+                
+                console.log('🔍 Loading basic info from AWS...');
+                const userData = await window.awsDataService.getUserData();
+                console.log('🔍 Retrieved userData:', userData);
+                
+                const basicInfo = userData.basicInfo || {};
+                console.log('🔍 Extracted basicInfo:', basicInfo);
+                
+                if (Object.keys(basicInfo).length > 0) {
+                    // Check if display elements exist
+                    const displayAddress = document.getElementById('displayAddress');
+                    const displayYearBuilt = document.getElementById('displayYearBuilt');
+                    const displaySquareFootage = document.getElementById('displaySquareFootage');
+                    const displayBedrooms = document.getElementById('displayBedrooms');
+                    const displayBathrooms = document.getElementById('displayBathrooms');
+                    const displayHomeType = document.getElementById('displayHomeType');
+                    
+                    if (displayAddress) displayAddress.textContent = basicInfo.address || 'Not set';
+                    if (displayYearBuilt) displayYearBuilt.textContent = basicInfo.yearBuilt || 'Not set';
+                    if (displaySquareFootage) displaySquareFootage.textContent = basicInfo.squareFootage || 'Not set';
+                    if (displayBedrooms) displayBedrooms.textContent = basicInfo.bedrooms || 'Not set';
+                    if (displayBathrooms) displayBathrooms.textContent = basicInfo.bathrooms || 'Not set';
+                    if (displayHomeType) displayHomeType.textContent = basicInfo.homeType || 'Not set';
+                    
+                    // Also populate form fields for editing
+                    const addressInput = document.getElementById('address');
+                    const yearBuiltInput = document.getElementById('yearBuilt');
+                    const squareFootageInput = document.getElementById('squareFootage');
+                    const bedroomsInput = document.getElementById('bedrooms');
+                    const bathroomsInput = document.getElementById('bathrooms');
+                    const homeTypeInput = document.getElementById('homeType');
+                    
+                    if (addressInput) addressInput.value = basicInfo.address || '';
+                    if (yearBuiltInput) yearBuiltInput.value = basicInfo.yearBuilt || '';
+                    if (squareFootageInput) squareFootageInput.value = basicInfo.squareFootage || '';
+                    if (bedroomsInput) bedroomsInput.value = basicInfo.bedrooms || '';
+                    if (bathroomsInput) bathroomsInput.value = basicInfo.bathrooms || '';
+                    if (homeTypeInput) homeTypeInput.value = basicInfo.homeType || '';
+                    
+                    console.log('✅ Basic info loaded and displayed from AWS');
+                } else {
+                    console.log('ℹ️ No basic info found in userData');
+                }
+            } catch (error) {
+                console.error('❌ Error loading basic info:', error);
+            }
+        }
+
         async function saveBasicInfo() {
             const address = document.getElementById('address').value;
             const yearBuilt = document.getElementById('yearBuilt').value;
@@ -2436,6 +2491,50 @@
             document.getElementById('structureForm').style.display = 'none';
         }
 
+        // Load Structure from AWS
+        async function loadStructure() {
+            try {
+                if (!window.awsDataService) {
+                    console.warn('⚠️ AWS Data Service not available for loading structure info');
+                    return;
+                }
+                
+                console.log('🔍 Loading structure info from AWS for homeId:', currentHomeId);
+                const structure = await window.awsDataService.getStructureInfo(currentHomeId);
+                console.log('🔍 Retrieved structure:', structure);
+                
+                if (Object.keys(structure).length > 0) {
+                    // Check if display elements exist
+                    const displayFoundation = document.getElementById('displayFoundation');
+                    const displayRoofType = document.getElementById('displayRoofType');
+                    const displayExteriorMaterial = document.getElementById('displayExteriorMaterial');
+                    const displayWindows = document.getElementById('displayWindows');
+                    
+                    if (displayFoundation) displayFoundation.textContent = structure.foundation || 'Not set';
+                    if (displayRoofType) displayRoofType.textContent = structure.roofType || 'Not set';
+                    if (displayExteriorMaterial) displayExteriorMaterial.textContent = structure.exteriorMaterial || 'Not set';
+                    if (displayWindows) displayWindows.textContent = structure.windows || 'Not set';
+                    
+                    // Also populate form fields for editing
+                    const foundationInput = document.getElementById('foundation');
+                    const roofTypeInput = document.getElementById('roofType');
+                    const exteriorMaterialInput = document.getElementById('exteriorMaterial');
+                    const windowsInput = document.getElementById('windows');
+                    
+                    if (foundationInput) foundationInput.value = structure.foundation || '';
+                    if (roofTypeInput) roofTypeInput.value = structure.roofType || '';
+                    if (exteriorMaterialInput) exteriorMaterialInput.value = structure.exteriorMaterial || '';
+                    if (windowsInput) windowsInput.value = structure.windows || '';
+                    
+                    console.log('✅ Structure info loaded and displayed from AWS');
+                } else {
+                    console.log('ℹ️ No structure info found in userData');
+                }
+            } catch (error) {
+                console.error('❌ Error loading structure info:', error);
+            }
+        }
+
         async function saveStructure() {
             const foundation = document.getElementById('foundation').value;
             const roofType = document.getElementById('roofType').value;
@@ -2464,6 +2563,50 @@
         window.cancelEditSystems = function cancelEditSystems() {
             document.getElementById('systemsDisplay').style.display = 'block';
             document.getElementById('systemsForm').style.display = 'none';
+        }
+
+        // Load Systems from AWS
+        async function loadSystems() {
+            try {
+                if (!window.awsDataService) {
+                    console.warn('⚠️ AWS Data Service not available for loading systems info');
+                    return;
+                }
+                
+                console.log('🔍 Loading systems info from AWS for homeId:', currentHomeId);
+                const systems = await window.awsDataService.getSystemsInfo(currentHomeId);
+                console.log('🔍 Retrieved systems:', systems);
+                
+                if (Object.keys(systems).length > 0) {
+                    // Check if display elements exist
+                    const displayHVAC = document.getElementById('displayHVAC');
+                    const displayElectrical = document.getElementById('displayElectrical');
+                    const displayPlumbing = document.getElementById('displayPlumbing');
+                    const displayWaterHeater = document.getElementById('displayWaterHeater');
+                    
+                    if (displayHVAC) displayHVAC.textContent = systems.hvac || 'Not set';
+                    if (displayElectrical) displayElectrical.textContent = systems.electrical || 'Not set';
+                    if (displayPlumbing) displayPlumbing.textContent = systems.plumbing || 'Not set';
+                    if (displayWaterHeater) displayWaterHeater.textContent = systems.waterHeater || 'Not set';
+                    
+                    // Also populate form fields for editing
+                    const hvacInput = document.getElementById('hvac');
+                    const electricalInput = document.getElementById('electrical');
+                    const plumbingInput = document.getElementById('plumbing');
+                    const waterHeaterInput = document.getElementById('waterHeater');
+                    
+                    if (hvacInput) hvacInput.value = systems.hvac || '';
+                    if (electricalInput) electricalInput.value = systems.electrical || '';
+                    if (plumbingInput) plumbingInput.value = systems.plumbing || '';
+                    if (waterHeaterInput) waterHeaterInput.value = systems.waterHeater || '';
+                    
+                    console.log('✅ Systems info loaded and displayed from AWS');
+                } else {
+                    console.log('ℹ️ No systems info found in userData');
+                }
+            } catch (error) {
+                console.error('❌ Error loading systems info:', error);
+            }
         }
 
         async function saveSystems() {
