@@ -5328,6 +5328,371 @@
         }
 
         // Initialize dashboard
+        // Missing render functions - adding placeholders that match dashboard-advanced.html
+        async function renderLivingAreasList() {
+            const container = document.getElementById('livingAreasList');
+            if (!container) return;
+            container.innerHTML = '';
+            
+            if (!window.awsDataService || !currentHomeId) {
+                const empty = document.createElement('div');
+                empty.className = 'empty-state';
+                empty.textContent = 'No home selected. Please select a home first.';
+                container.appendChild(empty);
+                return;
+            }
+            
+            const list = await window.awsDataService.getLivingAreasList(currentHomeId) || [];
+            
+            if (list.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'empty-state';
+                empty.textContent = 'No living areas added yet. Click "Add Living Area" to create one.';
+                container.appendChild(empty);
+                return;
+            }
+            
+            list.forEach((area, idx) => {
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                const details = [
+                    area.size && `Size: ${area.size}`,
+                    area.floorType && `Floor: ${area.floorType}`,
+                    area.windowCount && `Windows: ${area.windowCount}`,
+                    area.outlets && `Outlets: ${area.outlets}`,
+                    area.condition && `Condition: ${area.condition}`
+                ].filter(Boolean).join(' · ');
+                item.innerHTML = `
+                    <div class="list-item-main">
+                        <div class="list-item-title">${area.name || `Living Area ${idx + 1}`}</div>
+                        <div class="list-item-sub">${details || 'No details added'}</div>
+                    </div>
+                    <div class="list-item-actions">
+                        <button class="btn btn-secondary" onclick="openEditLivingAreaModal(${idx})"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-secondary" onclick="deleteLivingArea(${idx})"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        async function renderAppliancesList() {
+            const container = document.getElementById('appliancesList');
+            if (!container) return;
+            container.innerHTML = '';
+            
+            if (!window.awsDataService || !currentHomeId) {
+                const empty = document.createElement('div');
+                empty.className = 'empty-state';
+                empty.textContent = 'No home selected. Please select a home first.';
+                container.appendChild(empty);
+                return;
+            }
+            
+            const list = await window.awsDataService.getAppliancesList(currentHomeId) || [];
+            
+            if (list.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'empty-state';
+                empty.textContent = 'No appliances added yet. Click "Add Appliance" to create one.';
+                container.appendChild(empty);
+                return;
+            }
+            
+            list.forEach((appliance, idx) => {
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                const details = [
+                    appliance.brand && `Brand: ${appliance.brand}`,
+                    appliance.model && `Model: ${appliance.model}`,
+                    appliance.type && `Type: ${appliance.type}`,
+                    appliance.condition && `Condition: ${appliance.condition}`
+                ].filter(Boolean).join(' · ');
+                item.innerHTML = `
+                    <div class="list-item-main">
+                        <div class="list-item-title">${appliance.name || `Appliance ${idx + 1}`}</div>
+                        <div class="list-item-sub">${details || 'No details added'}</div>
+                    </div>
+                    <div class="list-item-actions">
+                        <button class="btn btn-secondary" onclick="openEditApplianceModal(${idx})"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-secondary" onclick="deleteAppliance(${idx})"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        async function renderRenovationsList() {
+            const container = document.getElementById('renovationsList');
+            if (!container) return;
+            container.innerHTML = '';
+            
+            if (!window.awsDataService || !currentHomeId) {
+                const empty = document.createElement('div');
+                empty.className = 'empty-state';
+                empty.textContent = 'No home selected. Please select a home first.';
+                container.appendChild(empty);
+                return;
+            }
+            
+            const list = await window.awsDataService.getRenovationsList(currentHomeId) || [];
+            
+            if (list.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'empty-state';
+                empty.textContent = 'No renovation projects yet. Click "Add Renovation" to create one.';
+                container.appendChild(empty);
+                return;
+            }
+            
+            list.forEach((renovation, idx) => {
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                const details = [
+                    renovation.projectType && `Type: ${renovation.projectType}`,
+                    renovation.status && `Status: ${renovation.status}`,
+                    renovation.startDate && `Start: ${renovation.startDate}`,
+                    renovation.totalCost && `Cost: $${renovation.totalCost}`
+                ].filter(Boolean).join(' · ');
+                item.innerHTML = `
+                    <div class="list-item-main">
+                        <div class="list-item-title">${renovation.projectName || `Renovation ${idx + 1}`}</div>
+                        <div class="list-item-sub">${details || 'No details added'}</div>
+                        ${renovation.projectDescription ? `<div class="list-item-desc" style="margin-top: 0.5rem; color: #94a3b8; font-size: 0.9rem;">${renovation.projectDescription}</div>` : ''}
+                    </div>
+                    <div class="list-item-actions">
+                        <button class="btn btn-secondary" onclick="openEditRenovationModal(${idx})"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-secondary" onclick="deleteRenovation(${idx})"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        let photosData = [];
+        async function initPhotos() {
+            if (window.awsDataService && currentHomeId) {
+                try {
+                    photosData = await window.awsDataService.getPhotosList(currentHomeId) || [];
+                    console.log('📷 Photos initialized:', photosData.length, 'photos');
+                } catch (error) {
+                    console.error('❌ Error initializing photos:', error);
+                    photosData = [];
+                }
+            }
+        }
+
+        function filterPhotos(filterType) {
+            console.log('🔍 Filtering photos by:', filterType);
+            document.querySelectorAll('.photo-filters .filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+            displayPhotos();
+        }
+
+        function openPhotoUpload() {
+            const form = document.getElementById('photosUploadForm');
+            if (!form) return;
+            const isHidden = form.style.display === 'none' || !form.style.display;
+            form.style.display = isHidden ? 'block' : 'none';
+        }
+
+        function cancelPhotoUpload() {
+            const form = document.getElementById('photosUploadForm');
+            const fileInput = document.getElementById('photoFileInput');
+            const urlInput = document.getElementById('photoUrlInput');
+            if (form) form.style.display = 'none';
+            if (fileInput) fileInput.value = '';
+            if (urlInput) urlInput.value = '';
+        }
+
+        async function uploadPhotos() {
+            showAlert('Photo upload functionality coming soon!', 'info');
+        }
+
+        async function addPhotoFromUrl() {
+            showAlert('Add photo from URL functionality coming soon!', 'info');
+        }
+
+        async function displayPhotos() {
+            const gallery = document.getElementById('photosGallery');
+            const empty = document.getElementById('photosEmpty');
+            if (!gallery) return;
+            
+            gallery.innerHTML = '';
+            
+            if (!photosData || photosData.length === 0) {
+                if (empty) empty.style.display = 'block';
+                return;
+            }
+            
+            if (empty) empty.style.display = 'none';
+            
+            photosData.forEach((photo, idx) => {
+                const photoItem = document.createElement('div');
+                photoItem.className = 'photo-item';
+                photoItem.innerHTML = `
+                    <img src="${photo.url || photo}" alt="Photo ${idx + 1}" loading="lazy">
+                    <button class="photo-delete" onclick="deletePhoto(${idx})"><i class="fas fa-trash"></i></button>
+                `;
+                gallery.appendChild(photoItem);
+            });
+        }
+
+        let currentContactTab = 'family';
+        function initEmergencyContacts() {
+            showContactTab('family');
+        }
+
+        function showContactTab(tab) {
+            currentContactTab = tab;
+            
+            const familyContacts = document.getElementById('familyContacts');
+            const emergencyContacts = document.getElementById('emergencyContacts');
+            const servicesContacts = document.getElementById('servicesContacts');
+            
+            if (familyContacts) familyContacts.style.display = 'none';
+            if (emergencyContacts) emergencyContacts.style.display = 'none';
+            if (servicesContacts) servicesContacts.style.display = 'none';
+            
+            const tabFamily = document.getElementById('tabFamily');
+            const tabEmergency = document.getElementById('tabEmergency');
+            const tabServices = document.getElementById('tabServices');
+            
+            if (tabFamily) tabFamily.classList.remove('active');
+            if (tabEmergency) tabEmergency.classList.remove('active');
+            if (tabServices) tabServices.classList.remove('active');
+            
+            if (tab === 'family') {
+                if (familyContacts) familyContacts.style.display = 'block';
+                if (tabFamily) tabFamily.classList.add('active');
+                renderFamilyContacts();
+            } else if (tab === 'emergency') {
+                if (emergencyContacts) emergencyContacts.style.display = 'block';
+                if (tabEmergency) tabEmergency.classList.add('active');
+                renderEmergencyContacts();
+            } else if (tab === 'services') {
+                if (servicesContacts) servicesContacts.style.display = 'block';
+                if (tabServices) tabServices.classList.add('active');
+                renderServiceContacts();
+            }
+        }
+
+        async function renderFamilyContacts() {
+            const container = document.getElementById('familyContactsList');
+            if (!container) return;
+            if (!window.awsDataService || !currentHomeId) return;
+            
+            const contacts = await window.awsDataService.getEmergencyContacts(currentHomeId) || {};
+            const list = contacts.family || [];
+            container.innerHTML = '';
+            
+            if (list.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'empty-state';
+                empty.textContent = 'No family contacts added yet. Click "Add Contact" to create one.';
+                container.appendChild(empty);
+                return;
+            }
+            
+            list.forEach((contact, idx) => {
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                item.innerHTML = `
+                    <div class="list-item-main">
+                        <div class="list-item-title">${contact.name || 'Unnamed Contact'}</div>
+                        <div class="list-item-sub">${contact.phone || contact.email || 'No contact info'}</div>
+                    </div>
+                    <div class="list-item-actions">
+                        <button class="btn btn-secondary" onclick="editContact('family', ${idx})"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-secondary" onclick="deleteContact('family', ${idx})"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        async function renderEmergencyContacts() {
+            const container = document.getElementById('emergencyContactsList');
+            if (!container) return;
+            if (!window.awsDataService || !currentHomeId) return;
+            
+            const contacts = await window.awsDataService.getEmergencyContacts(currentHomeId) || {};
+            const list = contacts.emergency || [];
+            container.innerHTML = '';
+            
+            if (list.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'empty-state';
+                empty.textContent = 'No emergency contacts added yet. Click "Add Contact" to create one.';
+                container.appendChild(empty);
+                return;
+            }
+            
+            list.forEach((contact, idx) => {
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                item.innerHTML = `
+                    <div class="list-item-main">
+                        <div class="list-item-title">${contact.name || 'Unnamed Contact'}</div>
+                        <div class="list-item-sub">${contact.phone || contact.email || 'No contact info'}</div>
+                    </div>
+                    <div class="list-item-actions">
+                        <button class="btn btn-secondary" onclick="editContact('emergency', ${idx})"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-secondary" onclick="deleteContact('emergency', ${idx})"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        async function renderServiceContacts() {
+            const container = document.getElementById('servicesContactsList');
+            if (!container) return;
+            if (!window.awsDataService || !currentHomeId) return;
+            
+            const contacts = await window.awsDataService.getEmergencyContacts(currentHomeId) || {};
+            const list = contacts.services || [];
+            container.innerHTML = '';
+            
+            if (list.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'empty-state';
+                empty.textContent = 'No service contacts added yet. Click "Add Contact" to create one.';
+                container.appendChild(empty);
+                return;
+            }
+            
+            list.forEach((contact, idx) => {
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                item.innerHTML = `
+                    <div class="list-item-main">
+                        <div class="list-item-title">${contact.name || 'Unnamed Contact'}</div>
+                        <div class="list-item-sub">${contact.phone || contact.email || 'No contact info'}</div>
+                    </div>
+                    <div class="list-item-actions">
+                        <button class="btn btn-secondary" onclick="editContact('services', ${idx})"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-secondary" onclick="deleteContact('services', ${idx})"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        async function renderAllContacts() {
+            await renderFamilyContacts();
+            await renderEmergencyContacts();
+            await renderServiceContacts();
+        }
+
+        function openAddContactModal() {
+            showAlert('Add contact functionality coming soon!', 'info');
+        }
+
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('🚀 Advanced Pro Dashboard Starting...');
             
