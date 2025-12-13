@@ -364,6 +364,11 @@ class NestMateAuth {
     // Get current user information
     async getCurrentUser() {
         try {
+            // First check if we already have currentUser in memory
+            if (this.currentUser && this.accessToken) {
+                return this.currentUser;
+            }
+            
             if (!this.accessToken) {
                 // Handle both sync and async localStorage.getItem
                 const tokenValue = localStorage.getItem('awsAccessToken');
@@ -372,7 +377,19 @@ class NestMateAuth {
                 } else {
                     this.accessToken = tokenValue;
                 }
-                if (!this.accessToken || this.accessToken === 'null' || this.accessToken === 'undefined') {
+                
+                // Also check if token is stored as string 'null' or 'undefined'
+                if (!this.accessToken || this.accessToken === 'null' || this.accessToken === 'undefined' || this.accessToken === '') {
+                    // Try to get from sessionStorage as fallback
+                    const sessionUser = sessionStorage.getItem('currentUser');
+                    if (sessionUser) {
+                        try {
+                            this.currentUser = JSON.parse(sessionUser);
+                            return this.currentUser;
+                        } catch (e) {
+                            console.error('Error parsing session user:', e);
+                        }
+                    }
                     return null;
                 }
             }
@@ -380,6 +397,16 @@ class NestMateAuth {
             // Ensure accessToken is a string
             if (typeof this.accessToken !== 'string') {
                 console.error('AccessToken is not a string:', typeof this.accessToken, this.accessToken);
+                // Try sessionStorage fallback
+                const sessionUser = sessionStorage.getItem('currentUser');
+                if (sessionUser) {
+                    try {
+                        this.currentUser = JSON.parse(sessionUser);
+                        return this.currentUser;
+                    } catch (e) {
+                        console.error('Error parsing session user:', e);
+                    }
+                }
                 return null;
             }
 
@@ -398,16 +425,32 @@ class NestMateAuth {
                 emailVerified: result.UserAttributes.find(attr => attr.Name === 'email_verified')?.Value === 'true'
             };
 
-            // Store in localStorage
-            localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
+            // Store in both localStorage and sessionStorage
+            const setCurrentUser = localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
+            if (setCurrentUser instanceof Promise) await setCurrentUser;
+            sessionStorage.setItem('currentUser', JSON.stringify(this.currentUser));
             
             return this.currentUser;
         } catch (error) {
             console.error('Get current user error:', error);
             // Token might be expired, try to refresh
             if (error.code === 'NotAuthorizedException') {
-                await this.refreshAccessToken();
-                return await this.getCurrentUser();
+                try {
+                    await this.refreshAccessToken();
+                    return await this.getCurrentUser();
+                } catch (refreshError) {
+                    console.error('Token refresh failed:', refreshError);
+                    // Check sessionStorage as last resort
+                    const sessionUser = sessionStorage.getItem('currentUser');
+                    if (sessionUser) {
+                        try {
+                            this.currentUser = JSON.parse(sessionUser);
+                            return this.currentUser;
+                        } catch (e) {
+                            console.error('Error parsing session user:', e);
+                        }
+                    }
+                }
             }
             return null;
         }
