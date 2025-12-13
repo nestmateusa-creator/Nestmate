@@ -335,6 +335,9 @@
             console.log('nestMateAuth object:', nestMateAuth);
             console.log('typeof nestMateAuth:', typeof nestMateAuth);
             
+            // Add event listeners FIRST - always needed for login form to work
+            loginForm.addEventListener('submit', handleLogin);
+            
             // Check for demo credentials
             const demoEmail = localStorage.getItem('demoEmail');
             const demoPassword = localStorage.getItem('demoPassword');
@@ -364,16 +367,16 @@
                     nestMateAuth.accessToken = null;
                     nestMateAuth.refreshToken = null;
                 }
-                return; // Don't check for existing authentication
-            }
-            
-            // Wait a bit for auth to initialize
-            setTimeout(async () => {
-                console.log('Checking authentication after delay...');
-                console.log('nestMateAuth.currentUser:', nestMateAuth.currentUser);
-                
-                // Check if user is already authenticated
-                if (nestMateAuth && nestMateAuth.currentUser) {
+                // Don't return - continue to set up message handling
+            } else {
+                // Only check for existing authentication if NOT a signout
+                // Wait a bit for auth to initialize
+                setTimeout(async () => {
+                    console.log('Checking authentication after delay...');
+                    console.log('nestMateAuth.currentUser:', nestMateAuth.currentUser);
+                    
+                    // Check if user is already authenticated
+                    if (nestMateAuth && nestMateAuth.currentUser) {
                     console.log('User already authenticated, checking subscription and redirecting...');
                     
                     try {
