@@ -5900,6 +5900,12 @@
                     await awsDataService.initialize(userId);
                     window.awsDataService = awsDataService; // Make it globally available
                     console.log('✅ AWS Data Service initialized successfully');
+                    console.log('✅ window.awsDataService set:', !!window.awsDataService);
+                    
+                    // Notify localStorage replacement that AWS is ready
+                    if (typeof window.dispatchEvent === 'function') {
+                        window.dispatchEvent(new CustomEvent('awsDataServiceReady'));
+                    }
 
                     // Load homes using AWS (Basic Dashboard pattern)
                     await loadHomes();

@@ -12,13 +12,45 @@ class AWSDataService {
     async initialize(userId) {
         this.currentUserId = userId;
         
+        // Wait for AWS SDK to be available
+        let attempts = 0;
+        const maxAttempts = 50; // 5 seconds total
+        
+        while (typeof AWS === 'undefined' && attempts < maxAttempts) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            attempts++;
+        }
+        
         // Initialize DynamoDB client when needed
-        if (typeof AWS !== 'undefined') {
-            this.dynamodb = new AWS.DynamoDB.DocumentClient();
+        if (typeof AWS !== 'undefined' && AWS.DynamoDB && AWS.DynamoDB.DocumentClient) {
+            // Use the same AWS config that auth-aws.js uses
+            // AWS.config should already be set by auth-aws.js
+            if (!AWS.config.region) {
+                AWS.config.update({
+                    region: 'us-east-2'
+                });
+            }
+            
+            // Use the global dynamodb instance if available (from auth-aws.js)
+            if (window.dynamodb) {
+                this.dynamodb = window.dynamodb;
+                console.log('✅ Using global DynamoDB client from auth-aws.js');
+            } else {
+                this.dynamodb = new AWS.DynamoDB.DocumentClient();
+                console.log('✅ Created new DynamoDB client');
+            }
+            
             this.initialized = true;
             console.log('🔧 AWS Data Service initialized for user:', userId);
+            console.log('🔧 DynamoDB client:', !!this.dynamodb);
+            console.log('🔧 AWS region:', AWS.config.region);
         } else {
-            console.error('AWS SDK not available');
+            console.error('❌ AWS SDK not available after waiting');
+            console.error('AWS defined:', typeof AWS !== 'undefined');
+            if (typeof AWS !== 'undefined') {
+                console.error('AWS.DynamoDB:', typeof AWS.DynamoDB);
+                console.error('AWS.DynamoDB.DocumentClient:', typeof AWS.DynamoDB?.DocumentClient);
+            }
             throw new Error('AWS SDK not available');
         }
     }
