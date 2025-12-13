@@ -3029,13 +3029,41 @@
             document.getElementById('homeModal').style.display = 'none';
         }
 
-        // Multi-Home Functions - Using Basic Dashboard AWS Pattern
+        // Multi-Home Functions - Using AWS Data Service
         async function saveHome() {
             const form = document.getElementById('homeForm');
             
+            if (!form) {
+                console.error('Home form not found');
+                showAlert('Form not found. Please try again.', 'error');
+                return;
+            }
+            
+            // Get values from within the form to avoid duplicate ID conflicts
+            const addressInput = form.querySelector('#homeAddress');
+            const typeInput = form.querySelector('#homeType');
+            
+            console.log('Address input element:', addressInput);
+            console.log('Type input element:', typeInput);
+            console.log('Address value:', addressInput ? addressInput.value : 'NOT FOUND');
+            console.log('Type value:', typeInput ? typeInput.value : 'NOT FOUND');
+            
+            const address = addressInput ? addressInput.value.trim() : '';
+            const type = typeInput ? typeInput.value.trim() : '';
+            
+            console.log('Trimmed address:', address);
+            console.log('Trimmed type:', type);
+            
+            // Validate required fields first
+            if (!address || !type || type === '') {
+                console.log('Validation failed - address:', address, 'type:', type);
+                showAlert('Please fill in all required fields (Address and Type are required)', 'error');
+                return;
+            }
+            
             const homeData = {
-                address: document.getElementById('homeAddress').value,
-                type: document.getElementById('homeType').value,
+                address: address,
+                type: type,
                 bedrooms: parseInt(document.getElementById('homeBedrooms').value) || 0,
                 bathrooms: parseFloat(document.getElementById('homeBathrooms').value) || 0,
                 squareFootage: parseInt(document.getElementById('homeSquareFootage').value) || 0,
@@ -3043,69 +3071,125 @@
                 healthScore: Math.floor(Math.random() * 20) + 80
             };
 
-            // Validate required fields
-            if (!homeData.address || !homeData.type) {
-                showAlert('Please fill in all required fields (Address and Type are required)', 'error');
-                return;
-            }
-
             try {
-                const userId = nestMateAuth.currentUser.userId;
-                console.log('Saving home data for userId:', userId);
-                console.log('Home data:', homeData);
+                if (!window.awsDataService) {
+                    throw new Error('AWS Data Service not initialized');
+                }
+                
+                console.log('Saving home data:', homeData);
                 
                 // Get existing homes list
-                const existingHomes = await getHomesList();
+                const existingHomes = await window.awsDataService.getHomesList();
                 
                 // Add new home or update existing
-                const homeId = homeData.address.toLowerCase().replace(/\s+/g, '-');
+                const homeId = homeData.address.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
                 homeData.id = homeId;
                 
                 let updatedHomes;
                 if (form.dataset.homeId) {
-                    // Edit existing home
-                    const index = parseInt(form.dataset.homeId);
-                    updatedHomes = [...existingHomes];
-                    updatedHomes[index] = homeData;
+                    // Edit existing home - find by id
+                    const index = existingHomes.findIndex(h => h.id === form.dataset.homeId);
+                    if (index !== -1) {
+                        updatedHomes = [...existingHomes];
+                        updatedHomes[index] = { ...updatedHomes[index], ...homeData };
+                    } else {
+                        updatedHomes = [...existingHomes, homeData];
+                    }
                 } else {
-                    // Add new home
+                    // Add new home - check if home with same address already exists
+                    const existingIndex = existingHomes.findIndex(h => h.id === homeId || h.address.toLowerCase() === address.toLowerCase());
+                    if (existingIndex !== -1) {
+                        showAlert('A home with this address already exists. Please edit the existing home instead.', 'error');
+                        return;
+                    }
+                    
+                    // Check home limit (5 homes)
+                    if (existingHomes.length >= 5) {
+                        showAlert('You have reached the maximum limit of 5 homes. Please delete a home first.', 'error');
+                        return;
+                    }
+                    
                     updatedHomes = [...existingHomes, homeData];
                 }
                 
-                const params = {
-                    TableName: 'nestmate-users',
-                    Key: { userId: userId },
-                    UpdateExpression: 'SET homesList = :homes, lastUpdated = :timestamp',
-                    ExpressionAttributeValues: {
-                        ':homes': updatedHomes,
-                        ':timestamp': new Date().toISOString()
-                    },
-                    ReturnValues: 'UPDATED_NEW'
-                };
+                await window.awsDataService.saveHomesList(updatedHomes);
+                console.log('Home saved successfully to AWS');
                 
-                const result = await dynamodb.update(params).promise();
-                console.log('Home saved successfully:', result);
+                // Initialize homesData structure for the new home if it doesn't exist
+                if (!form.dataset.homeId) {
+                    // New home - initialize its data structure
+                    const getParams = {
+                        TableName: 'nestmate-users',
+                        Key: { userId: window.awsDataService.currentUserId }
+                    };
+                    const currentUserData = await window.awsDataService.dynamodb.get(getParams).promise();
+                    const homesData = currentUserData.Item?.homesData || {};
+                    
+                    if (!homesData[homeId]) {
+                        homesData[homeId] = {
+                            bedroomsList: [],
+                            bathroomsList: [],
+                            kitchensList: [],
+                            livingAreasList: [],
+                            appliancesList: [],
+                            photosList: [],
+                            renovationsList: [],
+                            emergencyContacts: { family: [], emergency: [], services: [] },
+                            garageInfo: {},
+                            exteriorInfo: {},
+                            structureInfo: {},
+                            systemsInfo: {},
+                            basicInfo: {
+                                address: homeData.address,
+                                yearBuilt: homeData.yearBuilt,
+                                squareFootage: homeData.squareFootage,
+                                bedrooms: homeData.bedrooms,
+                                bathrooms: homeData.bathrooms,
+                                homeType: homeData.type
+                            }
+                        };
+                        
+                        // Save the initialized homesData
+                        const updateParams = {
+                            TableName: 'nestmate-users',
+                            Key: { userId: window.awsDataService.currentUserId },
+                            UpdateExpression: 'SET homesData = :homesData, updatedAt = :updated',
+                            ExpressionAttributeValues: {
+                                ':homesData': homesData,
+                                ':updated': new Date().toISOString()
+                            }
+                        };
+                        
+                        await window.awsDataService.dynamodb.update(updateParams).promise();
+                        console.log('✅ Initialized homesData structure for new home:', homeId);
+                    }
+                }
                 
                 showAlert('Home saved successfully!', 'success');
                 closeHomeModal();
-                loadHomes();
+                await loadHomes();
+                
+                // If this was a new home, switch to it
+                if (!form.dataset.homeId) {
+                    currentHomeId = homeId;
+                    await initHomeSelector();
+                    await switchHome(homeId);
+                }
                 
             } catch (error) {
                 console.error('Save home error:', error);
-                showAlert('Failed to save home. Try again.', 'error');
+                showAlert('Failed to save home: ' + (error.message || 'Unknown error'), 'error');
             }
         }
 
         async function getHomesList() {
             try {
-                const userId = nestMateAuth.currentUser.userId;
-                const params = {
-                    TableName: 'nestmate-users',
-                    Key: { userId: userId }
-                };
-                
-                const result = await dynamodb.get(params).promise();
-                return result.Item?.homesList || [];
+                if (window.awsDataService) {
+                    return await window.awsDataService.getHomesList();
+                } else {
+                    console.error('AWS Data Service not initialized');
+                    return [];
+                }
             } catch (error) {
                 console.error('Get homes list error:', error);
                 return [];
@@ -3114,14 +3198,142 @@
 
         async function loadHomes() {
             try {
-                const homesList = await getHomesList();
+                if (!window.awsDataService) {
+                    console.warn('AWS Data Service not available for loading homes');
+                    return;
+                }
+                
+                const homesList = await window.awsDataService.getHomesList();
+                console.log('Loaded homes list:', homesList);
+                
                 const container = document.querySelector('.homes-grid');
-                if (!container) return;
+                if (!container) {
+                    console.warn('Homes grid container not found');
+                    return;
+                }
                 
                 container.innerHTML = '';
                 
-                // Add existing homes
-                homesList.forEach((home, index) => {
+                if (homesList.length === 0) {
+                    container.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1; text-align: center; padding: 2rem;"><p>No homes added yet. Click "Add Home" to create your first home.</p></div>';
+                    return;
+                }
+                
+                // Update home selector
+                await initHomeSelector();
+                
+                // Add existing homes with calculated health scores
+                for (const home of homesList) {
+                    // Calculate health score for this home
+                    const healthScore = await calculateHomeHealthScore(home.id);
+                    home.healthScore = healthScore;
+                    
+                    const homeCard = document.createElement('div');
+                    homeCard.className = 'home-card';
+                    homeCard.innerHTML = `
+                        <div class="home-header">
+                            <h3>${home.address || 'Unnamed Home'}</h3>
+                            <span class="home-type">${home.type || 'Home'}</span>
+                        </div>
+                        <div class="home-details">
+                            <div class="home-detail-item">
+                                <span class="detail-label">Health Score:</span>
+                                <span class="detail-value">${home.healthScore || 0}%</span>
+                            </div>
+                            <div class="home-detail-item">
+                                <span class="detail-label">Bedrooms:</span>
+                                <span class="detail-value">${home.bedrooms || 0}</span>
+                            </div>
+                            <div class="home-detail-item">
+                                <span class="detail-label">Bathrooms:</span>
+                                <span class="detail-value">${home.bathrooms || 0}</span>
+                            </div>
+                            <div class="home-detail-item">
+                                <span class="detail-label">Square Feet:</span>
+                                <span class="detail-value">${home.squareFootage || 0}</span>
+                            </div>
+                            <div class="home-detail-item">
+                                <span class="detail-label">Year Built:</span>
+                                <span class="detail-value">${home.yearBuilt || 'N/A'}</span>
+                            </div>
+                        </div>
+                        <div class="home-actions">
+                            <button class="btn btn-sm" onclick="openHomeModal(${JSON.stringify(home).replace(/"/g, '&quot;')})">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteHome('${home.id}')">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                            <button class="btn btn-sm btn-primary" onclick="switchHome('${home.id}')">
+                                <i class="fas fa-check"></i> Select
+                            </button>
+                        </div>
+                    `;
+                    container.appendChild(homeCard);
+                }
+                
+                console.log('✅ Homes loaded and displayed');
+            } catch (error) {
+                console.error('Error loading homes:', error);
+                showAlert('Error loading homes. Please refresh the page.', 'error');
+            }
+        }
+
+        async function deleteHome(homeId) {
+            if (!confirm('Are you sure you want to delete this home? This action cannot be undone.')) {
+                return;
+            }
+            
+            try {
+                if (!window.awsDataService) {
+                    throw new Error('AWS Data Service not initialized');
+                }
+                
+                const existingHomes = await window.awsDataService.getHomesList();
+                const updatedHomes = existingHomes.filter(h => h.id !== homeId);
+                
+                await window.awsDataService.saveHomesList(updatedHomes);
+                console.log('Home deleted successfully from AWS');
+                
+                // Also remove homesData for this home
+                const getParams = {
+                    TableName: 'nestmate-users',
+                    Key: { userId: window.awsDataService.currentUserId }
+                };
+                const currentUserData = await window.awsDataService.dynamodb.get(getParams).promise();
+                const homesData = currentUserData.Item?.homesData || {};
+                
+                if (homesData[homeId]) {
+                    delete homesData[homeId];
+                    
+                    const updateParams = {
+                        TableName: 'nestmate-users',
+                        Key: { userId: window.awsDataService.currentUserId },
+                        UpdateExpression: 'SET homesData = :homesData, updatedAt = :updated',
+                        ExpressionAttributeValues: {
+                            ':homesData': homesData,
+                            ':updated': new Date().toISOString()
+                        }
+                    };
+                    
+                    await window.awsDataService.dynamodb.update(updateParams).promise();
+                    console.log('✅ Removed homesData for deleted home:', homeId);
+                }
+                
+                // If deleted home was selected, clear selection
+                if (currentHomeId === homeId) {
+                    currentHomeId = null;
+                }
+                
+                showAlert('Home deleted successfully!', 'success');
+                await loadHomes();
+                await initHomeSelector();
+                
+            } catch (error) {
+                console.error('Delete home error:', error);
+                showAlert('Failed to delete home: ' + (error.message || 'Unknown error'), 'error');
+            }
+        }
                     const homeCard = document.createElement('div');
                     homeCard.className = 'home-card';
                     homeCard.innerHTML = `
