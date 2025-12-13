@@ -2392,12 +2392,12 @@
         }
 
         // Basic Info Functions
-        function editBasicInfo() {
+        window.editBasicInfo = function editBasicInfo() {
             document.getElementById('basicInfoDisplay').style.display = 'none';
             document.getElementById('basicInfoForm').style.display = 'block';
         }
 
-        function cancelEditBasicInfo() {
+        window.cancelEditBasicInfo = function cancelEditBasicInfo() {
             document.getElementById('basicInfoDisplay').style.display = 'block';
             document.getElementById('basicInfoForm').style.display = 'none';
         }
@@ -2426,12 +2426,12 @@
         }
 
         // Structure Functions
-        function editStructure() {
+        window.editStructure = function editStructure() {
             document.getElementById('structureDisplay').style.display = 'none';
             document.getElementById('structureForm').style.display = 'block';
         }
 
-        function cancelEditStructure() {
+        window.cancelEditStructure = function cancelEditStructure() {
             document.getElementById('structureDisplay').style.display = 'block';
             document.getElementById('structureForm').style.display = 'none';
         }
@@ -2456,12 +2456,12 @@
         }
 
         // Systems Functions
-        function editSystems() {
+        window.editSystems = function editSystems() {
             document.getElementById('systemsDisplay').style.display = 'none';
             document.getElementById('systemsForm').style.display = 'block';
         }
 
-        function cancelEditSystems() {
+        window.cancelEditSystems = function cancelEditSystems() {
             document.getElementById('systemsDisplay').style.display = 'block';
             document.getElementById('systemsForm').style.display = 'none';
         }
@@ -2483,6 +2483,175 @@
             document.getElementById('systemsDisplay').style.display = 'block';
 
             showAlert('Systems info saved successfully!', 'success');
+        }
+
+        // ===== Garage Functions =====
+        async function loadGarage() {
+            try {
+                if (!window.awsDataService || !currentHomeId) {
+                    console.warn('⚠️ AWS Data Service not available or no home selected');
+                    return;
+                }
+                
+                const garageInfo = await window.awsDataService.getGarageInfo(currentHomeId) || {};
+                
+                // Update display
+                const displayGarageType = document.getElementById('displayGarageType');
+                const displayGarageCapacity = document.getElementById('displayGarageCapacity');
+                const displayGarageFeatures = document.getElementById('displayGarageFeatures');
+                const displayGarageMaintenance = document.getElementById('displayGarageMaintenance');
+                
+                if (displayGarageType) displayGarageType.textContent = garageInfo.type || 'Not set';
+                if (displayGarageCapacity) displayGarageCapacity.textContent = garageInfo.capacity || 'Not set';
+                if (displayGarageFeatures) displayGarageFeatures.textContent = garageInfo.features || 'Not set';
+                if (displayGarageMaintenance) displayGarageMaintenance.textContent = garageInfo.lastMaintenance || 'Not set';
+                
+                // Update form fields if form is visible
+                const garageType = document.getElementById('garageType');
+                const garageCapacity = document.getElementById('garageCapacity');
+                const garageFeatures = document.getElementById('garageFeatures');
+                const garageMaintenance = document.getElementById('garageMaintenance');
+                
+                if (garageType) garageType.value = garageInfo.type || '';
+                if (garageCapacity) garageCapacity.value = garageInfo.capacity || '';
+                if (garageFeatures) garageFeatures.value = garageInfo.features || '';
+                if (garageMaintenance) garageMaintenance.value = garageInfo.lastMaintenance || '';
+                
+            } catch (error) {
+                console.error('❌ Error loading garage info:', error);
+            }
+        }
+
+        window.editGarage = function editGarage() {
+            const display = document.getElementById('garageDisplay');
+            const form = document.getElementById('garageForm');
+            if (display) display.style.display = 'none';
+            if (form) {
+                form.style.display = 'block';
+                loadGarage(); // Load current data into form
+            }
+        }
+
+        window.cancelEditGarage = function cancelEditGarage() {
+            const display = document.getElementById('garageDisplay');
+            const form = document.getElementById('garageForm');
+            if (display) display.style.display = 'block';
+            if (form) form.style.display = 'none';
+        }
+
+        async function saveGarage() {
+            try {
+                const garageData = {
+                    type: document.getElementById('garageType').value,
+                    capacity: document.getElementById('garageCapacity').value,
+                    features: document.getElementById('garageFeatures').value.trim(),
+                    lastMaintenance: document.getElementById('garageMaintenance').value
+                };
+                
+                if (!window.awsDataService) {
+                    throw new Error('AWS Data Service not initialized');
+                }
+                
+                const result = await window.awsDataService.saveGarageInfo(garageData, currentHomeId);
+                if (result && result.success) {
+                    console.log('✅ Garage info saved successfully');
+                    await loadGarage(); // Reload to verify persistence
+                    cancelEditGarage();
+                    showAlert('Garage info saved successfully!', 'success');
+                } else {
+                    throw new Error(result?.error || 'Failed to save');
+                }
+            } catch (error) {
+                console.error('❌ Error saving garage info:', error);
+                showAlert('Error saving garage info. Please try again.', 'error');
+            }
+        }
+
+        // ===== Exterior Functions =====
+        async function loadExterior() {
+            try {
+                if (!window.awsDataService || !currentHomeId) {
+                    console.warn('⚠️ AWS Data Service not available or no home selected');
+                    return;
+                }
+                
+                const exteriorInfo = await window.awsDataService.getExteriorInfo(currentHomeId) || {};
+                
+                // Update display
+                const displayExteriorMaterialInfo = document.getElementById('displayExteriorMaterialInfo');
+                const displayExteriorRoofType = document.getElementById('displayExteriorRoofType');
+                const displayLandscaping = document.getElementById('displayLandscaping');
+                const displayOutdoorFeatures = document.getElementById('displayOutdoorFeatures');
+                const displayExteriorInspection = document.getElementById('displayExteriorInspection');
+                
+                if (displayExteriorMaterialInfo) displayExteriorMaterialInfo.textContent = exteriorInfo.material || 'Not set';
+                if (displayExteriorRoofType) displayExteriorRoofType.textContent = exteriorInfo.roofType || 'Not set';
+                if (displayLandscaping) displayLandscaping.textContent = exteriorInfo.landscaping || 'Not set';
+                if (displayOutdoorFeatures) displayOutdoorFeatures.textContent = exteriorInfo.outdoorFeatures || 'Not set';
+                if (displayExteriorInspection) displayExteriorInspection.textContent = exteriorInfo.lastInspection || 'Not set';
+                
+                // Update form fields if form is visible
+                const exteriorMaterialInfo = document.getElementById('exteriorMaterialInfo');
+                const exteriorRoofType = document.getElementById('exteriorRoofType');
+                const landscaping = document.getElementById('landscaping');
+                const outdoorFeatures = document.getElementById('outdoorFeatures');
+                const exteriorInspection = document.getElementById('exteriorInspection');
+                
+                if (exteriorMaterialInfo) exteriorMaterialInfo.value = exteriorInfo.material || '';
+                if (exteriorRoofType) exteriorRoofType.value = exteriorInfo.roofType || '';
+                if (landscaping) landscaping.value = exteriorInfo.landscaping || '';
+                if (outdoorFeatures) outdoorFeatures.value = exteriorInfo.outdoorFeatures || '';
+                if (exteriorInspection) exteriorInspection.value = exteriorInfo.lastInspection || '';
+                
+            } catch (error) {
+                console.error('❌ Error loading exterior info:', error);
+            }
+        }
+
+        window.editExterior = function editExterior() {
+            const display = document.getElementById('exteriorDisplay');
+            const form = document.getElementById('exteriorForm');
+            if (display) display.style.display = 'none';
+            if (form) {
+                form.style.display = 'block';
+                loadExterior(); // Load current data into form
+            }
+        }
+
+        window.cancelEditExterior = function cancelEditExterior() {
+            const display = document.getElementById('exteriorDisplay');
+            const form = document.getElementById('exteriorForm');
+            if (display) display.style.display = 'block';
+            if (form) form.style.display = 'none';
+        }
+
+        async function saveExterior() {
+            try {
+                const exteriorData = {
+                    material: document.getElementById('exteriorMaterialInfo').value,
+                    roofType: document.getElementById('exteriorRoofType').value,
+                    landscaping: document.getElementById('landscaping').value.trim(),
+                    outdoorFeatures: document.getElementById('outdoorFeatures').value.trim(),
+                    lastInspection: document.getElementById('exteriorInspection').value
+                };
+                
+                if (!window.awsDataService) {
+                    throw new Error('AWS Data Service not initialized');
+                }
+                
+                const result = await window.awsDataService.saveExteriorInfo(exteriorData, currentHomeId);
+                if (result && result.success) {
+                    console.log('✅ Exterior info saved successfully');
+                    await loadExterior(); // Reload to verify persistence
+                    cancelEditExterior();
+                    showAlert('Exterior info saved successfully!', 'success');
+                } else {
+                    throw new Error(result?.error || 'Failed to save');
+                }
+            } catch (error) {
+                console.error('❌ Error saving exterior info:', error);
+                showAlert('Error saving exterior info. Please try again.', 'error');
+            }
         }
 
         // Basic Add Functions
