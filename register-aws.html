@@ -329,12 +329,25 @@
 
     <script src="auth-aws.js"></script>
     <script>
-        // AWS Configuration for registration
-        AWS.config.update({
-            region: 'us-east-2',
-            accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
-            secretAccessKey: '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'
+        // Wait for AWS SDK to load before configuring
+        function waitForAWS(callback) {
+            if (typeof AWS !== 'undefined' && AWS.config) {
+                callback();
+            } else {
+                setTimeout(() => waitForAWS(callback), 100);
+            }
+        }
+
+        // Configure AWS once it's loaded
+        waitForAWS(function() {
+            AWS.config.update({
+                region: 'us-east-2',
+                accessKeyId: 'AKIAXBLPTGPR44FNAHUL',
+                secretAccessKey: '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'
+            });
+            console.log('AWS configured successfully');
         });
+
         // Form elements
         const signupForm = document.getElementById('signupForm');
         const loading = document.getElementById('loading');
@@ -361,12 +374,10 @@
 
 
         // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check if user is already authenticated
-            if (nestMateAuth.currentUser) {
-                window.location.href = 'dashboard-basic-aws.html';
-                return;
-            }
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Don't auto-redirect authenticated users - let them stay on the page or go to plan selection
+            // This prevents redirect loops
+            // They can manually navigate to select-plan if they want
 
             // Add event listeners
             passwordInput.addEventListener('input', validatePassword);
@@ -436,35 +447,111 @@
             try {
                 // Format phone number for Cognito (E.164 format)
                 let phone = phoneInput.value.trim();
-                if (phone && !phone.startsWith('+')) {
-                    // Add +1 for US numbers if not already formatted
-                    if (phone.length === 10) {
-                        phone = '+1' + phone;
-                    } else if (phone.length === 11 && phone.startsWith('1')) {
-                        phone = '+' + phone;
+                
+                // Validate phone number - must be digits only (or + and digits)
+                // If it looks like an email or invalid, set to empty
+                if (phone) {
+                    // Remove common phone formatting characters
+                    const cleaned = phone.replace(/[\s\-\(\)\.]/g, '');
+                    
+                    // Check if it's actually a phone number (not an email or invalid)
+                    if (cleaned.includes('@') || cleaned.length < 10 || !/^[\+]?[\d]+$/.test(cleaned)) {
+                        console.warn('Invalid phone number format, ignoring:', phone);
+                        phone = ''; // Set to empty if invalid
+                    } else {
+                        // Format for E.164 if it's a valid phone number
+                        if (!phone.startsWith('+')) {
+                            // Remove leading 1 if present
+                            if (cleaned.startsWith('1') && cleaned.length === 11) {
+                                phone = '+' + cleaned;
+                            } else if (cleaned.length === 10) {
+                                phone = '+1' + cleaned;
+                            } else if (cleaned.length > 10) {
+                                phone = '+' + cleaned;
+                            } else {
+                                // Too short, invalid
+                                phone = '';
+                            }
+                        }
                     }
                 }
 
-                const payload = {
-                    email: emailInput.value.trim().toLowerCase(),
-                    password,
+                // Use auth-aws.js directly (works both locally and when deployed)
+                console.log('Initializing auth system...');
+                await nestMateAuth.initialize();
+                
+                const userData = {
                     name: nameInput.value.trim(),
-                    phone: phone,
+                    phone: phone
                 };
-                console.log('Sending signup request:', payload);
-                const res = await fetch('/.netlify/functions/cognito-signup', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload),
+                
+                console.log('Calling signUp with:', {
+                    email: emailInput.value.trim().toLowerCase(),
+                    userData: userData
                 });
-                console.log('Response status:', res.status);
-                const data = await res.json();
-                console.log('Response data:', data);
-                if (data.success) {
-                    showMessage('Account created successfully! Redirecting to plan selection…', 'success');
-                    setTimeout(() => { window.location.href = 'pricing.html'; }, 1200);
+                
+                const signUpResult = await nestMateAuth.signUp(
+                    emailInput.value.trim().toLowerCase(),
+                    password,
+                    userData
+                );
+                
+                console.log('SignUp result:', signUpResult);
+                
+                if (signUpResult.success) {
+                    showMessage('Account created successfully! Signing you in...', 'success');
+                    
+                    // Auto-sign in the user after successful signup
+                    try {
+                        const signInResult = await nestMateAuth.signIn(
+                            emailInput.value.trim().toLowerCase(),
+                            password
+                        );
+                        
+                        if (signInResult.success) {
+                            // Re-initialize to ensure currentUser is set
+                            await nestMateAuth.initialize();
+                            
+                            // Wait longer to ensure auth is fully ready
+                            await new Promise(resolve => setTimeout(resolve, 1500));
+                            
+                            // Verify user is actually authenticated before redirecting
+                            const verifyAuth = await nestMateAuth.isAuthenticated();
+                            if (!verifyAuth) {
+                                console.error('User not authenticated after signup, redirecting to login...');
+                                showMessage('Account created! Please sign in.', 'success');
+                                setTimeout(() => { 
+                                    window.location.replace('login-aws.html?redirect=select-plan.html'); 
+                                }, 2000);
+                                return;
+                            }
+                            
+                            // Set flag to prevent redirect loop
+                            sessionStorage.setItem('fromSignup', 'true');
+                            
+                            showMessage('Redirecting to plan selection...', 'success');
+                            setTimeout(() => { 
+                                window.location.replace('select-plan.html'); 
+                            }, 500);
+                        } else {
+                            // If auto-signin fails, still redirect to plan selection
+                            // User can sign in there if needed
+                            showMessage('Account created! Please sign in to continue.', 'success');
+                            setTimeout(() => { 
+                                window.location.replace('login-aws.html?redirect=select-plan.html'); 
+                            }, 2000);
+                        }
+                    } catch (signInError) {
+                        console.error('Auto-signin error:', signInError);
+                        // Still redirect to plan selection
+                        showMessage('Account created! Please sign in to continue.', 'success');
+                        setTimeout(() => { 
+                            window.location.replace('login-aws.html?redirect=select-plan.html'); 
+                        }, 2000);
+                    }
                 } else {
-                    showMessage(data.message || 'Signup failed. Please try again.', 'error');
+                    const errorMsg = signUpResult.error || signUpResult.message || 'Signup failed. Please try again.';
+                    showMessage(errorMsg, 'error');
                 }
             } catch (err) {
                 console.error('Signup error:', err);

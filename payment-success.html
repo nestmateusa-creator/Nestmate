@@ -3,373 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Successful - NestMate</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+    <title>Payment Success - NestMate</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #333;
+            padding: 20px;
         }
-        
-        .success-container {
+
+        .container {
             background: white;
-            border-radius: 20px;
-            padding: 3rem;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            text-align: center;
+            border-radius: 16px;
+            padding: 48px;
             max-width: 500px;
-            width: 90%;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
         }
-        
+
         .success-icon {
             width: 80px;
             height: 80px;
-            background: linear-gradient(135deg, #4ade80, #22c55e);
+            background: #10b981;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 2rem;
-            animation: bounce 1s ease-in-out;
+            margin: 0 auto 24px;
+            font-size: 48px;
         }
-        
-        .success-icon i {
-            font-size: 2.5rem;
-            color: white;
-        }
-        
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {
-                transform: translateY(0);
-            }
-            40% {
-                transform: translateY(-10px);
-            }
-            60% {
-                transform: translateY(-5px);
-            }
-        }
-        
+
         h1 {
+            color: #1e293b;
             font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            color: #1f2937;
+            margin-bottom: 12px;
         }
-        
-        .plan-info {
-            background: #f8fafc;
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin: 2rem 0;
-            border-left: 4px solid #4ade80;
+
+        p {
+            color: #64748b;
+            font-size: 1.1rem;
+            margin-bottom: 32px;
+            line-height: 1.6;
         }
-        
-        .plan-name {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 0.5rem;
-        }
-        
-        .plan-price {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #059669;
-            margin-bottom: 0.5rem;
-        }
-        
-        .plan-period {
-            color: #6b7280;
-            font-size: 0.9rem;
-        }
-        
-        .loading-message {
-            color: #6b7280;
-            margin: 1rem 0;
-            font-size: 0.9rem;
-        }
-        
+
         .spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
+            border: 3px solid #f3f4f6;
             border-top: 3px solid #667eea;
             border-radius: 50%;
+            width: 40px;
+            height: 40px;
             animation: spin 1s linear infinite;
-            margin-right: 0.5rem;
+            margin: 0 auto 16px;
         }
-        
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        
-        .error-message {
-            background: #fef2f2;
-            border: 1px solid #fecaca;
-            color: #dc2626;
-            padding: 1rem;
-            border-radius: 8px;
-            margin: 1rem 0;
-        }
-        
+
         .btn {
-            display: inline-block;
-            padding: 0.75rem 2rem;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: #667eea;
             color: white;
-            text-decoration: none;
+            border: none;
             border-radius: 8px;
+            padding: 14px 32px;
+            font-size: 1rem;
             font-weight: 600;
-            transition: transform 0.2s;
-            margin-top: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
         }
-        
+
         .btn:hover {
-            transform: translateY(-2px);
+            background: #5568d3;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .error {
+            color: #ef4444;
+            margin-top: 16px;
         }
     </style>
 </head>
 <body>
-    <div class="success-container">
-        <div class="success-icon">
-            <i class="fas fa-check"></i>
+    <div class="container">
+        <div id="loading">
+            <div class="spinner"></div>
+            <h1>Processing Payment...</h1>
+            <p>Please wait while we confirm your payment.</p>
         </div>
-        
-        <h1>Payment Successful!</h1>
-        
-        <div class="plan-info">
-            <div class="plan-name" id="planName">Loading...</div>
-            <div class="plan-price" id="planPrice">Loading...</div>
-            <div class="plan-period" id="planPeriod">Loading...</div>
+
+        <div id="success" style="display: none;">
+            <div class="success-icon">✓</div>
+            <h1>Payment Successful!</h1>
+            <p>Your subscription has been activated. You'll be redirected to your dashboard shortly.</p>
+            <a href="#" id="dashboard-link" class="btn">Go to Dashboard</a>
         </div>
-        
-        <div class="loading-message" id="loadingMessage">
-            <span class="spinner"></span>
-            Setting up your account...
-        </div>
-        
-        <div class="error-message" id="errorMessage" style="display: none;">
-            There was an issue setting up your account. Please contact support.
+
+        <div id="error" style="display: none;">
+            <div class="success-icon" style="background: #ef4444;">✗</div>
+            <h1>Payment Processing Error</h1>
+            <p id="error-message">There was an issue processing your payment. Please contact support.</p>
+            <a href="payment-management.html" class="btn">Manage Payments</a>
         </div>
     </div>
 
-    <script>
-    // AWS SDK with fallback CDNs
-    (function() {
-        const cdnUrls = [
-            'https://sdk.amazonaws.com/js/aws-sdk-2.1491.0.min.js',
-            'https://cdn.jsdelivr.net/npm/aws-sdk@2.1491.0/dist/aws-sdk.min.js',
-            'https://unpkg.com/aws-sdk@2.1491.0/dist/aws-sdk.min.js'
-        ];
-        
-        let loaded = false;
-        let currentIndex = 0;
-        
-        function loadNext() {
-            if (currentIndex >= cdnUrls.length) {
-                console.error('Failed to load AWS SDK from all CDNs');
-                // Create a minimal AWS stub to prevent errors
-                window.AWS = window.AWS || {
-                    config: { update: function() {} },
-                    CognitoIdentityServiceProvider: function() {},
-                    DynamoDB: { DocumentClient: function() {} },
-                    S3: function() {}
-                };
-                return;
-            }
-            
-            const script = document.createElement('script');
-            script.src = cdnUrls[currentIndex];
-            script.onload = function() {
-                loaded = true;
-                console.log('AWS SDK loaded from:', cdnUrls[currentIndex]);
-            };
-            script.onerror = function() {
-                console.warn('Failed to load AWS SDK from:', cdnUrls[currentIndex]);
-                currentIndex++;
-                loadNext();
-            };
-            document.head.appendChild(script);
-        }
-        
-        loadNext();
-    })();
-</script>
+    <script src="https://cdn.jsdelivr.net/npm/aws-sdk@2/dist/aws-sdk.min.js"></script>
     <script src="aws-config.js"></script>
-    <script src="aws-payment-handler.js"></script>
+    <script src="auth-aws.js"></script>
+    <script src="stripe-payment-system.js"></script>
     <script>
-        // AWS Payment Success Handler
-        const paymentHandler = new AWSPaymentHandler();
+        const paymentSystem = new StripePaymentSystem();
 
-        // Plan mapping based on Stripe session IDs or other identifiers
-        const planMapping = {
-            // Yearly plans
-            'cNi3cx3zY3kj6rzckZ1sQ0R': { name: 'Basic', price: '$54', period: 'per year', dashboard: 'dashboard-basic-clean.html', accountType: 'basic' },
-            'bJe6oJ0nMg755nv0Ch1sQ0S': { name: 'Pro', price: '$108', period: 'per year', dashboard: 'dashboard-advanced.html', accountType: 'pro' },
-            '14AcN7eeC8ED3fn4Sx1sQ0T': { name: 'Advanced Pro', price: '$173', period: 'per year', dashboard: 'dashboard-advanced-pro.html', accountType: 'advanced' },
-            'aFa4gB8UiaML3fn1Gl1sQ0U': { name: 'Enterprise', price: '$540', period: 'per year', dashboard: 'dashboard-enterprise.html', accountType: 'enterprise' },
-            
-            // Monthly plans
-            '9B600lc6u4oneY50Ch1sQ0M': { name: 'Basic', price: '$5', period: 'per month', dashboard: 'dashboard-basic-clean.html', accountType: 'basic' },
-            '14AeVf4E29IHbLT4Sx1sQ0N': { name: 'Pro', price: '$10', period: 'per month', dashboard: 'dashboard-advanced.html', accountType: 'pro' },
-            '9B628t1rQ2gfdU1et71sQ0O': { name: 'Advanced Pro', price: '$16', period: 'per month', dashboard: 'dashboard-advanced-pro.html', accountType: 'advanced' },
-            '14A9AV2vU1cb3fn4Sx1sQ0Q': { name: 'Enterprise', price: '$50', period: 'per month', dashboard: 'dashboard-enterprise.html', accountType: 'enterprise' }
-        };
+        // Get session ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('session_id');
 
-        function getPlanFromURL() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const sessionId = urlParams.get('session_id');
-            const success = urlParams.get('success');
-            const plan = urlParams.get('plan');
-            
-            console.log('URL Params:', { sessionId, success, plan });
-            
-            if (success === 'true') {
-                // Try to get plan from URL parameter first
-                if (plan && planMapping[plan]) {
-                    return planMapping[plan];
-                }
-                
-                // Try to extract from session ID or other methods
-                if (sessionId) {
-                    // In a real implementation, you'd verify this with Stripe
-                    // For now, we'll use a fallback method
-                    return detectPlanFromContext();
-                }
-            }
-            
-            return null;
+        if (!sessionId) {
+            showError('No session ID found. Please try again.');
+            return;
         }
 
-        function detectPlanFromContext() {
-            // Check localStorage for plan selection
-            const selectedPlan = localStorage.getItem('selectedPlan');
-            if (selectedPlan && planMapping[selectedPlan]) {
-                return planMapping[selectedPlan];
-            }
-            
-            // Check referrer
-            const referrer = document.referrer;
-            if (referrer.includes('pricing.html')) {
-                // Default to Basic if coming from pricing page
-                return planMapping['9B600lc6u4oneY50Ch1sQ0M']; // Basic monthly
-            }
-            
-            // Default fallback
-            return { name: 'Basic', price: '$5', period: 'per month', dashboard: 'dashboard-basic-clean.html', accountType: 'basic' };
-        }
-
-        function updatePlanInfo(planInfo) {
-            document.getElementById('planName').textContent = planInfo.name;
-            document.getElementById('planPrice').textContent = planInfo.price;
-            document.getElementById('planPeriod').textContent = planInfo.period;
-        }
-
-        function showError() {
-            document.getElementById('loadingMessage').style.display = 'none';
-            document.getElementById('errorMessage').style.display = 'block';
-        }
-
-        async function saveUserSubscription(planInfo) {
+        // Process payment success
+        (async () => {
             try {
-                console.log('💳 Saving user subscription to AWS...', planInfo);
-
-                // Get user email from various sources
-                let userEmail = getEmailFromSources();
-                
-                if (!userEmail) {
-                    console.error('❌ No email found for user identification');
-                    showError('Unable to identify user. Please contact support.');
-                    return false;
-                }
-
-                console.log('📧 User email identified:', userEmail);
-
-                // Update user subscription in AWS
-                const result = await paymentHandler.handlePaymentSuccess(userEmail, planInfo);
-                
-                if (result.success) {
-                    console.log('✅ Subscription saved successfully to AWS');
-                    
-                    // User data is now stored in AWS DynamoDB - no localStorage needed
-                    console.log('User subscription updated in AWS DynamoDB');
-                    
-                    return true;
-                } else {
-                    console.error('❌ Failed to save subscription:', result.error);
-                    showError('Failed to update subscription. Please contact support.');
-                    return false;
-                }
-
+                await paymentSystem.handlePaymentSuccess(sessionId);
             } catch (error) {
-                console.error('❌ Error saving subscription:', error);
-                showError('Failed to save subscription. Please contact support.');
-                return false;
+                console.error('Payment processing error:', error);
+                showError(error.message || 'Failed to process payment. Please contact support.');
             }
+        })();
+
+        function showError(message) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error').style.display = 'block';
+            document.getElementById('error-message').textContent = message;
         }
-
-        function getEmailFromSources() {
-            // Try to get email from various sources
-            const urlParams = new URLSearchParams(window.location.search);
-            
-            // 1. Check URL parameters (primary method)
-            let email = urlParams.get('email') || urlParams.get('user_email');
-            if (email) return email;
-
-            // 2. Check session storage (temporary session data)
-            const sessionEmail = sessionStorage.getItem('userEmail');
-            if (sessionEmail) return sessionEmail;
-
-            // 3. Prompt user for email if not found
-            return promptForEmail();
-        }
-
-        function promptForEmail() {
-            const email = prompt('Please enter your email address to complete your subscription:');
-            if (email && email.includes('@')) {
-                return email;
-            }
-            return null;
-        }
-
-        function redirectToDashboard(planInfo) {
-            setTimeout(() => {
-                window.location.href = planInfo.dashboard;
-            }, 3000);
-        }
-
-        // Initialize the page
-        document.addEventListener('DOMContentLoaded', async function() {
-            const planInfo = getPlanFromURL();
-            
-            if (planInfo) {
-                updatePlanInfo(planInfo);
-                
-                // Save subscription info
-                await saveUserSubscription(planInfo);
-                
-                // Redirect to dashboard
-                redirectToDashboard(planInfo);
-            } else {
-                showError();
-            }
-        });
     </script>
 </body>
 </html>

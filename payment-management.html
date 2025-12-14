@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Management - NestMate</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            color: #1e293b;
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #64748b;
+            font-size: 1rem;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h2 {
+            color: #1e293b;
+            font-size: 1.5rem;
+            margin-bottom: 16px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 12px;
+        }
+
+        .subscription-info {
+            margin-bottom: 20px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .info-label {
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .info-value {
+            color: #1e293b;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-inactive {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-locked {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .plan-selector {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .plan-option {
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .plan-option:hover {
+            border-color: #667eea;
+            background: #f8fafc;
+        }
+
+        .plan-option.selected {
+            border-color: #667eea;
+            background: #eef2ff;
+        }
+
+        .plan-name {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .plan-price {
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+            margin-top: 12px;
+        }
+
+        .btn:hover {
+            background: #5568d3;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #64748b;
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-success {
+            background: #10b981;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .payment-methods {
+            margin-top: 20px;
+        }
+
+        .payment-method-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .payment-method-info {
+            flex: 1;
+        }
+
+        .payment-method-type {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .payment-method-details {
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        .payment-method-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.875rem;
+            width: auto;
+            margin: 0;
+        }
+
+        .alert {
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+
+        .alert-danger {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+        }
+
+        .spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Payment Management</h1>
+            <p>Manage your subscription, payment methods, and billing</p>
+        </div>
+
+        <div id="alerts"></div>
+
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Loading payment information...</p>
+        </div>
+
+        <div id="content" style="display: none;">
+            <div class="content-grid">
+                <!-- Current Subscription Card -->
+                <div class="card">
+                    <h2>Current Subscription</h2>
+                    <div id="subscription-info" class="subscription-info">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                    <div id="locked-warning" style="display: none;">
+                        <div class="alert alert-warning">
+                            <strong>⚠️ Dashboard Locked</strong><br>
+                            Your payment failed. Please update your payment method to unlock your dashboard.
+                        </div>
+                        <button class="btn btn-success" onclick="paymentSystem.retryPayment()">
+                            Retry Payment
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Change Plan Card -->
+                <div class="card">
+                    <h2>Change Plan</h2>
+                    <div class="plan-selector" id="plan-selector">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                    <button class="btn" id="change-plan-btn" onclick="handlePlanChange()">
+                        Change Plan
+                    </button>
+                </div>
+
+                <!-- Payment Methods Card -->
+                <div class="card full-width">
+                    <h2>Payment Methods</h2>
+                    <div id="payment-methods" class="payment-methods">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                    <button class="btn btn-secondary" onclick="handleAddPaymentMethod()">
+                        Add Payment Method
+                    </button>
+                </div>
+
+                <!-- Subscription Actions Card -->
+                <div class="card full-width">
+                    <h2>Subscription Actions</h2>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+                        <button class="btn btn-secondary" onclick="paymentSystem.openCustomerPortal()">
+                            Open Customer Portal
+                        </button>
+                        <button class="btn btn-danger" onclick="handleCancelSubscription()">
+                            Cancel Subscription
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/aws-sdk@2/dist/aws-sdk.min.js"></script>
+    <script src="aws-config.js"></script>
+    <script src="auth-aws.js"></script>
+    <script src="stripe-payment-system.js"></script>
+    <script>
+        let paymentSystem;
+        let currentSubscription = null;
+        let selectedPlan = null;
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Initialize payment system
+                paymentSystem = new StripePaymentSystem();
+                
+                // Wait for auth to be ready
+                if (window.nestMateAuth) {
+                    await nestMateAuth.initialize();
+                }
+
+                // Load subscription info
+                await loadSubscriptionInfo();
+                
+                // Check for dashboard lock
+                const isLocked = await paymentSystem.checkDashboardLock();
+                if (isLocked) {
+                    document.getElementById('locked-warning').style.display = 'block';
+                }
+
+                // Setup plan selector
+                setupPlanSelector();
+
+                // Load payment methods
+                await loadPaymentMethods();
+
+                // Hide loading, show content
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+            } catch (error) {
+                console.error('Initialization error:', error);
+                showAlert('Failed to load payment information. Please refresh the page.', 'danger');
+                document.getElementById('loading').style.display = 'none';
+            }
+        });
+
+        // Load subscription information
+        async function loadSubscriptionInfo() {
+            try {
+                currentSubscription = await paymentSystem.getUserSubscription();
+                
+                if (!currentSubscription) {
+                    showAlert('No subscription found. Please select a plan.', 'warning');
+                    return;
+                }
+
+                const infoDiv = document.getElementById('subscription-info');
+                const plans = paymentSystem.getPlans();
+                const currentPlan = Object.values(plans).find(p => p.subscriptionType === currentSubscription.subscription);
+
+                infoDiv.innerHTML = `
+                    <div class="info-row">
+                        <span class="info-label">Plan:</span>
+                        <span class="info-value">${currentPlan ? currentPlan.name : currentSubscription.subscription}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Status:</span>
+                        <span class="info-value">
+                            <span class="status-badge ${getStatusClass(currentSubscription.status, currentSubscription.isLocked)}">
+                                ${getStatusText(currentSubscription.status, currentSubscription.isLocked)}
+                            </span>
+                        </span>
+                    </div>
+                    ${currentSubscription.lastPayment ? `
+                    <div class="info-row">
+                        <span class="info-label">Last Payment:</span>
+                        <span class="info-value">${new Date(currentSubscription.lastPayment).toLocaleDateString()}</span>
+                    </div>
+                    ` : ''}
+                    ${currentSubscription.paymentFailedAt ? `
+                    <div class="info-row">
+                        <span class="info-label">Payment Failed:</span>
+                        <span class="info-value">${new Date(currentSubscription.paymentFailedAt).toLocaleDateString()}</span>
+                    </div>
+                    ` : ''}
+                `;
+            } catch (error) {
+                console.error('Error loading subscription info:', error);
+                showAlert('Failed to load subscription information.', 'danger');
+            }
+        }
+
+        // Setup plan selector
+        function setupPlanSelector() {
+            const selector = document.getElementById('plan-selector');
+            const plans = paymentSystem.getPlans();
+            
+            Object.keys(plans).forEach(planKey => {
+                const plan = plans[planKey];
+                const option = document.createElement('div');
+                option.className = 'plan-option';
+                option.dataset.plan = planKey;
+                
+                if (currentSubscription && plan.subscriptionType === currentSubscription.subscription) {
+                    option.classList.add('selected');
+                    selectedPlan = planKey;
+                }
+                
+                option.innerHTML = `
+                    <div class="plan-name">${plan.name}</div>
+                    <div class="plan-price">$${plan.price}/month</div>
+                `;
+                
+                option.onclick = () => {
+                    document.querySelectorAll('.plan-option').forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+                    selectedPlan = planKey;
+                };
+                
+                selector.appendChild(option);
+            });
+        }
+
+        // Handle plan change
+        async function handlePlanChange() {
+            if (!selectedPlan) {
+                showAlert('Please select a plan first.', 'warning');
+                return;
+            }
+
+            if (currentSubscription && 
+                paymentSystem.getPlans()[selectedPlan].subscriptionType === currentSubscription.subscription) {
+                showAlert('This is already your current plan.', 'warning');
+                return;
+            }
+
+            if (!confirm(`Are you sure you want to change to the ${paymentSystem.getPlans()[selectedPlan].name} plan?`)) {
+                return;
+            }
+
+            try {
+                const btn = document.getElementById('change-plan-btn');
+                btn.disabled = true;
+                btn.textContent = 'Processing...';
+
+                await paymentSystem.changeSubscription(selectedPlan);
+                
+                showAlert('Plan changed successfully! Redirecting...', 'success');
+            } catch (error) {
+                console.error('Error changing plan:', error);
+                showAlert(error.message || 'Failed to change plan. Please try again.', 'danger');
+                
+                const btn = document.getElementById('change-plan-btn');
+                btn.disabled = false;
+                btn.textContent = 'Change Plan';
+            }
+        }
+
+        // Load payment methods
+        async function loadPaymentMethods() {
+            try {
+                const methods = await paymentSystem.getPaymentMethods();
+                const methodsDiv = document.getElementById('payment-methods');
+                
+                if (methods.length === 0) {
+                    methodsDiv.innerHTML = '<p style="color: #64748b; margin-bottom: 16px;">No payment methods on file.</p>';
+                    return;
+                }
+
+                methodsDiv.innerHTML = methods.map(method => `
+                    <div class="payment-method-item">
+                        <div class="payment-method-info">
+                            <div class="payment-method-type">${method.type === 'card' ? '💳 Card' : method.type}</div>
+                            <div class="payment-method-details">
+                                ${method.type === 'card' ? `${method.card.brand.toUpperCase()} •••• ${method.card.last4}` : method.id}
+                                ${method.isDefault ? ' (Default)' : ''}
+                            </div>
+                        </div>
+                        <div class="payment-method-actions">
+                            ${!method.isDefault ? `
+                                <button class="btn btn-small btn-secondary" onclick="setDefaultPaymentMethod('${method.id}')">
+                                    Set Default
+                                </button>
+                            ` : ''}
+                            <button class="btn btn-small btn-danger" onclick="deletePaymentMethod('${method.id}')">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading payment methods:', error);
+                showAlert('Failed to load payment methods.', 'danger');
+            }
+        }
+
+        // Handle add payment method
+        async function handleAddPaymentMethod() {
+            try {
+                showAlert('Opening payment method form...', 'success');
+                await paymentSystem.addPaymentMethod();
+                await loadPaymentMethods();
+            } catch (error) {
+                console.error('Error adding payment method:', error);
+                showAlert(error.message || 'Failed to add payment method.', 'danger');
+            }
+        }
+
+        // Set default payment method
+        async function setDefaultPaymentMethod(paymentMethodId) {
+            try {
+                await paymentSystem.setDefaultPaymentMethod(paymentMethodId);
+                showAlert('Default payment method updated.', 'success');
+                await loadPaymentMethods();
+            } catch (error) {
+                console.error('Error setting default payment method:', error);
+                showAlert(error.message || 'Failed to update payment method.', 'danger');
+            }
+        }
+
+        // Delete payment method
+        async function deletePaymentMethod(paymentMethodId) {
+            if (!confirm('Are you sure you want to delete this payment method?')) {
+                return;
+            }
+
+            try {
+                await paymentSystem.deletePaymentMethod(paymentMethodId);
+                showAlert('Payment method deleted.', 'success');
+                await loadPaymentMethods();
+            } catch (error) {
+                console.error('Error deleting payment method:', error);
+                showAlert(error.message || 'Failed to delete payment method.', 'danger');
+            }
+        }
+
+        // Handle cancel subscription
+        async function handleCancelSubscription() {
+            if (!confirm('Are you sure you want to cancel your subscription? You will lose access to premium features.')) {
+                return;
+            }
+
+            try {
+                await paymentSystem.cancelSubscription();
+                showAlert('Subscription cancelled successfully.', 'success');
+                setTimeout(() => {
+                    window.location.href = 'dashboard-basic-clean.html';
+                }, 2000);
+            } catch (error) {
+                console.error('Error cancelling subscription:', error);
+                showAlert(error.message || 'Failed to cancel subscription.', 'danger');
+            }
+        }
+
+        // Helper functions
+        function getStatusClass(status, isLocked) {
+            if (isLocked) return 'status-locked';
+            return status === 'active' ? 'status-active' : 'status-inactive';
+        }
+
+        function getStatusText(status, isLocked) {
+            if (isLocked) return 'Locked';
+            return status === 'active' ? 'Active' : 'Inactive';
+        }
+
+        function showAlert(message, type) {
+            const alertsDiv = document.getElementById('alerts');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            alertsDiv.appendChild(alert);
+
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
+

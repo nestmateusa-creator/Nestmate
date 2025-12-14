@@ -352,6 +352,7 @@
             
             // Check if this is a signout redirect - if so, skip auto-login check
             const urlParams = new URLSearchParams(window.location.search);
+            const redirectTo = urlParams.get('redirect');
             const isSignOut = urlParams.get('signout') === 'true';
             
             if (isSignOut) {
@@ -395,40 +396,113 @@
                             else if (email === 'demo.advanced@nestmate.com') dest = 'dashboard-advanced.html';
                             else if (email === 'demo.advancedpro@nestmate.com') dest = 'dashboard-advanced-pro.html';
                             else if (email === 'demo.enterprise@nestmate.com') dest = 'dashboard-enterprise.html';
-                        } else if (userRec && userRec.success && userRec.user) {
-                            // Regular users redirect based on subscription
-                            const sub = userRec.user.subscription || 'basic';
+                        } else if (userRec && userRec.success) {
+                            const user = userRec.user || userRec;
                             
-                            // If user has a paid subscription type, send them to their dashboard
-                            if (sub === 'pro') {
-                                dest = 'dashboard-advanced.html';
-                            } else if (sub === 'advanced-pro') {
-                                dest = 'dashboard-advanced-pro.html';
-                            } else if (sub === 'enterprise') {
-                                dest = 'dashboard-enterprise.html';
-                            } else if (sub === 'basic') {
-                                // Basic users go to basic dashboard
-                                dest = 'dashboard-basic-clean.html';
-                            } else {
-                                // Unknown subscription type or missing - check status
-                                const status = userRec.user.subscriptionStatus;
-                                // Only redirect to pricing if status is explicitly 'inactive' or 'cancelled'
-                                // If status is undefined/null/active, allow access to basic dashboard
-                                if (status === 'inactive' || status === 'cancelled') {
-                                    dest = 'pricing.html?from=login';
+                            // Check if user has an active subscription - STRICT CHECK
+                            const stripeId = user.stripeCustomerId;
+                            const hasStripeCustomer = stripeId && 
+                                                     stripeId !== null && 
+                                                     stripeId !== undefined &&
+                                                     stripeId !== '' && 
+                                                     stripeId !== 'null' && 
+                                                     stripeId !== 'undefined' &&
+                                                     typeof stripeId === 'string' &&
+                                                     stripeId.trim() !== '' &&
+                                                     stripeId.startsWith('cus_');
+                            const subscriptionStatus = user.subscriptionStatus;
+                            const isActive = subscriptionStatus === 'active';
+                            const hasSubscription = user.subscription && user.subscription !== null;
+                            
+                            console.log('🔍 AUTO-LOGIN: Subscription check:', { 
+                                hasStripeCustomer, 
+                                subscriptionStatus, 
+                                isActive,
+                                hasSubscription,
+                                subscription: user.subscription,
+                                stripeCustomerId: user.stripeCustomerId,
+                                'RAW_stripeCustomerId': user.stripeCustomerId,
+                                'RAW_subscriptionStatus': user.subscriptionStatus
+                            });
+                            
+                            // CRITICAL: Must have BOTH stripeCustomerId AND active status to access dashboard
+                            // NO EXCEPTIONS - redirect to plan selection if either is missing
+                            console.log('🔍 AUTO-LOGIN: Final validation check...');
+                            console.log('🔍 AUTO-LOGIN: hasStripeCustomer =', hasStripeCustomer, '(type:', typeof user.stripeCustomerId, ', value:', user.stripeCustomerId, ')');
+                            console.log('🔍 AUTO-LOGIN: isActive =', isActive, '(subscriptionStatus:', user.subscriptionStatus, ')');
+                            console.log('🔍 AUTO-LOGIN: isDemoAccount =', isDemoAccount);
+                            
+                            if (!isDemoAccount) {
+                                if (!hasStripeCustomer) {
+                                    console.log('❌❌❌ AUTO-LOGIN: NO STRIPE CUSTOMER ID - FORCING REDIRECT TO PLAN SELECTION ❌❌❌');
+                                    dest = 'select-plan.html';
+                                } else if (!isActive) {
+                                    console.log('❌❌❌ AUTO-LOGIN: SUBSCRIPTION NOT ACTIVE - FORCING REDIRECT TO PLAN SELECTION ❌❌❌');
+                                    dest = 'select-plan.html';
                                 } else {
-                                    dest = 'dashboard-basic-clean.html';
+                                    console.log('✅ AUTO-LOGIN: Subscription validated - User has active subscription');
                                 }
+                            } else {
+                                console.log('✅ AUTO-LOGIN: Demo account - allowing access');
+                            }
+                            
+                            if (dest !== 'select-plan.html') {
+                                // User has active subscription - redirect to appropriate dashboard
+                                const sub = user.subscription || 'basic';
+                                
+                                if (sub === 'pro') {
+                                    dest = 'dashboard-advanced.html';
+                                } else if (sub === 'advanced-pro') {
+                                    dest = 'dashboard-advanced-pro.html';
+                                } else if (sub === 'enterprise') {
+                                    dest = 'dashboard-enterprise.html';
+                                } else if (sub === 'basic') {
+                                    dest = 'dashboard-basic-clean.html';
+                                } else {
+                                    // Fallback - if subscription type is unknown but has active status, check if they need to select plan
+                                    if (!hasStripeCustomer || !isActive) {
+                                        dest = 'select-plan.html';
+                                    } else {
+                                        dest = 'dashboard-basic-clean.html';
+                                    }
+                                }
+                            }
+                        } else {
+                            // No user record found - redirect to plan selection
+                            console.log('No user record found, redirecting to plan selection...');
+                            dest = 'select-plan.html';
+                        }
+                        
+                        console.log('🔍 AUTO-LOGIN: Final destination check:', dest);
+                        console.log('🔍 AUTO-LOGIN: User subscription data:', {
+                            hasStripeCustomer: user.stripeCustomerId && user.stripeCustomerId !== null && user.stripeCustomerId !== '',
+                            subscriptionStatus: user.subscriptionStatus,
+                            isActive: user.subscriptionStatus === 'active',
+                            subscription: user.subscription
+                        });
+                        
+                        // FINAL CHECK: If dest is dashboard but no subscription, override to plan selection
+                        if (dest.includes('dashboard') && !isDemoAccount) {
+                            const finalHasStripe = user.stripeCustomerId && user.stripeCustomerId !== null && user.stripeCustomerId !== '';
+                            const finalIsActive = user.subscriptionStatus === 'active';
+                            
+                            if (!finalHasStripe || !finalIsActive) {
+                                console.log('❌❌❌ AUTO-LOGIN: OVERRIDING DASHBOARD REDIRECT - NO SUBSCRIPTION ❌❌❌');
+                                dest = 'select-plan.html';
                             }
                         }
                         
-                        console.log('Redirecting authenticated user to:', dest);
-                        window.location.href = dest;
+                        console.log('🔍 AUTO-LOGIN: Redirecting to:', dest);
+                        // Use replace to prevent back button issues
+                        window.location.replace(dest);
                         return;
                     } catch (error) {
                         console.error('Error checking user subscription:', error);
-                        // Fallback to basic dashboard if there's an error
-                        window.location.href = 'dashboard-basic-clean.html';
+                        // If there's an error checking subscription, assume no subscription and redirect to plan selection
+                        console.log('Error occurred, redirecting to plan selection for safety...');
+                        dest = 'select-plan.html';
+                        console.log('Redirecting to plan selection due to error:', dest);
+                        window.location.href = dest;
                         return;
                     }
                 }
@@ -496,12 +570,104 @@
                             window.location.href = dest + '?t=' + Date.now(); 
                         }, 800);
                     } else {
-                        // Regular users follow normal flow with pricing page check
-                        const userRec = await nestMateAuth.getUserRecord(result.userId || nestMateAuth.currentUser?.userId);
-                        const sub = userRec?.user?.subscription || 'basic';
-
+                        // Check for redirect parameter first
+                        if (redirectTo) {
+                            showMessage('Signed in successfully! Redirecting...', 'success');
+                            setTimeout(() => { 
+                                window.location.href = redirectTo; 
+                            }, 800);
+                            return;
+                        }
+                        
+                        // Regular users - check if they have an active subscription
+                        const userId = result.userId || nestMateAuth.currentUser?.userId;
+                        console.log('🔍 LOGIN: Checking subscription for user:', userId);
+                        console.log('🔍 LOGIN: result object:', result);
+                        console.log('🔍 LOGIN: nestMateAuth.currentUser:', nestMateAuth.currentUser);
+                        
+                        // Wait a moment for user record to be available
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        
+                        console.log('🔍 LOGIN: Fetching user record from DynamoDB...');
+                        const userRec = await nestMateAuth.getUserRecord(userId);
+                        console.log('📋 LOGIN: User record response:', userRec);
+                        console.log('📋 LOGIN: User record success:', userRec?.success);
+                        console.log('📋 LOGIN: User record data:', userRec?.user);
+                        
+                        if (!userRec || !userRec.success) {
+                            console.log('❌ Could not get user record, redirecting to plan selection...');
+                            showMessage('Please select a plan to continue.', 'info');
+                            setTimeout(() => { 
+                                window.location.href = 'select-plan.html'; 
+                            }, 800);
+                            return;
+                        }
+                        
+                        const user = userRec.user || userRec;
+                        console.log('👤 LOGIN: User data object:', user);
+                        console.log('👤 LOGIN: User subscription field:', user?.subscription);
+                        console.log('👤 LOGIN: User subscriptionStatus field:', user?.subscriptionStatus);
+                        console.log('👤 LOGIN: User stripeCustomerId field:', user?.stripeCustomerId);
+                        
+                        // Check if user has an active subscription - STRICT CHECK
+                        const stripeId = user?.stripeCustomerId;
+                        const hasStripeCustomer = stripeId && 
+                                                 stripeId !== null && 
+                                                 stripeId !== undefined &&
+                                                 stripeId !== '' && 
+                                                 stripeId !== 'null' && 
+                                                 stripeId !== 'undefined' &&
+                                                 typeof stripeId === 'string' &&
+                                                 stripeId.trim() !== '' &&
+                                                 stripeId.startsWith('cus_');
+                        const subscriptionStatus = user?.subscriptionStatus;
+                        const isActive = subscriptionStatus === 'active';
+                        const hasSubscription = user?.subscription && user?.subscription !== null;
+                        
+                        console.log('💳 LOGIN: Subscription check results:', { 
+                            hasStripeCustomer, 
+                            subscriptionStatus, 
+                            isActive,
+                            hasSubscription,
+                            subscription: user?.subscription,
+                            stripeCustomerId: user?.stripeCustomerId,
+                            'RAW_stripeCustomerId': user?.stripeCustomerId,
+                            'RAW_subscriptionStatus': user?.subscriptionStatus,
+                            'RAW_subscription': user?.subscription
+                        });
+                        
+                        // CRITICAL CHECK: Must have BOTH stripeCustomerId AND active status
+                        console.log('🔍 LOGIN: Performing critical subscription validation...');
+                        console.log('🔍 LOGIN: hasStripeCustomer =', hasStripeCustomer);
+                        console.log('🔍 LOGIN: isActive =', isActive);
+                        console.log('🔍 LOGIN: hasSubscription =', hasSubscription);
+                        
+                        // If no Stripe customer ID, redirect immediately
+                        if (!hasStripeCustomer) {
+                            console.log('❌ LOGIN: NO STRIPE CUSTOMER ID - Redirecting to plan selection');
+                            showMessage('Please select a plan to continue.', 'info');
+                            setTimeout(() => { 
+                                window.location.replace('select-plan.html'); 
+                            }, 500);
+                            return;
+                        }
+                        
+                        // If subscription not active, redirect immediately
+                        if (!isActive) {
+                            console.log('❌ LOGIN: SUBSCRIPTION NOT ACTIVE - Redirecting to plan selection');
+                            showMessage('Please select a plan to continue.', 'info');
+                            setTimeout(() => { 
+                                window.location.replace('select-plan.html'); 
+                            }, 500);
+                            return;
+                        }
+                        
+                        console.log('✅ LOGIN: Subscription validation PASSED - User has active subscription');
+                        
+                        // User has active subscription - redirect to appropriate dashboard
+                        const sub = user?.subscription || 'basic';
                         let dest = 'dashboard-basic-clean.html';
-                        // Redirect to appropriate dashboard based on subscription
+                        
                         if (sub === 'pro') {
                             dest = 'dashboard-advanced.html';
                         } else if (sub === 'advanced-pro') {
@@ -509,22 +675,15 @@
                         } else if (sub === 'enterprise') {
                             dest = 'dashboard-enterprise.html';
                         } else if (sub === 'basic') {
-                            // Basic users go to basic dashboard
                             dest = 'dashboard-basic-clean.html';
                         } else {
-                            // Unknown subscription type or missing - check status
-                            const status = userRec?.user?.subscriptionStatus;
-                            // Only redirect to pricing if status is explicitly 'inactive' or 'cancelled'
-                            // If status is undefined/null/active, allow access to basic dashboard
-                            if (status === 'inactive' || status === 'cancelled') {
-                                dest = 'pricing.html?from=login';
-                            } else {
-                                dest = 'dashboard-basic-clean.html';
-                            }
+                            // Fallback - if subscription type is unknown but has active status, go to basic
+                            dest = 'dashboard-basic-clean.html';
                         }
 
+                        console.log('✅ Redirecting to dashboard:', dest);
                         showMessage('Signed in successfully! Redirecting...', 'success');
-                        setTimeout(() => { window.location.href = dest; }, 800);
+                        setTimeout(() => { window.location.replace(dest); }, 800);
                     }
                 } else {
                     showMessage(result.message, 'error');

@@ -3,7 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Basic Dashboard - NestMate</title>
+    <!-- CRITICAL: Block page rendering immediately until subscription is verified -->
+    <script>
+        (function() {
+            'use strict';
+            console.log('🚨🚨🚨🚨🚨 CRITICAL BLOCKER SCRIPT - VERSION 2.0 🚨🚨🚨🚨🚨');
+            console.log('🚨 Timestamp:', new Date().toISOString());
+            console.log('🚨 URL:', window.location.href);
+            
+            // IMMEDIATELY hide everything with maximum priority
+            try {
+                const criticalStyle = document.createElement('style');
+                criticalStyle.id = 'subscription-blocker-critical-v2';
+                criticalStyle.textContent = `
+                    html, body, body * { 
+                        display: none !important; 
+                        visibility: hidden !important; 
+                        opacity: 0 !important; 
+                        pointer-events: none !important;
+                    }
+                `;
+                (document.head || document.documentElement).appendChild(criticalStyle);
+                console.log('🚨 Critical blocker CSS added');
+            } catch(e) {
+                console.error('🚨 Error adding blocker CSS:', e);
+            }
+            
+            // Also directly hide body
+            try {
+                if (document.body) {
+                    document.body.style.setProperty('display', 'none', 'important');
+                    document.body.style.setProperty('visibility', 'hidden', 'important');
+                    document.body.style.setProperty('opacity', '0', 'important');
+                    console.log('🚨 Body directly hidden');
+                }
+            } catch(e) {
+                console.error('🚨 Error hiding body:', e);
+            }
+            
+            // Set flags
+            window.subscriptionCheckRequired = true;
+            window.subscriptionCheckPassed = false;
+            window.subscriptionCheckVersion = '2.0';
+            
+            console.log('🚨🚨🚨 PAGE BLOCKED - SUBSCRIPTION CHECK REQUIRED 🚨🚨🚨');
+        })();
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css" onerror="this.onerror=null;">
@@ -70,6 +119,143 @@
     })();
 </script>
     <script src="auth-aws.js"></script>
+    <!-- INLINE SUBSCRIPTION CHECK - Runs immediately, can't be bypassed -->
+    <script>
+        (function() {
+            'use strict';
+            console.log('🚨🚨🚨🚨🚨 INLINE SUBSCRIPTION CHECK - VERSION 2.0 🚨🚨🚨🚨🚨');
+            console.log('🚨 Check timestamp:', new Date().toISOString());
+            console.log('🚨 Check URL:', window.location.href);
+            
+            // Function to check subscription
+            async function checkSubscriptionInline() {
+            try {
+                console.log('🔍 INLINE: Starting subscription check...');
+                
+                // Wait for auth to be available
+                let attempts = 0;
+                console.log('🔍 INLINE: Waiting for auth system...');
+                while (!window.nestMateAuth && attempts < 50) {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    attempts++;
+                    if (attempts % 10 === 0) {
+                        console.log('🔍 INLINE: Still waiting for auth... attempt', attempts);
+                    }
+                }
+                
+                if (!window.nestMateAuth) {
+                    console.error('❌ INLINE: Auth not available after 5 seconds, redirecting...');
+                    window.location.replace('login-aws.html');
+                    return;
+                }
+                
+                console.log('✅ INLINE: Auth system found');
+                console.log('🔍 INLINE: Initializing auth...');
+                await nestMateAuth.initialize();
+                
+                const isAuth = await nestMateAuth.isAuthenticated();
+                console.log('🔍 INLINE: Authentication status:', isAuth);
+                if (!isAuth) {
+                    console.log('❌ INLINE: Not authenticated, redirecting to login...');
+                    window.location.replace('login-aws.html');
+                    return;
+                }
+                
+                const currentUser = nestMateAuth.currentUser || await nestMateAuth.getCurrentUser();
+                console.log('🔍 INLINE: Current user:', currentUser);
+                if (!currentUser) {
+                    console.log('❌ INLINE: No current user, redirecting to login...');
+                    window.location.replace('login-aws.html');
+                    return;
+                }
+                
+                console.log('🔍 INLINE: Getting user record for:', currentUser.userId);
+                const userRec = await nestMateAuth.getUserRecord(currentUser.userId);
+                console.log('📋 INLINE: User record response:', userRec);
+                
+                if (!userRec || !userRec.success || !userRec.user) {
+                    console.log('❌ INLINE: No user record found, redirecting to plan selection...');
+                    window.location.replace('select-plan.html');
+                    return;
+                }
+                
+                const user = userRec.user;
+                const hasStripeCustomer = user.stripeCustomerId && user.stripeCustomerId !== null && user.stripeCustomerId !== '';
+                const subscriptionStatus = user.subscriptionStatus;
+                const isActive = subscriptionStatus === 'active';
+                const email = currentUser.email || currentUser.username || '';
+                const isDemoAccount = email.includes('demo.') && email.includes('@nestmate.com');
+                
+                console.log('💳 INLINE: Subscription check results:', {
+                    hasStripeCustomer,
+                    subscriptionStatus,
+                    isActive,
+                    isDemoAccount,
+                    stripeCustomerId: user.stripeCustomerId,
+                    'RAW_stripeCustomerId': user.stripeCustomerId,
+                    'RAW_subscriptionStatus': user.subscriptionStatus
+                });
+                
+                if (!isDemoAccount && (!hasStripeCustomer || !isActive)) {
+                    console.log('❌❌❌ INLINE: NO ACTIVE SUBSCRIPTION DETECTED ❌❌❌');
+                    console.log('❌ INLINE: hasStripeCustomer =', hasStripeCustomer);
+                    console.log('❌ INLINE: isActive =', isActive);
+                    console.log('❌ INLINE: REDIRECTING TO PLAN SELECTION NOW...');
+                    window.location.replace('select-plan.html');
+                    return;
+                }
+                
+                console.log('✅✅✅ INLINE: Subscription verified - allowing dashboard access ✅✅✅');
+                window.subscriptionCheckPassed = true;
+                window.subscriptionCheckRequired = false;
+                
+                // Remove blockers
+                const blocker = document.getElementById('subscription-blocker-critical');
+                if (blocker) {
+                    blocker.remove();
+                    console.log('✅ INLINE: Removed blocker');
+                }
+                if (document.body) {
+                    document.body.style.display = '';
+                    document.body.style.visibility = 'visible';
+                    document.body.style.opacity = '1';
+                    console.log('✅ INLINE: Body restored');
+                }
+                
+            } catch (error) {
+                console.error('❌❌❌ INLINE: ERROR DURING SUBSCRIPTION CHECK ❌❌❌');
+                console.error('❌ INLINE: Error details:', error);
+                console.error('❌ INLINE: Error stack:', error.stack);
+                console.log('❌ INLINE: Redirecting to plan selection due to error...');
+                window.location.replace('select-plan.html');
+            }
+            }
+            
+            // Run immediately
+            console.log('🚨 INLINE: Calling checkSubscriptionInline() immediately...');
+            checkSubscriptionInline();
+            
+            // Also run on DOMContentLoaded as backup
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('🚨 INLINE: DOMContentLoaded fired - running backup check');
+                if (!window.subscriptionCheckPassed) {
+                    console.log('⚠️ INLINE: Subscription not verified yet, running backup check...');
+                    checkSubscriptionInline();
+                }
+            });
+        })();
+    </script>
+    <script src="dashboard-subscription-check.js"></script>
+    <script>
+        console.log('🔒 Dashboard subscription check script loaded');
+        // Safety check: If subscription check hasn't passed after 3 seconds, redirect
+        setTimeout(function() {
+            if (window.subscriptionCheckRequired && !window.subscriptionCheckPassed) {
+                console.error('❌❌❌ SUBSCRIPTION CHECK TIMEOUT - REDIRECTING TO PLAN SELECTION ❌❌❌');
+                window.location.replace('select-plan.html');
+            }
+        }, 3000);
+    </script>
     
     <style>
         * {
@@ -1411,6 +1597,126 @@
     </style>
 </head>
 <body>
+    <!-- IMMEDIATE SUBSCRIPTION CHECK - Runs before ANYTHING else renders -->
+    <script>
+        (function() {
+            'use strict';
+            console.log('🚨🚨🚨 IMMEDIATE BODY CHECK RUNNING 🚨🚨🚨');
+            
+            // Hide everything immediately
+            document.body.style.display = 'none';
+            document.body.style.visibility = 'hidden';
+            document.body.style.opacity = '0';
+            
+            // Run check immediately
+            (async function immediateCheck() {
+                try {
+                    console.log('🚨 IMMEDIATE: Starting immediate subscription check...');
+                    
+                    // Wait for auth
+                    let attempts = 0;
+                    while (!window.nestMateAuth && attempts < 50) {
+                        await new Promise(r => setTimeout(r, 100));
+                        attempts++;
+                    }
+                    
+                    if (!window.nestMateAuth) {
+                        console.error('🚨 IMMEDIATE: No auth, redirecting to login');
+                        window.location.replace('login-aws.html');
+                        return;
+                    }
+                    
+                    console.log('🚨 IMMEDIATE: Auth found, initializing...');
+                    await nestMateAuth.initialize();
+                    
+                    const isAuth = await nestMateAuth.isAuthenticated();
+                    console.log('🚨 IMMEDIATE: Auth status:', isAuth);
+                    if (!isAuth) {
+                        console.log('🚨 IMMEDIATE: Not authenticated, redirecting');
+                        window.location.replace('login-aws.html');
+                        return;
+                    }
+                    
+                    const currentUser = nestMateAuth.currentUser || await nestMateAuth.getCurrentUser();
+                    console.log('🚨 IMMEDIATE: Current user:', currentUser?.userId);
+                    if (!currentUser) {
+                        console.log('🚨 IMMEDIATE: No user, redirecting');
+                        window.location.replace('login-aws.html');
+                        return;
+                    }
+                    
+                    console.log('🚨 IMMEDIATE: Fetching user record...');
+                    const userRec = await nestMateAuth.getUserRecord(currentUser.userId);
+                    console.log('🚨 IMMEDIATE: User record received:', userRec);
+                    
+                    if (!userRec || !userRec.success || !userRec.user) {
+                        console.log('🚨 IMMEDIATE: No user record, redirecting to plan selection');
+                        window.location.replace('select-plan.html');
+                        return;
+                    }
+                    
+                    const user = userRec.user;
+                    console.log('🚨 IMMEDIATE: User data:', {
+                        stripeCustomerId: user.stripeCustomerId,
+                        subscriptionStatus: user.subscriptionStatus,
+                        subscription: user.subscription
+                    });
+                    
+                    // STRICT CHECK: Must be a valid non-empty string starting with 'cus_'
+                    const stripeId = user.stripeCustomerId;
+                    const hasStripeCustomer = stripeId && 
+                                             stripeId !== null && 
+                                             stripeId !== undefined &&
+                                             stripeId !== '' && 
+                                             stripeId !== 'null' && 
+                                             stripeId !== 'undefined' &&
+                                             typeof stripeId === 'string' &&
+                                             stripeId.trim() !== '' &&
+                                             stripeId.startsWith('cus_');
+                    
+                    const isActive = user.subscriptionStatus === 'active';
+                    const email = currentUser.email || currentUser.username || '';
+                    const isDemoAccount = email.includes('demo.') && email.includes('@nestmate.com');
+                    
+                    console.log('🚨 IMMEDIATE: Check results:', {
+                        hasStripeCustomer,
+                        isActive,
+                        isDemoAccount,
+                        'RAW_stripeCustomerId': String(stripeId),
+                        'RAW_subscriptionStatus': String(user.subscriptionStatus),
+                        'stripeId_type': typeof stripeId,
+                        'stripeId_value': stripeId
+                    });
+                    
+                    if (!isDemoAccount) {
+                        if (!hasStripeCustomer) {
+                            console.error('🚨🚨🚨 IMMEDIATE: NO VALID STRIPE CUSTOMER ID 🚨🚨🚨');
+                            console.error('🚨 IMMEDIATE: stripeId =', stripeId, '(type:', typeof stripeId, ')');
+                            console.error('🚨 IMMEDIATE: REDIRECTING TO PLAN SELECTION NOW...');
+                            window.location.replace('select-plan.html');
+                            return;
+                        }
+                        if (!isActive) {
+                            console.error('🚨🚨🚨 IMMEDIATE: SUBSCRIPTION NOT ACTIVE 🚨🚨🚨');
+                            console.error('🚨 IMMEDIATE: subscriptionStatus =', user.subscriptionStatus);
+                            console.error('🚨 IMMEDIATE: REDIRECTING TO PLAN SELECTION NOW...');
+                            window.location.replace('select-plan.html');
+                            return;
+                        }
+                    }
+                    
+                    console.log('✅ IMMEDIATE: Subscription verified, showing page');
+                    document.body.style.display = '';
+                    document.body.style.visibility = 'visible';
+                    document.body.style.opacity = '1';
+                    
+                } catch (error) {
+                    console.error('🚨 IMMEDIATE: Error:', error);
+                    window.location.replace('select-plan.html');
+                }
+            })();
+        })();
+    </script>
     <div class="dashboard-container">
         <!-- Sidebar -->
         <nav class="sidebar">

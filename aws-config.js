@@ -54,13 +54,15 @@ const DYNAMODB_CONFIG = {
     }
 };
 
-// Cognito Configuration
-const COGNITO_CONFIG = {
-    region: awsConfig.region || 'us-east-1',
-    userPoolId: awsConfig.cognito?.userPoolId || '',
-    clientId: awsConfig.cognito?.clientId || '',
-    identityPoolId: awsConfig.cognito?.identityPoolId || ''
-};
+// Cognito Configuration (only declare if not already declared)
+if (typeof COGNITO_CONFIG === 'undefined') {
+    var COGNITO_CONFIG = {
+        region: awsConfig.region || 'us-east-1',
+        userPoolId: awsConfig.cognito?.userPoolId || 'us-east-2_2aUT3c65F',
+        clientId: awsConfig.cognito?.clientId || '3a603s7kgoc0e47cjjtj1nugfe',
+        identityPoolId: awsConfig.cognito?.identityPoolId || ''
+    };
+}
 
 // S3 Configuration
 const S3_CONFIG = {
@@ -85,21 +87,37 @@ const API_GATEWAY_CONFIG = {
     stage: awsConfig.environment || 'production'
 };
 
-// Export configurations
-module.exports = {
-    AWS_CONFIG,
-    DYNAMODB_CONFIG,
-    COGNITO_CONFIG,
-    S3_CONFIG,
-    LAMBDA_CONFIG,
-    API_GATEWAY_CONFIG,
-    awsConfig
-};
+// Export configurations (commented out for browser - use window object instead)
+// module.exports = {
+//     AWS_CONFIG,
+//     DYNAMODB_CONFIG,
+//     COGNITO_CONFIG,
+//     S3_CONFIG,
+//     LAMBDA_CONFIG,
+//     API_GATEWAY_CONFIG,
+//     awsConfig
+// };
 
-// Environment-specific configurations
-if (process.env.NODE_ENV === 'development') {
-    console.log('🔧 Development mode: Using local AWS configuration');
-    console.log('📁 Make sure aws-config.json exists and is properly configured');
-} else if (process.env.NODE_ENV === 'production') {
-    console.log('🚀 Production mode: Using AWS IAM roles and environment variables');
+// Make available globally for browser
+if (typeof window !== 'undefined') {
+    window.AWS_CONFIG = AWS_CONFIG;
+    window.DYNAMODB_CONFIG = DYNAMODB_CONFIG;
+    window.COGNITO_CONFIG = COGNITO_CONFIG;
+    window.S3_CONFIG = S3_CONFIG;
+    window.LAMBDA_CONFIG = LAMBDA_CONFIG;
+    window.API_GATEWAY_CONFIG = API_GATEWAY_CONFIG;
+    window.awsConfig = awsConfig;
+}
+
+// Environment-specific configurations (browser-safe)
+if (typeof process !== 'undefined' && process.env) {
+    if (process.env.NODE_ENV === 'development') {
+        console.log('🔧 Development mode: Using local AWS configuration');
+        console.log('📁 Make sure aws-config.json exists and is properly configured');
+    } else if (process.env.NODE_ENV === 'production') {
+        console.log('🚀 Production mode: Using AWS IAM roles and environment variables');
+    }
+} else {
+    // Browser environment - use default configuration
+    console.log('🌐 Browser environment: Using AWS configuration');
 }

@@ -83,11 +83,14 @@ if (!initAWSServices()) {
 }
 
 // Cognito Configuration
-const COGNITO_CONFIG = {
-    userPoolId: 'us-east-2_2aUT3c65F',
-    clientId: '3a603s7kgoc0e47cjjtj1nugfe',
-    clientSecret: ''
-};
+// Use COGNITO_CONFIG from aws-config.js if available, otherwise define it
+if (typeof COGNITO_CONFIG === 'undefined') {
+    var COGNITO_CONFIG = window.COGNITO_CONFIG || {
+        userPoolId: 'us-east-2_2aUT3c65F',
+        clientId: '3a603s7kgoc0e47cjjtj1nugfe',
+        clientSecret: ''
+    };
+}
 
 class NestMateAuth {
     constructor() {
@@ -153,8 +156,11 @@ class NestMateAuth {
                 { Name: 'email', Value: email },
                 { Name: 'name', Value: userData.name || '' }
             ];
-            if (userData.phone) {
+            // Only add phone if it's valid and properly formatted (E.164)
+            if (userData.phone && userData.phone.startsWith('+') && userData.phone.length >= 10) {
                 attrs.push({ Name: 'phone_number', Value: userData.phone });
+            } else if (userData.phone) {
+                console.warn('Invalid phone number format, skipping phone attribute:', userData.phone);
             }
 
             const params = {
@@ -170,6 +176,24 @@ class NestMateAuth {
             const result = await cognito.signUp(params).promise();
             console.log('Cognito result:', result);
             
+            // Step 2.5: Auto-confirm the user so they can sign in immediately
+            console.log('Step 2.5: Auto-confirming user...');
+            try {
+                await cognito.adminConfirmSignUp({
+                    UserPoolId: COGNITO_CONFIG.userPoolId,
+                    Username: email
+                }).promise();
+                console.log('✅ User auto-confirmed successfully');
+            } catch (confirmError) {
+                // If already confirmed or lacking permission, continue anyway
+                if (confirmError.code === 'NotAuthorizedException' || confirmError.code === 'AliasExistsException') {
+                    console.warn('⚠️ Could not auto-confirm (may need admin permissions or already confirmed):', confirmError.message);
+                    // User might need to confirm via email - we'll handle that in the flow
+                } else {
+                    console.warn('⚠️ Auto-confirm warning:', confirmError.message);
+                }
+            }
+            
             console.log('Step 3: Creating DynamoDB user record...');
             try {
                 await this.createUserRecord({
@@ -177,8 +201,10 @@ class NestMateAuth {
                     email: email,
                     name: userData.name || '',
                     phone: userData.phone || '',
-                    subscription: 'basic',
-                    subscriptionStatus: 'active',
+                    subscription: null,
+                    subscriptionStatus: 'inactive',
+                    stripeCustomerId: null,
+                    stripeSubscriptionId: null,
                     createdAt: new Date().toISOString(),
                     lastLogin: new Date().toISOString()
                 });
@@ -448,6 +474,16 @@ class NestMateAuth {
             return this.currentUser;
         } catch (error) {
             console.error('Get current user error:', error);
+            
+            // Handle UserNotFoundException - user doesn't exist or not authenticated
+            if (error.code === 'UserNotFoundException') {
+                console.log('User not found - not authenticated');
+                this.currentUser = null;
+                localStorage.removeItem('currentUser');
+                sessionStorage.removeItem('currentUser');
+                return null;
+            }
+            
             // Token might be expired, try to refresh
             if (error.code === 'NotAuthorizedException') {
                 try {
@@ -537,8 +573,8 @@ class NestMateAuth {
                     email: userData.email,
                     name: userData.name || '',
                     phone: userData.phone || '',
-                    subscription: userData.subscription || 'basic',
-                    subscriptionStatus: 'active',
+                    subscription: userData.subscription || null,
+                    subscriptionStatus: userData.subscriptionStatus || 'inactive',
                     createdAt: userData.createdAt || new Date().toISOString(),
                     lastLogin: userData.lastLogin || new Date().toISOString(),
                     homes: userData.homes || [],
