@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NestMate YouTube Profile Picture Generator</title>
+    <title>NestMate YouTube Profile Picture Generator - Premium</title>
     <style>
         * {
             margin: 0;
@@ -99,7 +99,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>🖼️ NestMate YouTube Profile Picture Generator</h1>
+        <h1>🖼️ NestMate YouTube Profile Picture Generator - Premium</h1>
         
         <div class="preview-container">
             <div class="size-options">
@@ -117,7 +117,7 @@
         <div class="info">
             <p><strong>📐 Dimensions:</strong> <span id="dimensions">800 x 800 pixels</span> (YouTube recommended: at least 98x98, but 800x800 for best quality)</p>
             <p><strong>💡 Tip:</strong> Right-click the canvas and select "Save image as..." or use the download button</p>
-            <p><strong>🎨 Design:</strong> Circular profile picture with NestMate branding and modern gradient</p>
+            <p><strong>🎨 Design:</strong> Premium circular profile with distinctive NestMate branding and modern gradient</p>
         </div>
     </div>
 
@@ -141,81 +141,128 @@
             generateProfile();
         }
 
+        function drawHouseIcon(ctx, x, y, size) {
+            const roofHeight = size * 0.25;
+            const wallHeight = size * 0.4;
+            const wallWidth = size * 0.5;
+            
+            // Roof (triangle)
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.moveTo(x, y - size * 0.15);
+            ctx.lineTo(x - wallWidth/2, y + roofHeight);
+            ctx.lineTo(x + wallWidth/2, y + roofHeight);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Wall (rectangle)
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(x - wallWidth/2, y + roofHeight, wallWidth, wallHeight);
+            
+            // Door
+            ctx.fillStyle = '#6366f1';
+            ctx.fillRect(x - size * 0.06, y + roofHeight + wallHeight * 0.4, size * 0.12, wallHeight * 0.5);
+            
+            // Windows
+            ctx.fillStyle = '#8b5cf6';
+            ctx.fillRect(x - size * 0.18, y + roofHeight + wallHeight * 0.15, size * 0.1, size * 0.1);
+            ctx.fillRect(x + size * 0.08, y + roofHeight + wallHeight * 0.15, size * 0.1, size * 0.1);
+        }
+
         function generateProfile() {
             const size = canvas.width;
             const center = size / 2;
+            const radius = center;
             
             // Clear canvas
             ctx.clearRect(0, 0, size, size);
 
             // Create circular clipping path
+            ctx.save();
             ctx.beginPath();
-            ctx.arc(center, center, center, 0, Math.PI * 2);
+            ctx.arc(center, center, radius, 0, Math.PI * 2);
             ctx.clip();
 
-            // Background gradient
-            const gradient = ctx.createRadialGradient(center, center, 0, center, center, center);
-            gradient.addColorStop(0, '#6366f1');
-            gradient.addColorStop(0.5, '#8b5cf6');
-            gradient.addColorStop(1, '#4f46e5');
-            ctx.fillStyle = gradient;
+            // Premium multi-layer gradient background
+            // Base gradient
+            const baseGradient = ctx.createRadialGradient(center * 0.7, center * 0.7, 0, center, center, radius * 1.2);
+            baseGradient.addColorStop(0, '#6366f1');
+            baseGradient.addColorStop(0.4, '#7c3aed');
+            baseGradient.addColorStop(0.7, '#8b5cf6');
+            baseGradient.addColorStop(1, '#4f46e5');
+            ctx.fillStyle = baseGradient;
             ctx.fillRect(0, 0, size, size);
 
-            // Add subtle pattern overlay
+            // Overlay gradient for depth
+            const overlayGradient = ctx.createRadialGradient(center * 1.3, center * 1.3, 0, center, center, radius * 1.1);
+            overlayGradient.addColorStop(0, 'rgba(139, 92, 246, 0.6)');
+            overlayGradient.addColorStop(1, 'transparent');
+            ctx.fillStyle = overlayGradient;
+            ctx.fillRect(0, 0, size, size);
+
+            // Accent gradient
+            const accentGradient = ctx.createRadialGradient(center * 0.5, center * 0.5, 0, center, center, radius);
+            accentGradient.addColorStop(0, 'rgba(16, 185, 129, 0.3)');
+            accentGradient.addColorStop(1, 'transparent');
+            ctx.fillStyle = accentGradient;
+            ctx.fillRect(0, 0, size, size);
+
+            // Subtle pattern overlay
             ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-            for (let i = 0; i < 20; i++) {
-                const angle = (Math.PI * 2 * i) / 20;
-                const x = center + Math.cos(angle) * (center * 0.7);
-                const y = center + Math.sin(angle) * (center * 0.7);
+            for (let i = 0; i < 12; i++) {
+                const angle = (Math.PI * 2 * i) / 12;
+                const distance = radius * 0.65;
+                const x = center + Math.cos(angle) * distance;
+                const y = center + Math.sin(angle) * distance;
                 ctx.beginPath();
-                ctx.arc(x, y, size * 0.03, 0, Math.PI * 2);
+                ctx.arc(x, y, size * 0.025, 0, Math.PI * 2);
                 ctx.fill();
             }
 
-            // Main "N" letter (NestMate initial)
+            // Main house icon (centered, larger)
+            ctx.save();
+            ctx.translate(center, center);
+            ctx.scale(1, 1);
+            drawHouseIcon(ctx, 0, 0, size * 0.6);
+            ctx.restore();
+
+            // Premium "N" letter overlay (subtle, behind house)
+            ctx.globalAlpha = 0.15;
             ctx.fillStyle = '#ffffff';
             ctx.font = `bold ${size * 0.5}px Inter, sans-serif`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            
-            // Text shadow for depth
-            ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
-            ctx.shadowBlur = size * 0.02;
-            ctx.shadowOffsetX = size * 0.01;
-            ctx.shadowOffsetY = size * 0.01;
-            
             ctx.fillText('N', center, center);
+            ctx.globalAlpha = 1.0;
 
-            // Reset shadow
-            ctx.shadowColor = 'transparent';
-            ctx.shadowBlur = 0;
-            ctx.shadowOffsetX = 0;
-            ctx.shadowOffsetY = 0;
-
-            // Optional: Add small decorative elements
-            if (size >= 400) {
-                // Small accent circles
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-                ctx.beginPath();
-                ctx.arc(center * 0.3, center * 0.3, size * 0.05, 0, Math.PI * 2);
-                ctx.fill();
-                
-                ctx.beginPath();
-                ctx.arc(center * 1.7, center * 1.7, size * 0.05, 0, Math.PI * 2);
-                ctx.fill();
-            }
-
-            // Border for definition
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-            ctx.lineWidth = size * 0.01;
+            // Outer glow effect
+            ctx.strokeStyle = 'rgba(99, 102, 241, 0.3)';
+            ctx.lineWidth = size * 0.02;
             ctx.beginPath();
-            ctx.arc(center, center, center - ctx.lineWidth / 2, 0, Math.PI * 2);
+            ctx.arc(center, center, radius - ctx.lineWidth / 2, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Inner highlight ring
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.lineWidth = size * 0.008;
+            ctx.beginPath();
+            ctx.arc(center, center, radius * 0.95, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Restore clipping
+            ctx.restore();
+
+            // Outer border for definition
+            ctx.strokeStyle = 'rgba(99, 102, 241, 0.4)';
+            ctx.lineWidth = size * 0.015;
+            ctx.beginPath();
+            ctx.arc(center, center, radius - ctx.lineWidth / 2, 0, Math.PI * 2);
             ctx.stroke();
         }
 
         function downloadProfile() {
             const link = document.createElement('a');
-            link.download = `nestmate-youtube-profile-${currentSize}x${currentSize}.png`;
+            link.download = `nestmate-youtube-profile-premium-${currentSize}x${currentSize}.png`;
             link.href = canvas.toDataURL('image/png');
             link.click();
         }

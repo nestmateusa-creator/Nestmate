@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NestMate YouTube Banner Generator</title>
+    <title>NestMate YouTube Banner Generator - Premium</title>
     <style>
         * {
             margin: 0;
@@ -77,7 +77,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>🎬 NestMate YouTube Banner Generator</h1>
+        <h1>🎬 NestMate YouTube Banner Generator - Premium Design</h1>
         
         <div class="preview-container">
             <canvas id="bannerCanvas" width="2048" height="1152"></canvas>
@@ -90,7 +90,7 @@
         <div class="info">
             <p><strong>📐 Dimensions:</strong> 2048 x 1152 pixels (YouTube recommended)</p>
             <p><strong>💡 Tip:</strong> Right-click the canvas and select "Save image as..." or use the download button</p>
-            <p><strong>🎨 Design:</strong> Features NestMate branding with gradient background and modern typography</p>
+            <p><strong>🎨 Design:</strong> Premium conversion-focused design with compelling visuals and value proposition</p>
         </div>
     </div>
 
@@ -98,119 +98,223 @@
         const canvas = document.getElementById('bannerCanvas');
         const ctx = canvas.getContext('2d');
 
+        function drawHouse(ctx, x, y, size, color) {
+            const roofHeight = size * 0.4;
+            const wallHeight = size * 0.6;
+            const wallWidth = size * 0.8;
+            
+            // Roof
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x - wallWidth/2, y + roofHeight);
+            ctx.lineTo(x + wallWidth/2, y + roofHeight);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Wall
+            ctx.fillStyle = color;
+            ctx.fillRect(x - wallWidth/2, y + roofHeight, wallWidth, wallHeight);
+            
+            // Door
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.fillRect(x - size * 0.08, y + roofHeight + wallHeight * 0.5, size * 0.16, wallHeight * 0.4);
+            
+            // Windows
+            ctx.fillStyle = 'rgba(99, 102, 241, 0.6)';
+            ctx.fillRect(x - size * 0.25, y + roofHeight + wallHeight * 0.2, size * 0.15, size * 0.15);
+            ctx.fillRect(x + size * 0.1, y + roofHeight + wallHeight * 0.2, size * 0.15, size * 0.15);
+        }
+
+        function drawChart(ctx, x, y, width, height, color) {
+            // Chart bars
+            const barWidth = width / 5;
+            const bars = [0.3, 0.5, 0.7, 0.85, 1.0];
+            
+            bars.forEach((barHeight, i) => {
+                ctx.fillStyle = color;
+                ctx.fillRect(x + i * barWidth, y + height * (1 - barHeight), barWidth * 0.7, height * barHeight);
+            });
+        }
+
+        function drawShield(ctx, x, y, size, color) {
+            // Shield shape
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(x, y - size * 0.4);
+            ctx.quadraticCurveTo(x - size * 0.3, y - size * 0.2, x - size * 0.3, y);
+            ctx.quadraticCurveTo(x - size * 0.3, y + size * 0.3, x, y + size * 0.4);
+            ctx.quadraticCurveTo(x + size * 0.3, y + size * 0.3, x + size * 0.3, y);
+            ctx.quadraticCurveTo(x + size * 0.3, y - size * 0.2, x, y - size * 0.4);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Checkmark
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = size * 0.1;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.beginPath();
+            ctx.moveTo(x - size * 0.15, y);
+            ctx.lineTo(x - size * 0.05, y + size * 0.1);
+            ctx.lineTo(x + size * 0.15, y - size * 0.1);
+            ctx.stroke();
+        }
+
         function generateBanner() {
             // Clear canvas
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Create gradient background
-            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-            gradient.addColorStop(0, '#0a0a0f');
-            gradient.addColorStop(0.3, '#151520');
-            gradient.addColorStop(0.6, '#1a1a2a');
-            gradient.addColorStop(1, '#0f0f1a');
-            ctx.fillStyle = gradient;
+            // Premium gradient background
+            const bgGradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            bgGradient.addColorStop(0, '#0f0f1a');
+            bgGradient.addColorStop(0.2, '#1a1a2e');
+            bgGradient.addColorStop(0.5, '#151528');
+            bgGradient.addColorStop(0.8, '#0f0f1a');
+            bgGradient.addColorStop(1, '#0a0a15');
+            ctx.fillStyle = bgGradient;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Add subtle grid pattern
-            ctx.strokeStyle = 'rgba(99, 102, 241, 0.1)';
-            ctx.lineWidth = 1;
-            for (let x = 0; x < canvas.width; x += 100) {
+            // Animated mesh gradient overlay
+            const meshGradient1 = ctx.createRadialGradient(300, 400, 0, 300, 400, 600);
+            meshGradient1.addColorStop(0, 'rgba(99, 102, 241, 0.4)');
+            meshGradient1.addColorStop(1, 'rgba(99, 102, 241, 0)');
+            ctx.fillStyle = meshGradient1;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const meshGradient2 = ctx.createRadialGradient(canvas.width - 400, canvas.height - 300, 0, canvas.width - 400, canvas.height - 300, 700);
+            meshGradient2.addColorStop(0, 'rgba(139, 92, 246, 0.35)');
+            meshGradient2.addColorStop(1, 'rgba(139, 92, 246, 0)');
+            ctx.fillStyle = meshGradient2;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const meshGradient3 = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, 0, canvas.width / 2, canvas.height / 2, 800);
+            meshGradient3.addColorStop(0, 'rgba(16, 185, 129, 0.2)');
+            meshGradient3.addColorStop(1, 'rgba(16, 185, 129, 0)');
+            ctx.fillStyle = meshGradient3;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Geometric pattern overlay
+            ctx.strokeStyle = 'rgba(99, 102, 241, 0.08)';
+            ctx.lineWidth = 2;
+            for (let i = 0; i < 30; i++) {
+                const x = (canvas.width / 30) * i;
                 ctx.beginPath();
                 ctx.moveTo(x, 0);
                 ctx.lineTo(x, canvas.height);
                 ctx.stroke();
             }
-            for (let y = 0; y < canvas.height; y += 100) {
+            for (let i = 0; i < 20; i++) {
+                const y = (canvas.height / 20) * i;
                 ctx.beginPath();
                 ctx.moveTo(0, y);
                 ctx.lineTo(canvas.width, y);
                 ctx.stroke();
             }
 
-            // Add accent gradient circles
-            const accentGradient1 = ctx.createRadialGradient(200, 300, 0, 200, 300, 400);
-            accentGradient1.addColorStop(0, 'rgba(99, 102, 241, 0.3)');
-            accentGradient1.addColorStop(1, 'rgba(99, 102, 241, 0)');
-            ctx.fillStyle = accentGradient1;
-            ctx.beginPath();
-            ctx.arc(200, 300, 400, 0, Math.PI * 2);
-            ctx.fill();
-
-            const accentGradient2 = ctx.createRadialGradient(canvas.width - 200, canvas.height - 300, 0, canvas.width - 200, canvas.height - 300, 500);
-            accentGradient2.addColorStop(0, 'rgba(139, 92, 246, 0.25)');
-            accentGradient2.addColorStop(1, 'rgba(139, 92, 246, 0)');
-            ctx.fillStyle = accentGradient2;
-            ctx.beginPath();
-            ctx.arc(canvas.width - 200, canvas.height - 300, 500, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Main logo/brand area (centered)
-            const centerX = canvas.width / 2;
+            // Left side - Visual elements (Home + Growth)
+            const leftX = 200;
             const centerY = canvas.height / 2;
+            
+            // House icon with glow
+            ctx.shadowColor = 'rgba(99, 102, 241, 0.6)';
+            ctx.shadowBlur = 40;
+            drawHouse(ctx, leftX, centerY - 100, 180, '#6366f1');
+            ctx.shadowBlur = 0;
 
-            // Draw NestMate text with gradient
-            ctx.font = 'bold 120px Inter, sans-serif';
+            // Growth chart
+            ctx.shadowColor = 'rgba(16, 185, 129, 0.5)';
+            ctx.shadowBlur = 30;
+            drawChart(ctx, leftX - 100, centerY + 80, 200, 120, '#10b981');
+            ctx.shadowBlur = 0;
+
+            // Right side - Value props with icons
+            const rightX = canvas.width - 400;
+            
+            // Shield icon (Protection)
+            ctx.shadowColor = 'rgba(245, 158, 11, 0.5)';
+            ctx.shadowBlur = 30;
+            drawShield(ctx, rightX, centerY - 150, 120, '#f59e0b');
+            ctx.shadowBlur = 0;
+
+            // Dollar sign circle (Value)
+            ctx.fillStyle = '#10b981';
+            ctx.shadowColor = 'rgba(16, 185, 129, 0.5)';
+            ctx.shadowBlur = 30;
+            ctx.beginPath();
+            ctx.arc(rightX, centerY + 100, 60, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 70px Inter';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('$', rightX, centerY + 100);
+
+            // Center - Main branding
+            const centerX = canvas.width / 2;
+            
+            // Main logo text with premium styling
+            ctx.font = 'bold 140px Inter, sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             
-            // Text shadow
+            // Text shadow for depth
             ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-            ctx.fillText('NestMate', centerX + 4, centerY + 4);
-
+            ctx.fillText('NestMate', centerX + 6, centerY - 6);
+            
             // Text gradient
-            const textGradient = ctx.createLinearGradient(centerX - 300, centerY, centerX + 300, centerY);
+            const textGradient = ctx.createLinearGradient(centerX - 400, centerY - 100, centerX + 400, centerY + 100);
             textGradient.addColorStop(0, '#6366f1');
             textGradient.addColorStop(0.5, '#8b5cf6');
             textGradient.addColorStop(1, '#a78bfa');
             ctx.fillStyle = textGradient;
             ctx.fillText('NestMate', centerX, centerY);
 
-            // Tagline
-            ctx.font = '400 48px Inter, sans-serif';
-            ctx.fillStyle = '#a0aec0';
-            ctx.fillText('Never Lose Money on Your Home Again', centerX, centerY + 100);
+            // Premium tagline
+            ctx.font = '600 52px Inter, sans-serif';
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText('Never Lose Money on Your Home Again', centerX, centerY + 120);
 
-            // Decorative elements - geometric shapes
-            ctx.fillStyle = 'rgba(99, 102, 241, 0.15)';
-            // Left side decorative circle
-            ctx.beginPath();
-            ctx.arc(centerX - 500, centerY - 100, 80, 0, Math.PI * 2);
-            ctx.fill();
-            // Right side decorative circle
-            ctx.beginPath();
-            ctx.arc(centerX + 500, centerY + 100, 100, 0, Math.PI * 2);
-            ctx.fill();
+            // Value proposition bullets
+            ctx.font = '500 36px Inter, sans-serif';
+            ctx.fillStyle = '#a0aec0';
             
-            // Small accent dots
-            ctx.fillStyle = 'rgba(139, 92, 246, 0.3)';
-            for (let i = 0; i < 8; i++) {
-                const angle = (Math.PI * 2 * i) / 8;
-                const radius = 350;
-                const x = centerX + Math.cos(angle) * radius;
-                const y = centerY + Math.sin(angle) * radius;
+            const bullets = [
+                '✓ Track Everything  •  ✓ Automate Maintenance  •  ✓ Increase Value 15%+'
+            ];
+            ctx.fillText(bullets[0], centerX, centerY + 200);
+
+            // Bottom accent bar
+            const accentGradient = ctx.createLinearGradient(centerX - 500, canvas.height - 60, centerX + 500, canvas.height - 60);
+            accentGradient.addColorStop(0, 'transparent');
+            accentGradient.addColorStop(0.3, '#6366f1');
+            accentGradient.addColorStop(0.7, '#8b5cf6');
+            accentGradient.addColorStop(1, 'transparent');
+            ctx.fillStyle = accentGradient;
+            ctx.fillRect(centerX - 500, canvas.height - 60, 1000, 4);
+
+            // Floating particles for dynamism
+            ctx.fillStyle = 'rgba(99, 102, 241, 0.3)';
+            for (let i = 0; i < 20; i++) {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                const size = Math.random() * 8 + 4;
                 ctx.beginPath();
-                ctx.arc(x, y, 15, 0, Math.PI * 2);
+                ctx.arc(x, y, size, 0, Math.PI * 2);
                 ctx.fill();
             }
 
-            // Bottom accent line
-            ctx.strokeStyle = '#6366f1';
-            ctx.lineWidth = 4;
-            ctx.beginPath();
-            ctx.moveTo(centerX - 400, canvas.height - 80);
-            ctx.lineTo(centerX + 400, canvas.height - 80);
-            ctx.stroke();
-
-            // Website URL (optional, bottom right)
-            ctx.font = '300 36px Inter, sans-serif';
-            ctx.fillStyle = 'rgba(160, 174, 192, 0.6)';
+            // Website URL (subtle, bottom right)
+            ctx.font = '300 32px Inter, sans-serif';
+            ctx.fillStyle = 'rgba(160, 174, 192, 0.5)';
             ctx.textAlign = 'right';
-            ctx.fillText('nestmateus.com', canvas.width - 60, canvas.height - 40);
+            ctx.fillText('nestmateus.com', canvas.width - 50, canvas.height - 30);
         }
 
         function downloadBanner() {
             const link = document.createElement('a');
-            link.download = 'nestmate-youtube-banner.png';
+            link.download = 'nestmate-youtube-banner-premium.png';
             link.href = canvas.toDataURL('image/png');
             link.click();
         }
