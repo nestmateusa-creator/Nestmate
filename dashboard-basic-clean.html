@@ -4803,10 +4803,24 @@
 
         async function removePhoto(index) {
             photosData.splice(index, 1);
+            
+            // Save to AWS
+            if (window.awsDataService) {
+                try {
+                    const result = await window.awsDataService.savePhotosList(photosData, null);
+                    if (!result || !result.success) {
+                        console.error('Failed to save photos after removal');
+                    }
+                } catch (error) {
+                    console.error('Error saving photos after removal:', error);
+                }
+            }
+            
             await displayPhotos();
             if (photosData.length === 0) {
                 document.getElementById('photosEmpty').style.display = '';
             }
+            showAlert('Photo removed', 'success');
         }
 
         async function clearPhotos() {
@@ -8795,6 +8809,12 @@
 
         async function uploadFile(file, listContainer, type) {
             try {
+                const userId = nestMateAuth.currentUser?.userId;
+                if (!userId) {
+                    showAlert('User not authenticated. Please refresh the page.', 'error');
+                    return;
+                }
+                
                 // Get presigned URL for upload
                 const response = await fetch('/.netlify/functions/s3-presign', {
                     method: 'POST',
@@ -8802,25 +8822,35 @@
                     body: JSON.stringify({
                         fileName: file.name,
                         fileType: file.type,
-                        folder: `bedrooms/${type}`
+                        folder: `users/${userId}/${type}`
                     })
                 });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Failed to get presigned URL: ${response.status} - ${errorText}`);
+                }
                 
                 const { uploadUrl, fileKey } = await response.json();
                 
                 // Upload file to S3
-                await fetch(uploadUrl, {
+                const uploadResponse = await fetch(uploadUrl, {
                     method: 'PUT',
                     body: file,
                     headers: { 'Content-Type': file.type }
                 });
                 
+                if (!uploadResponse.ok) {
+                    throw new Error(`S3 upload failed: ${uploadResponse.status}`);
+                }
+                
                 // Add to UI
                 addFileToList(listContainer, file.name, fileKey, type);
+                showAlert('File uploaded successfully!', 'success');
                 
             } catch (error) {
                 console.error('Upload error:', error);
-                showAlert('Failed to upload file', 'error');
+                showAlert('Failed to upload file: ' + (error.message || 'Unknown error'), 'error');
             }
         }
 
