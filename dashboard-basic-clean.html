@@ -209,18 +209,35 @@
                 window.subscriptionCheckPassed = true;
                 window.subscriptionCheckRequired = false;
                 
-                // Remove blockers
+                // Remove blockers - check for both versions
                 const blocker = document.getElementById('subscription-blocker-critical');
+                const blockerV2 = document.getElementById('subscription-blocker-critical-v2');
                 if (blocker) {
                     blocker.remove();
                     console.log('✅ INLINE: Removed blocker');
                 }
+                if (blockerV2) {
+                    blockerV2.remove();
+                    console.log('✅ INLINE: Removed blocker V2');
+                }
+                
+                // Force remove all display:none styles
                 if (document.body) {
+                    document.body.style.removeProperty('display');
+                    document.body.style.removeProperty('visibility');
+                    document.body.style.removeProperty('opacity');
                     document.body.style.display = '';
                     document.body.style.visibility = 'visible';
                     document.body.style.opacity = '1';
                     console.log('✅ INLINE: Body restored');
                 }
+                
+                // Also restore HTML element
+                const html = document.documentElement;
+                html.style.removeProperty('display');
+                html.style.removeProperty('visibility');
+                html.style.removeProperty('opacity');
+                console.log('✅ INLINE: HTML element restored');
                 
             } catch (error) {
                 console.error('❌❌❌ INLINE: ERROR DURING SUBSCRIPTION CHECK ❌❌❌');
@@ -1706,9 +1723,43 @@
                     }
                     
                     console.log('✅ IMMEDIATE: Subscription verified, showing page');
-                    document.body.style.display = '';
-                    document.body.style.visibility = 'visible';
-                    document.body.style.opacity = '1';
+                    
+                    // Remove all blockers
+                    const blocker = document.getElementById('subscription-blocker-critical-v2');
+                    const blockerOld = document.getElementById('subscription-blocker-critical');
+                    if (blocker) {
+                        blocker.remove();
+                        console.log('✅ IMMEDIATE: Removed critical blocker CSS V2');
+                    }
+                    if (blockerOld) {
+                        blockerOld.remove();
+                        console.log('✅ IMMEDIATE: Removed critical blocker CSS');
+                    }
+                    
+                    // Restore body visibility - use multiple methods to ensure it works
+                    if (document.body) {
+                        document.body.style.removeProperty('display');
+                        document.body.style.removeProperty('visibility');
+                        document.body.style.removeProperty('opacity');
+                        document.body.style.display = '';
+                        document.body.style.visibility = 'visible';
+                        document.body.style.opacity = '1';
+                        document.body.removeAttribute('style'); // Remove all inline styles
+                        document.body.style.display = 'block';
+                        console.log('✅ IMMEDIATE: Body restored');
+                    }
+                    
+                    // Also remove any inline styles from HTML that might be hiding content
+                    const html = document.documentElement;
+                    html.style.removeProperty('display');
+                    html.style.removeProperty('visibility');
+                    html.style.removeProperty('opacity');
+                    
+                    // Set flag that check passed
+                    window.subscriptionCheckPassed = true;
+                    window.subscriptionCheckRequired = false;
+                    
+                    console.log('✅ IMMEDIATE: Body and HTML restored, page should be visible now');
                     
                 } catch (error) {
                     console.error('🚨 IMMEDIATE: Error:', error);
@@ -2274,75 +2325,17 @@
                 
                 <div class="card">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <h3>Living Space Information</h3>
-                        <button class="btn" onclick="editLivingAreas()">
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-                    </div>
-                    
-                    <div id="livingDisplay">
-                        <p><strong>Living Room:</strong> <span id="displayLivingRoom">Not set</span></p>
-                        <p><strong>Dining Room:</strong> <span id="displayDiningRoom">Not set</span></p>
-                        <p><strong>Family Room:</strong> <span id="displayFamilyRoom">Not set</span></p>
-                        <p><strong>Flooring:</strong> <span id="displayLivingFlooring">Not set</span></p>
-                        <p><strong>Ceiling Height:</strong> <span id="displayCeilingHeight">Not set</span></p>
-                        <p><strong>Fireplace:</strong> <span id="displayFireplace">Not set</span></p>
-                    </div>
-                    
-                    <div id="livingForm" style="display: none;">
-                        <div class="form-group">
-                            <label for="livingRoom">Living Room Size</label>
-                            <input type="text" id="livingRoom" placeholder="e.g., 16' x 14'">
-                        </div>
-                        <div class="form-group">
-                            <label for="diningRoom">Dining Room Size</label>
-                            <input type="text" id="diningRoom" placeholder="e.g., 12' x 10'">
-                        </div>
-                        <div class="form-group">
-                            <label for="familyRoom">Family Room Size</label>
-                            <input type="text" id="familyRoom" placeholder="e.g., 15' x 12'">
-                        </div>
-                        <div class="form-group">
-                            <label for="livingFlooring">Flooring Type</label>
-                            <select id="livingFlooring">
-                                <option value="">Select flooring type</option>
-                                <option value="hardwood">Hardwood</option>
-                                <option value="carpet">Carpet</option>
-                                <option value="tile">Tile</option>
-                                <option value="laminate">Laminate</option>
-                                <option value="vinyl">Vinyl</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="ceilingHeight">Ceiling Height</label>
-                            <select id="ceilingHeight">
-                                <option value="">Select ceiling height</option>
-                                <option value="8-ft">8 feet</option>
-                                <option value="9-ft">9 feet</option>
-                                <option value="10-ft">10 feet</option>
-                                <option value="vaulted">Vaulted</option>
-                                <option value="cathedral">Cathedral</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="fireplace">Fireplace</label>
-                            <select id="fireplace">
-                                <option value="">Select fireplace type</option>
-                                <option value="none">No fireplace</option>
-                                <option value="wood-burning">Wood Burning</option>
-                                <option value="gas">Gas</option>
-                                <option value="electric">Electric</option>
-                                <option value="pellet">Pellet</option>
-                            </select>
-                        </div>
-                        <div style="display: flex; gap: 1rem;">
-                            <button class="btn" onclick="saveLivingAreas()">
-                                <i class="fas fa-save"></i> Save
-                            </button>
-                            <button class="btn btn-secondary" onclick="cancelEditLivingAreas()">
-                                <i class="fas fa-times"></i> Cancel
+                        <h3>Living Area Information</h3>
+                        <div>
+                            <button class="btn" onclick="openAddLivingAreaModal()">
+                                <i class="fas fa-plus"></i> Add Living Area
                             </button>
                         </div>
+                    </div>
+
+                    <!-- List of living areas -->
+                    <div id="livingAreasList" class="list-container">
+                        <!-- dynamically rendered -->
                     </div>
                 </div>
             </div>
@@ -2695,8 +2688,11 @@
                 <div id="tasksView" class="tasks-view">
                     <div class="card">
                         <div class="edit-panel-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                            <h3>My Tasks</h3>
-                            <button class="btn" onclick="openAddTaskModal()">
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <h3>My Tasks</h3>
+                                <span id="taskCountBadge" style="background: #334155; color: #94a3b8; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.875rem; font-weight: 500;">0/10 tasks</span>
+                            </div>
+                            <button class="btn" onclick="openAddTaskModal()" id="addTaskBtn">
                                 <i class="fas fa-plus"></i> Add Task
                             </button>
                         </div>
@@ -3455,14 +3451,17 @@
         }
 
         function addService() {
-            console.log('✅ Adding Service');
-            showSection('service');
-            showAlert('Service management feature coming soon!', 'info');
+            console.log('✅ Opening Service Records');
+            // Redirect to service-records.html with return URL
+            const returnUrl = encodeURIComponent(window.location.href);
+            window.location.href = `service-records.html?returnUrl=${returnUrl}`;
         }
 
         function viewRecords() {
-            console.log('✅ Viewing Records');
-            showAlert('Service records feature coming soon!', 'info');
+            console.log('✅ Viewing Service Records');
+            // Redirect to service-records.html with return URL
+            const returnUrl = encodeURIComponent(window.location.href);
+            window.location.href = `service-records.html?returnUrl=${returnUrl}`;
         }
 
         function openHomeDetails() {
@@ -3794,9 +3793,10 @@
         window.editKitchen = editKitchen;
         window.cancelEditKitchen = cancelEditKitchen;
         window.saveKitchen = saveKitchen;
-        window.editLivingAreas = editLivingAreas;
-        window.cancelEditLivingAreas = cancelEditLivingAreas;
-        window.saveLivingAreas = saveLivingAreas;
+        window.openAddLivingAreaModal = openAddLivingAreaModal;
+        window.openLivingAreaModal = openLivingAreaModal;
+        window.deleteLivingArea = deleteLivingArea;
+        window.renderLivingAreasList = renderLivingAreasList;
         window.editGarage = editGarage;
         window.cancelEditGarage = cancelEditGarage;
         window.saveGarage = saveGarage;
@@ -3816,6 +3816,16 @@
         window.addPhotoFromUrl = addPhotoFromUrl;
         window.clearPhotos = clearPhotos;
         window.editFloorplan = editFloorplan;
+        
+        // Expose modal functions globally
+        window.openAddBedroomModal = openAddBedroomModal;
+        window.openAddBathroomModal = openAddBathroomModal;
+        window.openAddKitchenModal = openAddKitchenModal;
+        window.openAddLivingAreaModal = openAddLivingAreaModal;
+        window.openBedroomModal = openBedroomModal;
+        window.openBathroomModal = openBathroomModal;
+        window.openKitchenModal = openKitchenModal;
+        window.openLivingAreaModal = openLivingAreaModal;
         window.cancelEditFloorplan = cancelEditFloorplan;
         window.saveFloorplan = saveFloorplan;
         window.uploadFloorplan = uploadFloorplan;
@@ -4045,69 +4055,219 @@
         window.cancelEditKitchen = cancelEditKitchen;
         window.saveKitchen = saveKitchen;
 
-        // Living Areas CRUD Functions
-        function editLivingAreas() {
-            document.getElementById('livingDisplay').style.display = 'none';
-            const form = document.getElementById('livingForm');
-            form.style.display = 'grid';
-            form.classList.add('active');
+        // Living Areas CRUD Functions - List-based
+        function renderLivingAreasList() {
+            const container = document.getElementById('livingAreasList');
+            if (!container) return;
+            container.innerHTML = '';
+            const list = ensureDashboardState().livingAreasList || [];
+            if (list.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'empty-state';
+                empty.textContent = 'No living areas added yet. Click "Add Living Area" to create one.';
+                container.appendChild(empty);
+                return;
+            }
+            list.forEach((area, idx) => {
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                const details = [
+                    area.size && `Size: ${area.size}`,
+                    area.floorType && `Floor: ${area.floorType}`,
+                    area.ceilingHeight && `Ceiling: ${area.ceilingHeight}`,
+                    area.fireplace && `Fireplace: ${area.fireplace}`,
+                    area.condition && `Condition: ${area.condition}`
+                ].filter(Boolean).join(' · ');
+                item.innerHTML = `
+                    <div class="list-item-main">
+                        <div class="list-item-title">${area.name || `Living Area ${idx + 1}`}</div>
+                        <div class="list-item-sub">${details || 'No details added'}</div>
+                    </div>
+                    <div class="list-item-actions">
+                        <button class="btn btn-secondary" onclick="openLivingAreaModal(${idx})"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-secondary" onclick="exportLivingAreaPDF(${idx})"><i class="fas fa-file-pdf"></i></button>
+                        <button class="btn btn-secondary" onclick="deleteLivingArea(${idx})"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
         }
 
-        function cancelEditLivingAreas() {
-            document.getElementById('livingDisplay').style.display = 'block';
-            const form = document.getElementById('livingForm');
-            form.style.display = 'none';
-            form.classList.remove('active');
+        function openAddLivingAreaModal() {
+            console.log('openAddLivingAreaModal called');
+            if (typeof openLivingAreaModal === 'function') {
+                openLivingAreaModal(null);
+            } else {
+                console.error('openLivingAreaModal function not found');
+                alert('Error: Living area modal function not available. Please refresh the page.');
+            }
         }
 
-        async function saveLivingAreas() {
-            const livingData = {
-                livingRoom: document.getElementById('livingRoom').value,
-                diningRoom: document.getElementById('diningRoom').value,
-                familyRoom: document.getElementById('familyRoom').value,
-                livingFlooring: document.getElementById('livingFlooring').value,
-                ceilingHeight: document.getElementById('ceilingHeight').value,
-                fireplace: document.getElementById('fireplace').value
+        function openLivingAreaModal(index) {
+            const existing = (index !== null && index !== undefined) ? ensureDashboardState().livingAreasList[index] : null;
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <h3>${existing ? 'Edit Living Area' : 'Add Living Area'}</h3>
+                <div class="form-grid">
+                    <div class="form-group"><label>Name</label><input id="laName" type="text" placeholder="e.g., Living Room, Family Room, Dining Room" value="${existing?.name || ''}"></div>
+                    <div class="form-group"><label>Size</label><input id="laSize" type="text" placeholder="e.g., 16' x 14'" value="${existing?.size || ''}"></div>
+                    <div class="form-group"><label>Floor Type</label>
+                        <select id="laFloorType">
+                            <option value="">Select</option>
+                            <option value="hardwood" ${existing?.floorType === 'hardwood' ? 'selected' : ''}>Hardwood</option>
+                            <option value="carpet" ${existing?.floorType === 'carpet' ? 'selected' : ''}>Carpet</option>
+                            <option value="tile" ${existing?.floorType === 'tile' ? 'selected' : ''}>Tile</option>
+                            <option value="laminate" ${existing?.floorType === 'laminate' ? 'selected' : ''}>Laminate</option>
+                            <option value="vinyl" ${existing?.floorType === 'vinyl' ? 'selected' : ''}>Vinyl</option>
+                            <option value="bamboo" ${existing?.floorType === 'bamboo' ? 'selected' : ''}>Bamboo</option>
+                            <option value="cork" ${existing?.floorType === 'cork' ? 'selected' : ''}>Cork</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Floor Details</label><input id="laFloorDetails" type="text" placeholder="e.g., Oak, Gray Berber" value="${existing?.floorDetails || ''}"></div>
+                    <div class="form-group"><label>Ceiling Height</label>
+                        <select id="laCeilingHeight">
+                            <option value="">Select</option>
+                            <option value="8-ft" ${existing?.ceilingHeight === '8-ft' ? 'selected' : ''}>8 feet</option>
+                            <option value="9-ft" ${existing?.ceilingHeight === '9-ft' ? 'selected' : ''}>9 feet</option>
+                            <option value="10-ft" ${existing?.ceilingHeight === '10-ft' ? 'selected' : ''}>10 feet</option>
+                            <option value="vaulted" ${existing?.ceilingHeight === 'vaulted' ? 'selected' : ''}>Vaulted</option>
+                            <option value="cathedral" ${existing?.ceilingHeight === 'cathedral' ? 'selected' : ''}>Cathedral</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Fireplace</label>
+                        <select id="laFireplace">
+                            <option value="">Select</option>
+                            <option value="none" ${existing?.fireplace === 'none' ? 'selected' : ''}>No fireplace</option>
+                            <option value="wood-burning" ${existing?.fireplace === 'wood-burning' ? 'selected' : ''}>Wood Burning</option>
+                            <option value="gas" ${existing?.fireplace === 'gas' ? 'selected' : ''}>Gas</option>
+                            <option value="electric" ${existing?.fireplace === 'electric' ? 'selected' : ''}>Electric</option>
+                            <option value="pellet" ${existing?.fireplace === 'pellet' ? 'selected' : ''}>Pellet</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Window Count</label><input id="laWindowCount" type="number" min="0" placeholder="e.g., 3" value="${existing?.windowCount ?? ''}"></div>
+                    <div class="form-group"><label>Window Sizes</label><input id="laWindows" type="text" placeholder="e.g., 36x48, 24x36" value="${existing?.windowSizes || ''}"></div>
+                    <div class="form-group"><label>Wall Color</label><input id="laWallColor" type="text" placeholder="e.g., Beige, White" value="${existing?.wallColor || ''}"></div>
+                    <div class="form-group"><label>Trim Style</label>
+                        <select id="laTrimStyle">
+                            <option value="">Select</option>
+                            <option value="colonial" ${existing?.trimStyle === 'colonial' ? 'selected' : ''}>Colonial</option>
+                            <option value="craftsman" ${existing?.trimStyle === 'craftsman' ? 'selected' : ''}>Craftsman</option>
+                            <option value="modern" ${existing?.trimStyle === 'modern' ? 'selected' : ''}>Modern</option>
+                            <option value="traditional" ${existing?.trimStyle === 'traditional' ? 'selected' : ''}>Traditional</option>
+                            <option value="minimal" ${existing?.trimStyle === 'minimal' ? 'selected' : ''}>Minimal</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Trim Color</label><input id="laTrimColor" type="text" placeholder="e.g., White, Cream" value="${existing?.trimColor || ''}"></div>
+                    <div class="form-group"><label>Outlets</label><input id="laOutlets" type="number" min="0" placeholder="e.g., 8" value="${existing?.outlets ?? ''}"></div>
+                    <div class="form-group"><label>Lighting Type</label>
+                        <select id="laLighting">
+                            <option value="">Select</option>
+                            <option value="recessed" ${existing?.lighting === 'recessed' ? 'selected' : ''}>Recessed</option>
+                            <option value="chandelier" ${existing?.lighting === 'chandelier' ? 'selected' : ''}>Chandelier</option>
+                            <option value="ceiling-fan" ${existing?.lighting === 'ceiling-fan' ? 'selected' : ''}>Ceiling Fan</option>
+                            <option value="track-lighting" ${existing?.lighting === 'track-lighting' ? 'selected' : ''}>Track Lighting</option>
+                            <option value="pendant" ${existing?.lighting === 'pendant' ? 'selected' : ''}>Pendant</option>
+                            <option value="mixed" ${existing?.lighting === 'mixed' ? 'selected' : ''}>Mixed</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Last Renovation</label><input id="laLastRenovation" type="text" placeholder="e.g., 2020" value="${existing?.lastRenovation || ''}"></div>
+                    <div class="form-group"><label>Condition</label>
+                        <select id="laCondition">
+                            <option value="">Select</option>
+                            <option value="excellent" ${existing?.condition === 'excellent' ? 'selected' : ''}>Excellent</option>
+                            <option value="good" ${existing?.condition === 'good' ? 'selected' : ''}>Good</option>
+                            <option value="fair" ${existing?.condition === 'fair' ? 'selected' : ''}>Fair</option>
+                            <option value="poor" ${existing?.condition === 'poor' ? 'selected' : ''}>Poor</option>
+                            <option value="needs-renovation" ${existing?.condition === 'needs-renovation' ? 'selected' : ''}>Needs Renovation</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / -1;"><label>Notes</label><textarea id="laNotes" rows="3" placeholder="Any additional notes...">${existing?.notes || ''}</textarea></div>
+                </div>
+                <div style="display:flex; gap: .75rem; justify-content:flex-end; margin-top: 1rem;">
+                    <button class="btn" id="laSaveBtn"><i class="fas fa-save"></i> Save</button>
+                    <button class="btn btn-secondary" id="laCancelBtn"><i class="fas fa-times"></i> Cancel</button>
+                </div>
+            `;
+            overlay.appendChild(modal);
+            document.body.appendChild(overlay);
+            
+            // Add classes to show modal
+            overlay.classList.add('active');
+            modal.classList.add('show');
+
+            modal.querySelector('#laCancelBtn').onclick = () => overlay.remove();
+            modal.querySelector('#laSaveBtn').onclick = async () => {
+                try {
+                    const payload = {
+                        name: document.getElementById('laName').value.trim(),
+                        size: document.getElementById('laSize').value.trim(),
+                        floorType: document.getElementById('laFloorType').value,
+                        floorDetails: document.getElementById('laFloorDetails').value.trim(),
+                        ceilingHeight: document.getElementById('laCeilingHeight').value,
+                        fireplace: document.getElementById('laFireplace').value,
+                        windowCount: Number(document.getElementById('laWindowCount').value || 0),
+                        windowSizes: document.getElementById('laWindows').value.trim(),
+                        wallColor: document.getElementById('laWallColor').value.trim(),
+                        trimStyle: document.getElementById('laTrimStyle').value,
+                        trimColor: document.getElementById('laTrimColor').value.trim(),
+                        outlets: Number(document.getElementById('laOutlets').value || 0),
+                        lighting: document.getElementById('laLighting').value,
+                        lastRenovation: document.getElementById('laLastRenovation').value.trim(),
+                        condition: document.getElementById('laCondition').value,
+                        notes: document.getElementById('laNotes').value.trim()
+                    };
+                    console.log('Living area payload:', payload);
+                    await upsertLivingArea(index, payload);
+                    overlay.remove();
+                } catch (error) {
+                    console.error('Error saving living area:', error);
+                    showAlert('Error saving living area: ' + error.message, 'error');
+                }
             };
+        }
 
+        async function upsertLivingArea(index, data) {
+            const state = ensureDashboardState();
+            if (index === null || index === undefined) {
+                state.livingAreasList.push(data);
+            } else {
+                state.livingAreasList[index] = data;
+            }
+            await saveLivingAreasList();
+            renderLivingAreasList();
+            showAlert('Living area saved successfully!', 'success');
+        }
+
+        async function deleteLivingArea(index) {
+            if (!confirm('Are you sure you want to delete this living area?')) return;
+            const state = ensureDashboardState();
+            state.livingAreasList.splice(index, 1);
+            await saveLivingAreasList();
+            renderLivingAreasList();
+            showAlert('Living area removed', 'success');
+        }
+
+        async function saveLivingAreasList() {
             try {
-                // Save to DynamoDB
                 const userId = nestMateAuth.currentUser.userId;
-                console.log('Saving living areas data for userId:', userId);
-                console.log('Living areas data:', livingData);
-                
                 const params = {
                     TableName: 'nestmate-users',
-                    Key: { userId: userId },
-                    UpdateExpression: 'SET livingInfo = :living, lastUpdated = :timestamp',
+                    Key: { userId },
+                    UpdateExpression: 'SET livingAreasList = :list, lastUpdated = :ts',
                     ExpressionAttributeValues: {
-                        ':living': livingData,
-                        ':timestamp': new Date().toISOString()
+                        ':list': ensureDashboardState().livingAreasList,
+                        ':ts': new Date().toISOString()
                     },
                     ReturnValues: 'UPDATED_NEW'
                 };
-                
-                const result = await dynamodb.update(params).promise();
-                console.log('Living areas data saved to DynamoDB:', result);
-
-                // Update display
-                document.getElementById('displayLivingRoom').textContent = livingData.livingRoom || 'Not set';
-                document.getElementById('displayDiningRoom').textContent = livingData.diningRoom || 'Not set';
-                document.getElementById('displayFamilyRoom').textContent = livingData.familyRoom || 'Not set';
-                document.getElementById('displayLivingFlooring').textContent = livingData.livingFlooring || 'Not set';
-                document.getElementById('displayCeilingHeight').textContent = livingData.ceilingHeight || 'Not set';
-                document.getElementById('displayFireplace').textContent = livingData.fireplace || 'Not set';
-                
-                // Hide form
-                document.getElementById('livingDisplay').style.display = 'block';
-                const form = document.getElementById('livingForm');
-            form.style.display = 'none';
-            form.classList.remove('active');
-                
-                showAlert('Living areas information saved successfully!', 'success');
-            } catch (error) {
-                console.error('Error saving living areas data:', error);
-                showAlert('Error saving living areas information. Please try again.', 'error');
+                await dynamodb.update(params).promise();
+                console.log('livingAreasList saved');
+            } catch (e) {
+                console.error('Save livingAreasList error', e);
+                showAlert('Failed to save living area. Try again.', 'error');
             }
         }
 
@@ -4177,9 +4337,10 @@
             }
         }
 
-        window.editLivingAreas = editLivingAreas;
-        window.cancelEditLivingAreas = cancelEditLivingAreas;
-        window.saveLivingAreas = saveLivingAreas;
+        window.openAddLivingAreaModal = openAddLivingAreaModal;
+        window.openLivingAreaModal = openLivingAreaModal;
+        window.deleteLivingArea = deleteLivingArea;
+        window.renderLivingAreasList = renderLivingAreasList;
         window.editGarage = editGarage;
         window.cancelEditGarage = cancelEditGarage;
         window.saveGarage = saveGarage;
@@ -4669,30 +4830,44 @@
                 console.log('Saving photos:', photosData);
                 console.log('User ID:', nestMateAuth.currentUser.userId);
                 
-                const response = await fetch('/.netlify/functions/save-user-photos', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        userId: nestMateAuth.currentUser.userId,
-                        photos: photosData
-                    })
-                });
-                
-                console.log('Save response status:', response.status);
-                const responseText = await response.text();
-                console.log('Save response body:', responseText);
-                
-                if (response.ok) {
-                    console.log('Photos saved successfully to database');
-                    document.getElementById('photosDisplay').style.display = 'block';
-                    const form = document.getElementById('photosForm');
-            form.style.display = 'none';
-            form.classList.remove('active');
-                    showAlert('Photos saved to database!', 'success');
-                } else {
-                    console.error('Save failed with status:', response.status, 'Response:', responseText);
-                    throw new Error(`Failed to save photos: ${response.status} - ${responseText}`);
+                // Save directly to DynamoDB like other sections
+                const dynamodb = getDynamoDB();
+                if (!dynamodb) {
+                    throw new Error('DynamoDB not initialized');
                 }
+                
+                const userId = nestMateAuth.currentUser.userId;
+                const params = {
+                    TableName: 'nestmate-users',
+                    Key: { userId: userId },
+                    UpdateExpression: 'SET photos = :photos, lastUpdated = :timestamp',
+                    ExpressionAttributeValues: {
+                        ':photos': photosData,
+                        ':timestamp': new Date().toISOString()
+                    },
+                    ReturnValues: 'UPDATED_NEW'
+                };
+                
+                const result = await dynamodb.update(params).promise();
+                console.log('Photos saved to DynamoDB:', result);
+                
+                // Display the photos immediately
+                await displayPhotos();
+                
+                // Hide empty state if photos exist
+                if (photosData && photosData.length > 0) {
+                    document.getElementById('photosEmpty').style.display = 'none';
+                } else {
+                    document.getElementById('photosEmpty').style.display = 'block';
+                }
+                
+                // Hide form and show display
+                document.getElementById('photosDisplay').style.display = 'block';
+                const form = document.getElementById('photosForm');
+                form.style.display = 'none';
+                form.classList.remove('active');
+                
+                showAlert('Photos saved successfully!', 'success');
             } catch (error) {
                 console.error('Save photos error:', error);
                 showAlert('Failed to save photos. Please try again.', 'error');
@@ -6181,33 +6356,11 @@
                 userAvatarEl.textContent = (displayName || 'U').charAt(0).toUpperCase();
                 console.log('User display updated:', displayName, displayEmail);
             } else {
-                // Try localStorage as fallback
-                const storedUser = localStorage.getItem('currentUser');
-                if (storedUser) {
-                    try {
-                        const parsedUser = JSON.parse(storedUser);
-                        if (parsedUser.email) {
-                            const name = parsedUser.name || parsedUser.email.split('@')[0];
-                            userNameEl.textContent = name;
-                            userEmailEl.textContent = parsedUser.email;
-                            userAvatarEl.textContent = name.charAt(0).toUpperCase();
-                            console.log('User display updated from localStorage:', name, parsedUser.email);
-                        } else {
-                            userNameEl.textContent = 'User';
-                            userEmailEl.textContent = 'Loading...';
-                            userAvatarEl.textContent = 'U';
-                        }
-                    } catch (e) {
-                        console.error('Error parsing stored user:', e);
-                        userNameEl.textContent = 'User';
-                        userEmailEl.textContent = 'Loading...';
-                        userAvatarEl.textContent = 'U';
-                    }
-                } else {
-                    userNameEl.textContent = 'User';
-                    userEmailEl.textContent = 'Loading...';
-                    userAvatarEl.textContent = 'U';
-                }
+                // No user from AWS auth - show loading state
+                userNameEl.textContent = 'User';
+                userEmailEl.textContent = 'Loading...';
+                userAvatarEl.textContent = 'U';
+                console.log('No user from AWS auth, showing loading state');
             }
         }
 
@@ -6334,6 +6487,12 @@
         }
 
         function openAddTaskModal() {
+            // Check task limit for Basic Plan (10 tasks max)
+            if (tasksData.length >= 10) {
+                showAlert('Task limit reached! Basic Plan allows up to 10 tasks. Please delete a task or upgrade your plan to add more.', 'error');
+                return;
+            }
+            
             document.getElementById('taskModalTitle').textContent = 'Add Task';
             document.getElementById('taskForm').reset();
             document.getElementById('taskForm').dataset.taskId = '';
@@ -6431,7 +6590,11 @@
                         tasksData[index] = { ...tasksData[index], ...taskData };
                     }
                 } else {
-                    // Add new task
+                    // Add new task - check limit for Basic Plan (10 tasks max)
+                    if (tasksData.length >= 10) {
+                        showAlert('Task limit reached! Basic Plan allows up to 10 tasks. Please delete a task or upgrade your plan to add more.', 'error');
+                        return;
+                    }
                     taskData.id = Date.now().toString();
                     tasksData.push(taskData);
                 }
@@ -6481,6 +6644,42 @@
         function renderTasks() {
             const tasksList = document.getElementById('tasksList');
             if (!tasksList) return;
+            
+            // Update task count badge
+            const taskCountBadge = document.getElementById('taskCountBadge');
+            if (taskCountBadge) {
+                const taskCount = tasksData.length;
+                const maxTasks = 10;
+                taskCountBadge.textContent = `${taskCount}/${maxTasks} tasks`;
+                
+                // Update badge color based on usage
+                if (taskCount >= maxTasks) {
+                    taskCountBadge.style.background = '#ef4444';
+                    taskCountBadge.style.color = '#ffffff';
+                } else if (taskCount >= maxTasks * 0.8) {
+                    taskCountBadge.style.background = '#f59e0b';
+                    taskCountBadge.style.color = '#ffffff';
+                } else {
+                    taskCountBadge.style.background = '#334155';
+                    taskCountBadge.style.color = '#94a3b8';
+                }
+                
+                // Disable/enable Add Task button based on limit
+                const addTaskBtn = document.getElementById('addTaskBtn');
+                if (addTaskBtn) {
+                    if (taskCount >= maxTasks) {
+                        addTaskBtn.disabled = true;
+                        addTaskBtn.style.opacity = '0.5';
+                        addTaskBtn.style.cursor = 'not-allowed';
+                        addTaskBtn.title = 'Task limit reached. Delete a task or upgrade your plan.';
+                    } else {
+                        addTaskBtn.disabled = false;
+                        addTaskBtn.style.opacity = '1';
+                        addTaskBtn.style.cursor = 'pointer';
+                        addTaskBtn.title = '';
+                    }
+                }
+            }
 
             let filteredTasks = [...tasksData];
             const today = new Date().toISOString().split('T')[0];
@@ -7092,26 +7291,11 @@
                 return;
             }
 
-            // Get user info from AWS authentication - try multiple sources
+            // Get user info from AWS authentication only
             let user = nestMateAuth.currentUser;
             console.log('Current user from auth after isAuthenticated:', user);
             
-            // If no user from auth, try localStorage first (faster)
-            if (!user) {
-                const storedUser = localStorage.getItem('currentUser');
-                if (storedUser) {
-                    try {
-                        user = JSON.parse(storedUser);
-                        console.log('Using stored user from localStorage:', user);
-                        // Update nestMateAuth.currentUser for consistency
-                        nestMateAuth.currentUser = user;
-                    } catch (e) {
-                        console.error('Error parsing stored user:', e);
-                    }
-                }
-            }
-            
-            // If still no user, explicitly call getCurrentUser
+            // If no user from auth, explicitly call getCurrentUser
             if (!user) {
                 try {
                     console.log('No user found, calling getCurrentUser()...');
@@ -7119,20 +7303,6 @@
                     console.log('Got user from getCurrentUser:', user);
                 } catch (e) {
                     console.warn('Failed to get user from getCurrentUser:', e);
-                }
-            }
-            
-            // Final check - if still no user, try localStorage again
-            if (!user) {
-                const storedUser = localStorage.getItem('currentUser');
-                if (storedUser) {
-                    try {
-                        user = JSON.parse(storedUser);
-                        console.log('Final attempt - using stored user:', user);
-                        nestMateAuth.currentUser = user;
-                    } catch (e) {
-                        console.error('Error parsing stored user on final attempt:', e);
-                    }
                 }
             }
             
@@ -7188,46 +7358,27 @@
                 updateUserDisplay();
             }, 100);
             
-            // Force update user display multiple times to ensure it works
+            // Force update user display to ensure it works (AWS only)
             setTimeout(() => {
                 console.log('Force updating user display (1st attempt)...');
                 console.log('Current user:', nestMateAuth.currentUser);
-                const storedUser = localStorage.getItem('currentUser');
-                console.log('Stored user:', storedUser);
                 
                 if (nestMateAuth.currentUser && nestMateAuth.currentUser.email) {
                     const name = nestMateAuth.currentUser.name || nestMateAuth.currentUser.email.split('@')[0];
                     updateUserDisplayElements(name, nestMateAuth.currentUser.email, nestMateAuth.currentUser);
                     console.log('Updated from nestMateAuth.currentUser');
-                } else if (storedUser) {
-                    try {
-                        const parsedUser = JSON.parse(storedUser);
-                        if (parsedUser.email) {
-                            const name = parsedUser.name || parsedUser.email.split('@')[0];
-                            updateUserDisplayElements(name, parsedUser.email, parsedUser);
-                            console.log('Updated from localStorage:', parsedUser.email);
-                        }
-                    } catch (e) {
-                        console.error('Error parsing stored user:', e);
-                    }
+                } else {
+                    console.log('No user available from AWS auth');
                 }
             }, 1000);
             
-            // Second attempt after 2 seconds
+            // Second attempt after 2 seconds (AWS only)
             setTimeout(() => {
                 console.log('Force updating user display (2nd attempt)...');
-                const storedUser = localStorage.getItem('currentUser');
-                if (storedUser) {
-                    try {
-                        const parsedUser = JSON.parse(storedUser);
-                        if (parsedUser.email) {
-                            const name = parsedUser.name || parsedUser.email.split('@')[0];
-                            updateUserDisplayElements(name, parsedUser.email, parsedUser);
-                            console.log('Final update from localStorage:', parsedUser.email);
-                        }
-                    } catch (e) {
-                        console.error('Error parsing stored user on 2nd attempt:', e);
-                    }
+                if (nestMateAuth.currentUser && nestMateAuth.currentUser.email) {
+                    const name = nestMateAuth.currentUser.name || nestMateAuth.currentUser.email.split('@')[0];
+                    updateUserDisplayElements(name, nestMateAuth.currentUser.email, nestMateAuth.currentUser);
+                    console.log('Updated from nestMateAuth.currentUser (2nd attempt)');
                 }
             }, 2000);
             
@@ -7240,17 +7391,14 @@
                 console.log('loadUserData called');
                 console.log('nestMateAuth.currentUser:', nestMateAuth.currentUser);
                 
-                // Try to get user from localStorage if not in auth
+                // Get user from AWS auth only
                 let currentUser = nestMateAuth.currentUser;
                 if (!currentUser) {
-                    const storedUser = localStorage.getItem('currentUser');
-                    if (storedUser) {
-                        try {
-                            currentUser = JSON.parse(storedUser);
-                            console.log('Using stored user:', currentUser);
-                        } catch (e) {
-                            console.error('Error parsing stored user:', e);
-                        }
+                    try {
+                        currentUser = await nestMateAuth.getCurrentUser();
+                        console.log('Got user from getCurrentUser:', currentUser);
+                    } catch (e) {
+                        console.error('Error getting user from AWS:', e);
                     }
                 }
                 
@@ -7319,6 +7467,11 @@
             if (document.getElementById('kitchensList')) {
                 renderKitchensList();
             }
+            // Load dynamic living areas list
+            window.dashboardState.livingAreasList = userData.livingAreasList || [];
+            if (document.getElementById('livingAreasList')) {
+                renderLivingAreasList();
+            }
             
             // Load photos data
             console.log('Loading photos data:', userData.photos);
@@ -7367,14 +7520,8 @@
             // const kitchenInfo = userData.kitchenInfo || {};
             // Old static kitchen display elements removed - now using dynamic kitchensList
             
-            // Load living areas info
-            const livingInfo = userData.livingInfo || {};
-            document.getElementById('displayLivingRoom').textContent = livingInfo.livingRoom || 'Not set';
-            document.getElementById('displayDiningRoom').textContent = livingInfo.diningRoom || 'Not set';
-            document.getElementById('displayFamilyRoom').textContent = livingInfo.familyRoom || 'Not set';
-            document.getElementById('displayLivingFlooring').textContent = livingInfo.livingFlooring || livingInfo.flooring || 'Not set';
-            document.getElementById('displayCeilingHeight').textContent = livingInfo.ceilingHeight || 'Not set';
-            document.getElementById('displayFireplace').textContent = livingInfo.fireplace || 'Not set';
+            // Load living areas info (now handled by dynamic livingAreasList - see renderLivingAreasList())
+            // Old static display elements removed - now using dynamic list-based approach
             
             // Load garage info
             const garageInfo = userData.garageInfo || {};
@@ -7733,6 +7880,7 @@
             if (!window.dashboardState.bedroomsList) window.dashboardState.bedroomsList = [];
             if (!window.dashboardState.bathroomsList) window.dashboardState.bathroomsList = [];
             if (!window.dashboardState.kitchensList) window.dashboardState.kitchensList = [];
+            if (!window.dashboardState.livingAreasList) window.dashboardState.livingAreasList = [];
             return window.dashboardState;
         }
 
@@ -7770,6 +7918,7 @@
                     </div>
                     <div class="list-item-actions">
                         <button class="btn btn-secondary" onclick="openKitchenModal(${idx})"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-secondary" onclick="exportKitchenPDF(${idx})"><i class="fas fa-file-pdf"></i></button>
                         <button class="btn btn-secondary" onclick="deleteKitchen(${idx})"><i class="fas fa-trash"></i></button>
                     </div>
                 `;
@@ -7777,7 +7926,15 @@
             });
         }
 
-        function openAddKitchenModal() { openKitchenModal(null); }
+        function openAddKitchenModal() {
+            console.log('openAddKitchenModal called');
+            if (typeof openKitchenModal === 'function') {
+                openKitchenModal(null);
+            } else {
+                console.error('openKitchenModal function not found');
+                alert('Error: Kitchen modal function not available. Please refresh the page.');
+            }
+        }
 
         function openKitchenModal(index) {
             const existing = (index !== null && index !== undefined) ? ensureDashboardState().kitchensList[index] : null;
@@ -7914,6 +8071,10 @@
             `;
             overlay.appendChild(modal);
             document.body.appendChild(overlay);
+            
+            // Add classes to show modal
+            overlay.classList.add('active');
+            modal.classList.add('show');
 
             // Prefill file lists
             const photos = existing?.photos || [];
@@ -8015,7 +8176,13 @@
         }
 
         function openAddBedroomModal() {
-            openBedroomModal();
+            console.log('openAddBedroomModal called');
+            if (typeof openBedroomModal === 'function') {
+                openBedroomModal(null, null);
+            } else {
+                console.error('openBedroomModal function not found');
+                alert('Error: Bedroom modal function not available. Please refresh the page.');
+            }
         }
 
         // ===== Dynamic Bathrooms Helpers =====
@@ -8048,15 +8215,24 @@
                         <div class="list-item-sub">${details || 'No details added'}</div>
                     </div>
                     <div class="list-item-actions">
-                        <button class="btn btn-secondary" onclick="openBathroomModal(${idx})"><i class=\"fas fa-edit\"></i></button>
-                        <button class="btn btn-secondary" onclick="deleteBathroom(${idx})"><i class=\"fas fa-trash\"></i></button>
+                        <button class="btn btn-secondary" onclick="openBathroomModal(${idx})"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-secondary" onclick="exportBathroomPDF(${idx})"><i class="fas fa-file-pdf"></i></button>
+                        <button class="btn btn-secondary" onclick="deleteBathroom(${idx})"><i class="fas fa-trash"></i></button>
                     </div>
                 `;
                 container.appendChild(item);
             });
         }
 
-        function openAddBathroomModal() { openBathroomModal(null); }
+        function openAddBathroomModal() {
+            console.log('openAddBathroomModal called');
+            if (typeof openBathroomModal === 'function') {
+                openBathroomModal(null);
+            } else {
+                console.error('openBathroomModal function not found');
+                alert('Error: Bathroom modal function not available. Please refresh the page.');
+            }
+        }
 
         function openBathroomModal(index) {
             const existing = (index !== null && index !== undefined) ? ensureDashboardState().bathroomsList[index] : null;
@@ -8118,6 +8294,10 @@
             `;
             overlay.appendChild(modal);
             document.body.appendChild(overlay);
+            
+            // Add classes to show modal
+            overlay.classList.add('active');
+            modal.classList.add('show');
 
             // Prefill file lists
             const photos = existing?.photos || [];
@@ -8421,6 +8601,10 @@
             `;
             overlay.appendChild(modal);
             document.body.appendChild(overlay);
+            
+            // Add classes to show modal
+            overlay.classList.add('active');
+            modal.classList.add('show');
 
             // Setup file upload handlers
             setupFileUpload('bBedroomPhotos', 'bBedroomPhotosList', 'bedroomPhotos');
@@ -8688,6 +8872,134 @@
                 showAlert('Failed to generate PDF report', 'error');
             }
         }
+
+        async function exportBathroomPDF(bathroomIndex) {
+            console.log('exportBathroomPDF called with index:', bathroomIndex);
+            try {
+                const bathroom = window.dashboardState.bathroomsList[bathroomIndex];
+                if (!bathroom) {
+                    showAlert('Bathroom not found', 'error');
+                    return;
+                }
+
+                showAlert('Generating PDF report...', 'info');
+                
+                const response = await fetch('/.netlify/functions/generate-bedroom-pdf-simple', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        bedroom: bathroom, // Reuse bedroom PDF generator with bathroom data
+                        roomType: 'Bathroom',
+                        userInfo: {
+                            name: nestMateAuth.currentUser.name,
+                            email: nestMateAuth.currentUser.email
+                        }
+                    })
+                });
+
+                if (response.ok) {
+                    const htmlContent = await response.text();
+                    const newWindow = window.open('', '_blank');
+                    newWindow.document.write(htmlContent);
+                    newWindow.document.close();
+                    showAlert('Report opened in new tab. Use Ctrl+P to print/save as PDF!', 'success');
+                } else {
+                    const errorText = await response.text();
+                    console.error('Report generation failed:', response.status, errorText);
+                    throw new Error(`Report generation failed: ${response.status} - ${errorText}`);
+                }
+            } catch (error) {
+                console.error('PDF export error:', error);
+                showAlert('Failed to generate PDF report', 'error');
+            }
+        }
+
+        async function exportKitchenPDF(kitchenIndex) {
+            console.log('exportKitchenPDF called with index:', kitchenIndex);
+            try {
+                const kitchen = window.dashboardState.kitchensList[kitchenIndex];
+                if (!kitchen) {
+                    showAlert('Kitchen not found', 'error');
+                    return;
+                }
+
+                showAlert('Generating PDF report...', 'info');
+                
+                const response = await fetch('/.netlify/functions/generate-bedroom-pdf-simple', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        bedroom: kitchen, // Reuse bedroom PDF generator with kitchen data
+                        roomType: 'Kitchen',
+                        userInfo: {
+                            name: nestMateAuth.currentUser.name,
+                            email: nestMateAuth.currentUser.email
+                        }
+                    })
+                });
+
+                if (response.ok) {
+                    const htmlContent = await response.text();
+                    const newWindow = window.open('', '_blank');
+                    newWindow.document.write(htmlContent);
+                    newWindow.document.close();
+                    showAlert('Report opened in new tab. Use Ctrl+P to print/save as PDF!', 'success');
+                } else {
+                    const errorText = await response.text();
+                    console.error('Report generation failed:', response.status, errorText);
+                    throw new Error(`Report generation failed: ${response.status} - ${errorText}`);
+                }
+            } catch (error) {
+                console.error('PDF export error:', error);
+                showAlert('Failed to generate PDF report', 'error');
+            }
+        }
+
+        async function exportLivingAreaPDF(livingAreaIndex) {
+            console.log('exportLivingAreaPDF called with index:', livingAreaIndex);
+            try {
+                const livingArea = window.dashboardState.livingAreasList[livingAreaIndex];
+                if (!livingArea) {
+                    showAlert('Living area not found', 'error');
+                    return;
+                }
+
+                showAlert('Generating PDF report...', 'info');
+                
+                const response = await fetch('/.netlify/functions/generate-bedroom-pdf-simple', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        bedroom: livingArea, // Reuse bedroom PDF generator with living area data
+                        roomType: 'Living Area',
+                        userInfo: {
+                            name: nestMateAuth.currentUser.name,
+                            email: nestMateAuth.currentUser.email
+                        }
+                    })
+                });
+
+                if (response.ok) {
+                    const htmlContent = await response.text();
+                    const newWindow = window.open('', '_blank');
+                    newWindow.document.write(htmlContent);
+                    newWindow.document.close();
+                    showAlert('Report opened in new tab. Use Ctrl+P to print/save as PDF!', 'success');
+                } else {
+                    const errorText = await response.text();
+                    console.error('Report generation failed:', response.status, errorText);
+                    throw new Error(`Report generation failed: ${response.status} - ${errorText}`);
+                }
+            } catch (error) {
+                console.error('PDF export error:', error);
+                showAlert('Failed to generate PDF report', 'error');
+            }
+        }
+
+        // Make PDF export functions globally accessible
+        window.exportBathroomPDF = exportBathroomPDF;
+        window.exportKitchenPDF = exportKitchenPDF;
+        window.exportLivingAreaPDF = exportLivingAreaPDF;
 
         // Account Management Modal
         function openAccountModal() {
@@ -9084,6 +9396,34 @@
 
         // Extend loadUserData to pull bedroomsList
         // ... existing code ...
+
+        // Re-expose modal functions globally AFTER all function definitions
+        // This ensures they're available when buttons are clicked
+        if (typeof openAddBedroomModal === 'function') {
+            window.openAddBedroomModal = openAddBedroomModal;
+            console.log('✅ openAddBedroomModal exposed to window');
+        }
+        if (typeof openAddBathroomModal === 'function') {
+            window.openAddBathroomModal = openAddBathroomModal;
+            console.log('✅ openAddBathroomModal exposed to window');
+        }
+        if (typeof openAddKitchenModal === 'function') {
+            window.openAddKitchenModal = openAddKitchenModal;
+            console.log('✅ openAddKitchenModal exposed to window');
+        }
+        if (typeof openAddLivingAreaModal === 'function') {
+            window.openAddLivingAreaModal = openAddLivingAreaModal;
+            console.log('✅ openAddLivingAreaModal exposed to window');
+        }
+        if (typeof openBedroomModal === 'function') {
+            window.openBedroomModal = openBedroomModal;
+        }
+        if (typeof openBathroomModal === 'function') {
+            window.openBathroomModal = openBathroomModal;
+        }
+        if (typeof openKitchenModal === 'function') {
+            window.openKitchenModal = openKitchenModal;
+        }
 
     </script>
 </body>
