@@ -4,81 +4,152 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>NestMate — Pricing & Plans</title>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;500&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
-      --primary: #2563eb;
-      --accent: #facc15;
-      --bg: #f8fafc;
-      --card: #fff;
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --primary-light: #818cf8;
+      --secondary: #f59e0b;
+      --accent: #10b981;
+      --danger: #ef4444;
+      
+      --bg-dark: #0a0a0f;
+      --bg-card: #151520;
+      --bg-card-hover: #1a1a2a;
+      --bg-glass: rgba(21, 21, 32, 0.9);
+      
+      --text-primary: #ffffff;
+      --text-secondary: #a0aec0;
+      --text-muted: #718096;
+      
+      --border: #2d3748;
+      --border-light: #4a5568;
+      
+      --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      --gradient-accent: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      --gradient-gold: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+      
       --radius: 18px;
-      --shadow: 0 4px 32px rgba(37,99,235,0.10);
+      --shadow: 0 4px 32px rgba(99, 102, 241, 0.15);
     }
+    
+    /* Animated Grid Background */
+    .grid-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background: 
+        linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      animation: gridMove 20s linear infinite;
+    }
+    
+    @keyframes gridMove {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(50px, 50px); }
+    }
+    
     body {
       margin: 0;
-      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
-      background: linear-gradient(120deg, #e0e7ff 0%, #f8fafc 100%);
-      color: #1e293b;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-primary);
       min-height: 100vh;
+      line-height: 1.6;
+      overflow-x: hidden;
     }
     header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 32px 8vw 0 8vw;
-      max-width: 1200px;
+      padding: 1rem 2rem;
+      max-width: 1400px;
       margin: 0 auto;
     }
     .brand {
       display: flex;
       align-items: center;
       gap: 14px;
-      font-size: 2.2rem;
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.5rem;
       font-weight: 800;
-      color: var(--primary);
+      color: var(--text-primary);
       letter-spacing: -1px;
+    }
+    .brand button {
+      background: none;
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      letter-spacing: -1px;
+      cursor: pointer;
+      padding: 0;
     }
     nav {
       display: flex;
-      gap: 18px;
+      gap: 1rem;
+      align-items: center;
     }
     nav a {
       text-decoration: none;
-      color: var(--primary);
-      font-weight: 700;
-      font-size: 1.1rem;
-      padding: 8px 20px;
+      color: var(--text-secondary);
+      font-weight: 500;
+      font-size: 0.95rem;
+      padding: 8px 16px;
       border-radius: 10px;
-      transition: background 0.18s, color 0.18s;
+      transition: all 0.3s;
     }
     nav a.cta {
-      background: var(--primary);
+      background: var(--gradient-primary);
       color: #fff;
-      box-shadow: 0 2px 8px rgba(37,99,235,0.10);
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
     }
     nav a.cta:hover {
-      background: #1d4ed8;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
     }
     nav a:hover:not(.cta) {
-      background: #e0e7ff;
-      color: #1d4ed8;
+      color: var(--text-primary);
     }
     .pricing-hero {
       max-width: 900px;
-      margin: 48px auto 0 auto;
+      margin: 120px auto 0 auto;
       text-align: center;
       padding: 0 8vw;
     }
     .pricing-title {
-      font-size: 2.5rem;
+      font-family: 'Poppins', sans-serif;
+      font-size: clamp(2rem, 5vw, 3rem);
       font-weight: 900;
-      color: var(--primary);
+      background: linear-gradient(135deg, #ffffff 0%, #a0aec0 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
       margin-bottom: 16px;
       letter-spacing: -2px;
     }
     .pricing-desc {
       font-size: 1.25rem;
-      color: #334155;
+      color: var(--text-secondary);
       margin-bottom: 40px;
       font-weight: 500;
       line-height: 1.5;
@@ -93,7 +164,7 @@
     .toggle-label {
       font-size: 1.08rem;
       font-weight: 700;
-      color: #334155;
+      color: var(--text-secondary);
       cursor: pointer;
       user-select: none;
     }
@@ -112,7 +183,7 @@
       position: absolute;
       cursor: pointer;
       top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #e0e7ff;
+      background-color: var(--border);
       transition: .3s;
       border-radius: 18px;
     }
@@ -128,21 +199,21 @@
       border-radius: 50%;
     }
     .toggle-switch input:checked + .slider {
-      background-color: #dbeafe;
+      background-color: var(--primary-light);
     }
     .toggle-switch input:checked + .slider:before {
       transform: translateX(28px);
-      background-color: #facc15;
+      background-color: var(--secondary);
     }
     .toggle-yearly {
-      color: #facc15;
+      color: var(--secondary);
       font-weight: 800;
       margin-left: 6px;
       font-size: 1.05rem;
     }
     .discount-badge {
-      background: #facc15;
-      color: #1e293b;
+      background: var(--gradient-gold);
+      color: #fff;
       font-weight: 800;
       font-size: 0.95rem;
       border-radius: 12px;
@@ -160,66 +231,108 @@
       padding: 0 4vw;
     }
     .plan-card {
-      background: var(--card);
+      background: var(--bg-card);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       padding: 24px 20px 20px 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      border: 2.5px solid #e5e7eb;
-      transition: box-shadow 0.18s, border 0.18s;
+      border: 2.5px solid var(--border);
+      transition: all 0.3s;
       position: relative;
+    }
+    .plan-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-5px);
+      box-shadow: 0 8px 32px rgba(99, 102, 241, 0.3);
     }
     .plan-card.popular {
       border: 2.5px solid var(--primary);
-      box-shadow: 0 8px 32px #2563eb22;
+      box-shadow: 0 8px 32px rgba(99, 102, 241, 0.3);
     }
     .plan-card.enterprise {
-      border: 2.5px solid #7c3aed;
-      box-shadow: 0 8px 32px #7c3aed22;
-      background: linear-gradient(135deg, #faf5ff 0%, #ffffff 100%);
+      border: 2.5px solid var(--primary-light);
+      box-shadow: 0 8px 32px rgba(139, 92, 246, 0.3);
+      background: var(--bg-card);
+      position: relative;
+      overflow: hidden;
+    }
+    .coming-soon-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(10, 10, 15, 0.95);
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      border-radius: var(--radius);
+    }
+    .coming-soon-banner {
+      background: var(--gradient-primary);
+      color: #fff;
+      font-weight: 800;
+      font-size: 1.2rem;
+      padding: 12px 32px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.5);
+      margin-bottom: 1rem;
+      letter-spacing: 1px;
+    }
+    .coming-soon-text {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      text-align: center;
+      max-width: 200px;
     }
     .plan-badge {
       position: absolute;
       top: -18px;
       left: 50%;
       transform: translateX(-50%);
-      background: var(--primary);
+      background: var(--gradient-primary);
       color: #fff;
       font-size: 0.95rem;
       font-weight: 800;
       padding: 6px 22px;
       border-radius: 16px;
-      box-shadow: 0 2px 8px #2563eb22;
+      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
       letter-spacing: 1px;
     }
     .plan-card.enterprise .plan-badge {
-      background: #7c3aed;
-      box-shadow: 0 2px 8px #7c3aed22;
+      background: var(--gradient-primary);
+      box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
     }
     .plan-price-enterprise {
-      color: #7c3aed;
+      color: var(--primary-light);
     }
     .plan-period-enterprise {
-      color: #7c3aed;
+      color: var(--text-secondary);
     }
     .plan-title {
       font-size: 1.2rem;
       font-weight: 800;
-      color: var(--primary);
+      color: var(--text-primary);
       margin-bottom: 6px;
       margin-top: 6px;
     }
     .plan-price {
       font-size: 1.8rem;
       font-weight: 900;
-      color: #1e293b;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
       margin-bottom: 4px;
     }
     .plan-period {
       font-size: 0.95rem;
-      color: #64748b;
+      color: var(--text-secondary);
       margin-bottom: 12px;
     }
     .plan-features {
@@ -231,14 +344,14 @@
     }
     .plan-features li {
       font-size: 0.95rem;
-      color: #334155;
+      color: var(--text-secondary);
       margin-bottom: 8px;
       display: flex;
       align-items: center;
       gap: 6px;
     }
     .plan-features li .check {
-      color: #22c55e;
+      color: var(--accent);
       font-size: 1.2em;
     }
     .plan-action {
@@ -250,32 +363,33 @@
       display: inline-block;
       padding: 14px 0;
       width: 100%;
-      background: var(--primary);
+      background: var(--gradient-primary);
       color: #fff;
       font-size: 1.15rem;
       font-weight: 800;
       border-radius: 12px;
       text-decoration: none;
-      box-shadow: 0 2px 12px rgba(37,99,235,0.10);
-      transition: background 0.18s;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+      transition: all 0.3s;
     }
     .plan-action a:hover {
-      background: #1d4ed8;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
     }
     .plan-card.enterprise .plan-action a {
-      background: #7c3aed;
-    }
-    .plan-card.enterprise .plan-action a:hover {
-      background: #6d28d9;
+      background: var(--gradient-primary);
+      opacity: 0.5;
+      cursor: not-allowed;
+      pointer-events: none;
     }
     .plan-note {
       font-size: 0.98rem;
-      color: #64748b;
+      color: var(--text-muted);
       margin-top: 18px;
       text-align: center;
     }
     .trial-badge {
-      background: #22c55e;
+      background: var(--gradient-accent);
       color: #fff;
       font-weight: 800;
       font-size: 0.95rem;
@@ -288,8 +402,17 @@
     footer {
       text-align: center;
       margin: 64px 0 24px 0;
-      color: #64748b;
+      color: var(--text-muted);
       font-size: 1.05rem;
+      padding: 0 2rem;
+    }
+    footer a {
+      color: var(--primary-light);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    footer a:hover {
+      color: var(--primary);
     }
     @media (max-width: 1200px) {
       .pricing-table {
@@ -325,7 +448,7 @@
     /* Comparison Table Styles */
     .comparison-section {
       padding: 80px 8vw;
-      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      background: var(--bg-dark);
     }
 
     .container {
@@ -335,9 +458,13 @@
 
     .comparison-title {
       text-align: center;
-      font-size: 2.5rem;
-      font-weight: 800;
-      color: var(--primary);
+      font-family: 'Poppins', sans-serif;
+      font-size: clamp(2rem, 5vw, 2.5rem);
+      font-weight: 900;
+      background: linear-gradient(135deg, #ffffff 0%, #a0aec0 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
       margin-bottom: 1rem;
       letter-spacing: -1px;
     }
@@ -345,7 +472,7 @@
     .comparison-subtitle {
       text-align: center;
       font-size: 1.2rem;
-      color: #64748b;
+      color: var(--text-secondary);
       margin-bottom: 3rem;
       max-width: 600px;
       margin-left: auto;
@@ -353,7 +480,8 @@
     }
 
     .comparison-table-container {
-      background: white;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       overflow: hidden;
@@ -372,10 +500,10 @@
     }
 
     .feature-column {
-      background: #f8fafc;
+      background: var(--bg-card-hover);
       text-align: left;
       font-weight: 700;
-      color: #1e293b;
+      color: var(--text-primary);
       padding: 1.5rem;
       width: 30%;
     }
@@ -421,12 +549,12 @@
 
     .comparison-table td {
       padding: 1rem 1.5rem;
-      border-bottom: 1px solid #e2e8f0;
+      border-bottom: 1px solid var(--border);
       vertical-align: middle;
     }
 
     .category-row td {
-      background: #f1f5f9;
+      background: var(--bg-card-hover);
       font-weight: 700;
       color: var(--primary);
       font-size: 1.1rem;
@@ -439,45 +567,52 @@
 
     .feature-name {
       font-weight: 600;
-      color: #374151;
+      color: var(--text-secondary);
       text-align: left;
     }
 
-    .feature-basic, .feature-pro, .feature-advanced {
+    .feature-basic, .feature-pro, .feature-advanced, .feature-enterprise {
       text-align: center;
       font-weight: 600;
     }
 
     .feature-basic {
-      color: #6b7280;
+      color: var(--text-muted);
     }
 
     .feature-pro {
-      color: #1d4ed8;
+      color: var(--primary);
     }
 
     .feature-advanced {
-      color: #7c3aed;
+      color: var(--primary-light);
+    }
+    
+    .feature-enterprise {
+      color: var(--text-muted);
+      opacity: 0.6;
     }
 
     .comparison-cta {
       text-align: center;
-      background: white;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
       padding: 3rem;
       border-radius: var(--radius);
       box-shadow: var(--shadow);
     }
 
     .comparison-cta h3 {
+      font-family: 'Poppins', sans-serif;
       font-size: 2rem;
       font-weight: 800;
-      color: var(--primary);
+      color: var(--text-primary);
       margin-bottom: 1rem;
     }
 
     .comparison-cta p {
       font-size: 1.1rem;
-      color: #64748b;
+      color: var(--text-secondary);
       margin-bottom: 2rem;
     }
 
@@ -526,6 +661,15 @@
     .btn-cta.advanced:hover {
       transform: translateY(-2px);
       box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+    }
+    
+    .btn-cta.enterprise {
+      background: var(--bg-card);
+      color: var(--text-muted);
+      border: 2px solid var(--border);
+      opacity: 0.6;
+      cursor: not-allowed;
+      pointer-events: none;
     }
 
     /* Mobile Responsive for Comparison Table */
@@ -651,7 +795,8 @@
     });
   </script>
 </head>
-<body>
+  <body>
+  <div class="grid-bg"></div>
   <header>
     <div class="brand">
       <button onclick="location.href='index.html'" style="background:none;border:none;display:flex;align-items:center;gap:14px;font-size:2.2rem;font-weight:800;color:var(--primary);letter-spacing:-1px;cursor:pointer;padding:0;">
@@ -720,7 +865,7 @@
   <li><span class="check">✔</span> Photo management & organization</li>
       </ul>
       <div class="plan-action">
-        <a href="https://buy.stripe.com/14AeVf4E29IHbLT4Sx1sQ0N" target="_blank">Start Pro</a>
+        <a href="https://nestmateus.com/register-aws">Start Pro</a>
       </div>
       <div class="plan-note plan-note-pro">Billed monthly. Cancel anytime.</div>
     </div>
@@ -741,12 +886,16 @@
   <li><span class="check">✔</span> Unlimited access to emergency home & contractor services, hand-picked by NestMate experts</li>
       </ul>
       <div class="plan-action">
-        <a href="https://buy.stripe.com/9B628t1rQ2gfdU1et71sQ0O" target="_blank">Start Advanced Pro</a>
+        <a href="https://nestmateus.com/register-aws">Start Advanced Pro</a>
       </div>
       <div class="plan-note plan-note-advanced">Billed monthly. Cancel anytime.</div>
     </div>
     <!-- Enterprise Plan -->
     <div class="plan-card enterprise">
+      <div class="coming-soon-overlay">
+        <div class="coming-soon-banner">COMING SOON</div>
+        <div class="coming-soon-text">Enterprise features are launching soon. Stay tuned!</div>
+      </div>
       <div class="plan-badge">For Professionals</div>
       <div class="plan-title">Enterprise</div>
       <div class="plan-price plan-price-enterprise">$50</div>
@@ -764,7 +913,7 @@
   <li><span class="check">✔</span> All Advanced Pro features included</li>
       </ul>
       <div class="plan-action">
-        <a href="https://buy.stripe.com/14A9AV2vU1cb3fn4Sx1sQ0Q" target="_blank">Start Enterprise</a>
+        <a href="https://nestmateus.com/register-aws">Start Enterprise</a>
       </div>
       <div class="plan-note plan-note-enterprise">Custom pricing available for large teams. Contact us for details.</div>
     </div>
@@ -966,10 +1115,10 @@
         <h3>Ready to Get Started?</h3>
         <p>Choose the plan that fits your home and lifestyle. Basic plan includes a 14-day free trial.</p>
         <div class="cta-buttons">
-          <a href="https://buy.stripe.com/9B600lc6u4oneY50Ch1sQ0M" class="btn-cta basic" target="_blank">Start Basic Free</a>
-          <a href="https://buy.stripe.com/14AeVf4E29IHbLT4Sx1sQ0N" class="btn-cta pro" target="_blank">Start Pro Free</a>
-          <a href="https://buy.stripe.com/9B628t1rQ2gfdU1et71sQ0O" class="btn-cta advanced" target="_blank">Start Advanced Pro Free</a>
-          <a href="https://buy.stripe.com/14A9AV2vU1cb3fn4Sx1sQ0Q" class="btn-cta enterprise" target="_blank">Start Enterprise</a>
+          <a href="https://nestmateus.com/register-aws" class="btn-cta basic">Start Basic Free</a>
+          <a href="https://nestmateus.com/register-aws" class="btn-cta pro">Start Pro Free</a>
+          <a href="https://nestmateus.com/register-aws" class="btn-cta advanced">Start Advanced Pro Free</a>
+          <a href="#" class="btn-cta enterprise">Start Enterprise</a>
         </div>
       </div>
     </div>
@@ -977,8 +1126,8 @@
 
   <footer>
     <div style="margin-bottom: 1rem;">
-      <a href="contact.html" style="color: #2563eb; text-decoration: none; margin-right: 2rem;">Contact Support</a>
-      <a href="mailto:support@nestmateusa.com" style="color: #2563eb; text-decoration: none;">support@nestmateusa.com</a>
+      <a href="contact.html" style="color: var(--primary-light); text-decoration: none; margin-right: 2rem;">Contact Support</a>
+      <a href="mailto:support@nestmateusa.com" style="color: var(--primary-light); text-decoration: none;">support@nestmateusa.com</a>
     </div>
     &copy; 2025 NestMate. Your home, organized.
   </footer>
