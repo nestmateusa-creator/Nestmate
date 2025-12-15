@@ -8815,14 +8815,18 @@
                     return;
                 }
                 
+                // Construct the S3 key
+                const key = `users/${userId}/${type}/${Date.now()}-${file.name}`;
+                const bucket = 'nestmate-files-483954734051';
+                
                 // Get presigned URL for upload
                 const response = await fetch('/.netlify/functions/s3-presign', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        fileName: file.name,
-                        fileType: file.type,
-                        folder: `users/${userId}/${type}`
+                        bucket: bucket,
+                        key: key,
+                        contentType: file.type
                     })
                 });
                 
@@ -8831,7 +8835,7 @@
                     throw new Error(`Failed to get presigned URL: ${response.status} - ${errorText}`);
                 }
                 
-                const { uploadUrl, fileKey } = await response.json();
+                const { uploadUrl, publicUrl, key: fileKey } = await response.json();
                 
                 // Upload file to S3
                 const uploadResponse = await fetch(uploadUrl, {
@@ -8845,7 +8849,7 @@
                 }
                 
                 // Add to UI
-                addFileToList(listContainer, file.name, fileKey, type);
+                addFileToList(listContainer, file.name, fileKey || key, type);
                 showAlert('File uploaded successfully!', 'success');
                 
             } catch (error) {
