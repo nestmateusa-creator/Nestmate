@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NestMate YouTube Banner Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0a0a0f 0%, #151520 100%);
+            color: #ffffff;
+            padding: 40px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #6366f1;
+            font-size: 32px;
+        }
+        .preview-container {
+            background: #1a1a2a;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        canvas {
+            display: block;
+            margin: 0 auto;
+            border: 2px solid #2d3748;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+        .controls {
+            text-align: center;
+            margin-top: 20px;
+        }
+        button {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin: 0 10px;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        }
+        .info {
+            background: #151520;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid #6366f1;
+        }
+        .info p {
+            margin: 10px 0;
+            color: #a0aec0;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎬 NestMate YouTube Banner Generator</h1>
+        
+        <div class="preview-container">
+            <canvas id="bannerCanvas" width="2048" height="1152"></canvas>
+            <div class="controls">
+                <button onclick="generateBanner()">🔄 Regenerate</button>
+                <button onclick="downloadBanner()">💾 Download Banner</button>
+            </div>
+        </div>
+
+        <div class="info">
+            <p><strong>📐 Dimensions:</strong> 2048 x 1152 pixels (YouTube recommended)</p>
+            <p><strong>💡 Tip:</strong> Right-click the canvas and select "Save image as..." or use the download button</p>
+            <p><strong>🎨 Design:</strong> Features NestMate branding with gradient background and modern typography</p>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('bannerCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function generateBanner() {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Create gradient background
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, '#0a0a0f');
+            gradient.addColorStop(0.3, '#151520');
+            gradient.addColorStop(0.6, '#1a1a2a');
+            gradient.addColorStop(1, '#0f0f1a');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Add subtle grid pattern
+            ctx.strokeStyle = 'rgba(99, 102, 241, 0.1)';
+            ctx.lineWidth = 1;
+            for (let x = 0; x < canvas.width; x += 100) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+            for (let y = 0; y < canvas.height; y += 100) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+
+            // Add accent gradient circles
+            const accentGradient1 = ctx.createRadialGradient(200, 300, 0, 200, 300, 400);
+            accentGradient1.addColorStop(0, 'rgba(99, 102, 241, 0.3)');
+            accentGradient1.addColorStop(1, 'rgba(99, 102, 241, 0)');
+            ctx.fillStyle = accentGradient1;
+            ctx.beginPath();
+            ctx.arc(200, 300, 400, 0, Math.PI * 2);
+            ctx.fill();
+
+            const accentGradient2 = ctx.createRadialGradient(canvas.width - 200, canvas.height - 300, 0, canvas.width - 200, canvas.height - 300, 500);
+            accentGradient2.addColorStop(0, 'rgba(139, 92, 246, 0.25)');
+            accentGradient2.addColorStop(1, 'rgba(139, 92, 246, 0)');
+            ctx.fillStyle = accentGradient2;
+            ctx.beginPath();
+            ctx.arc(canvas.width - 200, canvas.height - 300, 500, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Main logo/brand area (centered)
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            // Draw NestMate text with gradient
+            ctx.font = 'bold 120px Inter, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // Text shadow
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+            ctx.fillText('NestMate', centerX + 4, centerY + 4);
+
+            // Text gradient
+            const textGradient = ctx.createLinearGradient(centerX - 300, centerY, centerX + 300, centerY);
+            textGradient.addColorStop(0, '#6366f1');
+            textGradient.addColorStop(0.5, '#8b5cf6');
+            textGradient.addColorStop(1, '#a78bfa');
+            ctx.fillStyle = textGradient;
+            ctx.fillText('NestMate', centerX, centerY);
+
+            // Tagline
+            ctx.font = '400 48px Inter, sans-serif';
+            ctx.fillStyle = '#a0aec0';
+            ctx.fillText('Never Lose Money on Your Home Again', centerX, centerY + 100);
+
+            // Decorative elements - geometric shapes
+            ctx.fillStyle = 'rgba(99, 102, 241, 0.15)';
+            // Left side decorative circle
+            ctx.beginPath();
+            ctx.arc(centerX - 500, centerY - 100, 80, 0, Math.PI * 2);
+            ctx.fill();
+            // Right side decorative circle
+            ctx.beginPath();
+            ctx.arc(centerX + 500, centerY + 100, 100, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Small accent dots
+            ctx.fillStyle = 'rgba(139, 92, 246, 0.3)';
+            for (let i = 0; i < 8; i++) {
+                const angle = (Math.PI * 2 * i) / 8;
+                const radius = 350;
+                const x = centerX + Math.cos(angle) * radius;
+                const y = centerY + Math.sin(angle) * radius;
+                ctx.beginPath();
+                ctx.arc(x, y, 15, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Bottom accent line
+            ctx.strokeStyle = '#6366f1';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(centerX - 400, canvas.height - 80);
+            ctx.lineTo(centerX + 400, canvas.height - 80);
+            ctx.stroke();
+
+            // Website URL (optional, bottom right)
+            ctx.font = '300 36px Inter, sans-serif';
+            ctx.fillStyle = 'rgba(160, 174, 192, 0.6)';
+            ctx.textAlign = 'right';
+            ctx.fillText('nestmateus.com', canvas.width - 60, canvas.height - 40);
+        }
+
+        function downloadBanner() {
+            const link = document.createElement('a');
+            link.download = 'nestmate-youtube-banner.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        // Generate on load
+        window.addEventListener('load', generateBanner);
+    </script>
+</body>
+</html>

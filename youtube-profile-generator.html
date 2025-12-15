@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NestMate YouTube Profile Picture Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0a0a0f 0%, #151520 100%);
+            color: #ffffff;
+            padding: 40px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #6366f1;
+            font-size: 32px;
+        }
+        .preview-container {
+            background: #1a1a2a;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        canvas {
+            display: block;
+            border: 2px solid #2d3748;
+            border-radius: 50%;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+        .controls {
+            text-align: center;
+            margin-top: 20px;
+        }
+        button {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin: 0 10px;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        }
+        .info {
+            background: #151520;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid #6366f1;
+        }
+        .info p {
+            margin: 10px 0;
+            color: #a0aec0;
+            line-height: 1.6;
+        }
+        .size-options {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .size-btn {
+            padding: 10px 20px;
+            background: #2d3748;
+            border: 2px solid #4a5568;
+            color: #a0aec0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .size-btn.active {
+            background: #6366f1;
+            border-color: #818cf8;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🖼️ NestMate YouTube Profile Picture Generator</h1>
+        
+        <div class="preview-container">
+            <div class="size-options">
+                <button class="size-btn active" onclick="setSize(800)">800x800 (HD)</button>
+                <button class="size-btn" onclick="setSize(400)">400x400 (Standard)</button>
+                <button class="size-btn" onclick="setSize(200)">200x200 (Thumbnail)</button>
+            </div>
+            <canvas id="profileCanvas" width="800" height="800"></canvas>
+            <div class="controls">
+                <button onclick="generateProfile()">🔄 Regenerate</button>
+                <button onclick="downloadProfile()">💾 Download Profile Picture</button>
+            </div>
+        </div>
+
+        <div class="info">
+            <p><strong>📐 Dimensions:</strong> <span id="dimensions">800 x 800 pixels</span> (YouTube recommended: at least 98x98, but 800x800 for best quality)</p>
+            <p><strong>💡 Tip:</strong> Right-click the canvas and select "Save image as..." or use the download button</p>
+            <p><strong>🎨 Design:</strong> Circular profile picture with NestMate branding and modern gradient</p>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('profileCanvas');
+        const ctx = canvas.getContext('2d');
+        let currentSize = 800;
+
+        function setSize(size) {
+            currentSize = size;
+            canvas.width = size;
+            canvas.height = size;
+            document.getElementById('dimensions').textContent = `${size} x ${size} pixels`;
+            
+            // Update active button
+            document.querySelectorAll('.size-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            generateProfile();
+        }
+
+        function generateProfile() {
+            const size = canvas.width;
+            const center = size / 2;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, size, size);
+
+            // Create circular clipping path
+            ctx.beginPath();
+            ctx.arc(center, center, center, 0, Math.PI * 2);
+            ctx.clip();
+
+            // Background gradient
+            const gradient = ctx.createRadialGradient(center, center, 0, center, center, center);
+            gradient.addColorStop(0, '#6366f1');
+            gradient.addColorStop(0.5, '#8b5cf6');
+            gradient.addColorStop(1, '#4f46e5');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, size, size);
+
+            // Add subtle pattern overlay
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+            for (let i = 0; i < 20; i++) {
+                const angle = (Math.PI * 2 * i) / 20;
+                const x = center + Math.cos(angle) * (center * 0.7);
+                const y = center + Math.sin(angle) * (center * 0.7);
+                ctx.beginPath();
+                ctx.arc(x, y, size * 0.03, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Main "N" letter (NestMate initial)
+            ctx.fillStyle = '#ffffff';
+            ctx.font = `bold ${size * 0.5}px Inter, sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // Text shadow for depth
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+            ctx.shadowBlur = size * 0.02;
+            ctx.shadowOffsetX = size * 0.01;
+            ctx.shadowOffsetY = size * 0.01;
+            
+            ctx.fillText('N', center, center);
+
+            // Reset shadow
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+
+            // Optional: Add small decorative elements
+            if (size >= 400) {
+                // Small accent circles
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+                ctx.beginPath();
+                ctx.arc(center * 0.3, center * 0.3, size * 0.05, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.beginPath();
+                ctx.arc(center * 1.7, center * 1.7, size * 0.05, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Border for definition
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = size * 0.01;
+            ctx.beginPath();
+            ctx.arc(center, center, center - ctx.lineWidth / 2, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+
+        function downloadProfile() {
+            const link = document.createElement('a');
+            link.download = `nestmate-youtube-profile-${currentSize}x${currentSize}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        // Generate on load
+        window.addEventListener('load', generateProfile);
+    </script>
+</body>
+</html>
