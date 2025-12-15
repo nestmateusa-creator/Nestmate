@@ -758,35 +758,31 @@
         document.querySelectorAll('.plan-note-enterprise').forEach(e => e.textContent = yearly ? notes.yearly : notes.monthly);
         document.querySelectorAll('.discount-badge').forEach(e => e.style.display = yearly ? 'inline-block' : 'none');
         
-        // Update plan action links
+        // Update plan action links - all link to register-aws
         document.querySelectorAll('.plan-action a').forEach(link => {
           const planCard = link.closest('.plan-card');
-          let planKey = '';
+          let planType = '';
           
-          if (planCard.classList.contains('basic') || planCard.querySelector('.plan-title').textContent === 'Basic') {
-            planKey = yearly ? 'cNi3cx3zY3kj6rzckZ1sQ0R' : '9B600lc6u4oneY50Ch1sQ0M';
-            link.href = yearly ? links.basic.yearly : links.basic.monthly;
-          } else if (planCard.classList.contains('popular') || planCard.querySelector('.plan-title').textContent === 'Pro') {
-            planKey = yearly ? 'bJe6oJ0nMg755nv0Ch1sQ0S' : '14AeVf4E29IHbLT4Sx1sQ0N';
-            link.href = yearly ? links.pro.yearly : links.pro.monthly;
-          } else if (planCard.querySelector('.plan-title').textContent === 'Advanced Pro') {
-            planKey = yearly ? '14AcN7eeC8ED3fn4Sx1sQ0T' : '9B628t1rQ2gfdU1et71sQ0O';
-            link.href = yearly ? links.advanced.yearly : links.advanced.monthly;
-          } else if (planCard.classList.contains('enterprise') || planCard.querySelector('.plan-title').textContent === 'Enterprise') {
-            planKey = yearly ? 'aFa4gB8UiaML3fn1Gl1sQ0U' : '14A9AV2vU1cb3fn4Sx1sQ0Q';
-            link.href = yearly ? links.enterprise.yearly : links.enterprise.monthly;
+          if (planCard.classList.contains('basic') || planCard.querySelector('.plan-title')?.textContent === 'Basic') {
+            planType = 'basic';
+            link.href = links.basic.monthly;
+          } else if (planCard.classList.contains('popular') || planCard.querySelector('.plan-title')?.textContent === 'Pro') {
+            planType = 'pro';
+            link.href = links.pro.monthly;
+          } else if (planCard.querySelector('.plan-title')?.textContent === 'Advanced Pro') {
+            planType = 'advanced';
+            link.href = links.advanced.monthly;
+          } else if (planCard.classList.contains('enterprise') || planCard.querySelector('.plan-title')?.textContent === 'Enterprise') {
+            planType = 'enterprise';
+            link.href = links.enterprise.monthly;
           }
           
-          // Store selected plan in localStorage and append plan key to Stripe URL
+          // Store selected plan in localStorage for registration page
           link.addEventListener('click', function(e) {
-            localStorage.setItem('selectedPlan', planKey);
-            localStorage.setItem('selectedPlanType', yearly ? 'yearly' : 'monthly');
-            // ensure Stripe success redirects back with plan
-            try {
-              const u = new URL(link.href);
-              // let Stripe success url redirect to our success page
-              // We cannot change Stripe link here, so after checkout it will return; we use localStorage fallback
-            } catch(_) {}
+            if (planType) {
+              localStorage.setItem('selectedPlan', planType);
+              localStorage.setItem('selectedPlanType', yearly ? 'yearly' : 'monthly');
+            }
           });
         });
       }
