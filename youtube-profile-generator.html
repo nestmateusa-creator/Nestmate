@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NestMate YouTube Profile Picture Generator - Premium</title>
+    <title>NestMate YouTube Profile Picture Generator</title>
     <style>
         * {
             margin: 0;
@@ -95,11 +95,16 @@
             border-color: #818cf8;
             color: white;
         }
+        .loading {
+            text-align: center;
+            color: #6366f1;
+            padding: 20px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🖼️ NestMate YouTube Profile Picture Generator - Premium</h1>
+        <h1>🖼️ NestMate YouTube Profile Picture Generator</h1>
         
         <div class="preview-container">
             <div class="size-options">
@@ -107,8 +112,9 @@
                 <button class="size-btn" onclick="setSize(400)">400x400 (Standard)</button>
                 <button class="size-btn" onclick="setSize(200)">200x200 (Thumbnail)</button>
             </div>
-            <canvas id="profileCanvas" width="800" height="800"></canvas>
-            <div class="controls">
+            <div id="loading" class="loading">Loading logo...</div>
+            <canvas id="profileCanvas" width="800" height="800" style="display: none;"></canvas>
+            <div class="controls" style="display: none;">
                 <button onclick="generateProfile()">🔄 Regenerate</button>
                 <button onclick="downloadProfile()">💾 Download Profile Picture</button>
             </div>
@@ -117,7 +123,7 @@
         <div class="info">
             <p><strong>📐 Dimensions:</strong> <span id="dimensions">800 x 800 pixels</span> (YouTube recommended: at least 98x98, but 800x800 for best quality)</p>
             <p><strong>💡 Tip:</strong> Right-click the canvas and select "Save image as..." or use the download button</p>
-            <p><strong>🎨 Design:</strong> Modern geometric "N" logo with premium gradient and professional styling</p>
+            <p><strong>🎨 Design:</strong> Circular profile picture featuring NestMate logo with premium gradient background</p>
         </div>
     </div>
 
@@ -125,6 +131,38 @@
         const canvas = document.getElementById('profileCanvas');
         const ctx = canvas.getContext('2d');
         let currentSize = 800;
+        let logoImage = null;
+
+        // Load the NestMate logo (prefer square version for profile)
+        const logo = new Image();
+        logo.crossOrigin = 'anonymous';
+        logo.onload = function() {
+            logoImage = this;
+            document.getElementById('loading').style.display = 'none';
+            canvas.style.display = 'block';
+            document.querySelector('.controls').style.display = 'block';
+            generateProfile();
+        };
+        logo.onerror = function() {
+            // Try alternative logo paths
+            const altPaths = ['nestmate-logo-square.png', 'nestmate-logo.png', 'nestmate-logo-hd.png'];
+            let currentIndex = 0;
+            const tryNextLogo = () => {
+                if (currentIndex < altPaths.length) {
+                    logo.src = altPaths[currentIndex];
+                    currentIndex++;
+                } else {
+                    document.getElementById('loading').textContent = 'Logo not found. Using text fallback.';
+                    logoImage = null;
+                    canvas.style.display = 'block';
+                    document.querySelector('.controls').style.display = 'block';
+                    generateProfile();
+                }
+            };
+            logo.onerror = tryNextLogo;
+            tryNextLogo();
+        };
+        logo.src = 'nestmate-logo-square.png';
 
         function setSize(size) {
             currentSize = size;
@@ -141,27 +179,6 @@
             generateProfile();
         }
 
-        function drawModernN(ctx, x, y, size) {
-            const width = size * 0.6;
-            const height = size * 0.8;
-            const thickness = size * 0.12;
-            const offset = size * 0.15;
-            
-            // Left vertical bar
-            ctx.fillRect(x - width/2, y - height/2, thickness, height);
-            
-            // Right vertical bar
-            ctx.fillRect(x + width/2 - thickness, y - height/2, thickness, height);
-            
-            // Diagonal bar
-            ctx.save();
-            ctx.translate(x, y);
-            const angle = Math.atan2(height, width - thickness);
-            ctx.rotate(angle);
-            ctx.fillRect(-thickness/2, -height/2, thickness, Math.sqrt(height * height + (width - thickness) * (width - thickness)));
-            ctx.restore();
-        }
-
         function generateProfile() {
             const size = canvas.width;
             const center = size / 2;
@@ -176,7 +193,7 @@
             ctx.arc(center, center, radius, 0, Math.PI * 2);
             ctx.clip();
 
-            // Premium gradient background - vibrant and modern
+            // Premium gradient background
             const baseGradient = ctx.createLinearGradient(0, 0, size, size);
             baseGradient.addColorStop(0, '#6366f1');
             baseGradient.addColorStop(0.3, '#7c3aed');
@@ -187,62 +204,36 @@
 
             // Add radial overlay for depth
             const overlayGradient = ctx.createRadialGradient(center * 0.6, center * 0.6, 0, center, center, radius * 1.2);
-            overlayGradient.addColorStop(0, 'rgba(16, 185, 129, 0.25)');
+            overlayGradient.addColorStop(0, 'rgba(16, 185, 129, 0.2)');
             overlayGradient.addColorStop(0.5, 'rgba(99, 102, 241, 0.3)');
             overlayGradient.addColorStop(1, 'transparent');
             ctx.fillStyle = overlayGradient;
             ctx.fillRect(0, 0, size, size);
 
-            // Add subtle geometric pattern
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
-            ctx.lineWidth = size * 0.005;
-            for (let i = 0; i < 8; i++) {
-                const angle = (Math.PI * 2 * i) / 8;
-                ctx.beginPath();
-                ctx.moveTo(center, center);
-                ctx.lineTo(
-                    center + Math.cos(angle) * radius * 0.9,
-                    center + Math.sin(angle) * radius * 0.9
-                );
-                ctx.stroke();
+            // Draw the NestMate logo
+            if (logoImage) {
+                // Calculate logo size (fit nicely in circle with padding)
+                const padding = size * 0.15;
+                const logoSize = size - (padding * 2);
+                
+                // Draw logo with shadow
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+                ctx.shadowBlur = size * 0.03;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = size * 0.01;
+                ctx.drawImage(logoImage, padding, padding, logoSize, logoSize);
+                ctx.shadowBlur = 0;
+            } else {
+                // Fallback: Draw text logo
+                ctx.fillStyle = '#ffffff';
+                ctx.font = `bold ${size * 0.4}px Poppins, sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+                ctx.shadowBlur = size * 0.02;
+                ctx.fillText('N', center, center);
+                ctx.shadowBlur = 0;
             }
-
-            // Draw concentric circles
-            for (let i = 1; i <= 3; i++) {
-                ctx.beginPath();
-                ctx.arc(center, center, radius * (0.3 + i * 0.15), 0, Math.PI * 2);
-                ctx.stroke();
-            }
-
-            // Modern "N" letter with premium styling
-            ctx.fillStyle = '#ffffff';
-            ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
-            ctx.shadowBlur = size * 0.03;
-            ctx.shadowOffsetX = size * 0.01;
-            ctx.shadowOffsetY = size * 0.01;
-            
-            drawModernN(ctx, center, center, size * 0.7);
-            
-            // Reset shadow
-            ctx.shadowColor = 'transparent';
-            ctx.shadowBlur = 0;
-            ctx.shadowOffsetX = 0;
-            ctx.shadowOffsetY = 0;
-
-            // Add accent highlights on the N
-            const highlightGradient = ctx.createLinearGradient(
-                center - size * 0.2, center - size * 0.3,
-                center + size * 0.2, center + size * 0.3
-            );
-            highlightGradient.addColorStop(0, 'rgba(255, 255, 255, 0.3)');
-            highlightGradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.1)');
-            highlightGradient.addColorStop(1, 'transparent');
-            
-            // Apply subtle highlight overlay
-            ctx.globalCompositeOperation = 'overlay';
-            ctx.fillStyle = highlightGradient;
-            ctx.fillRect(center - size * 0.3, center - size * 0.35, size * 0.6, size * 0.7);
-            ctx.globalCompositeOperation = 'source-over';
 
             // Restore clipping
             ctx.restore();
@@ -268,13 +259,15 @@
 
         function downloadProfile() {
             const link = document.createElement('a');
-            link.download = `nestmate-youtube-profile-premium-${currentSize}x${currentSize}.png`;
+            link.download = `nestmate-youtube-profile-${currentSize}x${currentSize}.png`;
             link.href = canvas.toDataURL('image/png');
             link.click();
         }
 
-        // Generate on load
-        window.addEventListener('load', generateProfile);
+        // Generate on load (after logo loads)
+        if (logoImage) {
+            generateProfile();
+        }
     </script>
 </body>
 </html>
