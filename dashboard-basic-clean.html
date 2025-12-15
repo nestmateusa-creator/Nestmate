@@ -4551,10 +4551,35 @@
             const url = (input.value || '').trim();
             if (!url) return;
             
-            photosData.push({ url, type: 'url' });
-            await displayPhotos();
-            input.value = '';
-            document.getElementById('photosEmpty').style.display = 'none';
+            if (!window.awsDataService) {
+                showAlert('Data service not available. Please refresh the page.', 'error');
+                return;
+            }
+            
+            try {
+                const existingPhotos = await window.awsDataService.getPhotosList(null);
+                const newPhoto = {
+                    url,
+                    type: 'url',
+                    filename: url.split('/').pop() || 'image.jpg',
+                    uploadedAt: new Date().toISOString()
+                };
+                
+                photosData = [...(existingPhotos || []), newPhoto];
+                
+                const result = await window.awsDataService.savePhotosList(photosData, null);
+                if (result && result.success) {
+                    await displayPhotos();
+                    input.value = '';
+                    document.getElementById('photosEmpty').style.display = 'none';
+                    showAlert('Photo added successfully!', 'success');
+                } else {
+                    throw new Error(result?.error || 'Failed to save photo');
+                }
+            } catch (error) {
+                console.error('Error adding photo from URL:', error);
+                showAlert('Failed to add photo. Please try again.', 'error');
+            }
         }
 
         async function uploadPhotos() {
@@ -4570,6 +4595,11 @@
                 return;
             }
 
+            if (!window.awsDataService) {
+                showAlert('Data service not available. Please refresh the page.', 'error');
+                return;
+            }
+
             showAlert('Uploading photos...', 'info');
             
             try {
@@ -4581,19 +4611,34 @@
                     console.log('Uploading file:', file.name, 'with key:', key);
                     const url = await uploadToS3(file, key);
                     console.log('Upload successful, URL:', url);
-                    return { url, key, type: 's3', filename: file.name };
+                    return { 
+                        url, 
+                        key, 
+                        type: 's3', 
+                        filename: file.name,
+                        uploadedAt: new Date().toISOString()
+                    };
                 });
 
                 const uploadedPhotos = await Promise.all(uploadPromises);
                 console.log('All uploads completed:', uploadedPhotos);
-                console.log('Before push - photosData:', photosData);
-                photosData.push(...uploadedPhotos);
-                console.log('After push - photosData:', photosData);
-                console.log('Number of photos added:', uploadedPhotos.length);
-                await displayPhotos();
-                fileInput.value = '';
-                document.getElementById('photosEmpty').style.display = 'none';
-                showAlert(`${uploadedPhotos.length} photos uploaded successfully!`, 'success');
+                
+                // Get existing photos and add new ones
+                const existingPhotos = await window.awsDataService.getPhotosList(null);
+                console.log('Existing photos:', existingPhotos);
+                photosData = [...(existingPhotos || []), ...uploadedPhotos];
+                console.log('Combined photos data:', photosData);
+                
+                // Save to AWS
+                const result = await window.awsDataService.savePhotosList(photosData, null);
+                if (result && result.success) {
+                    await displayPhotos();
+                    fileInput.value = '';
+                    document.getElementById('photosEmpty').style.display = 'none';
+                    showAlert(`${uploadedPhotos.length} photos uploaded successfully!`, 'success');
+                } else {
+                    throw new Error(result?.error || 'Failed to save photos');
+                }
             } catch (error) {
                 console.error('Upload error:', error);
                 showAlert('Upload failed. Please try again.', 'error');
@@ -4601,12 +4646,28 @@
         }
 
         async function displayPhotos() {
-            console.log('displayPhotos called with photosData:', photosData);
+            console.log('displayPhotos called');
             const grid = document.getElementById('photosGrid');
             if (!grid) {
                 console.error('photosGrid element not found!');
                 return;
             }
+            
+            if (!window.awsDataService) {
+                console.error('AWS Data Service not available');
+                grid.innerHTML = '';
+                return;
+            }
+            
+            try {
+                // Load photos from AWS
+                photosData = await window.awsDataService.getPhotosList(null);
+                console.log('Photos loaded from AWS:', photosData);
+            } catch (error) {
+                console.error('Error loading photos:', error);
+                photosData = [];
+            }
+            
             grid.innerHTML = '';
             
             if (!photosData || photosData.length === 0) {
@@ -4750,8 +4811,22 @@
 
         async function clearPhotos() {
             photosData = [];
+            
+            // Save to AWS
+            if (window.awsDataService) {
+                try {
+                    const result = await window.awsDataService.savePhotosList(photosData, null);
+                    if (!result || !result.success) {
+                        console.error('Failed to save photos after clearing');
+                    }
+                } catch (error) {
+                    console.error('Error saving photos after clearing:', error);
+                }
+            }
+            
             await displayPhotos();
             document.getElementById('photosEmpty').style.display = '';
+            showAlert('All photos cleared', 'success');
         }
 
         // Open photo in new page with controls
@@ -4827,29 +4902,20 @@
 
         async function savePhotos() {
             try {
-                console.log('Saving photos:', photosData);
-                console.log('User ID:', nestMateAuth.currentUser.userId);
-                
-                // Save directly to DynamoDB like other sections
-                const dynamodb = getDynamoDB();
-                if (!dynamodb) {
-                    throw new Error('DynamoDB not initialized');
+                if (!window.awsDataService) {
+                    showAlert('Data service not available. Please refresh the page.', 'error');
+                    return;
                 }
                 
-                const userId = nestMateAuth.currentUser.userId;
-                const params = {
-                    TableName: 'nestmate-users',
-                    Key: { userId: userId },
-                    UpdateExpression: 'SET photos = :photos, lastUpdated = :timestamp',
-                    ExpressionAttributeValues: {
-                        ':photos': photosData,
-                        ':timestamp': new Date().toISOString()
-                    },
-                    ReturnValues: 'UPDATED_NEW'
-                };
+                console.log('Saving photos:', photosData);
                 
-                const result = await dynamodb.update(params).promise();
-                console.log('Photos saved to DynamoDB:', result);
+                // Save to AWS using awsDataService
+                const result = await window.awsDataService.savePhotosList(photosData, null);
+                if (!result || !result.success) {
+                    throw new Error(result?.error || 'Failed to save photos');
+                }
+                
+                console.log('Photos saved to AWS');
                 
                 // Display the photos immediately
                 await displayPhotos();
@@ -7473,17 +7539,35 @@
                 renderLivingAreasList();
             }
             
-            // Load photos data
-            console.log('Loading photos data:', userData.photos);
-            if (userData.photos && userData.photos.length > 0) {
-                photosData = userData.photos;
-                console.log('Photos loaded, calling displayPhotos with:', photosData);
-                await displayPhotos();
-                document.getElementById('photosEmpty').style.display = 'none';
+            // Load photos data from AWS
+            if (window.awsDataService) {
+                try {
+                    photosData = await window.awsDataService.getPhotosList(null);
+                    console.log('Photos loaded from AWS:', photosData);
+                    await displayPhotos();
+                    if (photosData && photosData.length > 0) {
+                        document.getElementById('photosEmpty').style.display = 'none';
+                    } else {
+                        document.getElementById('photosEmpty').style.display = 'block';
+                    }
+                } catch (error) {
+                    console.error('Error loading photos from AWS:', error);
+                    photosData = [];
+                    document.getElementById('photosEmpty').style.display = 'block';
+                }
             } else {
-                photosData = [];
-                console.log('No photos found, showing empty state');
-                document.getElementById('photosEmpty').style.display = 'block';
+                // Fallback to old method if awsDataService not available
+                console.log('Loading photos data:', userData.photos);
+                if (userData.photos && userData.photos.length > 0) {
+                    photosData = userData.photos;
+                    console.log('Photos loaded, calling displayPhotos with:', photosData);
+                    await displayPhotos();
+                    document.getElementById('photosEmpty').style.display = 'none';
+                } else {
+                    photosData = [];
+                    console.log('No photos found, showing empty state');
+                    document.getElementById('photosEmpty').style.display = 'block';
+                }
             }
             
             // Load favorites data
